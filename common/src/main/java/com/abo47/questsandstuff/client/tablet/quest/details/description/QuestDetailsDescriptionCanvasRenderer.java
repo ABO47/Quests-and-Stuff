@@ -110,20 +110,35 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
         CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
-        withSelectionGeometry(state, contentW, contentH, () -> drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH));
-        if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditController.canEdit(state) && selectedCount(state) <= 1) {
-            drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
-        }
+        withSelectionGeometry(state, contentW, contentH, () -> {
+            drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH);
+            if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditController.canEdit(state)) {
+                if (selectedCount(state) <= 1) {
+                    drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
+                } else {
+                    CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, contentX, contentY,
+                        drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(),
+                        drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                }
+            }
+        });
     }
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
         boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
-        withSelectionGeometry(state, contentW, contentH, () -> drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing));
-        if (isSelectedText(state, drawText.id()) && QuestDetailsEditController.canEdit(state) && selectedCount(state) <= 1) {
-            drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
-        }
+        withSelectionGeometry(state, contentW, contentH, () -> {
+            drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing);
+            if (isSelectedText(state, drawText.id()) && QuestDetailsEditController.canEdit(state)) {
+                if (selectedCount(state) <= 1) {
+                    drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+                } else {
+                    CanvasElementSelectionSlot.drawFillAndOutline(graphics, state, contentX, contentY,
+                        drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+                }
+            }
+        });
     }
 
     private static void drawImageAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasImageLayer drawImage, int contentX, int contentY, int contentH) {

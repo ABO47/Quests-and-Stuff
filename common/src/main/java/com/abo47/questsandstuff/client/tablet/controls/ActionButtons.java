@@ -41,7 +41,7 @@ public final class ActionButtons {
         parent.addWidget(IconOnlyButton.icon(contentX, iconY, iconSize, icon, color));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow(color));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.controlPressed(color));
         if (tooltips != null) {
             hit.setHoverTooltips(tooltips);

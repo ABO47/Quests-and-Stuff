@@ -120,7 +120,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow(theme.accent()));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         list.addWidget(hit);
     }
 
@@ -152,7 +152,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow(theme.accent()));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(theme.accent(), 64)));
         list.addWidget(hit);
     }

@@ -61,6 +61,10 @@ public final class CanvasElementSelectionSlot {
         }
     }
 
+    private static int normalize(int rotationDegrees) {
+        return ((rotationDegrees % 360) + 360) % 360;
+    }
+
     public static void drawScreenRectResizeOnly(GuiGraphics graphics, int originX, int originY, int left, int top, int width, int height) {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
@@ -95,6 +99,26 @@ public final class CanvasElementSelectionSlot {
         drawRectOutline(graphics, box.left(), box.top(), w, h, withAlpha(TabletColors.SELECTION, 185));
     }
 
+    public static void drawFillAndOutline(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, x, y, width, height, rotationDegrees);
+        drawFillAndOutlineAt(graphics, originX, originY, box, rotationDegrees);
+    }
+
+    public static void drawFillAndOutlineAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
+        drawFillAndOutlineAt(graphics, originX, originY, box, rotationDegrees);
+    }
+
+    private static void drawFillAndOutlineAt(GuiGraphics graphics, int originX, int originY, CanvasElementGeometry.Box box, int rotationDegrees) {
+        if (box.right() > box.left() && box.bottom() > box.top()) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
+            drawBoxFillAndOutline(graphics, box);
+            graphics.pose().popPose();
+        }
+    }
+
     public static boolean resizeHandleHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return resizeHandleHitAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, hitX, hitY);
     }
@@ -124,10 +148,6 @@ public final class CanvasElementSelectionSlot {
         drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
     }
 
-    private static int normalize(int rotationDegrees) {
-        return ((rotationDegrees % 360) + 360) % 360;
-    }
-
     public static void drawCombinedBounds(
             GuiGraphics graphics,
             int originX,
@@ -153,6 +173,42 @@ public final class CanvasElementSelectionSlot {
             int rotateY = top;
             drawClippedFill(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.WARNING, 210));
             drawClippedOutline(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
+        }
+    }
+
+    public static void drawRotatedCombinedBounds(GuiGraphics graphics, int originX, int originY, int pivotScreenX, int pivotScreenY, int startW, int startH, double rotatePreviewAngle) {
+        int halfW = startW / 2;
+        int halfH = startH / 2;
+        int left = -halfW - HANDLE_SIZE;
+        int top = -halfH - HANDLE_SIZE;
+        int right = halfW + HANDLE_SIZE;
+        int bottom = halfH + HANDLE_SIZE;
+        int bw = right - left;
+        int bh = bottom - top;
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(originX + pivotScreenX, originY + pivotScreenY, 0.0f);
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) rotatePreviewAngle));
+
+        SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 26)).draw(graphics, 0, 0, left, top, bw, bh);
+        drawRectOutline(graphics, left, top, bw, bh, withAlpha(TabletColors.SELECTION, 214));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 230)).draw(graphics, 0, 0, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+        SurfaceFactory.fill(withAlpha(TabletColors.WARNING, 210)).draw(graphics, 0, 0, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
+
+        graphics.pose().popPose();
+    }
+
+    public static void drawFillAndOutlineScreenRect(GuiGraphics graphics, int originX, int originY, int left, int top, int width, int height) {
+        int w = Math.max(1, width);
+        int h = Math.max(1, height);
+        CanvasElementGeometry.Box box = screenRectBox(left, top, w, h);
+        if (box.right() > box.left() && box.bottom() > box.top()) {
+            graphics.pose().pushPose();
+            graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
+            drawBoxFillAndOutline(graphics, box);
+            graphics.pose().popPose();
         }
     }
 

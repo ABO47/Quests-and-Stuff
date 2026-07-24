@@ -190,6 +190,8 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (state.questDetails.questDetailsBoxSelecting) {
             QuestDetailsDescriptionInteractionState.updateBoxSelection(state, localX(mouseX), localY(mouseY));
+            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            selection.updateDuringBoxDrag(model);
             return true;
         }
         if (state.questDetails.questDetailsTransformId.isBlank()) {

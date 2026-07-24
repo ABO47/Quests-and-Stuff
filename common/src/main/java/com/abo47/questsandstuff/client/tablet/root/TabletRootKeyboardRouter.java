@@ -28,6 +28,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTas
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
 final class TabletRootKeyboardRouter {
     private TabletRootKeyboardRouter() {
@@ -67,11 +68,18 @@ final class TabletRootKeyboardRouter {
                 refresher.run();
                 return true;
             }
+            if (state.modal.modalWindowClosing) {
+                TabletModalState.closeAllModalsImmediately(state);
+            }
+            if (state.questDetails.questDetailsClosing) {
+                QuestDetailsWindow.finishCloseAnimation(state);
+            }
             if (root.isAnyModalOpen()) {
-                if (modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
-                    return true;
+                if (state.modal.modalWindowClosing) {
+                    TabletModalState.closeAllModalsImmediately(state);
+                } else {
+                    ModalCloseActions.closeAll(state);
                 }
-                ModalCloseActions.closeAll(state);
                 refresher.run();
                 return true;
             }

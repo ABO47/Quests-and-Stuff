@@ -12,7 +12,6 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -43,6 +42,7 @@ public final class TabletRootWindowController {
             return true;
         }
         if (state.questDetails.questDetailsClosing) {
+            QuestDetailsWindow.finishCloseAnimation(state);
             return true;
         }
         if (state.questDetails.questDetailsOpen) {

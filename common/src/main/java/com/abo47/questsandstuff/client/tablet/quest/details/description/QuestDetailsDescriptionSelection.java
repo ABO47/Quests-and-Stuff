@@ -4,6 +4,7 @@ import java.util.function.IntSupplier;
 
 import net.minecraft.client.gui.GuiGraphics;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
@@ -52,6 +53,35 @@ public final class QuestDetailsDescriptionSelection {
         return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
+    void updateDuringBoxDrag(QuestDetailsDescriptionModel model) {
+        if (!state.questDetails.questDetailsBoxSelecting) {
+            return;
+        }
+        int minX = Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int minY = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        int maxX = Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int maxY = Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        String lastTextId = "";
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        for (CanvasTextLayer text : model.texts.values()) {
+            if (intersects(bounds(text.x(), text.y(), text.w(), text.h(), text.rotation()), minX, minY, maxX, maxY)) {
+                state.questDetails.questDetailsDescriptionSelection.textIds().add(text.id());
+                lastTextId = text.id();
+            }
+        }
+        String lastImageId = "";
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        for (CanvasImageLayer image : model.images.values()) {
+            CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
+            if (intersects(bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation()), minX, minY, maxX, maxY)) {
+                state.questDetails.questDetailsDescriptionSelection.imageIds().add(drawImage.id());
+                lastImageId = drawImage.id();
+            }
+        }
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(lastImageId);
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(lastTextId);
+    }
+
     void finishBoxSelection(QuestDetailsDescriptionModel model) {
         int minX = Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
         int minY = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY) + state.questDetails.questDetailsDescScroll;
@@ -83,6 +113,18 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     void drawMultiSelectionBounds(GuiGraphics graphics, QuestDetailsDescriptionModel model) {
+        boolean rotating = "selection".equals(state.questDetails.questDetailsTransformKind)
+                && "rotate".equals(state.questDetails.questDetailsTransformMode);
+        if (rotating && state.canvas.rotateStartBoundsRight > state.canvas.rotateStartBoundsLeft
+                && state.canvas.rotateStartBoundsBottom > state.canvas.rotateStartBoundsTop) {
+            int startW = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight);
+            int startH = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom);
+            int pivotScreenX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
+            int pivotScreenY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
+            CanvasElementSelectionSlot.drawRotatedCombinedBounds(graphics, contentX.getAsInt(), contentY.getAsInt(),
+                    pivotScreenX, pivotScreenY, startW, startH, state.canvas.rotatePreviewAngle);
+            return;
+        }
         SelectionRect bounds = selectionBounds(model);
         if (!bounds.valid()) {
             return;

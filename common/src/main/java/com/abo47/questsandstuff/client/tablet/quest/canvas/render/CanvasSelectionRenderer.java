@@ -27,8 +27,6 @@ public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = GRID_4;
     private static final int SINGLE_SELECTION_PAD = GRID_1;
     private static final int HANDLE_SIZE = GRID_5;
-    private static final int ROTATED_SELECTION_THICKNESS = GRID_2;
-
     private CanvasSelectionRenderer() {
     }
 
@@ -273,27 +271,10 @@ public final class CanvasSelectionRenderer {
     }
 
     private static void drawRotatedSelectionBounds(GuiGraphics graphics, int originX, int originY, TabletUiState state) {
-        int width = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight) + SELECTION_PAD * 2;
-        int height = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom) + SELECTION_PAD * 2;
-        int pivotX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
-        int pivotY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
-        int color = withAlpha(TabletColors.SELECTION, 225);
-
-        int halfW = width / 2;
-        int halfH = height / 2;
-
-        graphics.pose().pushPose();
-        graphics.pose().translate(originX + pivotX, originY + pivotY, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) state.canvas.rotatePreviewAngle));
-        drawRotatedOutline(graphics, -halfW, -halfH, width - halfW, height - halfH, ROTATED_SELECTION_THICKNESS, color);
-        graphics.pose().popPose();
-    }
-
-    private static void drawRotatedOutline(GuiGraphics graphics, int left, int top, int right, int bottom, int thickness, int color) {
-        int t = Math.max(1, thickness);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, top, right - left, t);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, bottom - t, right - left, t);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, left, top, t, bottom - top);
-        SurfaceFactory.fill(color).draw(graphics, 0, 0, right - t, top, t, bottom - top);
+        int startW = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight);
+        int startH = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom);
+        int pivotScreenX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
+        int pivotScreenY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
+        CanvasElementSelectionSlot.drawRotatedCombinedBounds(graphics, originX, originY, pivotScreenX, pivotScreenY, startW, startH, state.canvas.rotatePreviewAngle);
     }
 }

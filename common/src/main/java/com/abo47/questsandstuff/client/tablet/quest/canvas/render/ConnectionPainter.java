@@ -27,6 +27,7 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -196,9 +197,41 @@ final class ConnectionPainter {
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+            if (state.root.canEdit) {
+                int bbMinX = Integer.MAX_VALUE;
+                int bbMinY = Integer.MAX_VALUE;
+                int bbMaxX = Integer.MIN_VALUE;
+                int bbMaxY = Integer.MIN_VALUE;
+                for (CanvasPoint p : path) {
+                    bbMinX = Math.min(bbMinX, (int) p.x);
+                    bbMinY = Math.min(bbMinY, (int) p.y);
+                    bbMaxX = Math.max(bbMaxX, (int) p.x);
+                    bbMaxY = Math.max(bbMaxY, (int) p.y);
+                }
+                int pad = 8;
+                if (mouseX >= bbMinX - pad && mouseX <= bbMaxX + pad && mouseY >= bbMinY - pad && mouseY <= bbMaxY + pad) {
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, bbMinX - pad, bbMinY - pad, bbMaxX - bbMinX + pad * 2, bbMaxY - bbMinY + pad * 2);
+                }
+            }
             return;
         }
         drawTexturedChevrons(graphics, path, line.color(), alpha, texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        if (state.root.canEdit) {
+            int bbMinX = Integer.MAX_VALUE;
+            int bbMinY = Integer.MAX_VALUE;
+            int bbMaxX = Integer.MIN_VALUE;
+            int bbMaxY = Integer.MIN_VALUE;
+            for (CanvasPoint p : path) {
+                bbMinX = Math.min(bbMinX, (int) p.x);
+                bbMinY = Math.min(bbMinY, (int) p.y);
+                bbMaxX = Math.max(bbMaxX, (int) p.x);
+                bbMaxY = Math.max(bbMaxY, (int) p.y);
+            }
+            int pad = 8;
+            if (mouseX >= bbMinX - pad && mouseX <= bbMaxX + pad && mouseY >= bbMinY - pad && mouseY <= bbMaxY + pad) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, bbMinX - pad, bbMinY - pad, bbMaxX - bbMinX + pad * 2, bbMaxY - bbMinY + pad * 2);
+            }
+        }
     }
 
     private static boolean isHoveringEndpoint(

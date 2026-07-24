@@ -212,6 +212,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLifecycle.close(state);
     }
 
+    public static void finishCloseAnimation(TabletUiState state) {
+        QuestDetailsWindowLifecycle.finishClose(state);
+    }
+
     public static int leftPanelWidth(TabletUiState state) {
         return QuestDetailsWindowGeometry.leftPanelWidth(state);
     }

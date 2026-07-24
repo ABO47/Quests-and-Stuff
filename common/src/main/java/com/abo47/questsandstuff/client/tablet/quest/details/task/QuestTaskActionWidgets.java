@@ -106,7 +106,7 @@ final class QuestTaskActionWidgets {
                 refresh.run();
             });
             hit.setHoverTooltips(new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.CLAIM_ALL_REWARDS)});
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow(TabletColors.SUCCESS));
+            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
             hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             section.addWidget(hit);
         }

@@ -61,7 +61,7 @@ public final class TabletWidgets {
                 new TextTexture(text)
         );
         ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
-        button.setHoverTexture(GlowShaderHelper.hoverGlow(activeColor));
+        button.setHoverTexture(GlowShaderHelper.hoverGlow());
         button.setClickedTexture(active);
         button.setClientSideWidget();
         return button;

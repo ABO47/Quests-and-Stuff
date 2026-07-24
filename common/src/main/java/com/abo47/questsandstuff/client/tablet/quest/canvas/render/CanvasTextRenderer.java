@@ -39,10 +39,10 @@ public final class CanvasTextRenderer {
                 CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 int w = box.width();
                 int h = box.height();
+                boolean inlineEditing = isMainCanvasTextEditing(state, drawText);
                 graphics.pose().pushPose();
                 graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
-                boolean inlineEditing = isMainCanvasTextEditing(state, drawText);
                 drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing);
                 if (inlineEditing) {
                     drawCanvasTextCaret(graphics, state, drawText, w, h);
@@ -50,9 +50,10 @@ public final class CanvasTextRenderer {
                 graphics.pose().popPose();
                 if (state.root.canEdit && CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        return;
+                        CanvasElementSelectionSlot.drawFillAndOutline(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+                    } else {
+                        CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                     }
-                    CanvasElementSelectionSlot.draw(graphics, state, originX, originY, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 }
             }
         });

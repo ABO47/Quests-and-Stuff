@@ -263,12 +263,13 @@ final class CanvasSceneRenderer {
         CanvasQuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
         if (state.root.canEdit
-                && !card.questId().equals(state.questDetails.pendingQuestTitleChangeId)
-                && state.canvas.canvasSelection.questIds().contains(card.questId())
-                && CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
+                && !card.questId().equals(state.questDetails.pendingQuestTitleChangeId)) {
             canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
                 @Override
                 public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                    if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
+                        return;
+                    }
                     int originX = getPositionX();
                     int originY = getPositionY();
                     if (state.canvas.draggingSelection && state.canvas.canvasSelection.questIds().contains(card.questId())) {
@@ -277,7 +278,11 @@ final class CanvasSceneRenderer {
                         originY += CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
                                 - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
                     }
-                    CanvasElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                    if (CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
+                        CanvasElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                    } else {
+                        CanvasElementSelectionSlot.drawFillAndOutlineScreenRect(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                    }
                 }
             });
         }
@@ -399,13 +404,12 @@ final class CanvasSceneRenderer {
                 CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
                 if (state.root.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        return;
-                    }
-                    if (CanvasTransformGizmo.supports(drawImage.asset())) {
+                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                    } else if (CanvasTransformGizmo.supports(drawImage.asset())) {
                         CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation(), drawImage.entityYaw(), drawImage.modelPitch());
-                        return;
+                    } else {
+                        CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                     }
-                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 }
             }
         });
@@ -441,9 +445,10 @@ final class CanvasSceneRenderer {
                 graphics.pose().popPose();
                 if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        return;
+                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                    } else {
+                        CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                     }
-                    CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                 }
             }
         };

@@ -172,7 +172,7 @@ public final class SettingsOptionsPanelRenderer {
                     refresh.run();
                 }
             });
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow(theme.accent()));
+            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
             hit.setHoverTooltips(Component.literal(theme.label()));
             list.addWidget(hit);
         }
