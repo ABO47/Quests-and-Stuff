@@ -13,6 +13,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
@@ -61,20 +62,33 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            if (state.root.skinEditMode) {
-                if (root.isContextMenuOpen()) {
-                    root.closeContextMenu();
+            if (root.isContextMenuOpen()) {
+                root.closeContextMenu();
+                refresher.run();
+                return true;
+            }
+            if (root.isAnyModalOpen()) {
+                if (modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
                     return true;
                 }
+                ModalCloseActions.closeAll(state);
+                refresher.run();
+                return true;
+            }
+            if (TabletRootWindowController.closeFrontmostWindow(state)) {
+                refresher.run();
+                return true;
+            }
+            if (cancelInteractionStates(state)) {
+                refresher.run();
+                return true;
+            }
+            if (state.root.skinEditMode) {
                 state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
                 root.closeContextMenu();
                 TabletUiFactory.persistSkinState(state);
                 refresher.run();
-                return true;
-            }
-            if (root.isFrontWindowOpen() && frontWindowLayer != null) {
-                frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
                 return true;
             }
             TabletLifecycle.closeTabletUi(state, false, "escape");
@@ -346,6 +360,29 @@ final class TabletRootKeyboardRouter {
         if (keyCode == GLFW.GLFW_KEY_Y) {
             redoAction.run();
             refresher.run();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean cancelInteractionStates(TabletUiState state) {
+        if (!state.canvas.connectSourceQuestId.isBlank() || !state.canvas.connectSourceQuestIds.isEmpty()) {
+            state.canvas.connectSourceQuestId = "";
+            state.canvas.connectSourceQuestIds.clear();
+            state.canvas.connectEcId = "";
+            state.canvas.quickConnectEcId = "";
+            return true;
+        }
+        if (state.canvas.blueprintPlacement.active()) {
+            state.canvas.blueprintPlacement.cancel();
+            return true;
+        }
+        if (state.canvas.canvasSelection.hasAny() || state.canvas.selectionBoundsVisible) {
+            state.canvas.canvasSelection.clear();
+            state.canvas.selectionBoundsVisible = false;
+            return true;
+        }
+        if (TabletShortcutActions.cancelTransient(state)) {
             return true;
         }
         return false;
