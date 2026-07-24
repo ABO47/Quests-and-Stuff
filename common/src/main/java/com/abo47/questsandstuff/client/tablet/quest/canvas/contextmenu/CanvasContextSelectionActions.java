@@ -128,7 +128,8 @@ final class CanvasContextSelectionActions {
                     canvasViewport.refresh();
                 }));
                 if (selectionHasConnectionTexture(state, selectedChapter, connectedConnections)) {
-                    sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), "delete", TabletColors.WARNING, () -> {
+                    String selConnTexKey = "sel_remove_conn_tex:" + selectedChapter;
+                    sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, selConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
                         ContextMenuController.clearDeleteConfirm(state);
                         for (var connection : connectedConnections) {
                             String prereq = connection.prerequisiteId();
@@ -190,7 +191,8 @@ final class CanvasContextSelectionActions {
         }
         List<String> targets = new ArrayList<>(questIds);
         if (selectionHasQuestBackground(targets)) {
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), "delete", TabletColors.WARNING, () -> {
+            String selQuestBgKey = "sel_remove_quest_bg";
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selQuestBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 for (String questId : targets) {
                     EditorQuestCommandClient.setQuestBackground(player, questId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
@@ -200,7 +202,8 @@ final class CanvasContextSelectionActions {
             }));
         }
         if (selectionHasCompletionHudBackground(targets)) {
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), "delete", TabletColors.WARNING, () -> {
+            String selHudBgKey = "sel_remove_hud_bg";
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selHudBgKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), () -> {
                 EditorQuestCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_completion_hud_background quests={}", targets.size());
@@ -284,8 +287,18 @@ final class CanvasContextSelectionActions {
         if (questIds.size() <= 1) {
             return;
         }
-        List<String> targets = new ArrayList<>(questIds);
-        sections.add(ContextMenuSection.DANGER, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", TabletColors.WARNING, () -> {
+        List<String> targets = new ArrayList<>();
+        for (String questId : questIds) {
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
+            if (tag != null && (tag.getBoolean("completed") || tag.getBoolean("claimed") || tag.getFloat("progress") > 0.0f)) {
+                targets.add(questId);
+            }
+        }
+        if (targets.size() <= 1) {
+            return;
+        }
+        String selResetKey = "sel_reset_quests";
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selResetKey, CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), () -> {
             ContextMenuController.clearDeleteConfirm(state);
             for (String questId : targets) {
                 EditorQuestCommandClient.resetQuestProgress(player, questId);
@@ -492,7 +505,8 @@ final class CanvasContextSelectionActions {
             canvasViewport.refresh();
         }));
         if (!ec.background().isBlank()) {
-            sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), "delete", TabletColors.WARNING, () -> {
+            String selEcBgKey = "sel_remove_ec_bg:" + selectedChapter;
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, selEcBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
                 for (String batchEcId : ecIds) {
                     CanvasExclusiveChoice batchEc = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, batchEcId);
                     if (batchEc != null && !batchEc.background().isBlank()) {

@@ -281,10 +281,9 @@ public final class SkinEditManager {
                 modeActions));
 
         if (rawOverride != null && !rawOverride.isBlank()) {
-            actions.add(ContextActionFactory.action(
+            String skinTexKey = "skin_remove_tex:" + resolvedTarget;
+            actions.add(ContextActionFactory.warningDelete(state, skinTexKey,
                     TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
-                    "delete",
-                    TabletColors.ERROR,
                     () -> {
                         root.closeContextMenu();
                         String qualified = SkinOverrideKey.overrideKey(state, resolvedTarget);

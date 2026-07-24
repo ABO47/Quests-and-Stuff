@@ -51,14 +51,8 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void delete(Player player, TabletUiState state, String target, Runnable refresh) {
+    public static void delete(Player player, TabletUiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
-            return;
-        }
-        String deleteKey = ChapterContextMenuLayout.deleteKey(target);
-        if (!TabletUiFactory.confirmDeleteClick(state, deleteKey)) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter delete armed target={}", target);
-            refresh.run();
             return;
         }
         EditorChapterCommandClient.runChapterAction(player, state, "delete", target, "", 0);
@@ -67,8 +61,7 @@ public final class ChapterContextMenuActions {
             state.chapterPanel.chapterDraft = state.root.selectedChapter;
         }
         TabletUiFactory.persistUiState(state);
-        state.chapterPanel.chapterMenuOpen = false;
-        refresh.run();
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter delete target={}", target);
     }
 
     public static void changeIcon(TabletUiState state, String target, Runnable refresh) {
@@ -100,17 +93,12 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeIcon(Player player, TabletUiState state, String target, Runnable refresh) {
+    public static void removeIcon(Player player, TabletUiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        if (!EntityIconControls.confirmRemoveIcon(state, ChapterContextMenuLayout.removeIconKey(target))) {
-            refresh.run();
-            return;
-        }
         EditorChapterCommandClient.runChapterAction(player, state, "set_icon", target, "", 0);
-        state.chapterPanel.chapterMenuOpen = false;
-        refresh.run();
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_icon target={}", target);
     }
 
     public static void changeBackground(TabletUiState state, String target, Runnable refresh) {
@@ -122,17 +110,12 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeBackground(Player player, TabletUiState state, String target, Runnable refresh) {
+    public static void removeBackground(Player player, TabletUiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        if (!TabletUiFactory.confirmDeleteClick(state, ChapterContextMenuLayout.removeBackgroundKey(target))) {
-            refresh.run();
-            return;
-        }
         EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, "default", 0);
-        state.chapterPanel.chapterMenuOpen = false;
-        refresh.run();
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_background target={}", target);
     }
 
     public static void changeCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
@@ -195,7 +178,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeConnectionTexture(Player player, TabletUiState state, String target, Runnable refresh) {
+    public static void removeConnectionTexture(Player player, TabletUiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -219,9 +202,7 @@ public final class ChapterContextMenuActions {
                 EditorCanvasCommandClient.runEcConnectionTextureAction(state, ec.id(), prereqId, "");
             }
         }
-        state.chapterPanel.chapterMenuOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove connection textures target={} quests={}", target, questIds.size());
-        refresh.run();
     }
 
     private static String firstQuestCompletionHud(List<String> questIds) {

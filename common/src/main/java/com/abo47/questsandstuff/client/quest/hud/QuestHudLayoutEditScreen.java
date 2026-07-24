@@ -39,6 +39,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
     private List<ContextAction> contextMenuActions;
     private QuestHudLayoutManager.Element contextElement;
     private ThemedButton snapButton;
+    private String hudDeleteConfirmKey = "";
 
     public QuestHudLayoutEditScreen() {
         super(Component.translatable("ui.questsandstuff.hud.layout.title"));
@@ -201,6 +202,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
         contextMenuWidget = null;
         contextMenuActions = null;
         contextElement = null;
+        hudDeleteConfirmKey = "";
     }
 
     private List<ContextAction> contextActions() {
@@ -218,9 +220,17 @@ public final class QuestHudLayoutEditScreen extends Screen {
             }
         }));
         if (!QuestHudLayoutManager.background(target).isBlank()) {
-            actions.add(ContextActionFactory.action(
-                    Component.translatable("ui.questsandstuff.hud.remove_background").getString(),
-                    "delete", ActionTone.WARNING, () -> QuestHudLayoutManager.setBackground(target, "")));
+            String deleteKey = "hud_remove_bg:" + target.name();
+            boolean confirming = deleteKey.equals(hudDeleteConfirmKey);
+            String label = confirming ? "Sure?" : Component.translatable("ui.questsandstuff.hud.remove_background").getString();
+            actions.add(new ContextAction(label, "delete", ActionTone.WARNING, confirming, () -> {
+                if (confirming) {
+                    hudDeleteConfirmKey = "";
+                    QuestHudLayoutManager.setBackground(target, "");
+                } else {
+                    hudDeleteConfirmKey = deleteKey;
+                }
+            }));
         }
         boolean bordersShown = QuestHudLayoutManager.showBorders(target);
         if (bordersShown) {

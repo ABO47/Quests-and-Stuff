@@ -143,6 +143,7 @@ public final class TabletModalState {
         state.modal.modalQuestCompletionHudBackgroundTargets.clear();
         state.modal.modalHudBackgroundTarget = "";
         state.modal.modalHudBackgroundOpacityDragging = false;
+        state.modal.hudRemoveConfirmArmed = false;
         state.pickers.entityVariantTarget = "";
         state.pickers.entityVariantSelected = "";
         state.pickers.entityVariantFolder = "";
@@ -212,6 +213,7 @@ public final class TabletModalState {
         state.modal.prerequisitesManagerSearchFocused = false;
         state.modal.prerequisitesManagerHoveredConnectionKey = "";
         state.modal.modalHudBackgroundOpacityDragging = false;
+        state.modal.hudRemoveConfirmArmed = false;
         state.pickers.iconScrollDragging = false;
         state.pickers.iconSearchFocused = false;
         IconPickerMode.reset(state);

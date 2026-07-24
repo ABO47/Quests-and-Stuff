@@ -98,10 +98,13 @@ final class CanvasContextQuestActions {
                 },
                 canvasViewport::refresh
         );
-        sections.add(ContextMenuSection.DANGER, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), "reset_quest", TabletColors.WARNING, withCleanup(canvasViewport, state, () -> {
-            EditorQuestCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextMenu.contextQuestId);
-        })));
+        if (questTag.getBoolean("completed") || questTag.getBoolean("claimed") || questTag.getFloat("progress") > 0.0f) {
+            String resetKey = "quest_reset:" + state.contextMenu.contextQuestId;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, resetKey, CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), withCleanup(canvasViewport, state, () -> {
+                EditorQuestCommandClient.resetQuestProgress(player, state.contextMenu.contextQuestId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=reset_quest quest={}", state.contextMenu.contextQuestId);
+            })));
+        }
         addQuestCopyAndDeleteActions(sections, canvasViewport, state, player);
     }
 
@@ -116,7 +119,8 @@ final class CanvasContextQuestActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextMenu.contextQuestId);
         })));
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), "delete", TabletColors.WARNING, withCleanup(canvasViewport, state, () -> {
+            String removeBgKey = "quest_remove_bg:" + state.contextMenu.contextQuestId;
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, removeBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), withCleanup(canvasViewport, state, () -> {
                 EditorQuestCommandClient.setQuestBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextMenu.contextQuestId);
             })));
@@ -150,7 +154,8 @@ final class CanvasContextQuestActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextMenu.contextQuestId);
         })));
         if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
-            sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), "delete", TabletColors.WARNING, withCleanup(canvasViewport, state, () -> {
+            String removeHudBgKey = "quest_remove_hud_bg:" + state.contextMenu.contextQuestId;
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, removeHudBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), withCleanup(canvasViewport, state, () -> {
                 EditorQuestCommandClient.setQuestCompletionHudBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextMenu.contextQuestId);
             })));

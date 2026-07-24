@@ -37,7 +37,12 @@ public final class ChapterContextMenu {
                 ContextMenuPanel.rowActionCount(actions),
                 TabletColors.BORDER_BASE,
                 state,
-                null,
+                action -> {
+                    if (action.closeAfterClick()) {
+                        state.chapterPanel.chapterMenuOpen = false;
+                    }
+                    refresh.run();
+                },
                 ContextMenuAnimationBridge.CHAPTER_KEY
         ));
     }

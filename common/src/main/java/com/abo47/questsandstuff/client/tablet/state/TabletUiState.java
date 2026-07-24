@@ -172,6 +172,7 @@ public class TabletUiState {
         public String modalConnectionTextureTarget = "";
         public final java.util.Set<String> modalConnectionTextureChapterTargets = new java.util.LinkedHashSet<>();
         public String skinEditFillTarget = "";
+        public boolean hudRemoveConfirmArmed;
     }
 
     public static final class PickerState {

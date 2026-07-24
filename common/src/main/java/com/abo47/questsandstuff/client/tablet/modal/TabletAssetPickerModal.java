@@ -460,10 +460,18 @@ public final class TabletAssetPickerModal {
                 dragging -> state.modal.modalHudBackgroundOpacityDragging = dragging,
                 new Component[]{Component.translatable("ui.questsandstuff.hud.opacity")}
         );
-        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, TabletModalPanel.tr("ui.questsandstuff.hud.remove_background"), TabletColors.SURFACE_PANEL_ALT, TabletColors.WARNING, click -> {
-            QuestHudLayoutManager.setBackground(element, "");
-            state.pickers.assetSelected = "";
-            refresh.run();
+        boolean hudRemoveConfirming = state.modal.hudRemoveConfirmArmed;
+        String hudRemoveLabel = hudRemoveConfirming ? "Sure?" : TabletModalPanel.tr("ui.questsandstuff.hud.remove_background");
+        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, hudRemoveLabel, TabletColors.SURFACE_PANEL_ALT, TabletColors.WARNING, click -> {
+            if (hudRemoveConfirming) {
+                state.modal.hudRemoveConfirmArmed = false;
+                QuestHudLayoutManager.setBackground(element, "");
+                state.pickers.assetSelected = "";
+                refresh.run();
+            } else {
+                state.modal.hudRemoveConfirmArmed = true;
+                refresh.run();
+            }
         }));
     }
 
