@@ -2,14 +2,13 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-import org.joml.Quaternionf;
-
 import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -87,8 +86,9 @@ public final class CanvasSelectionRenderer {
                 continue;
             }
             count++;
-            int qx = CanvasGeometry.screenX(state, card.visualLogicalX());
-            int qy = CanvasGeometry.screenY(state, card.visualLogicalY());
+            CanvasPoint pos = state.canvas.transientQuestPositions.get(card.questId());
+            int qx = CanvasGeometry.screenX(state, pos != null ? pos.x : card.visualLogicalX());
+            int qy = CanvasGeometry.screenY(state, pos != null ? pos.y : card.visualLogicalY());
             int qw = CanvasGeometry.screenSpan(state, card.logicalWidth());
             int qh = CanvasGeometry.screenSpan(state, card.logicalHeight());
             minX = Math.min(minX, qx);
@@ -155,19 +155,6 @@ public final class CanvasSelectionRenderer {
             state.canvas.selectionBoundsTop = state.canvas.dragStartSelectionTop + screenDy;
             state.canvas.selectionBoundsRight = state.canvas.dragStartSelectionRight + screenDx;
             state.canvas.selectionBoundsBottom = state.canvas.dragStartSelectionBottom + screenDy;
-            return;
-        }
-        if (state.canvas.rotatingSelection
-                && state.canvas.rotateStartBoundsRight > state.canvas.rotateStartBoundsLeft
-                && state.canvas.rotateStartBoundsBottom > state.canvas.rotateStartBoundsTop) {
-            int startW = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight);
-            int startH = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom);
-            int centerX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
-            int centerY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
-            state.canvas.selectionBoundsLeft = centerX - startW / 2 - SELECTION_PAD;
-            state.canvas.selectionBoundsTop = centerY - startH / 2 - SELECTION_PAD;
-            state.canvas.selectionBoundsRight = state.canvas.selectionBoundsLeft + startW + SELECTION_PAD * 2;
-            state.canvas.selectionBoundsBottom = state.canvas.selectionBoundsTop + startH + SELECTION_PAD * 2;
             return;
         }
         int pad = count == 1 ? SINGLE_SELECTION_PAD : SELECTION_PAD;
@@ -259,22 +246,10 @@ public final class CanvasSelectionRenderer {
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) == 1) {
             return;
         }
-        if (state.canvas.rotatingSelection && CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-            drawRotatedSelectionBounds(graphics, originX, originY, state);
-            return;
-        }
         int left = state.canvas.selectionBoundsLeft;
         int top = state.canvas.selectionBoundsTop;
         int right = state.canvas.selectionBoundsRight;
         int bottom = state.canvas.selectionBoundsBottom;
         CanvasElementSelectionSlot.drawCombinedBounds(graphics, originX, originY, maxW, maxH, left, top, right, bottom, CanvasSelectionActions.totalCanvasSelectionCount(state) > 1);
-    }
-
-    private static void drawRotatedSelectionBounds(GuiGraphics graphics, int originX, int originY, TabletUiState state) {
-        int startW = CanvasGeometry.screenWidth(state, state.canvas.rotateStartBoundsLeft, state.canvas.rotateStartBoundsRight);
-        int startH = CanvasGeometry.screenHeight(state, state.canvas.rotateStartBoundsTop, state.canvas.rotateStartBoundsBottom);
-        int pivotScreenX = CanvasGeometry.screenX(state, state.canvas.rotatePivotX);
-        int pivotScreenY = CanvasGeometry.screenY(state, state.canvas.rotatePivotY);
-        CanvasElementSelectionSlot.drawRotatedCombinedBounds(graphics, originX, originY, pivotScreenX, pivotScreenY, startW, startH, state.canvas.rotatePreviewAngle);
     }
 }

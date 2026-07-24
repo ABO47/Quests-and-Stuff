@@ -176,30 +176,6 @@ public final class CanvasElementSelectionSlot {
         }
     }
 
-    public static void drawRotatedCombinedBounds(GuiGraphics graphics, int originX, int originY, int pivotScreenX, int pivotScreenY, int startW, int startH, double rotatePreviewAngle) {
-        int halfW = startW / 2;
-        int halfH = startH / 2;
-        int left = -halfW - HANDLE_SIZE;
-        int top = -halfH - HANDLE_SIZE;
-        int right = halfW + HANDLE_SIZE;
-        int bottom = halfH + HANDLE_SIZE;
-        int bw = right - left;
-        int bh = bottom - top;
-
-        graphics.pose().pushPose();
-        graphics.pose().translate(originX + pivotScreenX, originY + pivotScreenY, 0.0f);
-        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) rotatePreviewAngle));
-
-        SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 26)).draw(graphics, 0, 0, left, top, bw, bh);
-        drawRectOutline(graphics, left, top, bw, bh, withAlpha(TabletColors.SELECTION, 214));
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 230)).draw(graphics, 0, 0, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
-        SurfaceFactory.fill(withAlpha(TabletColors.WARNING, 210)).draw(graphics, 0, 0, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
-
-        graphics.pose().popPose();
-    }
-
     public static void drawFillAndOutlineScreenRect(GuiGraphics graphics, int originX, int originY, int left, int top, int width, int height) {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
