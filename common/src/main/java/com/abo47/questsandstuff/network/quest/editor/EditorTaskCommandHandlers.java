@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -12,20 +14,17 @@ final class EditorTaskCommandHandlers {
     private EditorTaskCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.TASK_PUT, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskPut);
-        registrar.register(EditorCommandType.TASK_REMOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskRemove);
-        registrar.register(EditorCommandType.TASK_MOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskMove);
-        registrar.register(EditorCommandType.REWARD_PUT, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardPut);
-        registrar.register(EditorCommandType.REWARD_REMOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardRemove);
-        registrar.register(EditorCommandType.REWARD_MOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardMove);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.TASK_PUT, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskPut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.TASK_REMOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskRemove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.TASK_MOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::taskMove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.REWARD_PUT, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardPut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.REWARD_REMOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardRemove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.REWARD_MOVE, EditorCommandFamily.TASK, EditorTaskCommandHandlers::rewardMove));
     }
 
     private static void taskPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         String json = EditorCommandPayloads.json(payload);
-        if (EditorCommandPayloads.exceedsLength(json, EditorCommandPayloads.MAX_EDITOR_JSON_LENGTH)) {
-            return;
-        }
         editor.putQuestTask(player, EditorCommandPayloads.quest(payload), json);
     }
 
@@ -44,9 +43,6 @@ final class EditorTaskCommandHandlers {
 
     private static void rewardPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         String json = EditorCommandPayloads.json(payload);
-        if (EditorCommandPayloads.exceedsLength(json, EditorCommandPayloads.MAX_EDITOR_JSON_LENGTH)) {
-            return;
-        }
         editor.putQuestReward(player, EditorCommandPayloads.quest(payload), json);
     }
 

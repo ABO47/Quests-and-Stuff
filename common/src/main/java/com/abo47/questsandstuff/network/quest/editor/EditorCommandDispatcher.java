@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 
 final class EditorCommandDispatcher {
@@ -40,7 +40,12 @@ final class EditorCommandDispatcher {
 
     private static Map<EditorCommandType, EditorCommandDescriptor> descriptors() {
         Map<EditorCommandType, EditorCommandDescriptor> descriptors = new EnumMap<>(EditorCommandType.class);
-        EditorCommandRegistrar registrar = (type, family, handler) -> register(descriptors, type, family, handler);
+        Consumer<EditorCommandDescriptor> registrar = descriptor -> {
+            EditorCommandDescriptor previous = descriptors.put(descriptor.type(), descriptor);
+            if (previous != null) {
+                throw new IllegalStateException("Duplicate editor command descriptor: " + descriptor.type());
+            }
+        };
         EditorCanvasCommandHandlers.register(registrar);
         EditorClipboardCommandHandlers.register(registrar);
         EditorPrerequisiteCommandHandlers.register(registrar);
@@ -49,13 +54,5 @@ final class EditorCommandDispatcher {
         EditorTaskCommandHandlers.register(registrar);
         EditorCanvasLayerCommandHandlers.register(registrar);
         return Collections.unmodifiableMap(descriptors);
-    }
-
-    private static void register(Map<EditorCommandType, EditorCommandDescriptor> descriptors, EditorCommandType type, EditorCommandFamily family, EditorCommandHandler handler) {
-        EditorCommandDescriptor descriptor = new EditorCommandDescriptor(type, family, handler);
-        EditorCommandDescriptor previous = descriptors.put(type, descriptor);
-        if (previous != null) {
-            throw new IllegalStateException("Duplicate editor command descriptor: " + type);
-        }
     }
 }

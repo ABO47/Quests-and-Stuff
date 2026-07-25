@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -15,16 +17,16 @@ final class EditorCanvasLayerCommandHandlers {
     private EditorCanvasLayerCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicePut);
-        registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicesPut);
-        registrar.register(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoiceRemove);
-        registrar.register(EditorCommandType.EC_CONNECTION_HIDDEN, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::ecConnectionHidden);
-        registrar.register(EditorCommandType.CANVAS_IMAGE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImagePut);
-        registrar.register(EditorCommandType.CANVAS_IMAGE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImageRemove);
-        registrar.register(EditorCommandType.CANVAS_TEXT_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextPut);
-        registrar.register(EditorCommandType.CANVAS_TEXT_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextRemove);
-        registrar.register(EditorCommandType.CANVAS_LAYER_ORDER, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasLayerOrder);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicePut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicesPut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoiceRemove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.EC_CONNECTION_HIDDEN, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::ecConnectionHidden));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_IMAGE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImagePut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_IMAGE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImageRemove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_TEXT_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextPut));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_TEXT_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextRemove));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_LAYER_ORDER, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasLayerOrder));
     }
 
     private static void canvasExclusiveChoicePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
@@ -80,9 +82,6 @@ final class EditorCanvasLayerCommandHandlers {
 
     private static void canvasTextPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         CompoundTag text = EditorCommandPayloads.compound(payload, EditorCommandPayloads.TEXT);
-        if (EditorCommandPayloads.exceedsLimit(text.getList(EditorCommandPayloads.SPANS, Tag.TAG_COMPOUND), EditorCommandPayloads.MAX_TEXT_SPANS)) {
-            return;
-        }
         editor.putCanvasText(player, EditorCommandPayloads.chapter(payload), CanvasLayerNbtCodec.textFromTag(text));
     }
 
@@ -96,9 +95,6 @@ final class EditorCanvasLayerCommandHandlers {
 
     private static void canvasLayerOrder(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         ListTag order = EditorCommandPayloads.order(payload);
-        if (EditorCommandPayloads.exceedsLimit(order, EditorCommandPayloads.MAX_LAYER_ORDER_ENTRIES)) {
-            return;
-        }
         editor.setCanvasLayerOrder(player, EditorCommandPayloads.chapter(payload), EditorCommandPayloads.nonBlankStringsFrom(order));
     }
 }

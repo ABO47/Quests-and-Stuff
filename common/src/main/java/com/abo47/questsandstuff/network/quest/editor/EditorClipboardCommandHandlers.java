@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -15,18 +15,14 @@ final class EditorClipboardCommandHandlers {
     private EditorClipboardCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.COPY_MANY, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::copyMany);
-        registrar.register(EditorCommandType.PASTE_CLIPBOARD, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteClipboard);
-        registrar.register(EditorCommandType.PASTE_BLUEPRINT, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteBlueprint);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.COPY_MANY, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::copyMany));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PASTE_CLIPBOARD, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteClipboard));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PASTE_BLUEPRINT, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteBlueprint));
     }
 
     private static void copyMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         String chapter = EditorCommandPayloads.chapter(payload);
-        ListTag questTags = EditorCommandPayloads.list(payload, EditorCommandPayloads.QUESTS, Tag.TAG_STRING);
-        if (EditorCommandPayloads.exceedsLimit(questTags, EditorCommandPayloads.MAX_BULK_EDIT_ENTRIES)) {
-            return;
-        }
         editor.copyQuestsToClipboard(player, chapter, EditorCommandPayloads.questIds(payload));
     }
 

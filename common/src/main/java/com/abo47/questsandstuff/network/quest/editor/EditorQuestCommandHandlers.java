@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -12,19 +14,19 @@ final class EditorQuestCommandHandlers {
     private EditorQuestCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.QUEST_ICON, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questIcon);
-        registrar.register(EditorCommandType.QUEST_REPEATABLE, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questRepeatable);
-        registrar.register(EditorCommandType.QUEST_HIDDEN_MODE, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questHiddenMode);
-        registrar.register(EditorCommandType.QUEST_VISUAL_HIDDEN, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questVisualHidden);
-        registrar.register(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSound);
-        registrar.register(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSoundMany);
-        registrar.register(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSoundVolume);
-        registrar.register(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSoundVolumeMany);
-        registrar.register(EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionHudBackground);
-        registrar.register(EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionHudBackgroundMany);
-        registrar.register(EditorCommandType.QUEST_BACKGROUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questBackground);
-        registrar.register(EditorCommandType.QUEST_BACKGROUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questBackgroundMany);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_ICON, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questIcon));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_REPEATABLE, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questRepeatable));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_HIDDEN_MODE, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questHiddenMode));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_VISUAL_HIDDEN, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questVisualHidden));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSound));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSound));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSoundVolume));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_CHANGE_COMPLETION_SOUND_VOLUME_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionSoundVolume));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionHudBackground));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_COMPLETION_HUD_BACKGROUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::completionHudBackground));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_BACKGROUND, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questBackground));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.QUEST_BACKGROUND_MANY, EditorCommandFamily.QUEST, EditorQuestCommandHandlers::questBackground));
     }
 
     private static void questIcon(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
@@ -62,15 +64,7 @@ final class EditorQuestCommandHandlers {
     private static void completionSound(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSound(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloads.SOUND)
-        );
-    }
-
-    private static void completionSoundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestCompletionSound(
-                player,
-                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.questIdOrIds(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.SOUND)
         );
     }
@@ -78,15 +72,7 @@ final class EditorQuestCommandHandlers {
     private static void completionSoundVolume(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionSoundVolume(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.integer(payload, EditorCommandPayloads.VOLUME)
-        );
-    }
-
-    private static void completionSoundVolumeMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestCompletionSoundVolume(
-                player,
-                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.questIdOrIds(payload),
                 EditorCommandPayloads.integer(payload, EditorCommandPayloads.VOLUME)
         );
     }
@@ -94,15 +80,7 @@ final class EditorQuestCommandHandlers {
     private static void completionHudBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestCompletionHudBackground(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND)
-        );
-    }
-
-    private static void completionHudBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestCompletionHudBackground(
-                player,
-                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.questIdOrIds(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND)
         );
     }
@@ -110,16 +88,7 @@ final class EditorQuestCommandHandlers {
     private static void questBackground(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setQuestBackground(
                 player,
-                EditorCommandPayloads.quest(payload),
-                EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND),
-                EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRAYSCALE)
-        );
-    }
-
-    private static void questBackgroundMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestBackground(
-                player,
-                EditorCommandPayloads.questIds(payload),
+                EditorCommandPayloads.questIdOrIds(payload),
                 EditorCommandPayloads.string(payload, EditorCommandPayloads.BACKGROUND),
                 EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRAYSCALE)
         );

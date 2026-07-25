@@ -1,14 +1,11 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -18,15 +15,15 @@ final class EditorPrerequisiteCommandHandlers {
     private EditorPrerequisiteCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.PREREQUISITE_ADD, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::addPrerequisite);
-        registrar.register(EditorCommandType.PREREQUISITE_REMOVE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::removePrerequisite);
-        registrar.register(EditorCommandType.CONNECTION_COLOR, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionColor);
-        registrar.register(EditorCommandType.CONNECTION_MODE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionMode);
-        registrar.register(EditorCommandType.CONNECTION_HIDDEN, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionHidden);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTexture);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE_MANY, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextures);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE_SPACING, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextureSpacing);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PREREQUISITE_ADD, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::addPrerequisite));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PREREQUISITE_REMOVE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::removePrerequisite));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_COLOR, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionColor));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_MODE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionMode));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_HIDDEN, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionHidden));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTexture));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE_MANY, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextures));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE_SPACING, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextureSpacing));
     }
 
     private static void addPrerequisite(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
@@ -74,17 +71,7 @@ final class EditorPrerequisiteCommandHandlers {
     }
 
     private static void connectionTextures(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        Map<String, Map<String, String>> questTextures = new HashMap<>();
-        ListTag list = payload.getList(EditorCommandPayloads.TEXTURES, Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            String quest = EditorCommandPayloads.string(entry, EditorCommandPayloads.QUEST);
-            String prerequisite = EditorCommandPayloads.string(entry, EditorCommandPayloads.PREREQUISITE);
-            String texture = EditorCommandPayloads.string(entry, EditorCommandPayloads.TEXTURE);
-            if (quest.isBlank() || prerequisite.isBlank()) continue;
-            questTextures.computeIfAbsent(quest, k -> new HashMap<>()).put(prerequisite, texture == null ? "" : texture);
-        }
-        QuestsAndStuffMod.debugLog("[QnS:Editor] CONNECTION_TEXTURE_MANY handler quests={} entries={}", questTextures.size(), list.size());
+        Map<String, Map<String, String>> questTextures = EditorCommandPayloads.connectionTextureMap(payload);
         editor.setConnectionTextures(player, questTextures);
     }
 

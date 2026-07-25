@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.quest.editor.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,66 @@ public final class EditorCommandPayloads {
 
     public static Set<String> questIds(CompoundTag payload) {
         return nonBlankStringSet(list(payload, QUESTS, Tag.TAG_STRING));
+    }
+
+    public static Set<String> questIdOrIds(CompoundTag payload) {
+        ListTag list = list(payload, QUESTS, Tag.TAG_STRING);
+        if (list != null && !list.isEmpty()) {
+            return nonBlankStringSet(list);
+        }
+        return Set.of(quest(payload));
+    }
+
+    public static Map<String, int[]> moveMap(CompoundTag payload) {
+        Map<String, int[]> moves = new HashMap<>();
+        ListTag tags = list(payload, MOVES, Tag.TAG_COMPOUND);
+        if (tags == null) {
+            return moves;
+        }
+        for (int i = 0; i < tags.size(); i++) {
+            CompoundTag tag = tags.getCompound(i);
+            String questId = tag.getString(QUEST);
+            if (!questId.isBlank()) {
+                moves.put(questId, new int[]{tag.getInt(X), tag.getInt(Y)});
+            }
+        }
+        return moves;
+    }
+
+    public static Map<String, Float> scaleMap(CompoundTag payload) {
+        Map<String, Float> scales = new HashMap<>();
+        ListTag tags = list(payload, SCALES, Tag.TAG_COMPOUND);
+        if (tags == null) {
+            return scales;
+        }
+        for (int i = 0; i < tags.size(); i++) {
+            CompoundTag tag = tags.getCompound(i);
+            String questId = tag.getString(QUEST);
+            if (!questId.isBlank()) {
+                scales.put(questId, tag.getFloat(SCALE));
+            }
+        }
+        return scales;
+    }
+
+    public static Map<String, Map<String, String>> connectionTextureMap(CompoundTag payload) {
+        Map<String, Map<String, String>> textures = new HashMap<>();
+        ListTag tags = list(payload, TEXTURES, Tag.TAG_COMPOUND);
+        if (tags == null) {
+            return textures;
+        }
+        for (int i = 0; i < tags.size(); i++) {
+            CompoundTag entry = tags.getCompound(i);
+            String questId = string(entry, QUEST);
+            String prerequisiteId = string(entry, PREREQUISITE);
+            String texture = string(entry, TEXTURE);
+            if (questId.isBlank() || prerequisiteId.isBlank()) {
+                continue;
+            }
+            textures.computeIfAbsent(questId, k -> new HashMap<>())
+                    .put(prerequisiteId, texture == null ? "" : texture);
+        }
+        return textures;
     }
 
     public static List<String> stringsFrom(ListTag tags) {
