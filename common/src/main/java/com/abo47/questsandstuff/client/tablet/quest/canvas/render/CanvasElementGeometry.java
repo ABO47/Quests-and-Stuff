@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRotationMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class CanvasElementGeometry {
@@ -34,7 +35,7 @@ public final class CanvasElementGeometry {
     }
 
     public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        int rotation = normalize(rotationDegrees);
+        int rotation = CanvasRotationMath.normalizeDegrees(rotationDegrees);
         if (!CanvasGeometry.isCardinalTurn(rotation) || rotation == 0) {
             return screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
         }
@@ -78,10 +79,19 @@ public final class CanvasElementGeometry {
     public static LocalPoint toLocalPoint(Box box, int rotationDegrees, int hitX, int hitY) {
         double dx = hitX - box.centerX();
         double dy = hitY - box.centerY();
-        double radians = Math.toRadians(-normalize(rotationDegrees));
+        double radians = Math.toRadians(-CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         return new LocalPoint(dx * cos - dy * sin, dx * sin + dy * cos);
+    }
+
+    public static double[] localScreenPoint(Box box, int rotationDegrees, int hitX, int hitY) {
+        double dx = hitX - box.centerX();
+        double dy = hitY - box.centerY();
+        double radians = Math.toRadians(-CanvasRotationMath.normalizeDegrees(rotationDegrees));
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+        return new double[]{dx * cos - dy * sin - box.left(), dx * sin + dy * cos - box.top()};
     }
 
     private static int[] rotatedBounds(Box box, int rotationDegrees) {
@@ -89,7 +99,7 @@ public final class CanvasElementGeometry {
     }
 
     private static int[] rotatedBounds(double centerX, double centerY, double left, double top, double right, double bottom, int rotationDegrees) {
-        int rotation = normalize(rotationDegrees);
+        int rotation = CanvasRotationMath.normalizeDegrees(rotationDegrees);
         double radians = Math.toRadians(rotation);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
@@ -120,10 +130,6 @@ public final class CanvasElementGeometry {
             maxY = Math.max(maxY, sy);
         }
         return new int[]{floorClean(minX), floorClean(minY), ceilClean(maxX), ceilClean(maxY)};
-    }
-
-    private static int normalize(int rotationDegrees) {
-        return ((rotationDegrees % 360) + 360) % 360;
     }
 
     private static ScreenAxis screenAxis(TabletUiState state, int start, int size, int pivot, boolean horizontal) {
@@ -191,7 +197,7 @@ public final class CanvasElementGeometry {
     }
 
     private static double[] rotatedRelativeBounds(int width, int height, int pivotX, int pivotY, int rotationDegrees) {
-        int rotation = normalize(rotationDegrees);
+        int rotation = CanvasRotationMath.normalizeDegrees(rotationDegrees);
         double radians = Math.toRadians(rotation);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);

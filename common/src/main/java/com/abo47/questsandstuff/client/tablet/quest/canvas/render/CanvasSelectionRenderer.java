@@ -147,10 +147,8 @@ public final class CanvasSelectionRenderer {
                 && state.canvas.dragStartBoundsBottom > state.canvas.dragStartBoundsTop
                 && state.canvas.dragStartSelectionRight > state.canvas.dragStartSelectionLeft
                 && state.canvas.dragStartSelectionBottom > state.canvas.dragStartSelectionTop) {
-            int screenDx = CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                    - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
-            int screenDy = CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                    - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+            int screenDx = CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
+            int screenDy = CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
             state.canvas.selectionBoundsLeft = state.canvas.dragStartSelectionLeft + screenDx;
             state.canvas.selectionBoundsTop = state.canvas.dragStartSelectionTop + screenDy;
             state.canvas.selectionBoundsRight = state.canvas.dragStartSelectionRight + screenDx;

@@ -197,16 +197,14 @@ final class ConnectionPainter {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
-        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
     }
 
     private static int selectionDragOffsetY(TabletUiState state, String elementId) {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
-        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
     private static int snapScreenLocalToGrid(TabletUiState state, int localX, int cell) {

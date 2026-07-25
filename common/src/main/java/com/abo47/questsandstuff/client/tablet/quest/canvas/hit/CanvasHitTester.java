@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -221,14 +222,7 @@ public final class CanvasHitTester {
 
     public static double[] canvasExclusiveChoiceLocalScreenPoint(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), 0, 0, ec.rotation());
-        double dx = x - box.centerX();
-        double dy = y - box.centerY();
-        double radians = Math.toRadians(-ec.rotation());
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin - box.left();
-        double localY = dx * sin + dy * cos - box.top();
-        return new double[]{localX, localY};
+        return CanvasElementGeometry.localScreenPoint(box, ec.rotation(), x, y);
     }
 
     public static CanvasTextLayer hitTestSelectedCanvasTextControls(TabletUiState state, int x, int y) {
@@ -261,14 +255,7 @@ public final class CanvasHitTester {
 
     public static double[] canvasTextLocalScreenPoint(TabletUiState state, CanvasTextLayer text, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
-        double dx = x - box.centerX();
-        double dy = y - box.centerY();
-        double radians = Math.toRadians(-text.rotation());
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin - box.left();
-        double localY = dx * sin + dy * cos - box.top();
-        return new double[]{localX, localY};
+        return CanvasElementGeometry.localScreenPoint(box, text.rotation(), x, y);
     }
 
     public static int[] canvasTextMenuBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
@@ -308,38 +295,27 @@ public final class CanvasHitTester {
 
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-        double dx = x - box.centerX();
-        double dy = y - box.centerY();
-        double radians = Math.toRadians(-image.rotation());
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-        double localX = dx * cos - dy * sin - box.left();
-        double localY = dx * sin + dy * cos - box.top();
-        return new double[]{localX, localY};
+        return CanvasElementGeometry.localScreenPoint(box, image.rotation(), x, y);
+    }
+
+    private static <T> List<T> orderedLayers(TabletUiState state, String chapter, List<T> source, java.util.function.Function<T, String> keyFunction) {
+        List<T> list = new ArrayList<>(source);
+        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
+        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
+        list.sort(Comparator.comparingInt(e -> CanvasLayerOrdering.layerIndex(indexes, keyFunction.apply(e))));
+        return list;
     }
 
     private static List<CanvasImageLayer> orderedCanvasImages(TabletUiState state, String chapter) {
-        List<CanvasImageLayer> images = new ArrayList<>(state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
-        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
-        images.sort(Comparator.comparingInt(image -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.imageKey(image.id()))));
-        return images;
+        return orderedLayers(state, chapter, state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()), image -> CanvasLayerOrdering.imageKey(image.id()));
     }
 
     private static List<CanvasExclusiveChoice> orderedCanvasExclusiveChoices(TabletUiState state, String chapter) {
-        List<CanvasExclusiveChoice> ecs = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
-        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
-        ecs.sort(Comparator.comparingInt(ec -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.exclusiveChoiceKey(ec.id()))));
-        return ecs;
+        return orderedLayers(state, chapter, state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()), ec -> CanvasLayerOrdering.exclusiveChoiceKey(ec.id()));
     }
 
     private static List<CanvasTextLayer> orderedCanvasTexts(TabletUiState state, String chapter) {
-        List<CanvasTextLayer> texts = new ArrayList<>(state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of()));
-        List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
-        Map<String, Integer> indexes = CanvasLayerOrdering.indexMap(order);
-        texts.sort(Comparator.comparingInt(text -> CanvasLayerOrdering.layerIndex(indexes, CanvasLayerOrdering.textKey(text.id()))));
-        return texts;
+        return orderedLayers(state, chapter, state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of()), text -> CanvasLayerOrdering.textKey(text.id()));
     }
 
     private static int[] rotatedTextScreenBounds(TabletUiState state, CanvasTextLayer text) {

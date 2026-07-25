@@ -336,6 +336,10 @@ public final class CanvasGeometry {
         return CanvasRotationMath.normalizeDegrees(degrees);
     }
 
+    public static int dragDelta(TabletUiState state, double logicalStart, double logicalDelta) {
+        return CanvasCoordinateMapper.screenX(state, logicalStart + logicalDelta) - CanvasCoordinateMapper.screenX(state, logicalStart);
+    }
+
     public record ResizedBox(int x, int y, int width, int height) {
     }
 

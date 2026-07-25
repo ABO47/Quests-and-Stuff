@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GameRenderer;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRotationMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -180,7 +181,7 @@ public final class CanvasTransformGizmo {
             rotateAxes = rotateAxes(rotationRadius(geometry.width(), geometry.height()), rotationDegrees, yawDegrees, pitchDegrees);
             drawRotateGizmo(graphics, state, rotateAxes, rotationDegrees, yawDegrees, pitchDegrees);
         } else {
-            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0F, 0.0F, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0F, 0.0F, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
             if (mode == CanvasTransformMode.RESIZE) {
                 drawResizeGizmo(graphics, geometry.left(), geometry.top(), geometry.right(), geometry.bottom());
             } else {
@@ -307,7 +308,7 @@ public final class CanvasTransformGizmo {
             value = rotationDegrees;
         }
         ScreenPoint point = screenPoint(originX, originY, geometry, 0, x, y);
-        drawValueLabel(graphics, normalize(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
+        drawValueLabel(graphics, CanvasRotationMath.normalizeDegrees(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
     }
 
     private static void drawActiveMoveLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int axisLength, int x, int y) {
@@ -538,7 +539,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static LocalPoint pointOnCircle(double radius, int degrees) {
-        double radians = Math.toRadians(normalize(degrees));
+        double radians = Math.toRadians(CanvasRotationMath.normalizeDegrees(degrees));
         return new LocalPoint(Math.cos(radians) * radius, Math.sin(radians) * radius);
     }
 
@@ -556,7 +557,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static ScreenPoint screenPoint(int originX, int originY, Geometry geometry, int rotationDegrees, double localX, double localY) {
-        double radians = Math.toRadians(normalize(rotationDegrees));
+        double radians = Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         int x = (int) Math.round(originX + geometry.centerX() + localX * cos - localY * sin);
@@ -567,14 +568,10 @@ public final class CanvasTransformGizmo {
     private static LocalPoint toLocalPoint(Geometry geometry, int rotationDegrees, int hitX, int hitY) {
         double dx = hitX - geometry.centerX();
         double dy = hitY - geometry.centerY();
-        double radians = Math.toRadians(-normalize(rotationDegrees));
+        double radians = Math.toRadians(-CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         return new LocalPoint(dx * cos - dy * sin, dx * sin + dy * cos);
-    }
-
-    private static int normalize(int rotationDegrees) {
-        return ((rotationDegrees % 360) + 360) % 360;
     }
 
     private record Geometry(double centerX, double centerY, int width, int height, int left, int top, int right, int bottom) {

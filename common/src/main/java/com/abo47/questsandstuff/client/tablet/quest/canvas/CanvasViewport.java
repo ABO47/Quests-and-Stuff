@@ -219,13 +219,11 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     private int selectionDragScreenX() {
-        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
     }
 
     private int selectionDragScreenY() {
-        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
     void commitCanvasPan() {

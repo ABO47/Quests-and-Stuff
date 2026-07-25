@@ -4,6 +4,7 @@ import org.joml.Quaternionf;
 
 import net.minecraft.client.gui.GuiGraphics;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRotationMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -41,7 +42,7 @@ public final class CanvasElementSelectionSlot {
         if (box.right() > box.left() && box.bottom() > box.top()) {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
-            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
             SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
             drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SELECTION, 185));
             SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
@@ -54,15 +55,11 @@ public final class CanvasElementSelectionSlot {
         if (box.right() > box.left() && box.bottom() > box.top()) {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
-            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
             drawBoxFillAndOutline(graphics, box);
             drawHandles(graphics, box);
             graphics.pose().popPose();
         }
-    }
-
-    private static int normalize(int rotationDegrees) {
-        return ((rotationDegrees % 360) + 360) % 360;
     }
 
     public static void drawScreenRectResizeOnly(GuiGraphics graphics, int originX, int originY, int left, int top, int width, int height) {
@@ -113,7 +110,7 @@ public final class CanvasElementSelectionSlot {
         if (box.right() > box.left() && box.bottom() > box.top()) {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
-            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
             drawBoxFillAndOutline(graphics, box);
             graphics.pose().popPose();
         }
