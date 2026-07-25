@@ -14,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.texture.TransformTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
@@ -104,11 +105,18 @@ public final class SkinEditManager {
             if (SkinOverrideKey.isSharedKey(targetKey) && !SkinOverrideKey.isSharedKey(entryKey)) continue;
 
             Widget w = SkinEditTargetResolver.widgetForKey(root, targetKey);
-            if (w == null) continue;
+            if (w == null) {
+                QuestsAndStuffMod.debugLog("[QnS:Skin] reapply SKIP widget not found: target={}, entryKey={}", targetKey, entryKey);
+                continue;
+            }
             SkinFillOverride override = SkinFillOverride.parse(entry.getValue());
             if (override == null) continue;
             IGuiTexture tex = override.createTexture();
             if (tex == null) continue;
+
+            QuestsAndStuffMod.debugLog("[QnS:Skin] reapply target={}, mode={}, texClass={}, shared={}, card={}, root={}",
+                    targetKey, override.mode(), tex.getClass().getSimpleName(),
+                    SkinOverrideKey.isSharedKey(targetKey), SkinOverrideKey.isCardKey(targetKey), SkinOverrideKey.isRootKey(targetKey));
 
             if (SkinOverrideKey.isSharedKey(targetKey) && w instanceof WidgetGroup wg) {
                 if (SkinOverrideKey.isRootKey(targetKey)) {
@@ -269,6 +277,7 @@ public final class SkinEditManager {
                 "size",
                 currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
+                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: stretch, asset={}", currentAsset);
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "stretch", currentAsset, root, refresher);
                 }));
@@ -277,6 +286,7 @@ public final class SkinEditManager {
                 "grid",
                 currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
+                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: tile, asset={}", currentAsset);
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "tile", currentAsset, root, refresher);
                 }));
@@ -285,6 +295,7 @@ public final class SkinEditManager {
                 "center_focus",
                 currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
+                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: center, asset={}", currentAsset);
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "center", currentAsset, root, refresher);
                 }));
@@ -323,17 +334,26 @@ public final class SkinEditManager {
         int py = ContextMenuPlacement.fitBelowOrAbove(mouseY, screenH, menuH);
 
         root.setContextMenu(
-                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> buildContextMenu(state, root, refresher, mouseX, mouseY)),
+                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> {
+                    if (root.isContextMenuOpen()) {
+                        buildContextMenu(state, root, refresher, mouseX, mouseY);
+                    }
+                }),
                 px, py, menuW, menuH
         );
     }
 
     private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, WidgetGroup root, Runnable refresher) {
-        if (asset == null || asset.isBlank()) return;
+        if (asset == null || asset.isBlank()) {
+            QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode ABORTED: asset is blank, target={}, mode={}", targetKey, mode);
+            return;
+        }
         String entryKey = SkinOverrideKey.isSharedKey(targetKey) ? targetKey : (state.root.currentApp.isBlank() ? targetKey : state.root.currentApp + ":" + targetKey);
         SkinFillOverride override = new SkinFillOverride(mode, asset);
-        state.root.skinFillOverrides.put(entryKey, override.encode());
+        String encoded = override.encode();
+        state.root.skinFillOverrides.put(entryKey, encoded);
         state.root.activeSkinTargets.add(targetKey);
+        QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode: target={}, mode={}, asset={}, entryKey={}, encoded={}", targetKey, mode, asset, entryKey, encoded);
         reapplyOverrides(state, root);
         if (refresher != null) refresher.run();
         TabletUiFactory.persistSkinState(state);

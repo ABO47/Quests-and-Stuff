@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -89,8 +90,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     public boolean isContextMenuAt(int x, int y) {
         if (contextMenuRoot == null) return false;
-        return x >= contextMenuRootX && x < contextMenuRootX + contextMenuRootW
-                && y >= contextMenuRootY && y < contextMenuRootY + contextMenuRootH;
+        if (contextMenuRoot.isMouseOverElement(x, y)) return true;
+        return isInContextMenuTree(contextMenuRoot, x, y);
+    }
+
+    private static boolean isInContextMenuTree(WidgetGroup group, int x, int y) {
+        for (Widget child : group.widgets) {
+            if (!child.isVisible() || !child.isActive()) continue;
+            if (child.isMouseOverElement(x, y)) return true;
+            if (child instanceof WidgetGroup wg && isInContextMenuTree(wg, x, y)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void clickContextMenu(int mouseX, int mouseY, int button) {

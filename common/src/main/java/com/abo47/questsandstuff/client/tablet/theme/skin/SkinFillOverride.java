@@ -38,7 +38,10 @@ public record SkinFillOverride(String mode, String path) {
         if (path == null || path.isBlank()) return null;
         String cacheKey = mode + ":" + path;
         IGuiTexture cached = CACHED.get(cacheKey);
-        if (cached != null) return cached;
+        if (cached != null) {
+            QuestsAndStuffMod.debugLog("[QnS:Skin] createTexture CACHED: mode={}, path={}, class={}", mode, path, cached.getClass().getSimpleName());
+            return cached;
+        }
 
         IGuiTexture tex;
         if ("tile".equals(mode)) {
@@ -48,7 +51,11 @@ public record SkinFillOverride(String mode, String path) {
         } else {
             tex = createFullTexture();
         }
-        if (tex == null) return null;
+        if (tex == null) {
+            QuestsAndStuffMod.debugLog("[QnS:Skin] createTexture FAILED: mode={}, path={}", mode, path);
+            return null;
+        }
+        QuestsAndStuffMod.debugLog("[QnS:Skin] createTexture NEW: mode={}, path={}, class={}", mode, path, tex.getClass().getSimpleName());
         CACHED.put(cacheKey, tex);
         return tex;
     }

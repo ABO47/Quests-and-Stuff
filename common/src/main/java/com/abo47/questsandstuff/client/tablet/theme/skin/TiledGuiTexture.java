@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -20,6 +22,7 @@ public class TiledGuiTexture implements IGuiTexture {
     private final ResourceLocation imageLocation;
     private final int tileW;
     private final int tileH;
+    private boolean logged = false;
 
     public TiledGuiTexture(ResourceLocation imageLocation, int tileW, int tileH) {
         this.imageLocation = imageLocation;
@@ -31,6 +34,12 @@ public class TiledGuiTexture implements IGuiTexture {
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
         if (width <= 0 || height <= 0 || tileW <= 0 || tileH <= 0) return;
+
+        if (!logged) {
+            QuestsAndStuffMod.debugLog("[QnS:Skin] TiledGuiTexture.draw: tile={}x{}, target={}x{}", tileW, tileH, width, height);
+            logged = true;
+        }
+
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);

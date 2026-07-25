@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -20,6 +22,7 @@ public class CenterCropTexture implements IGuiTexture {
     private final ResourceLocation imageLocation;
     private final int origW;
     private final int origH;
+    private boolean logged = false;
 
     public CenterCropTexture(ResourceLocation imageLocation, int origW, int origH) {
         this.imageLocation = imageLocation;
@@ -33,6 +36,11 @@ public class CenterCropTexture implements IGuiTexture {
         if (width <= 0 || height <= 0 || origW <= 0 || origH <= 0) return;
         int drawX = Math.round(x + (width - origW) / 2f);
         int drawY = Math.round(y + (height - origH) / 2f);
+
+        if (!logged) {
+            QuestsAndStuffMod.debugLog("[QnS:Skin] CenterCropTexture.draw: orig={}x{}, target={}x{}, drawAt=({},{})", origW, origH, width, height, drawX, drawY);
+            logged = true;
+        }
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
