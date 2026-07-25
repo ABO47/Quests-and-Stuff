@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
@@ -27,7 +32,10 @@ public record ChapterContextMenuLayout(
         boolean hasTarget = target != null && !target.isBlank();
         boolean entityIcon = hasTarget && isEntityChapterIcon(target);
         boolean entityVariants = entityIcon && hasEntityVariants(target);
-        int rowCount = rowCount(hasTarget, entityIcon, entityVariants);
+        boolean hasConnectionTexture = hasTarget && chapterHasConnectionTexture(state, target);
+        boolean hasIcon = hasTarget && !chapterIcon(target).isBlank();
+        boolean hasBackground = hasTarget && !"default".equals(ClientQuestStateFacade.chapterBackground(target));
+        int rowCount = rowCount(hasTarget, entityIcon, entityVariants, hasConnectionTexture, hasIcon, hasBackground);
         int menuW = width(state, availableW);
         int menuH = height(hasTarget, rowCount);
         int menuX = Math.max(4, Math.min(state.chapterPanel.chapterMenuX, availableW - menuW - 4));
@@ -51,15 +59,25 @@ public record ChapterContextMenuLayout(
         return relY >= rowY && relY < rowY + TabletUiFactory.CONTEXT_ROW_H;
     }
 
-    public static int rowCount(boolean hasTarget, boolean entityIcon, boolean entityVariants) {
+    public static int rowCount(boolean hasTarget, boolean entityIcon, boolean entityVariants,
+                               boolean hasConnectionTexture, boolean hasIcon, boolean hasBackground) {
         if (!hasTarget) {
             return 1;
         }
-        int count = 14;
+        int count = 16;
         if (entityVariants) {
             count++;
         }
         if (entityIcon) {
+            count++;
+        }
+        if (hasConnectionTexture) {
+            count++;
+        }
+        if (hasIcon) {
+            count++;
+        }
+        if (hasBackground) {
             count++;
         }
         return count;
@@ -90,12 +108,26 @@ public record ChapterContextMenuLayout(
         return icon == null ? "" : icon;
     }
 
+    private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
+        for (String questId : ClientQuestStateFacade.questIdsInChapter(target)) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest != null && quest.contains("connection_textures", Tag.TAG_COMPOUND)) {
+                CompoundTag textures = quest.getCompound("connection_textures");
+                if (!textures.isEmpty()) return true;
+            }
+        }
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, List.of())) {
+            if (!ec.connectionTextures().isEmpty()) return true;
+        }
+        return false;
+    }
+
     private static String resolveTarget(TabletUiState state) {
         return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorChapterCommandClient.selectedChapterName(state) : state.chapterPanel.chapterMenuTarget;
     }
 
     private static int height(boolean hasTarget, int rowCount) {
-        int promotedCount = hasTarget ? 3 : 0;
+        int promotedCount = hasTarget ? 5 : 0;
         int rowActionCount = Math.max(0, rowCount - promotedCount);
         return ContextMenuPanel.heightForCounts(promotedCount, rowActionCount, rowActionCount);
     }
