@@ -3,13 +3,8 @@ package com.abo47.questsandstuff.network.team;
 import java.util.UUID;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.team.TeamManager;
-import com.abo47.questsandstuff.team.model.TeamData;
 import com.abo47.questsandstuff.team.model.TeamMember;
 
 public record C2STeamActionPacket(Action action, UUID targetUuid) {
@@ -31,14 +26,9 @@ public record C2STeamActionPacket(Action action, UUID targetUuid) {
     }
 
     public void handle(ModPacketContext context) {
-        ServerPlayer player = context.sender();
-        if (player == null) {
-            return;
-        }
-        context.enqueueWork(() -> {
-            ServerLevel level = player.serverLevel();
-            TeamManager manager = new TeamManager(level, QuestServiceRegistry.engine(player.server));
-            TeamData before = manager.getTeamByPlayer(player.getUUID());
+        TeamPacketHelper.onServer(context, (player, manager) -> {
+            var level = player.serverLevel();
+            var before = manager.getTeamByPlayer(player.getUUID());
             boolean success = false;
             switch (action) {
                 case LEAVE -> success = manager.leaveTeam(player);
@@ -46,7 +36,7 @@ public record C2STeamActionPacket(Action action, UUID targetUuid) {
                 case TRANSFER -> success = manager.transferOwnership(player, targetUuid);
             }
             if (success) {
-                TeamData after = manager.getTeamByPlayer(player.getUUID());
+                var after = manager.getTeamByPlayer(player.getUUID());
                 if (after != null) {
                     TeamPacketHelper.broadcastToMembers(level, after);
                 }
@@ -58,7 +48,7 @@ public record C2STeamActionPacket(Action action, UUID targetUuid) {
                     }
                 }
                 if (after == null && before != null) {
-                    TeamData remaining = manager.getTeamById(before.teamId());
+                    var remaining = manager.getTeamById(before.teamId());
                     if (remaining != null) {
                         TeamPacketHelper.broadcastToMembers(level, remaining);
                     }

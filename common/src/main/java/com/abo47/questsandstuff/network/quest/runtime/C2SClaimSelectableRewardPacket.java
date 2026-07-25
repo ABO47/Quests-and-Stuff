@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
+import com.abo47.questsandstuff.network.PacketHandlerHelper;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SClaimSelectableRewardPacket(String questId, String rewardId, List<String> selectedRewardIds) {
@@ -31,19 +32,17 @@ public record C2SClaimSelectableRewardPacket(String questId, String rewardId, Li
         if (selected.size() > MAX_SELECTED_REWARDS) {
             throw new IllegalArgumentException("Too many selectable reward choices: " + selected.size());
         }
-        buf.writeUtf(questId == null ? "" : questId);
-        buf.writeUtf(rewardId == null ? "" : rewardId);
+        PacketBufHelper.writeUtfSafe(buf, questId);
+        PacketBufHelper.writeUtfSafe(buf, rewardId);
         buf.writeVarInt(selected.size());
         for (String id : selected) {
-            buf.writeUtf(id == null ? "" : id);
+            PacketBufHelper.writeUtfSafe(buf, id);
         }
     }
 
     public void handle(ModPacketContext context) {
-        ServerPlayer player = context.sender();
-        if (player != null) {
-            context.enqueueWork(() -> QuestServiceRegistry.engine(player.server)
-                    .claimSelectedRewardAndAvailableRewards(player, questId == null ? "" : questId, rewardId, selectedRewardIds));
-        }
+        PacketHandlerHelper.onServer(context, player ->
+                QuestServiceRegistry.engine(player.server)
+                        .claimSelectedRewardAndAvailableRewards(player, questId == null ? "" : questId, rewardId, selectedRewardIds));
     }
 }

@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int y, String title) {
@@ -18,11 +19,11 @@ public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(chapter == null ? "" : chapter);
-        buf.writeUtf(questId == null ? "" : questId);
+        PacketBufHelper.writeUtfSafe(buf, chapter);
+        PacketBufHelper.writeUtfSafe(buf, questId);
         buf.writeVarInt(x);
         buf.writeVarInt(y);
-        buf.writeUtf(title == null ? "" : title);
+        PacketBufHelper.writeUtfSafe(buf, title);
     }
 
     public void handle(ModPacketContext context) {

@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.QuestEditorPermissions;
 
@@ -13,7 +14,7 @@ public record C2SResetQuestPacket(String questId) {
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(questId == null ? "" : questId);
+        PacketBufHelper.writeUtfSafe(buf, questId);
     }
 
     public void handle(ModPacketContext context) {

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.network.team;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -11,12 +12,27 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.team.NbtKeys;
+import com.abo47.questsandstuff.team.TeamManager;
 import com.abo47.questsandstuff.team.model.TeamData;
 import com.abo47.questsandstuff.team.model.TeamMember;
 
 public final class TeamPacketHelper {
     private TeamPacketHelper() {
+    }
+
+    public static void onServer(ModPacketContext context, BiConsumer<ServerPlayer, TeamManager> action) {
+        ServerPlayer player = context.sender();
+        if (player == null) {
+            return;
+        }
+        context.enqueueWork(() -> {
+            ServerLevel level = player.serverLevel();
+            TeamManager manager = new TeamManager(level, QuestServiceRegistry.engine(player.server));
+            action.accept(player, manager);
+        });
     }
 
     public static void send(ServerPlayer player, TeamData team) {

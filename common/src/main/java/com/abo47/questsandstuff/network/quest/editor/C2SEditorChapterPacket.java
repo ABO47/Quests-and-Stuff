@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SEditorChapterPacket(String action, String chapter, String value, int offset) {
@@ -12,9 +13,9 @@ public record C2SEditorChapterPacket(String action, String chapter, String value
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(action == null ? "" : action);
-        buf.writeUtf(chapter == null ? "" : chapter);
-        buf.writeUtf(value == null ? "" : value);
+        PacketBufHelper.writeUtfSafe(buf, action);
+        PacketBufHelper.writeUtfSafe(buf, chapter);
+        PacketBufHelper.writeUtfSafe(buf, value);
         buf.writeVarInt(offset);
     }
 
