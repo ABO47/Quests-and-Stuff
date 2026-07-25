@@ -10,9 +10,12 @@ public final class S2CDeltaSyncPacket extends ChunkedSyncPacket {
         super(sequence, chunkIndex, chunkCount, payload);
     }
 
-    public static S2CDeltaSyncPacket fromBytes(FriendlyByteBuf buf) {
-        Data d = ChunkedSyncPacket.decode(buf);
-        return new S2CDeltaSyncPacket(d.sequence(), d.chunkIndex(), d.chunkCount(), d.payload());
+    public S2CDeltaSyncPacket(Data d) {
+        super(d);
+    }
+
+    public static S2CDeltaSyncPacket decode(FriendlyByteBuf buf) {
+        return ChunkedSyncPacket.decode(buf, S2CDeltaSyncPacket::new);
     }
 
     @Override

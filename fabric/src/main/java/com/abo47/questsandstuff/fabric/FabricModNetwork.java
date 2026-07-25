@@ -1,12 +1,11 @@
 package com.abo47.questsandstuff.fabric;
 
-import java.lang.reflect.Method;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.ClientNetworkBridge;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.ModPacketType;
@@ -30,7 +29,7 @@ public final class FabricModNetwork {
     }
 
     public static void sendToPlayer(Object packet, ServerPlayer player) {
-        if (packet == null || player == null || player.connection == null || !ServerPlayNetworking.canSend(player, CHANNEL)) {
+        if (packet == null || !ServerPlayNetworking.canSend(player, CHANNEL)) {
             return;
         }
         FriendlyByteBuf buffer = encode(packet, ModPacketType.Direction.PLAY_TO_CLIENT);
@@ -40,12 +39,9 @@ public final class FabricModNetwork {
     }
 
     public static void sendToServer(Object packet) {
-        try {
-            Class<?> clientNetwork = Class.forName("com.abo47.questsandstuff.fabric.FabricModNetworkClient");
-            Method method = clientNetwork.getMethod("sendToServer", Object.class);
-            method.invoke(null, packet);
-        } catch (ReflectiveOperationException e) {
-            QuestsAndStuffMod.LOGGER.warn("Failed to send Fabric client packet", e);
+        ClientNetworkBridge bridge = ModNetwork.clientNetwork();
+        if (bridge != null) {
+            bridge.sendToServer(packet);
         }
     }
 
@@ -57,28 +53,30 @@ public final class FabricModNetwork {
             QuestsAndStuffMod.LOGGER.warn("Tried to send unregistered {} packet {}", direction, packet.getClass().getName());
             return null;
         }
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer(512));
         buffer.writeVarInt(type.id());
         encodeUnchecked(type, packet, buffer);
         return buffer;
     }
 
     private static void handleServerbound(ServerPlayer player, FriendlyByteBuf buffer) {
-        ModPacketType<?> type = decodeType(buffer, ModPacketType.Direction.PLAY_TO_SERVER);
-        if (type == null) {
-            return;
-        }
-        Object packet = decodeUnchecked(type, buffer);
-        handleUnchecked(type, packet, new ModPacketContext() {
-            @Override
-            public ServerPlayer sender() {
-                return player;
+        player.server.execute(() -> {
+            ModPacketType<?> type = decodeType(buffer, ModPacketType.Direction.PLAY_TO_SERVER);
+            if (type == null) {
+                return;
             }
+            Object packet = decodeUnchecked(type, buffer);
+            handleUnchecked(type, packet, new ModPacketContext() {
+                @Override
+                public ServerPlayer sender() {
+                    return player;
+                }
 
-            @Override
-            public void enqueueWork(Runnable work) {
-                player.server.execute(work);
-            }
+                @Override
+                public void enqueueWork(Runnable work) {
+                    player.server.execute(work);
+                }
+            });
         });
     }
 

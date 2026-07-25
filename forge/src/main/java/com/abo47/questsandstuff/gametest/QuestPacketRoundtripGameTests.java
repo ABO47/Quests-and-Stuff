@@ -123,7 +123,7 @@ public final class QuestPacketRoundtripGameTests {
 
         boolean rejected = false;
         try {
-            S2CFullSyncPacket.fromBytes(oversized);
+            S2CFullSyncPacket.decode(oversized);
         } catch (RuntimeException expected) {
             rejected = true;
         }
@@ -142,7 +142,7 @@ public final class QuestPacketRoundtripGameTests {
         invalidIndex.writeVarInt(2);
 
         try {
-            S2CFullSyncPacket.fromBytes(invalidIndex);
+            S2CFullSyncPacket.decode(invalidIndex);
             throw new GameTestAssertException("Invalid full sync chunk index should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -153,7 +153,7 @@ public final class QuestPacketRoundtripGameTests {
         tooManyChunks.writeVarInt(SyncPacketPayloadLimits.MAX_SYNC_CHUNKS + 1);
 
         try {
-            S2CDeltaSyncPacket.fromBytes(tooManyChunks);
+            S2CDeltaSyncPacket.decode(tooManyChunks);
             throw new GameTestAssertException("Oversized delta sync chunk count should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -164,7 +164,7 @@ public final class QuestPacketRoundtripGameTests {
         zeroChunks.writeVarInt(0);
 
         try {
-            S2CDescriptionSyncPacket.fromBytes(zeroChunks);
+            S2CDescriptionSyncPacket.decode(zeroChunks);
             throw new GameTestAssertException("Zero description sync chunk count should fail during decode");
         } catch (IllegalArgumentException expected) {
         }
@@ -272,19 +272,19 @@ public final class QuestPacketRoundtripGameTests {
     private static S2CFullSyncPacket roundtrip(S2CFullSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CFullSyncPacket.fromBytes(buf);
+        return S2CFullSyncPacket.decode(buf);
     }
 
     private static S2CDeltaSyncPacket roundtrip(S2CDeltaSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CDeltaSyncPacket.fromBytes(buf);
+        return S2CDeltaSyncPacket.decode(buf);
     }
 
     private static S2CDescriptionSyncPacket roundtrip(S2CDescriptionSyncPacket packet) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         packet.encode(buf);
-        return S2CDescriptionSyncPacket.fromBytes(buf);
+        return S2CDescriptionSyncPacket.decode(buf);
     }
 
     private static S2CDisplayCacheSyncPacket roundtrip(S2CDisplayCacheSyncPacket packet) {

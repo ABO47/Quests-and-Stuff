@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
+import java.util.function.Function;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -18,12 +20,20 @@ public abstract class ChunkedSyncPacket {
         this.payload = payload;
     }
 
+    protected ChunkedSyncPacket(Data d) {
+        this(d.sequence, d.chunkIndex, d.chunkCount, d.payload);
+    }
+
     public long sequence() { return sequence; }
     public int chunkIndex() { return chunkIndex; }
     public int chunkCount() { return chunkCount; }
     public CompoundTag payload() { return payload; }
 
-    protected static Data decode(FriendlyByteBuf buf) {
+    protected static <T extends ChunkedSyncPacket> T decode(FriendlyByteBuf buf, Function<Data, T> factory) {
+        return factory.apply(decodeData(buf));
+    }
+
+    private static Data decodeData(FriendlyByteBuf buf) {
         long sequence = buf.readLong();
         int chunkIndex = buf.readVarInt();
         int chunkCount = buf.readVarInt();

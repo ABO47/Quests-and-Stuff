@@ -50,6 +50,15 @@ public final class ModNetwork {
     private static final Map<Class<?>, ModPacketType<?>> CLIENTBOUND_BY_CLASS = byClass(PACKETS, ModPacketType.Direction.PLAY_TO_CLIENT);
     private static final Map<Class<?>, ModPacketType<?>> SERVERBOUND_BY_CLASS = byClass(PACKETS, ModPacketType.Direction.PLAY_TO_SERVER);
     private static volatile BiConsumer<ServerPlayer, Object> testPacketSink;
+    private static volatile ClientNetworkBridge clientNetwork;
+
+    public static void setClientNetwork(ClientNetworkBridge bridge) {
+        clientNetwork = bridge;
+    }
+
+    public static ClientNetworkBridge clientNetwork() {
+        return clientNetwork;
+    }
 
     private ModNetwork() {
     }
@@ -80,6 +89,7 @@ public final class ModNetwork {
         BiConsumer<ServerPlayer, Object> sink = testPacketSink;
         if (sink != null) {
             sink.accept(player, packet);
+            return;
         }
         if (player == null || player.connection == null) {
             return;
@@ -102,10 +112,10 @@ public final class ModNetwork {
     private static List<ModPacketType<?>> buildPackets() {
         List<ModPacketType<?>> packets = new ArrayList<>();
         int id = 0;
-        packets.add(type(id++, S2CFullSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CFullSyncPacket::encode, S2CFullSyncPacket::fromBytes, S2CFullSyncPacket::handle));
-        packets.add(type(id++, S2CDeltaSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CDeltaSyncPacket::encode, S2CDeltaSyncPacket::fromBytes, S2CDeltaSyncPacket::handle));
+        packets.add(type(id++, S2CFullSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CFullSyncPacket::encode, S2CFullSyncPacket::decode, S2CFullSyncPacket::handle));
+        packets.add(type(id++, S2CDeltaSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CDeltaSyncPacket::encode, S2CDeltaSyncPacket::decode, S2CDeltaSyncPacket::handle));
         packets.add(type(id++, S2CPinnedSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CPinnedSyncPacket::encode, S2CPinnedSyncPacket::decode, S2CPinnedSyncPacket::handle));
-        packets.add(type(id++, S2CDescriptionSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CDescriptionSyncPacket::encode, S2CDescriptionSyncPacket::fromBytes, S2CDescriptionSyncPacket::handle));
+        packets.add(type(id++, S2CDescriptionSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CDescriptionSyncPacket::encode, S2CDescriptionSyncPacket::decode, S2CDescriptionSyncPacket::handle));
         packets.add(type(id++, S2CDisplayCacheSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CDisplayCacheSyncPacket::encode, S2CDisplayCacheSyncPacket::decode, S2CDisplayCacheSyncPacket::handle));
         packets.add(type(id++, S2CQuestEventPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CQuestEventPacket::encode, S2CQuestEventPacket::decode, S2CQuestEventPacket::handle));
         packets.add(type(id++, S2CEditorMutationPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CEditorMutationPacket::encode, S2CEditorMutationPacket::decode, S2CEditorMutationPacket::handle));
@@ -124,8 +134,7 @@ public final class ModNetwork {
         packets.add(type(id++, C2SManualItemSubmitPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SManualItemSubmitPacket::encode, C2SManualItemSubmitPacket::decode, C2SManualItemSubmitPacket::handle));
         packets.add(type(id++, C2SManualXpSubmitPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SManualXpSubmitPacket::encode, C2SManualXpSubmitPacket::decode, C2SManualXpSubmitPacket::handle));
         packets.add(type(id++, C2SResetQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SResetQuestPacket::encode, C2SResetQuestPacket::decode, C2SResetQuestPacket::handle));
-        packets.add(type(id, C2STogglePinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
-        id++;
+        packets.add(type(id++, C2STogglePinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
         packets.add(type(id++, S2CTeamSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamSyncPacket::encode, S2CTeamSyncPacket::decode, S2CTeamSyncPacket::handle));
         packets.add(type(id++, C2STeamCreatePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamCreatePacket::encode, C2STeamCreatePacket::decode, C2STeamCreatePacket::handle));
         packets.add(type(id++, C2STeamJoinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamJoinPacket::encode, C2STeamJoinPacket::decode, C2STeamJoinPacket::handle));
@@ -134,7 +143,7 @@ public final class ModNetwork {
         packets.add(type(id++, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
         packets.add(type(id++, S2CChunkClaimSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CChunkClaimSyncPacket::encode, S2CChunkClaimSyncPacket::decode, S2CChunkClaimSyncPacket::handle));
         packets.add(type(id++, C2SChunkClaimActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimActionPacket::encode, C2SChunkClaimActionPacket::decode, C2SChunkClaimActionPacket::handle));
-        packets.add(type(id, C2SChunkClaimConfigPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimConfigPacket::encode, C2SChunkClaimConfigPacket::decode, C2SChunkClaimConfigPacket::handle));
+        packets.add(type(id++, C2SChunkClaimConfigPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimConfigPacket::encode, C2SChunkClaimConfigPacket::decode, C2SChunkClaimConfigPacket::handle));
         return List.copyOf(packets);
     }
 

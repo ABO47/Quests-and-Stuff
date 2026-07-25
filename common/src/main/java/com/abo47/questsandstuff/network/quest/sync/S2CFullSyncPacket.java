@@ -10,9 +10,12 @@ public final class S2CFullSyncPacket extends ChunkedSyncPacket {
         super(sequence, chunkIndex, chunkCount, payload);
     }
 
-    public static S2CFullSyncPacket fromBytes(FriendlyByteBuf buf) {
-        Data d = ChunkedSyncPacket.decode(buf);
-        return new S2CFullSyncPacket(d.sequence(), d.chunkIndex(), d.chunkCount(), d.payload());
+    public S2CFullSyncPacket(Data d) {
+        super(d);
+    }
+
+    public static S2CFullSyncPacket decode(FriendlyByteBuf buf) {
+        return ChunkedSyncPacket.decode(buf, S2CFullSyncPacket::new);
     }
 
     @Override

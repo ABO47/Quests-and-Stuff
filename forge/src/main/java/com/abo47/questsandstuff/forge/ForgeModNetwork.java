@@ -35,7 +35,7 @@ public final class ForgeModNetwork {
     }
 
     public static void sendToPlayer(Object packet, ServerPlayer player) {
-        if (player == null || player.connection == null || player.connection.connection == null) {
+        if (player.connection.connection == null) {
             return;
         }
         if (!player.connection.connection.isConnected() || player.connection.connection.channel() == null) {
