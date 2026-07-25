@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -46,7 +48,10 @@ public final class ModalDismissGuard extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return state.modal.modalWindowClosing || super.keyPressed(keyCode, scanCode, modifiers);
+        if (state.modal.modalWindowClosing) {
+            return keyCode != GLFW.GLFW_KEY_ESCAPE;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
