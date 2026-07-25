@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -30,7 +31,8 @@ final class ChapterMetadataReader {
             readChapterChrome(json, state, name);
             readCanvasLayers(json, state, name);
             return migrated;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            QuestsAndStuffMod.LOGGER.error("Failed reading chapter metadata file {}", path, e);
             return false;
         }
     }

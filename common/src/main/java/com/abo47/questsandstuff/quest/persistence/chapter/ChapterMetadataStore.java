@@ -11,12 +11,13 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public final class ChapterMetadataStore {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
 
     private final Path chaptersDir;
     private final ChapterMetadataState state = new ChapterMetadataState();
@@ -154,7 +155,7 @@ public final class ChapterMetadataStore {
         String value = icon == null ? "" : icon.trim();
         state.chapterIcons.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter icon {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterBackground(String chapter, String background) {
@@ -165,7 +166,7 @@ public final class ChapterMetadataStore {
         String value = background == null || background.isBlank() ? "default" : background.trim();
         state.chapterBackgrounds.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter background {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterCanvasBackground(String chapter, String background) {
@@ -176,7 +177,7 @@ public final class ChapterMetadataStore {
         String value = background == null || background.isBlank() ? "default" : background.trim();
         state.chapterCanvasBackgrounds.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter canvas_background {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterTextAlign(String chapter, String align) {
@@ -187,7 +188,7 @@ public final class ChapterMetadataStore {
         String value = ChapterMetadataJsonCodec.normalizeTextAlign(align);
         state.chapterTextAlign.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_align {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterTextColor(String chapter, int color) {
@@ -197,7 +198,7 @@ public final class ChapterMetadataStore {
         }
         state.chapterTextColor.put(normalized, color);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_color {} -> {}", normalized, color);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterTextStyle(String chapter, String style) {
@@ -208,7 +209,7 @@ public final class ChapterMetadataStore {
         String value = ChapterMetadataJsonCodec.normalizeTextStyle(style);
         state.chapterTextStyle.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_style {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterTextSize(String chapter, int size) {
@@ -219,7 +220,7 @@ public final class ChapterMetadataStore {
         int value = CanvasTextLayer.clampFontSize(size);
         state.chapterTextSize.put(normalized, value);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_size {} -> {}", normalized, value);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterLockUntilUnlocked(String chapter, boolean lockUntilUnlocked) {
@@ -229,7 +230,7 @@ public final class ChapterMetadataStore {
         }
         state.chapterLockUntilUnlocked.put(normalized, lockUntilUnlocked);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter lock_until_unlocked {} -> {}", normalized, lockUntilUnlocked);
-        save();
+        saveChapter(normalized);
     }
 
     public void setChapterHideUntilUnlocked(String chapter, boolean hideUntilUnlocked) {
@@ -239,7 +240,7 @@ public final class ChapterMetadataStore {
         }
         state.chapterHideUntilUnlocked.put(normalized, hideUntilUnlocked);
         QuestsAndStuffMod.debugLog("[QnS:Store] chapter hide_until_unlocked {} -> {}", normalized, hideUntilUnlocked);
-        save();
+        saveChapter(normalized);
     }
 
     public void putCanvasExclusiveChoice(String chapter, CanvasExclusiveChoice ec) {
@@ -326,7 +327,7 @@ public final class ChapterMetadataStore {
         state.clear();
         try {
             boolean migrated = false;
-            for (Path path : ChapterMetadataFiles.jsonFiles(chaptersDir)) {
+            for (Path path : JsonFileTree.jsonFiles(chaptersDir)) {
                 migrated |= ChapterMetadataReader.read(path, state);
             }
             reconcile(discoveredChapters);

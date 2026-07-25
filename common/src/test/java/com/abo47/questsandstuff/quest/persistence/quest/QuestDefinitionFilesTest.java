@@ -7,6 +7,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.abo47.questsandstuff.util.io.JsonFileTree;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +26,7 @@ class QuestDefinitionFilesTest {
         Files.writeString(two, "{}");
         Files.writeString(root.resolve("ignored.tmp"), "{}");
 
-        assertEquals(Set.of(one, two), Set.copyOf(QuestDefinitionFiles.jsonFiles(root)));
+        assertEquals(Set.of(one, two), Set.copyOf(JsonFileTree.jsonFiles(root)));
     }
 
     @Test
@@ -36,7 +38,7 @@ class QuestDefinitionFilesTest {
         Files.writeString(keep, "{}");
         Files.writeString(stale, "{}");
 
-        assertEquals(Set.of(stale), Set.copyOf(QuestDefinitionFiles.deleteStaleJsonFiles(root, Set.of(keep))));
+        assertEquals(Set.of(stale), Set.copyOf(JsonFileTree.deleteStaleJsonFiles(root, Set.of(keep), true)));
 
         assertTrue(Files.exists(keep));
         assertFalse(Files.exists(stale));

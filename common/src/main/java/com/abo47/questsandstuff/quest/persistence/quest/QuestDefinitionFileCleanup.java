@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 final class QuestDefinitionFileCleanup {
     private QuestDefinitionFileCleanup() {
@@ -20,7 +21,7 @@ final class QuestDefinitionFileCleanup {
             }
             Path removedPath = QuestDefinitionPaths.questPath(questsDir, definition);
             Files.deleteIfExists(removedPath);
-            QuestDefinitionFiles.pruneEmptyParents(removedPath.getParent(), questsDir.toAbsolutePath().normalize());
+            JsonFileTree.pruneEmptyParents(removedPath.getParent(), questsDir.toAbsolutePath().normalize());
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed deleting quest file {}", questId, e);
         }
@@ -36,7 +37,7 @@ final class QuestDefinitionFileCleanup {
                 }
             }
 
-            QuestDefinitionFiles.deleteStaleJsonFiles(questsDir, expected);
+            JsonFileTree.deleteStaleJsonFiles(questsDir, expected, true);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed stale quest cleanup", e);
         }

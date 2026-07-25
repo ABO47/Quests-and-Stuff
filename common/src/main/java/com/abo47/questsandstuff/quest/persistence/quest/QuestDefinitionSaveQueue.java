@@ -15,6 +15,7 @@ import com.mojang.serialization.JsonOps;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -84,7 +85,7 @@ final class QuestDefinitionSaveQueue {
             }
 
             Path target = QuestDefinitionPaths.questPath(questsDir, definition);
-            QuestDefinitionFiles.writeAtomic(target, gson.toJson(json));
+            JsonFileTree.writeAtomic(target, gson.toJson(json));
             delayedSaves.remove(questId);
         } catch (IOException e) {
             QuestsAndStuffMod.LOGGER.error("Failed to save quest {}", questId, e);

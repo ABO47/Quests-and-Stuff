@@ -2,11 +2,8 @@ package com.abo47.questsandstuff.quest.persistence.quest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -15,9 +12,10 @@ import net.minecraft.SharedConstants;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -35,7 +33,7 @@ import com.google.gson.JsonParser;
 final class QuestlineManifestStore {
     static final int CURRENT_SCHEMA = 1;
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
     private static final String DEFAULT_TITLE = "Quests and Stuff Questline";
     private static final String DEFAULT_AUTHOR = "Abo47";
     private static final String DEFAULT_DESCRIPTION = "A questline pack for Quests and Stuff.";
@@ -146,17 +144,7 @@ final class QuestlineManifestStore {
 
     private void write(JsonObject manifest) {
         try {
-            Path parent = manifestFile.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            Path temp = manifestFile.resolveSibling(manifestFile.getFileName().toString() + ".tmp");
-            Files.writeString(temp, GSON.toJson(manifest), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            try {
-                Files.move(temp, manifestFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException ignored) {
-                Files.move(temp, manifestFile, StandardCopyOption.REPLACE_EXISTING);
-            }
+            JsonFileTree.writeAtomic(manifestFile, GSON.toJson(manifest));
         } catch (IOException e) {
             QuestsAndStuffMod.LOGGER.warn("Failed writing questline manifest {}", manifestFile, e);
         }

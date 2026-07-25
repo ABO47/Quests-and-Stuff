@@ -11,6 +11,7 @@ import com.mojang.serialization.JsonOps;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.persistence.QuestSchemaMigrator;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,7 +27,7 @@ final class QuestDefinitionLoader {
     static Map<String, QuestDefinition> load(Path questsDir) throws Exception {
         Files.createDirectories(questsDir);
         Map<String, QuestDefinition> loaded = new HashMap<>();
-        for (Path path : QuestDefinitionFiles.jsonFiles(questsDir)) {
+        for (Path path : JsonFileTree.jsonFiles(questsDir)) {
             readQuestFile(path, loaded);
         }
         return loaded;

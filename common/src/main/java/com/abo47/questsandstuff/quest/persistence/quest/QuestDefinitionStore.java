@@ -12,11 +12,11 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataSnapshot;
 import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizePrerequisites;
@@ -24,7 +24,7 @@ import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNo
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.removeUngroupedDefinitions;
 
 public final class QuestDefinitionStore {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
 
     private final Path root;
     private final Path questsDir;

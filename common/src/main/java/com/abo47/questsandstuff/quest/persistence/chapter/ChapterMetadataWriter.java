@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -24,9 +25,9 @@ final class ChapterMetadataWriter {
                 String chapter = state.chapterOrder.get(i);
                 Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(chapter) + ".json");
                 expected.add(target.toAbsolutePath().normalize());
-                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, chapter, i)));
+                JsonFileTree.writeAtomic(target, gson.toJson(chapterJson(state, chapter, i)));
             }
-            for (Path path : ChapterMetadataFiles.deleteStaleJsonFiles(chaptersDir, expected)) {
+            for (Path path : JsonFileTree.deleteStaleJsonFiles(chaptersDir, expected, false)) {
                 QuestsAndStuffMod.debugLog("[QnS:Store] deleted stale chapter metadata {}", path.getFileName());
             }
         } catch (Exception e) {
@@ -49,7 +50,7 @@ final class ChapterMetadataWriter {
                     continue;
                 }
                 Path target = chaptersDir.resolve(ChapterMetadataJsonCodec.chapterFileName(chapter) + ".json");
-                ChapterMetadataFiles.writeAtomic(target, gson.toJson(chapterJson(state, chapter, order)));
+                JsonFileTree.writeAtomic(target, gson.toJson(chapterJson(state, chapter, order)));
             }
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed to persist chapter metadata {}", chaptersDir, e);
