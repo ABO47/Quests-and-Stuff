@@ -4,21 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import it.unimi.dsi.fastutil.longs.LongSet;
-
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.levelgen.structure.Structure;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
+import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalHelper;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
 
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
@@ -60,35 +55,14 @@ public final class ForgeQuestEventBridge {
             return;
         }
 
-        send(player, QuestSignalType.LOCATION_TICK, "", 1);
-        send(player, QuestSignalType.XP_SNAPSHOT, "points", Math.max(0, player.totalExperience));
-        send(player, QuestSignalType.XP_SNAPSHOT, "level", Math.max(0, player.experienceLevel));
-
-        ResourceLocation biomeId = player.serverLevel().getBiome(player.blockPosition())
-                .unwrapKey()
-                .map(ResourceKey::location)
-                .orElse(ResourceLocation.tryBuild("minecraft", "plains"));
-        send(player, QuestSignalType.BIOME_ENTER, biomeId.toString(), 1);
-
-        Map<Structure, LongSet> structures = player.serverLevel().structureManager().getAllStructuresAt(player.blockPosition());
-        if (!structures.isEmpty()) {
-            for (Structure structure : structures.keySet()) {
-                ResourceLocation structureId = player.server.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getKey(structure);
-                if (structureId != null) {
-                    send(player, QuestSignalType.STRUCTURE_ENTER, structureId.toString(), 1);
-                }
-            }
-        }
-
-        pushInventorySnapshotDelta(player);
-        pushStatSnapshotDelta(player);
+        QuestSignalHelper.tick(player, inventorySnapshots, statSnapshots);
     }
 
     @SubscribeEvent
     public void onPickup(EntityItemPickupEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItem().getItem().getItem());
-            send(player, QuestSignalType.ITEM_COLLECTED, id.toString(), event.getItem().getItem().getCount());
+            QuestSignalHelper.send(player, QuestSignalType.ITEM_COLLECTED, id.toString(), event.getItem().getItem().getCount());
         }
     }
 
@@ -96,7 +70,7 @@ public final class ForgeQuestEventBridge {
     public void onItemUse(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItem().getItem());
-            send(player, QuestSignalType.ITEM_USED, id.toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.ITEM_USED, id.toString(), 1);
         }
     }
 
@@ -104,7 +78,7 @@ public final class ForgeQuestEventBridge {
     public void onItemRightClick(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
-            send(player, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
         }
     }
 
@@ -112,7 +86,7 @@ public final class ForgeQuestEventBridge {
     public void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.BLOCKS.getKey(player.level().getBlockState(event.getPos()).getBlock());
-            send(player, QuestSignalType.BLOCK_INTERACT, id.toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.BLOCK_INTERACT, id.toString(), 1);
         }
     }
 
@@ -120,7 +94,7 @@ public final class ForgeQuestEventBridge {
     public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(event.getTarget().getType());
-            send(player, QuestSignalType.ENTITY_INTERACT, id.toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.ENTITY_INTERACT, id.toString(), 1);
         }
     }
 
@@ -128,28 +102,28 @@ public final class ForgeQuestEventBridge {
     public void onKill(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType());
-            send(player, QuestSignalType.ENTITY_KILLED, id.toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.ENTITY_KILLED, id.toString(), 1);
         }
     }
 
     @SubscribeEvent
     public void onAdvancement(AdvancementEvent.AdvancementEarnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            send(player, QuestSignalType.ADVANCEMENT, event.getAdvancement().getId().toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.ADVANCEMENT, event.getAdvancement().getId().toString(), 1);
         }
     }
 
     @SubscribeEvent
     public void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            send(player, QuestSignalType.DIMENSION_CHANGED, event.getTo().location().toString(), 1);
+            QuestSignalHelper.send(player, QuestSignalType.DIMENSION_CHANGED, event.getTo().location().toString(), 1);
         }
     }
 
     @SubscribeEvent
     public void onXp(PlayerXpEvent.XpChange event) {
         if (event.getEntity() instanceof ServerPlayer player && event.getAmount() > 0) {
-            send(player, QuestSignalType.XP_CHANGE, "", event.getAmount());
+            QuestSignalHelper.send(player, QuestSignalType.XP_CHANGE, "", event.getAmount());
         }
     }
 
@@ -158,7 +132,7 @@ public final class ForgeQuestEventBridge {
         Player raw = event.getEntity();
         if (raw instanceof ServerPlayer player) {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getCrafting().getItem());
-            send(player, QuestSignalType.ITEM_CRAFTED, id.toString(), event.getCrafting().getCount());
+            QuestSignalHelper.send(player, QuestSignalType.ITEM_CRAFTED, id.toString(), event.getCrafting().getCount());
         }
     }
 
@@ -236,47 +210,4 @@ public final class ForgeQuestEventBridge {
         QuestServiceRegistry.chunkClaims(event.getServer()).suppressFire();
     }
 
-    private void send(ServerPlayer player, QuestSignalType type, String key, int amount) {
-        QuestServiceRegistry.engine(player.server).onSignal(QuestSignal.of(type, player, key, amount, player.blockPosition()));
-    }
-
-    private void pushInventorySnapshotDelta(ServerPlayer player) {
-        Map<String, Integer> current = new HashMap<>();
-        for (var stack : player.getInventory().items) {
-            if (stack.isEmpty()) {
-                continue;
-            }
-            ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
-            current.merge(id.toString(), stack.getCount(), Integer::sum);
-        }
-
-        Map<String, Integer> previous = inventorySnapshots.getOrDefault(player.getUUID(), Map.of());
-        for (Map.Entry<String, Integer> entry : current.entrySet()) {
-            int prev = previous.getOrDefault(entry.getKey(), 0);
-            int delta = entry.getValue() - prev;
-            if (delta > 0) {
-                send(player, QuestSignalType.INVENTORY_CHANGED, entry.getKey(), delta);
-            }
-        }
-
-        inventorySnapshots.put(player.getUUID(), current);
-    }
-
-    private void pushStatSnapshotDelta(ServerPlayer player) {
-        var engine = QuestServiceRegistry.engine(player.server);
-        Map<String, Integer> current = new HashMap<>();
-        for (String statKey : engine.trackedStatTaskTargets()) {
-            current.put(statKey, QuestStatHelper.readStat(player, statKey));
-        }
-
-        Map<String, Integer> previous = statSnapshots.getOrDefault(player.getUUID(), Map.of());
-        for (Map.Entry<String, Integer> entry : current.entrySet()) {
-            int prev = previous.getOrDefault(entry.getKey(), Integer.MIN_VALUE);
-            if (entry.getValue() != prev) {
-                send(player, QuestSignalType.STAT_CHANGE, entry.getKey(), Math.max(0, entry.getValue()));
-            }
-        }
-
-        statSnapshots.put(player.getUUID(), current);
-    }
 }

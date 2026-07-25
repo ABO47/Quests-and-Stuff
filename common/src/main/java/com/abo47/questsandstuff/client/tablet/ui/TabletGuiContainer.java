@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
 
@@ -33,7 +32,6 @@ public final class TabletGuiContainer extends ModularUIGuiContainer {
     @Override
     public void removed() {
         WorldPortalCapture.dispose();
-        CanvasBlueprintMiniRenderer.dispose();
         super.removed();
     }
 
