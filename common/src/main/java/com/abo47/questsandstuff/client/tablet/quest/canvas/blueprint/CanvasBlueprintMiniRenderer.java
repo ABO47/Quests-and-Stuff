@@ -161,7 +161,7 @@ public final class CanvasBlueprintMiniRenderer {
             return;
         }
         BlueprintBounds bounds = bounds(blueprint);
-        int pad = 8;
+        int pad = 2;
         int drawW = Math.max(1, w - pad * 2);
         int drawH = Math.max(1, h - pad * 2);
         float scale = Math.min(drawW / (float) bounds.width(), drawH / (float) bounds.height());
