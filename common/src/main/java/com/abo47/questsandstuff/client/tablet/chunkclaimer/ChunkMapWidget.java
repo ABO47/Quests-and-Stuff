@@ -87,8 +87,10 @@ public class ChunkMapWidget extends Widget {
 
     private void ensureTerrain(ClientLevel level, int w, int h, int cx, int cz) {
         int gw = Math.max(3, w / GRID_16);
+        if (gw % 2 == 0) gw++;
         int cell = Math.max(1, w / gw);
         int gh = Math.max(3, h / cell);
+        if (gh % 2 == 0) gh++;
         int s = Math.max(1, Math.min(16, (int) Math.sqrt(640000.0 / (gw * gh))));
         long now = System.currentTimeMillis();
         boolean needs = terrainTex == null || gw != gridW || gh != gridH || s != sub
