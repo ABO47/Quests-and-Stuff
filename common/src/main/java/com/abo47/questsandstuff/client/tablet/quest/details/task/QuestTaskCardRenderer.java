@@ -195,6 +195,7 @@ final class QuestTaskCardRenderer {
         }
         boolean skinned = rawOverride != null;
         if (skinned) {
+            card.setBackground(IGuiTexture.EMPTY);
             SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
             if (parsed != null) {
                 IGuiTexture tex = parsed.createTexture();

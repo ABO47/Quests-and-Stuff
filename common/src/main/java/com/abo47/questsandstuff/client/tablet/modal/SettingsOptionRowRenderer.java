@@ -51,8 +51,9 @@ public final class SettingsOptionRowRenderer {
         int cardW = rowW;
         int fill = enabled ? withAlpha(TabletColors.SUCCESS, 28) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
         int border = enabled ? withAlpha(TabletColors.SUCCESS, 170) : TabletColors.BORDER_BASE;
-        list.addWidget(panel(0, rowY, cardW, rowH, fill, border));
-        applyCardSkin(list, state, 0, rowY, cardW, rowH);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, fill, border);
+        list.addWidget(card);
+        applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
 
         Component[] tooltips = tooltips(option);
@@ -84,8 +85,9 @@ public final class SettingsOptionRowRenderer {
     private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        list.addWidget(panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE));
-        applyCardSkin(list, state, 0, rowY, cardW, rowH);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE);
+        list.addWidget(card);
+        applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
         Component[] tooltips = tooltips(option);
         int iconSize = 14;
@@ -109,8 +111,9 @@ public final class SettingsOptionRowRenderer {
     private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        list.addWidget(panel(0, rowY, cardW, rowH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 180), TabletColors.BORDER_BASE));
-        applyCardSkin(list, state, 0, rowY, cardW, rowH);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 180), TabletColors.BORDER_BASE);
+        list.addWidget(card);
+        applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
 
         Component[] tooltips = tooltips(option);
         int unitW = 18;
@@ -226,7 +229,7 @@ public final class SettingsOptionRowRenderer {
         return fill;
     }
 
-    private static void applyCardSkin(WidgetGroup list, TabletUiState state, int x, int y, int w, int h) {
+    private static void applyCardSkin(WidgetGroup list, TabletUiState state, WidgetGroup card, int x, int y, int w, int h) {
         String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_option_cards");
         if (rawOverride == null) {
             return;
@@ -237,6 +240,7 @@ public final class SettingsOptionRowRenderer {
         }
         IGuiTexture tex = parsed.createTexture();
         if (tex != null) {
+            card.setBackground(IGuiTexture.EMPTY);
             list.addWidget(new ImageWidget(x - 1, y - 1, w + 2, h + 2, tex));
         }
     }

@@ -6,7 +6,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -22,6 +24,8 @@ import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -153,7 +157,9 @@ public final class SettingsOptionsPanelRenderer {
         int w = Math.max(1, rowW);
         int fill = active ? withAlpha(theme.success(), 66) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
         int border = active ? theme.success() : TabletColors.BORDER_BASE;
-        list.addWidget(panel(x, rowY, w, h, fill, border));
+        WidgetGroup card = panel(x, rowY, w, h, fill, border);
+        list.addWidget(card);
+        applyCardSkin(list, state, card, x, rowY, w, h);
         list.addWidget(hoverFill(x, rowY, w, h));
         int rowMid = rowY + h / 2;
         int swatchX = GRID_8;
@@ -188,5 +194,21 @@ public final class SettingsOptionsPanelRenderer {
             }
         };
         return fill;
+    }
+
+    private static void applyCardSkin(WidgetGroup list, TabletUiState state, WidgetGroup card, int x, int y, int w, int h) {
+        String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_option_cards");
+        if (rawOverride == null) {
+            return;
+        }
+        SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+        if (parsed == null) {
+            return;
+        }
+        IGuiTexture tex = parsed.createTexture();
+        if (tex != null) {
+            card.setBackground(IGuiTexture.EMPTY);
+            list.addWidget(new ImageWidget(x - 1, y - 1, w + 2, h + 2, tex));
+        }
     }
 }

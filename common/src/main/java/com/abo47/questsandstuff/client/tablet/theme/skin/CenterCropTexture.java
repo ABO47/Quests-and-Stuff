@@ -31,11 +31,8 @@ public class CenterCropTexture implements IGuiTexture {
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
         if (width <= 0 || height <= 0 || origW <= 0 || origH <= 0) return;
-        float scale = Math.max((float) width / origW, (float) height / origH);
-        int drawW = Math.round(origW * scale);
-        int drawH = Math.round(origH * scale);
-        int drawX = Math.round(x + (width - drawW) / 2f);
-        int drawY = Math.round(y + (height - drawH) / 2f);
+        int drawX = Math.round(x + (width - origW) / 2f);
+        int drawY = Math.round(y + (height - origH) / 2f);
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
@@ -43,9 +40,9 @@ public class CenterCropTexture implements IGuiTexture {
         RenderSystem.setShaderTexture(0, imageLocation);
         var matrix = graphics.pose().last().pose();
         buffer.begin(VertexFormat.Mode.QUADS, POSITION_TEX_COLOR);
-        buffer.vertex(matrix, drawX, drawY + drawH, 0).uv(0, 1).color(-1).endVertex();
-        buffer.vertex(matrix, drawX + drawW, drawY + drawH, 0).uv(1, 1).color(-1).endVertex();
-        buffer.vertex(matrix, drawX + drawW, drawY, 0).uv(1, 0).color(-1).endVertex();
+        buffer.vertex(matrix, drawX, drawY + origH, 0).uv(0, 1).color(-1).endVertex();
+        buffer.vertex(matrix, drawX + origW, drawY + origH, 0).uv(1, 1).color(-1).endVertex();
+        buffer.vertex(matrix, drawX + origW, drawY, 0).uv(1, 0).color(-1).endVertex();
         buffer.vertex(matrix, drawX, drawY, 0).uv(0, 0).color(-1).endVertex();
         tessellator.end();
     }

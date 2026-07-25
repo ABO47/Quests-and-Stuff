@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -18,6 +19,8 @@ import com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptors;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -122,7 +125,20 @@ final class SettingsAppHeaderControls {
                 float t = Math.max(0f, Math.min(1f, (float) elapsed / (float) TAB_ANIM_MS));
                 float eased = 1f - (1f - t) * (1f - t) * (1f - t);
                 int grow = (int) (TAB_ENLARGE * eased);
-                SurfaceFactory.bordered(fill, border).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY() + TAB_ENLARGE - grow, getSizeWidth(), TAB_H + grow);
+                int drawY = getPositionY() + TAB_ENLARGE - grow;
+                int drawH = TAB_H + grow;
+                String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_tab_layer");
+                if (rawOverride != null) {
+                    SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+                    if (parsed != null) {
+                        IGuiTexture tex = parsed.createTexture();
+                        if (tex != null) {
+                            tex.draw(graphics, mouseX, mouseY, getPositionX(), drawY, getSizeWidth(), drawH);
+                            return;
+                        }
+                    }
+                }
+                SurfaceFactory.bordered(fill, border).draw(graphics, mouseX, mouseY, getPositionX(), drawY, getSizeWidth(), drawH);
             }
         };
     }

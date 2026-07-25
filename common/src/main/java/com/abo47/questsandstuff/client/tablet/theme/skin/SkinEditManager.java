@@ -116,7 +116,11 @@ public final class SkinEditManager {
                 } else if (!SkinOverrideKey.isCardKey(targetKey)) {
                     for (Widget child : wg.widgets) {
                         if (!SkinEditTargetResolver.hasCustomChrome(child)) {
-                            applyToWidget(child, targetKey, tex);
+                            if ("settings_tab_layer".equals(targetKey) && child instanceof WidgetGroup tabContainer && !tabContainer.widgets.isEmpty()) {
+                                applyToWidget(tabContainer.widgets.get(0), targetKey, tex);
+                            } else {
+                                applyToWidget(child, targetKey, tex);
+                            }
                         }
                     }
                 }
@@ -319,7 +323,7 @@ public final class SkinEditManager {
         int py = ContextMenuPlacement.fitBelowOrAbove(mouseY, screenH, menuH);
 
         root.setContextMenu(
-                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> {}),
+                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> buildContextMenu(state, root, refresher, mouseX, mouseY)),
                 px, py, menuW, menuH
         );
     }
