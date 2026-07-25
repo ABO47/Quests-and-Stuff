@@ -129,7 +129,7 @@ final class CanvasContextSelectionActions {
                 }));
                 if (selectionHasConnectionTexture(state, selectedChapter, connectedConnections)) {
                     String selConnTexKey = "sel_remove_conn_tex:" + selectedChapter;
-                    sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, selConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+                    sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
                         ContextMenuController.clearDeleteConfirm(state);
                         for (var connection : connectedConnections) {
                             String prereq = connection.prerequisiteId();
@@ -506,7 +506,7 @@ final class CanvasContextSelectionActions {
         }));
         if (!ec.background().isBlank()) {
             String selEcBgKey = "sel_remove_ec_bg:" + selectedChapter;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, selEcBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selEcBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
                 for (String batchEcId : ecIds) {
                     CanvasExclusiveChoice batchEc = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, batchEcId);
                     if (batchEc != null && !batchEc.background().isBlank()) {
