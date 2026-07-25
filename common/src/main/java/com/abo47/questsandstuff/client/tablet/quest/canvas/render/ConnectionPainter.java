@@ -27,7 +27,6 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -68,7 +67,7 @@ final class ConnectionPainter {
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
+                    drawConnection(graphics, originX, originY, state, line, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
                 }
             }
         });
@@ -130,8 +129,6 @@ final class ConnectionPainter {
             int originY,
             TabletUiState state,
             ConnectionLine line,
-            int mouseX,
-            int mouseY,
             long now,
             int clipMinX,
             int clipMinY,
@@ -154,21 +151,10 @@ final class ConnectionPainter {
             return;
         }
 
-        boolean hoveringEndpoint = isHoveringEndpoint(
-                originX,
-                originY,
-                line,
-                mouseX,
-                mouseY,
-                sourceOffsetX,
-                sourceOffsetY,
-                targetOffsetX,
-                targetOffsetY
-        );
-        if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
+        if (line.hidden() && !state.root.canEdit) {
             return;
         }
-        int alpha = line.hidden() && hoveringEndpoint ? ConnectionRenderStyle.VISIBLE_ALPHA : line.alpha();
+        int alpha = line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
         String rawTextureStr = line.texture();
         ResourceLocation texture = resolveTexture(rawTextureStr);
@@ -197,56 +183,9 @@ final class ConnectionPainter {
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
-            if (state.root.canEdit) {
-                int bbMinX = Integer.MAX_VALUE;
-                int bbMinY = Integer.MAX_VALUE;
-                int bbMaxX = Integer.MIN_VALUE;
-                int bbMaxY = Integer.MIN_VALUE;
-                for (CanvasPoint p : path) {
-                    bbMinX = Math.min(bbMinX, (int) p.x);
-                    bbMinY = Math.min(bbMinY, (int) p.y);
-                    bbMaxX = Math.max(bbMaxX, (int) p.x);
-                    bbMaxY = Math.max(bbMaxY, (int) p.y);
-                }
-                int pad = 8;
-                if (mouseX >= bbMinX - pad && mouseX <= bbMaxX + pad && mouseY >= bbMinY - pad && mouseY <= bbMaxY + pad) {
-                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, bbMinX - pad, bbMinY - pad, bbMaxX - bbMinX + pad * 2, bbMaxY - bbMinY + pad * 2);
-                }
-            }
             return;
         }
         drawTexturedChevrons(graphics, path, line.color(), alpha, texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
-        if (state.root.canEdit) {
-            int bbMinX = Integer.MAX_VALUE;
-            int bbMinY = Integer.MAX_VALUE;
-            int bbMaxX = Integer.MIN_VALUE;
-            int bbMaxY = Integer.MIN_VALUE;
-            for (CanvasPoint p : path) {
-                bbMinX = Math.min(bbMinX, (int) p.x);
-                bbMinY = Math.min(bbMinY, (int) p.y);
-                bbMaxX = Math.max(bbMaxX, (int) p.x);
-                bbMaxY = Math.max(bbMaxY, (int) p.y);
-            }
-            int pad = 8;
-            if (mouseX >= bbMinX - pad && mouseX <= bbMaxX + pad && mouseY >= bbMinY - pad && mouseY <= bbMaxY + pad) {
-                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, bbMinX - pad, bbMinY - pad, bbMaxX - bbMinX + pad * 2, bbMaxY - bbMinY + pad * 2);
-            }
-        }
-    }
-
-    private static boolean isHoveringEndpoint(
-            int originX,
-            int originY,
-            ConnectionLine line,
-            int mouseX,
-            int mouseY,
-            int sourceOffsetX,
-            int sourceOffsetY,
-            int targetOffsetX,
-            int targetOffsetY
-    ) {
-        return inside(mouseX, mouseY, originX + line.sourceX() + sourceOffsetX, originY + line.sourceY() + sourceOffsetY, line.sourceW(), line.sourceH())
-                || inside(mouseX, mouseY, originX + line.targetX() + targetOffsetX, originY + line.targetY() + targetOffsetY, line.targetW(), line.targetH());
     }
 
     private static boolean inSelection(TabletUiState state, String elementId) {
@@ -268,10 +207,6 @@ final class ConnectionPainter {
         }
         return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
                 - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
-    }
-
-    private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
-        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
     }
 
     private static int snapScreenLocalToGrid(TabletUiState state, int localX, int cell) {
