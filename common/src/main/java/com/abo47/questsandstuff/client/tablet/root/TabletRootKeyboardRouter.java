@@ -58,7 +58,10 @@ final class TabletRootKeyboardRouter {
         if (!textInputActive && root.isAnyModalOpen() && modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if ((TabletKeybindings.openUiMatches(keyCode, scanCode) || TabletKeybindings.openQuestsUiMatches(keyCode, scanCode)) && !textInputActive) {
+        if (!textInputActive && (TabletKeybindings.openUiMatches(keyCode, scanCode)
+                || TabletKeybindings.openQuestsUiMatches(keyCode, scanCode)
+                || TabletKeybindings.openTeamsUiMatches(keyCode, scanCode)
+                || TabletKeybindings.openChunkclaimerUiMatches(keyCode, scanCode))) {
             TabletLifecycle.closeTabletUi(state, true, "keybind");
             return true;
         }

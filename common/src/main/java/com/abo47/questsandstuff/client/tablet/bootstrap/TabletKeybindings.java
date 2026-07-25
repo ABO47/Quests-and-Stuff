@@ -23,6 +23,18 @@ public final class TabletKeybindings {
             GLFW.GLFW_KEY_UNKNOWN,
             CATEGORY
     );
+    public static final KeyMapping OPEN_TEAMS_UI = new KeyMapping(
+            "key.questsandstuff.open_teams_ui",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
+    public static final KeyMapping OPEN_CHUNKCLAIMER_UI = new KeyMapping(
+            "key.questsandstuff.open_chunkclaimer_ui",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
     private static final KeyMapping QUICK_CONNECT = new KeyMapping(
             "key.questsandstuff.quick_connect",
             InputConstants.Type.KEYSYM,
@@ -72,6 +84,8 @@ public final class TabletKeybindings {
     public static void registerKeyMappings(Consumer<KeyMapping> registrar) {
         registrar.accept(OPEN_UI);
         registrar.accept(OPEN_QUESTS_UI);
+        registrar.accept(OPEN_TEAMS_UI);
+        registrar.accept(OPEN_CHUNKCLAIMER_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
         registrar.accept(EDIT_HUD);
@@ -99,6 +113,14 @@ public final class TabletKeybindings {
 
     public static boolean openQuestsUiMatches(int keyCode, int scanCode) {
         return OPEN_QUESTS_UI.matches(keyCode, scanCode);
+    }
+
+    public static boolean openTeamsUiMatches(int keyCode, int scanCode) {
+        return OPEN_TEAMS_UI.matches(keyCode, scanCode);
+    }
+
+    public static boolean openChunkclaimerUiMatches(int keyCode, int scanCode) {
+        return OPEN_CHUNKCLAIMER_UI.matches(keyCode, scanCode);
     }
 
     public static boolean gizmoMoveMatches(int keyCode, int scanCode) {

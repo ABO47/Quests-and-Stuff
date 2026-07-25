@@ -62,7 +62,7 @@ public final class TabletLifecycle {
         if (minecraft.gameMode == null || minecraft.screen != null) {
             return;
         }
-        if (suppressNextOpenClick && !TabletKeybindings.OPEN_UI.isDown() && !TabletKeybindings.OPEN_QUESTS_UI.isDown()) {
+        if (suppressNextOpenClick && !TabletKeybindings.OPEN_UI.isDown() && !TabletKeybindings.OPEN_QUESTS_UI.isDown() && !TabletKeybindings.OPEN_TEAMS_UI.isDown() && !TabletKeybindings.OPEN_CHUNKCLAIMER_UI.isDown()) {
             suppressNextOpenClick = false;
         }
         while (TabletKeybindings.OPEN_UI.consumeClick()) {
@@ -77,6 +77,20 @@ public final class TabletLifecycle {
                 continue;
             }
             openApp("QUESTS");
+            break;
+        }
+        while (TabletKeybindings.OPEN_TEAMS_UI.consumeClick()) {
+            if (suppressNextOpenClick) {
+                continue;
+            }
+            openApp("TEAMS");
+            break;
+        }
+        while (TabletKeybindings.OPEN_CHUNKCLAIMER_UI.consumeClick()) {
+            if (suppressNextOpenClick) {
+                continue;
+            }
+            openApp("CHUNKCLAIMER");
             break;
         }
         while (TabletKeybindings.EDIT_HUD.consumeClick()) {
