@@ -28,6 +28,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class CanvasHitTester {
     private static final int TEXT_MENU_MARGIN = 4;
@@ -356,12 +357,6 @@ public final class CanvasHitTester {
         return best == null ? new MenuCandidate(TEXT_MENU_MARGIN, TEXT_MENU_MARGIN, 0L) : best;
     }
 
-    private static int clamp(int value, int min, int max) {
-        if (max < min) {
-            return min;
-        }
-        return Math.max(min, Math.min(max, value));
-    }
 
     private static int overlapArea(int x, int y, int w, int h, int[] bounds) {
         int left = Math.max(x, bounds[0]);

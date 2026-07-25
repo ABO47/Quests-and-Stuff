@@ -4,6 +4,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class ModalContextMenuPlacement {
     private static final int MARGIN = GRID_4;
@@ -42,12 +43,6 @@ public final class ModalContextMenuPlacement {
         return (TabletStateQueries.rootHeight(state) - modalH) / 2;
     }
 
-    private static int clamp(int value, int min, int max) {
-        if (max < min) {
-            return min;
-        }
-        return Math.max(min, Math.min(max, value));
-    }
 
     public record Placement(int x, int y, int w, int h) {
     }

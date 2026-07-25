@@ -29,6 +29,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 final class CanvasMinimapPainter {
     static final float BODY_REVEAL_START = 0.48f;
@@ -271,7 +272,4 @@ final class CanvasMinimapPainter {
         SurfaceFactory.fill(color).draw(graphics, 0, 0, x + w - 1, y, 1, h);
     }
 
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
 }

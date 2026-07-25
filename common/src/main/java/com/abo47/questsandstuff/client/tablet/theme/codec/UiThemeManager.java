@@ -10,9 +10,9 @@ import java.util.Map;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
  * statics directly, so all palette mutation is routed through this manager.
  */
 public final class UiThemeManager {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
     private static final Object LOCK = new Object();
     private static final long RELOAD_CHECK_MS = TabletAnimationTimings.THEME_RELOAD_CHECK_MS;
 

@@ -31,6 +31,7 @@ import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 final class CanvasMinimapOverlay {
     private static final int MIN_QUEST_SIZE = 4;
@@ -385,10 +386,6 @@ final class CanvasMinimapOverlay {
         state.canvas.minimapWorldMinY = projection.world().minY();
         state.canvas.minimapWorldWidth = projection.world().width();
         state.canvas.minimapWorldHeight = projection.world().height();
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
     }
 
 }

@@ -17,6 +17,8 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
+
 public final class RecipePickButtonOverlay {
     public static final int BUTTON_SIZE = 11;
     public static final int BUTTON_GAP = 2;
@@ -224,10 +226,4 @@ public final class RecipePickButtonOverlay {
         return clamp(size, MIN_NATIVE_BUTTON_SIZE, MAX_NATIVE_BUTTON_SIZE);
     }
 
-    private static int clamp(int value, int min, int max) {
-        if (max < min) {
-            return min;
-        }
-        return Math.max(min, Math.min(max, value));
-    }
 }

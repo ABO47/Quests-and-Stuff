@@ -5,6 +5,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRotationMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
+
 public final class CanvasElementGeometry {
     private CanvasElementGeometry() {
     }
@@ -261,9 +263,6 @@ public final class CanvasElementGeometry {
         return Math.min(slotScreenSize - visualScreenSize, Math.max(1, centered));
     }
 
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
 
     private static double effectivePivot(int pivot, int span) {
         int safeSpan = Math.max(1, span);

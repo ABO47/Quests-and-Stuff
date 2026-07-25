@@ -19,9 +19,9 @@ import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,7 +39,7 @@ public record CanvasBlueprint(
         List<ExclusiveChoiceEntry> exclusiveChoices
 ) {
     public static final int CURRENT_SCHEMA = 1;
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
 
     public CanvasBlueprint {
         schema = schema <= 0 ? CURRENT_SCHEMA : schema;

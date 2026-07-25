@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class CanvasMiniNotificationController {
     private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;
@@ -80,7 +81,4 @@ public final class CanvasMiniNotificationController {
         graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(TabletColors.SUCCESS, alpha), true);
     }
 
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
 }

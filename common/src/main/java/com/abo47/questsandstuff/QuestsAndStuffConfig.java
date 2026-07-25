@@ -6,15 +6,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import com.abo47.questsandstuff.platform.Services;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public final class QuestsAndStuffConfig {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
     public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.DEFAULT_DURATION_MS;
     public static final int MIN_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MIN_DURATION_MS;
     public static final int MAX_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MAX_DURATION_MS;

@@ -7,15 +7,18 @@ import java.nio.file.StandardOpenOption;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.platform.Services;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
+import com.abo47.questsandstuff.util.JsonFieldHelper;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
+
 public final class QuestHudLayoutManager {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
     private static final int UNSET = Integer.MIN_VALUE;
 
 
@@ -279,22 +282,22 @@ public final class QuestHudLayoutManager {
             }
             JsonObject root = parsed.getAsJsonObject();
             JsonObject completion = object(root, "completion");
-            completionX = intValue(completion, "x", completionX);
-            completionY = intValue(completion, "y", completionY);
-            completionScale = Math.max(1, intValue(completion, "scale", completionScale));
-            completionHeightScale = Math.max(1, intValue(completion, "height_scale", completionScale));
-            completionBackground = stringValue(completion, "background", completionBackground);
-            completionOpacity = clamp(intValue(completion, "opacity", completionOpacity), 0, 100);
-            completionShowBorders = boolValue(completion, "show_borders", completionShowBorders);
+            completionX = JsonFieldHelper.readInt(completion, "x", completionX);
+            completionY = JsonFieldHelper.readInt(completion, "y", completionY);
+            completionScale = Math.max(1, JsonFieldHelper.readInt(completion, "scale", completionScale));
+            completionHeightScale = Math.max(1, JsonFieldHelper.readInt(completion, "height_scale", completionScale));
+            completionBackground = JsonFieldHelper.string(completion, "background", completionBackground);
+            completionOpacity = clamp(JsonFieldHelper.readInt(completion, "opacity", completionOpacity), 0, 100);
+            completionShowBorders = JsonFieldHelper.bool(completion, "show_borders", completionShowBorders);
             JsonObject pinned = object(root, "pinned");
-            pinnedX = intValue(pinned, "x", pinnedX);
-            pinnedY = intValue(pinned, "y", pinnedY);
-            pinnedScale = Math.max(1, intValue(pinned, "scale", pinnedScale));
-            pinnedHeightScale = Math.max(1, intValue(pinned, "height_scale", pinnedScale));
-            pinnedBackground = stringValue(pinned, "background", pinnedBackground);
-            pinnedOpacity = clamp(intValue(pinned, "opacity", pinnedOpacity), 0, 100);
-            pinnedShowBorders = boolValue(pinned, "show_borders", pinnedShowBorders);
-            snapToGrid = boolValue(root, "snapToGrid", snapToGrid);
+            pinnedX = JsonFieldHelper.readInt(pinned, "x", pinnedX);
+            pinnedY = JsonFieldHelper.readInt(pinned, "y", pinnedY);
+            pinnedScale = Math.max(1, JsonFieldHelper.readInt(pinned, "scale", pinnedScale));
+            pinnedHeightScale = Math.max(1, JsonFieldHelper.readInt(pinned, "height_scale", pinnedScale));
+            pinnedBackground = JsonFieldHelper.string(pinned, "background", pinnedBackground);
+            pinnedOpacity = clamp(JsonFieldHelper.readInt(pinned, "opacity", pinnedOpacity), 0, 100);
+            pinnedShowBorders = JsonFieldHelper.bool(pinned, "show_borders", pinnedShowBorders);
+            snapToGrid = JsonFieldHelper.bool(root, "snapToGrid", snapToGrid);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed reading Quests and Stuff HUD layout {}, keeping defaults", file, e);
         }
@@ -335,43 +338,6 @@ public final class QuestHudLayoutManager {
             return root.getAsJsonObject(key);
         }
         return null;
-    }
-
-    private static int intValue(JsonObject root, String key, int fallback) {
-        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
-            try {
-                return root.get(key).getAsInt();
-            } catch (Exception ignored) {
-                return fallback;
-            }
-        }
-        return fallback;
-    }
-
-    private static String stringValue(JsonObject root, String key, String fallback) {
-        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
-            try {
-                return root.get(key).getAsString();
-            } catch (Exception ignored) {
-                return fallback;
-            }
-        }
-        return fallback;
-    }
-
-    private static boolean boolValue(JsonObject root, String key, boolean fallback) {
-        if (root != null && root.has(key) && root.get(key).isJsonPrimitive()) {
-            try {
-                return root.get(key).getAsBoolean();
-            } catch (Exception ignored) {
-                return fallback;
-            }
-        }
-        return fallback;
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
     }
 
     public enum Element {

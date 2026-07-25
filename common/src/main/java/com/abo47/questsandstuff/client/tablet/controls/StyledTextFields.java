@@ -10,6 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.util.MathUtils;
 import com.abo47.questsandstuff.util.naming.SafeNames;
 
 public final class StyledTextFields {
@@ -274,7 +275,7 @@ public final class StyledTextFields {
             Runnable blur,
             Consumer<Boolean> focusResponder
     ) {
-        int value = clamp(current, min, max);
+        int value = MathUtils.clamp((int) current, min, max);
         TextFieldWidget field = configuredCommitField(
                 x,
                 y,
@@ -342,7 +343,7 @@ public final class StyledTextFields {
                 y,
                 width,
                 height,
-                () -> Integer.toString(clamp(current, 0, 100)),
+                () -> Integer.toString(MathUtils.clamp(current, 0, 100)),
                 3,
                 responder,
                 commit,
@@ -482,10 +483,6 @@ public final class StyledTextFields {
         }
         String value = textSupplier.get();
         return value == null ? "" : value;
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
     }
 
     private static float clamp(float value, float min, float max) {
