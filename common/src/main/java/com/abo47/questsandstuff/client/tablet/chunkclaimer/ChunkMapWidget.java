@@ -106,8 +106,8 @@ public class ChunkMapWidget extends Widget {
         cachedCz = cz;
         lastSample = now;
 
-        int totalW = (gw + 2) * sub;
-        int totalH = (gh + 2) * sub;
+        int totalW = (gw + 6) * sub;
+        int totalH = (gh + 4) * sub;
         if (terrainTex == null || texW != totalW || texH != totalH) {
             if (terrainTex != null) {
                 terrainTex.close();
@@ -126,29 +126,30 @@ public class ChunkMapWidget extends Widget {
 
         int halfGw = gw / 2;
         int halfGh = gh / 2;
-        int bias = -1;
+        int biasX = -3;
+        int biasZ = -2;
         var player = Minecraft.getInstance().player;
         int playerY = player != null ? player.blockPosition().getY() : level.getSeaLevel();
         NativeImage img = terrainTex.getPixels();
         int[][] surfaceY = new int[totalW][totalH];
         for (int tx = 0; tx < totalW; tx++) {
-            int worldChunkX = cx + (tx / sub + bias - halfGw);
+            int worldChunkX = cx + (tx / sub + biasX - halfGw);
             for (int tz = 0; tz < totalH; tz++) {
-                int worldChunkZ = cz + (tz / sub + bias - halfGh);
+                int worldChunkZ = cz + (tz / sub + biasZ - halfGh);
                 int blockX = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
                 int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
                 surfaceY[tx][tz] = findSurfaceY(level, blockX, blockZ, playerY);
             }
         }
-        int egw = gw + 2;
-        int egh = gh + 2;
+        int egw = gw + 6;
+        int egh = gh + 4;
         int[][] lightGrid = new int[egw][egh];
         for (int cgx = 0; cgx < egw; cgx++) {
             for (int cgz = 0; cgz < egh; cgz++) {
                 int txc = cgx * sub + sub / 2;
                 int tzc = cgz * sub + sub / 2;
-                int worldChunkX = cx + (cgx + bias - halfGw);
-                int worldChunkZ = cz + (cgz + bias - halfGh);
+                int worldChunkX = cx + (cgx + biasX - halfGw);
+                int worldChunkZ = cz + (cgz + biasZ - halfGh);
                 int bx = worldChunkX * 16 + 8;
                 int bz = worldChunkZ * 16 + 8;
                 int by = Mth.clamp(surfaceY[txc][tzc] + 1, level.getMinBuildHeight(), level.getMaxBuildHeight() - 1);
@@ -159,10 +160,10 @@ public class ChunkMapWidget extends Widget {
 
         int maxY = level.getMaxBuildHeight();
         for (int tx = 0; tx < totalW; tx++) {
-            int worldChunkX = cx + (tx / sub + bias - halfGw);
+            int worldChunkX = cx + (tx / sub + biasX - halfGw);
             int cgx = tx / sub;
             for (int tz = 0; tz < totalH; tz++) {
-                int worldChunkZ = cz + (tz / sub + bias - halfGh);
+                int worldChunkZ = cz + (tz / sub + biasZ - halfGh);
                 int cgz = tz / sub;
                 int blockB = worldChunkX * 16 + (int) ((tx % sub + 0.5) * (16.0 / sub));
                 int blockZ = worldChunkZ * 16 + (int) ((tz % sub + 0.5) * (16.0 / sub));
@@ -359,7 +360,7 @@ public class ChunkMapWidget extends Widget {
 
         if (terrainTexLoc != null) {
             ResourceTexture tex = new ResourceTexture(terrainTexLoc);
-            tex.draw(graphics, mouseX, mouseY, baseX + ox - cell, baseY + oy - cell, (gw + 2) * cell, (gh + 2) * cell);
+            tex.draw(graphics, mouseX, mouseY, baseX + ox - 3 * cell, baseY + oy - 2 * cell, (gw + 6) * cell, (gh + 4) * cell);
         }
 
         int iLo = (int) Math.floor((0 - ox) / (double) cell);
@@ -523,10 +524,8 @@ public class ChunkMapWidget extends Widget {
         }
         int left = cx - size / 2;
         int top = cy - size / 2;
-        graphics.fill(left - 1, top - 1, left + size + 1, top + size + 1, TabletColors.SURFACE_BASE);
-        graphics.renderOutline(left - 1, top - 1, size + 2, size + 2, TabletColors.BORDER_ACCENT);
         new PlayerFaceTexture(player.getGameProfile().getId(), player.getGameProfile().getName())
-                .draw(graphics, 0, 0, left + 1, top + 1, size - 2, size - 2);
+                .draw(graphics, 0, 0, left, top, size, size);
     }
 
     private static long key(int dx, int dz) {
