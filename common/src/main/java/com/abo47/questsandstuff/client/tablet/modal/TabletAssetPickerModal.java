@@ -149,7 +149,9 @@ public final class TabletAssetPickerModal {
                     ? TabletModalPanel.tr("ui.questsandstuff.common.none_short")
                     : TabletModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), TabletColors.TEXT_MUTED));
             if (!blueprint.isEmpty()) {
-                preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, leftW - 16, Math.max(24, previewH - 58), blueprint));
+                int previewW = leftW - 16;
+                int previewAreaH = Math.max(24, h - 100);
+                preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, previewW, previewAreaH, blueprint));
             }
         } else {
             preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), TabletColors.TEXT_MUTED));
@@ -249,7 +251,9 @@ public final class TabletAssetPickerModal {
             } else if (entry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
                 CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
                 if (!blueprint.isEmpty()) {
-                    tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget(4, 4, Math.max(12, cellW - 8), Math.max(16, iconAreaH - 4), blueprint));
+                    int thumbW = Math.max(12, cellW - 14);
+                    int thumbH = Math.max(16, iconAreaH - 4);
+                    tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget((cellW - thumbW) / 2, 4, thumbW, thumbH, blueprint));
                 } else {
                     var blueprintIcon = IconAtlas.iconTexture("scroll");
                     if (blueprintIcon != null) {

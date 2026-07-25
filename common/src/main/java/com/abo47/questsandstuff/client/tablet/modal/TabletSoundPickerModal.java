@@ -144,7 +144,7 @@ public final class TabletSoundPickerModal {
     }
 
     private static List<SoundChoice> sounds(String query) {
-        String normalizedQuery = SearchFilter.normalize(query);
+        String normalizedQuery = SearchFilter.normalizeUserInput(query);
         return CACHE.query(owner(), normalizedQuery, TabletSoundPickerModal::buildChoices, choices -> normalizedQuery.isBlank()
                 ? choices
                 : choices.stream()
@@ -179,7 +179,7 @@ public final class TabletSoundPickerModal {
     private record SoundChoice(String id, String name, String normalizedId, String normalizedName) {
         static SoundChoice of(String id) {
             String name = displayName(id);
-            return new SoundChoice(id, name, SearchFilter.normalize(id), SearchFilter.normalize(name));
+            return new SoundChoice(id, name, SearchFilter.normalizeUserInput(id), SearchFilter.normalizeUserInput(name));
         }
 
         boolean matches(String query) {

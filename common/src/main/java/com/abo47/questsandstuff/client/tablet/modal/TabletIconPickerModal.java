@@ -59,8 +59,8 @@ public final class TabletIconPickerModal {
         String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modal.modalChapterTarget);
         final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedChapterName(state) : resolvedChapterTarget;
         String questTarget = ModalTargetState.target(state, QUEST, state.modal.modalQuestTarget);
-        boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, questTarget, chapterTarget);
-        boolean supportsInventoryIcons = supportsInventoryIconSelection(detailsTarget, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
+        boolean supportsEntityIcons = supportsEntityIconSelection(details, questTarget, chapterTarget);
+        boolean supportsInventoryIcons = supportsInventoryIconSelection(details, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
         IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
         int headY = 22;
@@ -239,19 +239,17 @@ public final class TabletIconPickerModal {
                 .toList();
     }
 
-    private static boolean supportsEntityIconSelection(String detailsTarget, String questTarget, String chapterTarget) {
-        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
+    private static boolean supportsEntityIconSelection(ModalTargetParser.Target details, String questTarget, String chapterTarget) {
         if (!details.kind().isBlank()) {
             return details.supportsEntityIconSelection();
         }
         return (questTarget != null && !questTarget.isBlank()) || (chapterTarget != null && !chapterTarget.isBlank());
     }
 
-    private static boolean supportsInventoryIconSelection(String detailsTarget, String questTarget, String chapterTarget, String canvasEntityTarget, String canvasModelTarget) {
+    private static boolean supportsInventoryIconSelection(ModalTargetParser.Target details, String questTarget, String chapterTarget, String canvasEntityTarget, String canvasModelTarget) {
         if ((canvasEntityTarget != null && !canvasEntityTarget.isBlank()) || (canvasModelTarget != null && !canvasModelTarget.isBlank())) {
             return false;
         }
-        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
         if (!details.kind().isBlank()) {
             return details.supportsInventoryIconSelection();
         }
