@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.abo47.questsandstuff.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EnderDragonMixin",
+    "FarmBlockMixin",
+    "LightningBoltMixin",
+    "RemoveBlockGoalMixin",
+    "WitherBossMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
