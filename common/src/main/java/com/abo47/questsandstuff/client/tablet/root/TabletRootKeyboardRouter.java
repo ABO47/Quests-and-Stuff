@@ -87,10 +87,7 @@ final class TabletRootKeyboardRouter {
                 refresher.run();
                 return true;
             }
-            if (cancelInteractionStates(state)) {
-                refresher.run();
-                return true;
-            }
+            cancelInteractionStates(state);
             if (state.root.skinEditMode) {
                 state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
@@ -373,27 +370,24 @@ final class TabletRootKeyboardRouter {
         return false;
     }
 
-    private static boolean cancelInteractionStates(TabletUiState state) {
+    private static void cancelInteractionStates(TabletUiState state) {
         if (!state.canvas.connectSourceQuestId.isBlank() || !state.canvas.connectSourceQuestIds.isEmpty()) {
             state.canvas.connectSourceQuestId = "";
             state.canvas.connectSourceQuestIds.clear();
             state.canvas.connectEcId = "";
             state.canvas.quickConnectEcId = "";
-            return true;
+            return;
         }
         if (state.canvas.blueprintPlacement.active()) {
             state.canvas.blueprintPlacement.cancel();
-            return true;
+            return;
         }
         if (state.canvas.canvasSelection.hasAny() || state.canvas.selectionBoundsVisible) {
             state.canvas.canvasSelection.clear();
             state.canvas.selectionBoundsVisible = false;
-            return true;
+            return;
         }
-        if (TabletShortcutActions.cancelTransient(state)) {
-            return true;
-        }
-        return false;
+        TabletShortcutActions.cancelTransient(state);
     }
 
     static boolean keyReleased(TabletRootWidget root, TabletUiState state, Runnable refresher, KeyDelegate selfKeyRelease, int keyCode, int scanCode, int modifiers) {
