@@ -19,6 +19,8 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
@@ -115,6 +117,9 @@ final class CanvasSceneRenderer {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
         IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
+        if (canvasViewport instanceof CanvasViewport cv) {
+            cv.setExtendedBackgroundTexture(canvasBackground);
+        }
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -39,6 +40,7 @@ public final class CanvasViewport extends WidgetGroup {
     private int livePanX;
     private int livePanY;
     private boolean canvasRefreshQueued;
+    private IGuiTexture extendedBackgroundTexture;
     private final CanvasInlineTextEditor textEditor;
     private final CanvasElementTransformController elementTransforms;
     private final CanvasSelectionTransformController selectionTransforms;
@@ -58,6 +60,10 @@ public final class CanvasViewport extends WidgetGroup {
 
     public void setCanvasRefresher(Runnable canvasRefresher) {
         this.canvasRefresher = canvasRefresher == null ? () -> {} : canvasRefresher;
+    }
+
+    public void setExtendedBackgroundTexture(IGuiTexture texture) {
+        this.extendedBackgroundTexture = texture;
     }
 
     public void updateCardCache(List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
@@ -290,6 +296,14 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     private record LayerPosition(int x, int y) {
+    }
+
+    @Override
+    protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
+        if (extendedBackgroundTexture != null) {
+            extendedBackgroundTexture.draw(graphics, mouseX, mouseY, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2);
+        }
+        super.drawBackgroundTexture(graphics, mouseX, mouseY);
     }
 
     @Override

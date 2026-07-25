@@ -5,7 +5,11 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
@@ -16,6 +20,19 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final String questId;
     private final QuestDetailsDescriptionSelection selection;
     private final QuestDetailsDescriptionEventRouter events;
+    private IGuiTexture extendedBackgroundTexture;
+
+    void setExtendedBackgroundTexture(IGuiTexture texture) {
+        this.extendedBackgroundTexture = texture;
+    }
+
+    @Override
+    protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
+        if (extendedBackgroundTexture != null) {
+            extendedBackgroundTexture.draw(graphics, mouseX, mouseY, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2);
+        }
+        super.drawBackgroundTexture(graphics, mouseX, mouseY);
+    }
 
     QuestDetailsDescriptionCanvas(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId) {
         super(x, y, w, h);
@@ -100,9 +117,12 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        String bg = model != null ? model.canvasBackground : null;
+        setExtendedBackgroundTexture(bg != null && !bg.isBlank() && !"default".equals(bg)
+                ? TabletUiFactory.chapterBackgroundTexture(bg) : null);
         drawBackgroundTexture(graphics, mouseX, mouseY);
         withScissor(graphics, () -> {
-            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
             QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, mouseX, mouseY, state, model, contentX(), contentY(), contentW(), contentH());
             selection.drawMultiSelectionBounds(graphics, model);
             selection.drawBoxSelection(graphics);
