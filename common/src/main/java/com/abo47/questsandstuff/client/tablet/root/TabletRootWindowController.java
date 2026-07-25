@@ -46,7 +46,14 @@ public final class TabletRootWindowController {
             return true;
         }
         if (state.questDetails.questDetailsOpen) {
+            boolean hadVisibleSubState = hasVisibleQuestDetailsSubState(state);
             if (closeQuestDetailsFrontState(state)) {
+                if (!hadVisibleSubState) {
+                    QuestDetailsWindow.close(state);
+                    TabletLifecycle.rememberMainWindow();
+                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details force-close stale sub-state");
+                    return true;
+                }
                 return true;
             }
             QuestDetailsWindow.close(state);
@@ -128,6 +135,18 @@ public final class TabletRootWindowController {
 
     public static boolean isFontSizeFieldOpen(TabletUiState state) {
         return TextStyleSession.isAnyFontSizeFieldOpen(state);
+    }
+
+    private static boolean hasVisibleQuestDetailsSubState(TabletUiState state) {
+        return state.questDetails.questDetailsPickerSession.active()
+                || state.questDetails.questDetailsCommandRewardEditorOpen
+                || state.questDetails.questDetailsTaskRenameOpen
+                || state.questDetails.questDetailsContextOpen
+                || state.questDetails.questDetailsToolsOpen
+                || state.questDetails.questDetailsToolsClosing
+                || EntityMotionEditor.isQuestDetailsOpen(state)
+                || TextStyleSession.questDetailsOpenOrEditingFont(state)
+                || TextEditSession.isAnyEditing(state);
     }
 
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
