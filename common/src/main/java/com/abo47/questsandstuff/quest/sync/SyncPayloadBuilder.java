@@ -34,10 +34,6 @@ final class SyncPayloadBuilder {
     }
 
     ListTag chaptersTag() {
-        return chaptersTag(Set.of(), true);
-    }
-
-    ListTag chaptersTag(Set<String> visibleQuestIds, boolean includeAllChapters) {
         ListTag chaptersTag = new ListTag();
         for (String chapter : definitionStore.chapterOrder()) {
             chaptersTag.add(StringTag.valueOf(chapter));
@@ -46,10 +42,6 @@ final class SyncPayloadBuilder {
     }
 
     CompoundTag chapterPropsTag() {
-        return chapterPropsTag(Set.of(), true);
-    }
-
-    CompoundTag chapterPropsTag(Set<String> visibleQuestIds, boolean includeAllChapters) {
         return chapterPropsTagForChapters(Set.copyOf(definitionStore.chapterOrder()));
     }
 
@@ -153,7 +145,7 @@ final class SyncPayloadBuilder {
         return questTag;
     }
 
-    private static ListTag descriptionTag(QuestDefinition definition) {
+    static ListTag descriptionTag(QuestDefinition definition) {
         ListTag lines = new ListTag();
         for (String line : definition.display().description()) {
             lines.add(StringTag.valueOf(line));

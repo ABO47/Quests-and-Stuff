@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.sync;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -8,6 +10,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -55,13 +58,13 @@ public final class SyncService {
         boolean editorGraphVisible = visibilitySelector.canSeeEditorGraph(player);
         Set<String> visibleQuestIds = visibilitySelector.visibleQuestIds(playerState, editorGraphVisible);
         Set<String> syncedQuestIds = visibilitySelector.syncedQuestIds(playerState, editorGraphVisible);
-        List<SyncChunker.SyncChunk> chunks = chunker.fullChunks(playerState, syncedQuestIds, editorGraphVisible);
+        List<SyncChunker.SyncChunk> chunks = chunker.fullChunks(playerState, syncedQuestIds);
         long sequence = sequenceCounter.getAndIncrement();
         long bytes = 0L;
 
         for (SyncChunker.SyncChunk chunk : chunks) {
             CompoundTag payload = chunk.payload();
-            bytes += payload.toString().length();
+            bytes += nbtByteSize(payload);
             ModNetwork.sendToPlayer(new S2CFullSyncPacket(sequence, chunk.chunkIndex(), chunk.chunkCount(), payload), player);
         }
 
@@ -111,7 +114,7 @@ public final class SyncService {
 
         for (SyncChunker.SyncChunk chunk : chunks) {
             CompoundTag payload = chunk.payload();
-            bytes += payload.toString().length();
+            bytes += nbtByteSize(payload);
             ModNetwork.sendToPlayer(new S2CDeltaSyncPacket(sequence, chunk.chunkIndex(), chunk.chunkCount(), payload), player);
         }
 
@@ -144,4 +147,13 @@ public final class SyncService {
         editorMutationSyncer.broadcast(sequenceCounter.getAndIncrement(), players, action, questId, questTag);
     }
 
+    private static long nbtByteSize(CompoundTag tag) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            NbtIo.writeCompressed(tag, out);
+            return out.size();
+        } catch (IOException e) {
+            return 0L;
+        }
+    }
 }

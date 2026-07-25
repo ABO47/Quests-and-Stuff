@@ -19,14 +19,14 @@ final class SyncChunker {
         this.payloads = payloads;
     }
 
-    List<SyncChunk> fullChunks(PlayerQuestState playerState, Set<String> syncedQuestIds, boolean editorGraphVisible) {
+    List<SyncChunk> fullChunks(PlayerQuestState playerState, Set<String> syncedQuestIds) {
         List<Set<String>> chunkIds = partitionQuestIds(syncedQuestIds);
         List<SyncChunk> chunks = new ArrayList<>();
         for (int i = 0; i < chunkIds.size(); i++) {
             CompoundTag payload = new CompoundTag();
             payload.putInt(SyncKeys.SCHEMA, QuestDefinition.CURRENT_SCHEMA);
-            payload.put(SyncKeys.CHAPTERS, payloads.chaptersTag(syncedQuestIds, editorGraphVisible));
-            payload.put(SyncKeys.CHAPTER_PROPS, payloads.chapterPropsTag(syncedQuestIds, editorGraphVisible));
+            payload.put(SyncKeys.CHAPTERS, payloads.chaptersTag());
+            payload.put(SyncKeys.CHAPTER_PROPS, payloads.chapterPropsTag());
             payload.put(SyncKeys.QUESTS, payloads.questPayload(playerState, chunkIds.get(i)));
             chunks.add(new SyncChunk(i, chunkIds.size(), payload));
         }

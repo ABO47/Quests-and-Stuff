@@ -6,8 +6,6 @@ import java.util.Set;
 import java.util.function.LongSupplier;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -58,20 +56,12 @@ final class DescriptionSyncer {
                 if (definition == null) {
                     continue;
                 }
-                descriptions.put(questId, descriptionTag(definition));
+                descriptions.put(questId, SyncPayloadBuilder.descriptionTag(definition));
             }
             payload.put(SyncKeys.DESCRIPTIONS, descriptions);
             chunks.add(new DescriptionChunk(i, chunkIds.size(), payload));
         }
         return List.copyOf(chunks);
-    }
-
-    private static ListTag descriptionTag(QuestDefinition definition) {
-        ListTag lines = new ListTag();
-        for (String line : definition.display().description()) {
-            lines.add(StringTag.valueOf(line));
-        }
-        return lines;
     }
 
     record DescriptionChunk(int chunkIndex, int chunkCount, CompoundTag payload) {

@@ -215,13 +215,13 @@ class SyncPayloadBuilderTest {
         store.setChapterLockUntilUnlocked("locked_chapter", true);
 
         SyncPayloadBuilder builder = new SyncPayloadBuilder(store);
-        ListTag lockedChapters = builder.chaptersTag(Set.of("quest/open"), false);
-        CompoundTag lockedChapterProps = builder.chapterPropsTag(Set.of("quest/open"), false);
+        ListTag lockedChapters = builder.chaptersTag();
+        CompoundTag lockedChapterProps = builder.chapterPropsTag();
         assertTrue(containsString(lockedChapters, "locked_chapter"));
         assertTrue(lockedChapterProps.getCompound("locked_chapter").getBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED));
 
-        ListTag visibleChapters = builder.chaptersTag(Set.of("quest/open", "quest/locked"), false);
-        CompoundTag visibleChapterProps = builder.chapterPropsTag(Set.of("quest/open", "quest/locked"), false);
+        ListTag visibleChapters = builder.chaptersTag();
+        CompoundTag visibleChapterProps = builder.chapterPropsTag();
         assertTrue(containsString(visibleChapters, "locked_chapter"));
         assertTrue(visibleChapterProps.getCompound("locked_chapter").getBoolean(SyncKeys.ChapterProps.LOCK_UNTIL_UNLOCKED));
     }

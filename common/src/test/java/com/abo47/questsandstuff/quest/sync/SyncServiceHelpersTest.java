@@ -38,7 +38,7 @@ class SyncServiceHelpersTest {
             store.setChapterOrder(List.of("main"));
             SyncChunker chunker = new SyncChunker(new SyncPayloadBuilder(store));
 
-            List<SyncChunker.SyncChunk> chunks = chunker.fullChunks(new PlayerQuestState(), store.questIds(), true);
+            List<SyncChunker.SyncChunk> chunks = chunker.fullChunks(new PlayerQuestState(), store.questIds());
 
             assertEquals(2, chunks.size());
             assertEquals(0, chunks.get(0).chunkIndex());

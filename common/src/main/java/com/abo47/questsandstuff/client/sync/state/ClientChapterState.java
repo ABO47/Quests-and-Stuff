@@ -53,7 +53,8 @@ public final class ClientChapterState {
             return;
         }
         ListTag groupsTag = payload.getList(SyncKeys.CHAPTERS, Tag.TAG_STRING);
-        if (!groupsTag.isEmpty()) {
+        boolean chaptersRebuilt = !groupsTag.isEmpty();
+        if (chaptersRebuilt) {
             CHAPTER_ORDER.clear();
             for (int i = 0; i < groupsTag.size(); i++) {
                 String chapter = normalizeChapter(groupsTag.getString(i));
@@ -68,8 +69,14 @@ public final class ClientChapterState {
         for (String chapter : chapterProps.getAllKeys()) {
             mergeChapterProps(chapter, chapterProps.getCompound(chapter));
         }
-        for (String chapter : CHAPTER_ORDER) {
-            ensureChapterDefaults(chapter);
+        if (chaptersRebuilt) {
+            for (String chapter : CHAPTER_ORDER) {
+                ensureChapterDefaults(chapter);
+            }
+        } else {
+            for (String chapter : chapterProps.getAllKeys()) {
+                ensureChapterDefaults(normalizeChapter(chapter));
+            }
         }
     }
 
@@ -87,15 +94,7 @@ public final class ClientChapterState {
             return false;
         }
         CHAPTER_ORDER.add(normalized);
-        CHAPTER_ICONS.putIfAbsent(normalized, "");
-        CHAPTER_BACKGROUNDS.putIfAbsent(normalized, "default");
-        CHAPTER_CANVAS_BACKGROUNDS.putIfAbsent(normalized, "default");
-        CHAPTER_TEXT_ALIGN.putIfAbsent(normalized, "center");
-        CHAPTER_TEXT_COLOR.putIfAbsent(normalized, TabletColors.WHITE);
-        CHAPTER_TEXT_STYLE.putIfAbsent(normalized, "normal");
-        CHAPTER_TEXT_SIZE.putIfAbsent(normalized, CanvasTextLayer.DEFAULT_FONT_SIZE);
-        CHAPTER_LOCK_UNTIL_UNLOCKED.putIfAbsent(normalized, false);
-        CHAPTER_HIDE_UNTIL_UNLOCKED.putIfAbsent(normalized, false);
+        ensureChapterDefaults(normalized);
         return true;
     }
 
