@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
@@ -14,8 +15,11 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -33,13 +37,13 @@ public final class SettingsOptionRowRenderer {
     private SettingsOptionRowRenderer() {
     }
 
-    public static void render(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode) {
+    public static void render(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
         if (option.isAction()) {
-            renderActionOptionRow(list, option, rowY, rowW, skinEditMode);
+            renderActionOptionRow(list, option, rowY, rowW, skinEditMode, state);
             return;
         }
         if (option.number()) {
-            renderNumberOptionRow(list, option, rowY, rowW, refresh, skinEditMode);
+            renderNumberOptionRow(list, option, rowY, rowW, refresh, skinEditMode, state);
             return;
         }
         boolean enabled = option.enabled();
@@ -48,6 +52,7 @@ public final class SettingsOptionRowRenderer {
         int fill = enabled ? withAlpha(TabletColors.SUCCESS, 28) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
         int border = enabled ? withAlpha(TabletColors.SUCCESS, 170) : TabletColors.BORDER_BASE;
         list.addWidget(panel(0, rowY, cardW, rowH, fill, border));
+        applyCardSkin(list, state, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
 
         Component[] tooltips = tooltips(option);
@@ -76,10 +81,11 @@ public final class SettingsOptionRowRenderer {
         }
     }
 
-    private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode) {
+    private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
         list.addWidget(panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE));
+        applyCardSkin(list, state, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
         Component[] tooltips = tooltips(option);
         int iconSize = 14;
@@ -100,10 +106,11 @@ public final class SettingsOptionRowRenderer {
         }
     }
 
-    private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode) {
+    private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
         list.addWidget(panel(0, rowY, cardW, rowH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 180), TabletColors.BORDER_BASE));
+        applyCardSkin(list, state, 0, rowY, cardW, rowH);
 
         Component[] tooltips = tooltips(option);
         int unitW = 18;
@@ -217,5 +224,20 @@ public final class SettingsOptionRowRenderer {
             }
         };
         return fill;
+    }
+
+    private static void applyCardSkin(WidgetGroup list, TabletUiState state, int x, int y, int w, int h) {
+        String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_option_cards");
+        if (rawOverride == null) {
+            return;
+        }
+        SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+        if (parsed == null) {
+            return;
+        }
+        IGuiTexture tex = parsed.createTexture();
+        if (tex != null) {
+            list.addWidget(new ImageWidget(x - 1, y - 1, w + 2, h + 2, tex));
+        }
     }
 }

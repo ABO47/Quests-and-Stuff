@@ -5,13 +5,13 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -32,9 +32,7 @@ public final class SkinEditRenderer {
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
-        if (!QuestDetailsWindow.isVisible(state)) {
-            DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
-        }
+        DIM_BG.draw(graphics, 0, 0, 0, 0, screenW, screenH);
 
         String selectedKey = state.root.skinEditSelectedTarget;
         if (!selectedKey.isBlank()) {
@@ -48,6 +46,17 @@ public final class SkinEditRenderer {
 
         if (root.isContextMenuOpen()) {
             root.getContextMenuRoot().drawInBackground(graphics, mouseX, mouseY, mc.getFrameTime());
+        }
+
+        String tooltipKey = !selectedKey.isBlank() ? selectedKey :
+                SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+        if (tooltipKey != null) {
+            Widget tw = SkinEditTargetResolver.widgetForKey(root, tooltipKey);
+            if (tw != null) {
+                int dw = tw.getSizeWidth() + 1;
+                int dh = tw.getSizeHeight() + 1;
+                graphics.renderTooltip(mc.font, Component.literal(dw + " x " + dh), mouseX, mouseY);
+            }
         }
     }
 

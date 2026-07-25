@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -171,11 +169,6 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!QuestDetailsWindow.isVisible(state)) {
             return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            QuestDetailsWindow.close(state);
-            refresh.run();
-            return true;
         }
         if (!QuestDetailsWindow.isInteractive(state)) {
             return true;

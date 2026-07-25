@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.client.tablet.assets;
 import java.nio.file.Path;
 import java.util.List;
 
+import net.minecraft.resources.ResourceLocation;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
@@ -59,6 +61,14 @@ public final class AssetLibrary {
 
     public static IGuiTexture assetThumbnailTexture(Path assetsRoot, String relativePath) {
         return AssetTextureCache.assetThumbnailTexture(assetsRoot, relativePath);
+    }
+
+    public static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {
+        return AssetTextureCache.staticTextureLocation(assetsRoot, relativePath);
+    }
+
+    public static ResourceLocation tileTextureLocation(Path assetsRoot, String relativePath) {
+        return AssetTextureCache.tileTextureLocation(assetsRoot, relativePath);
     }
 
     public static IGuiTexture preRenderedTileTexture(Path assetsRoot, String relativePath) {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.minecraft.client.gui.GuiGraphics;
 
+import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -157,7 +158,9 @@ public final class SkinEditTargetResolver {
     private static boolean hasVisibleBackground(Widget widget) {
         IGuiTexture bg = widget.getBackgroundTexture();
         if (bg == null) return false;
-        return !bg.equals(IGuiTexture.EMPTY);
+        if (bg.equals(IGuiTexture.EMPTY)) return false;
+        if (bg instanceof ColorRectTexture crt && (crt.color >>> 24) == 0) return false;
+        return true;
     }
 
     public static String resolveSharedKey(Widget widget) {

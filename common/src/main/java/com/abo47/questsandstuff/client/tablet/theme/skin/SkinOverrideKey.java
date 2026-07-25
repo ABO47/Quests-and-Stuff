@@ -9,10 +9,15 @@ public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(
             "quest_details_root", "quest_details_tasks",
             "quest_details_task_section", "quest_details_reward_section",
-            "quests_task_cards", "quests_reward_cards"
+            "quests_task_cards", "quests_reward_cards",
+            "settings_option_cards",
+            "settings_tab_layer",
+            "teams_member_cards"
     );
     private static final Set<String> CARD_KEYS = Set.of(
-            "quests_task_cards", "quests_reward_cards"
+            "quests_task_cards", "quests_reward_cards",
+            "settings_option_cards",
+            "teams_member_cards"
     );
     private static final Set<String> ROOT_KEYS = Set.of(
             "quest_details_root", "quest_details_tasks", "quest_details_task_section", "quest_details_reward_section"

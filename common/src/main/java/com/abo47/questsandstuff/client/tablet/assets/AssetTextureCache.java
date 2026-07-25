@@ -211,6 +211,49 @@ final class AssetTextureCache {
         THUMBNAIL_CACHE.remove(key);
     }
 
+    static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) return null;
+        AssetPathResolver.ensureAssetsDirs(assetsRoot);
+        Path path = AssetPathResolver.resolveAssetPath(assetsRoot, relativePath);
+        if (!availableAssetFile("asset.static_location", assetsRoot, relativePath, path)) return null;
+        String ext = AssetPathResolver.extension(path.getFileName().toString());
+        if (!AssetPathResolver.hasImageThumbnail(relativePath)) return null;
+        String sanitized = AssetPathResolver.sanitizeAssetId(relativePath + "_static");
+       ResourceLocation id = ResourceLocation.tryBuild(com.abo47.questsandstuff.QuestsAndStuffMod.MODID, "chapter_asset/" + sanitized);
+        if (id == null) return null;
+        try (var stream = java.nio.file.Files.newInputStream(path)) {
+            com.mojang.blaze3d.platform.NativeImage image = com.mojang.blaze3d.platform.NativeImage.read(stream);
+            if (image == null) return null;
+            Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
+        } catch (Exception e) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed loading static texture location {}", relativePath, e);
+            return null;
+        }
+        return id;
+    }
+
+    static ResourceLocation tileTextureLocation(Path assetsRoot, String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) return null;
+        AssetPathResolver.ensureAssetsDirs(assetsRoot);
+        String sanitized = AssetPathResolver.sanitizeAssetId(relativePath);
+        ResourceLocation id = ResourceLocation.tryBuild(com.abo47.questsandstuff.QuestsAndStuffMod.MODID, "skin_tile/" + sanitized);
+        if (id == null) return null;
+        Path sourcePath = AssetPathResolver.resolveAssetPath(assetsRoot, relativePath);
+        if (sourcePath == null || !java.nio.file.Files.exists(sourcePath)) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Tile source not found for location: root={} asset={}", assetsRoot, relativePath);
+            return null;
+        }
+        try (var stream = java.nio.file.Files.newInputStream(sourcePath)) {
+            com.mojang.blaze3d.platform.NativeImage image = com.mojang.blaze3d.platform.NativeImage.read(stream);
+            if (image == null) return null;
+            Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
+        } catch (Exception e) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed loading tile texture location {}", relativePath, e);
+            return null;
+        }
+        return id;
+    }
+
     private static AssetLibrary.AssetDimensions gifDimensions(Path path) {
         try (ImageInputStream input = ImageIO.createImageInputStream(path.toFile())) {
             Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");

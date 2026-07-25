@@ -86,19 +86,19 @@ final class TabletRootKeyboardRouter {
                 refresher.run();
                 return true;
             }
-            if (TabletRootWindowController.closeFrontmostWindow(state)) {
-                refresher.run();
-                return true;
-            }
-            if (cancelInteractionStates(state)) {
-                refresher.run();
-                return true;
-            }
             if (state.root.skinEditMode) {
                 state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
                 root.closeContextMenu();
                 TabletUiFactory.persistSkinState(state);
+                refresher.run();
+                return true;
+            }
+            if (TabletRootWindowController.closeFrontmostWindow(state)) {
+                refresher.run();
+                return true;
+            }
+            if (cancelInteractionStates(state)) {
                 refresher.run();
                 return true;
             }

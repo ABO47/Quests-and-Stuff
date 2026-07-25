@@ -41,14 +41,14 @@ public final class SettingsOptionsPanelRenderer {
 
     public static void rebuildOptions(WidgetGroup panel, TabletUiState state, Runnable refresh, int listX, int listY, int listW, int listH) {
         panel.clearAllWidgets();
-        SkinAnchorRegistry.unregister("settings_options_list");
+        SkinAnchorRegistry.unregister("settings_option_cards");
         boolean skinEditMode = state.root.skinEditMode;
         String search = state.settings.search;
         if (!search.isBlank()) {
             List<SettingsOptionDescriptor> matches = SettingsTabDescriptors.search(state, search);
             WidgetGroup list = buildList(panel, listX, listY, listW, listH, ROW_H, matches, I18n.get("ui.questsandstuff.settings.empty"),
                     ScrollState.bind(() -> state.settings.scroll, v -> state.settings.scroll = v, () -> state.settings.scrollDragging, d -> state.settings.scrollDragging = d),
-                    refresh, skinEditMode, (list2, option, rowY, rowW, mode) -> SettingsOptionRowRenderer.render(list2, option, rowY, rowW, refresh, mode), LIST_V_PAD);
+                    refresh, skinEditMode, (list2, option, rowY, rowW, mode, st) -> SettingsOptionRowRenderer.render(list2, option, rowY, rowW, refresh, mode, st), LIST_V_PAD, state);
             registerOptionsList(list);
             return;
         }
@@ -59,7 +59,7 @@ public final class SettingsOptionsPanelRenderer {
         }
         WidgetGroup list = buildList(panel, listX, listY, listW, listH, ROW_H, tab.options(state), I18n.get("ui.questsandstuff.settings.empty"),
                 ScrollState.bind(() -> state.settings.scroll, v -> state.settings.scroll = v, () -> state.settings.scrollDragging, d -> state.settings.scrollDragging = d),
-                refresh, skinEditMode, (list2, option, rowY, rowW, mode) -> SettingsOptionRowRenderer.render(list2, option, rowY, rowW, refresh, mode), LIST_V_PAD);
+                refresh, skinEditMode, (list2, option, rowY, rowW, mode, st) -> SettingsOptionRowRenderer.render(list2, option, rowY, rowW, refresh, mode, st), LIST_V_PAD, state);
         registerOptionsList(list);
     }
 
@@ -67,15 +67,15 @@ public final class SettingsOptionsPanelRenderer {
         if (list == null) {
             return;
         }
-        SkinAnchorRegistry.register("settings_options_list", list);
+        SkinAnchorRegistry.register("settings_option_cards", list);
     }
 
     private interface RowDrawer<T> {
-        void draw(WidgetGroup list, T entry, int rowY, int rowW, boolean skinEditMode);
+        void draw(WidgetGroup list, T entry, int rowY, int rowW, boolean skinEditMode, TabletUiState state);
     }
 
     private static <T> WidgetGroup buildList(WidgetGroup panel, int x, int y, int w, int h, int rowH, List<T> entries,
-                                      String emptyText, ScrollState scroll, Runnable refresh, boolean skinEditMode, RowDrawer<T> drawer, int vPad) {
+                                      String emptyText, ScrollState scroll, Runnable refresh, boolean skinEditMode, RowDrawer<T> drawer, int vPad, TabletUiState state) {
         int rows = ScrollMath.listRows(h - vPad * 2, rowH, GRID_4);
         int maxStart = Math.max(0, entries.size() - rows);
         scroll.setValue(ScrollMath.clamp(scroll.value(), maxStart));
@@ -105,7 +105,7 @@ public final class SettingsOptionsPanelRenderer {
         int end = Math.min(entries.size(), scroll.value() + rows);
         int rowY = vPad;
         for (int i = scroll.value(); i < end; i++) {
-            drawer.draw(list, entries.get(i), rowY, rowW, skinEditMode);
+            drawer.draw(list, entries.get(i), rowY, rowW, skinEditMode, state);
             rowY += rowH;
         }
         if (showScroll) {
@@ -142,7 +142,7 @@ public final class SettingsOptionsPanelRenderer {
         }
         ScrollState scroll = ScrollState.bind(() -> state.modal.themeScroll, v -> state.modal.themeScroll = v, () -> state.modal.themeScrollDragging, d -> state.modal.themeScrollDragging = d);
         WidgetGroup list = buildList(panel, x, y, w, h, THEME_ROW_H, themes, I18n.get("ui.questsandstuff.settings.themes_empty"), scroll,
-                refresh, skinEditMode, (list2, theme, rowY, rowW, mode) -> addThemeRow(list2, state, refresh, theme, rowY, rowW, mode), LIST_V_PAD);
+                refresh, skinEditMode, (list2, theme, rowY, rowW, mode, st) -> addThemeRow(list2, st, refresh, theme, rowY, rowW, mode), LIST_V_PAD, state);
         registerOptionsList(list);
     }
 

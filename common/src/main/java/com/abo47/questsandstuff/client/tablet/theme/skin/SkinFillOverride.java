@@ -42,14 +42,35 @@ public record SkinFillOverride(String mode, String path) {
 
         IGuiTexture tex;
         if ("tile".equals(mode)) {
-            QuestsAndStuffMod.LOGGER.info("[QnS:UI] Creating tile texture path={} root={}", path, TabletUiFactory.ASSETS_ROOT_DIR);
-            tex = AssetLibrary.preRenderedTileTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
+            tex = createTileTexture();
+        } else if ("center".equals(mode)) {
+            tex = createCenterTexture();
         } else {
             tex = createFullTexture();
         }
         if (tex == null) return null;
         CACHED.put(cacheKey, tex);
         return tex;
+    }
+
+    private IGuiTexture createTileTexture() {
+        net.minecraft.resources.ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) return null;
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (dims == null) return null;
+        return new TiledGuiTexture(id, dims.width(), dims.height());
+    }
+
+    private IGuiTexture createCenterTexture() {
+        AssetKind kind = AssetLibrary.assetKind(path);
+        if (kind == AssetKind.GIF) {
+            return createFullTexture();
+        }
+        net.minecraft.resources.ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) return null;
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (dims == null) return null;
+        return new CenterCropTexture(id, dims.width(), dims.height());
     }
 
     private IGuiTexture createFullTexture() {

@@ -9,7 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -18,6 +20,8 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 
@@ -69,6 +73,7 @@ final class TeamsMemberCardRenderer {
 
         WidgetGroup card = new WidgetGroup(0, 0, cardW, CARD_H);
         card.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
+        applyCardSkin(card, state, cardW);
 
         PlayerFaceTexture faceTexture = new PlayerFaceTexture(member.uuid(), member.name());
 
@@ -130,5 +135,16 @@ final class TeamsMemberCardRenderer {
         }
 
         return card;
+    }
+
+    private static void applyCardSkin(WidgetGroup card, TabletUiState state, int cardW) {
+        String rawOverride = SkinOverrideKey.resolveOverride(state, "teams_member_cards");
+        if (rawOverride == null) return;
+        SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+        if (parsed == null) return;
+        IGuiTexture tex = parsed.createTexture();
+        if (tex != null) {
+            card.addWidget(new ImageWidget(-1, -1, cardW + 2, CARD_H + 2, tex));
+        }
     }
 }

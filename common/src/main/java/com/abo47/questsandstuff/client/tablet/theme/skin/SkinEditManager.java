@@ -165,7 +165,9 @@ public final class SkinEditManager {
             return new int[]{-1, -1, 2, 2};
         }
         if (original == null || original.equals(IGuiTexture.EMPTY)) {
-            if ("quests_task_cards".equals(targetKey) || "quests_reward_cards".equals(targetKey)) {
+            if ("quests_task_cards".equals(targetKey) || "quests_reward_cards".equals(targetKey)
+                    || "settings_option_cards".equals(targetKey)
+                    || "teams_member_cards".equals(targetKey)) {
                 return new int[]{-1, -1, 2, 2};
             }
             Class<?> cls = w.getClass();
@@ -273,6 +275,14 @@ public final class SkinEditManager {
                 () -> {
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "tile", currentAsset, root, refresher);
+                }));
+        modeActions.add(ContextActionFactory.action(
+                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_center"),
+                "center_focus",
+                currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                () -> {
+                    root.closeContextMenu();
+                    setFillMode(state, resolvedTarget, "center", currentAsset, root, refresher);
                 }));
         actions.add(ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
