@@ -42,23 +42,8 @@ public class TeamSavedData extends SavedData {
         TeamSavedData data = new TeamSavedData();
         ListTag teamsList = tag.getList(NbtKeys.TEAMS, Tag.TAG_COMPOUND);
         for (int i = 0; i < teamsList.size(); i++) {
-            CompoundTag teamTag = teamsList.getCompound(i);
-            UUID teamId = teamTag.getUUID(NbtKeys.TEAM_ID);
-            UUID owner = teamTag.getUUID(NbtKeys.OWNER);
-            String inviteCode = teamTag.getString(NbtKeys.INVITE_CODE);
-            long inviteExpiry = teamTag.getLong(NbtKeys.INVITE_EXPIRY);
-            ListTag membersList = teamTag.getList(NbtKeys.MEMBERS, Tag.TAG_COMPOUND);
-            List<TeamMember> members = new ArrayList<>();
-            for (int j = 0; j < membersList.size(); j++) {
-                CompoundTag memberTag = membersList.getCompound(j);
-                UUID uuid = memberTag.getUUID(NbtKeys.UUID);
-                String name = memberTag.getString(NbtKeys.NAME);
-                String roleStr = memberTag.getString(NbtKeys.ROLE);
-                TeamMember.Role role = "OWNER".equals(roleStr) ? TeamMember.Role.OWNER : TeamMember.Role.MEMBER;
-                members.add(new TeamMember(uuid, name, role));
-            }
-            TeamData team = new TeamData(teamId, owner, members, inviteCode, inviteExpiry);
-            for (TeamMember m : members) {
+            TeamData team = TeamData.fromNbt(teamsList.getCompound(i));
+            for (TeamMember m : team.members()) {
                 data.teamsByPlayer.put(m.uuid(), team);
             }
         }
@@ -84,21 +69,7 @@ public class TeamSavedData extends SavedData {
             uniqueTeams.put(team.teamId(), team);
         }
         for (TeamData team : uniqueTeams.values()) {
-            CompoundTag teamTag = new CompoundTag();
-            teamTag.putUUID(NbtKeys.TEAM_ID, team.teamId());
-            teamTag.putUUID(NbtKeys.OWNER, team.owner());
-            teamTag.putString(NbtKeys.INVITE_CODE, team.inviteCode());
-            teamTag.putLong(NbtKeys.INVITE_EXPIRY, team.inviteExpiryMs());
-            ListTag membersList = new ListTag();
-            for (TeamMember m : team.members()) {
-                CompoundTag memberTag = new CompoundTag();
-                memberTag.putUUID(NbtKeys.UUID, m.uuid());
-                memberTag.putString(NbtKeys.NAME, m.name());
-                memberTag.putString(NbtKeys.ROLE, m.role().name());
-                membersList.add(memberTag);
-            }
-            teamTag.put(NbtKeys.MEMBERS, membersList);
-            teamsList.add(teamTag);
+            teamsList.add(team.toNbt());
         }
         tag.put(NbtKeys.TEAMS, teamsList);
         ListTag codesList = new ListTag();

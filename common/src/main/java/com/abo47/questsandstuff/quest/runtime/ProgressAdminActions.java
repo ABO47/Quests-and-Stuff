@@ -15,63 +15,57 @@ import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.sync.SyncService;
 
 final class ProgressAdminActions {
-    private final QuestDefinitionStore definitionStore;
-    private final QuestProgressSavedData progressData;
-    private final SyncService syncService;
-    private final RuntimeEngine engine;
+    private final RuntimeContext ctx;
 
-    ProgressAdminActions(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, SyncService syncService, RuntimeEngine engine) {
-        this.definitionStore = definitionStore;
-        this.progressData = progressData;
-        this.syncService = syncService;
-        this.engine = engine;
+    ProgressAdminActions(RuntimeContext ctx) {
+        this.ctx = ctx;
     }
 
     void completeQuest(ServerPlayer player, String questId) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return;
         }
 
-        PlayerQuestState state = progressData.state(player.getUUID());
-        engine.ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
+        PlayerQuestState state = ctx.progressData().state(player.getUUID());
+        ctx.engine().ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
 
         QuestProgressState questState = state.quest(questId);
         for (Map.Entry<String, QuestTaskDefinition> task : definition.tasks().entrySet()) {
             questState.setTaskProgress(task.getKey(), task.getValue(), CompletionRules.completeProgress(task.getValue()));
         }
         questState.setCompleted(true, player.server.getTickCount());
-        engine.applyExclusiveChoiceDisable(player, player.getUUID(), state, questId);
-        syncService.sendQuestEvent(player, "quest_completed", questId, "");
-        RuntimeSyncs.syncChangedToAll(player, progressData, syncService, Set.of(questId));
+        ctx.engine().applyExclusiveChoiceDisable(player, player.getUUID(), state, questId);
+        ctx.syncService().sendQuestEvent(player, "quest_completed", questId, "");
+        RuntimeSyncs.syncChangedToAll(player, ctx.progressData(), ctx.syncService(), Set.of(questId));
     }
 
     void resetQuest(ServerPlayer player, String questId) {
-        PlayerQuestState state = progressData.state(player.getUUID());
-        Set<String> siblings = engine.exclusiveChoiceSiblings(questId);
+        PlayerQuestState state = ctx.progressData().state(player.getUUID());
+        Set<String> siblings = ctx.engine().exclusiveChoiceSiblings(questId);
         state.quests().remove(questId);
         if (!siblings.isEmpty()) {
-            engine.clearExclusiveChoiceDisabledForPlayer(player.getUUID(), siblings);
+            ctx.engine().clearExclusiveChoiceDisabledForPlayer(player.getUUID(), siblings);
         }
-        engine.ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
-        progressData.setDirty();
-        syncService.syncFull(player);
+        ctx.engine().ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
+        ctx.progressData().setDirty();
+        ctx.syncService().syncFull(player);
     }
 
     void resetAll(ServerPlayer player) {
-        PlayerQuestState state = progressData.state(player.getUUID());
+        PlayerQuestState state = ctx.progressData().state(player.getUUID());
         state.quests().clear();
-        engine.ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
-        progressData.setDirty();
-        syncService.syncFull(player);
+        ctx.engine().ensureUnlocks(player, player.getUUID(), state, new HashSet<>(), player.server.getTickCount());
+        ctx.progressData().setDirty();
+        ctx.syncService().syncFull(player);
     }
 
     void togglePin(ServerPlayer player, String questId) {
-        PlayerQuestState state = progressData.state(player.getUUID());
+        PlayerQuestState state = ctx.progressData().state(player.getUUID());
         if (!state.pinnedQuests().add(questId)) {
             state.pinnedQuests().remove(questId);
         }
-        progressData.setDirty();
-        syncService.syncPinned(player);
+        ctx.progressData().setDirty();
+        ctx.syncService().syncPinned(player);
     }
 }

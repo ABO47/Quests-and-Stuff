@@ -18,23 +18,17 @@ import com.abo47.questsandstuff.quest.runtime.reward.QuestRewardApplier;
 import com.abo47.questsandstuff.quest.sync.SyncService;
 
 final class RewardClaims {
-    private final QuestDefinitionStore definitionStore;
-    private final QuestProgressSavedData progressData;
-    private final SyncService syncService;
-    private final RuntimeEngine engine;
+    private final RuntimeContext ctx;
 
-    RewardClaims(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, SyncService syncService, RuntimeEngine engine) {
-        this.definitionStore = definitionStore;
-        this.progressData = progressData;
-        this.syncService = syncService;
-        this.engine = engine;
+    RewardClaims(RuntimeContext ctx) {
+        this.ctx = ctx;
     }
 
     boolean claimReward(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
         if (player == null) {
             return false;
         }
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return false;
         }
@@ -44,9 +38,9 @@ final class RewardClaims {
             return false;
         }
 
-        PlayerQuestState state = progressData.state(player.getUUID());
+        PlayerQuestState state = ctx.progressData().state(player.getUUID());
         Set<String> changed = new HashSet<>();
-        engine.ensureUnlocks(player, player.getUUID(), state, changed, player.server.getTickCount());
+        ctx.engine().ensureUnlocks(player, player.getUUID(), state, changed, player.server.getTickCount());
         QuestProgressState questState = state.quest(questId);
         if (!questState.unlocked()) {
             syncChanged(player, changed);
@@ -85,7 +79,7 @@ final class RewardClaims {
         }
 
         questState.claimedRewards().add(rewardId);
-        syncService.sendQuestEvent(player, "reward_claimed", questId, rewardId);
+        ctx.syncService().sendQuestEvent(player, "reward_claimed", questId, rewardId);
         QuestRewardApplier.maybeResetRepeatable(player, definition, questState, player.server.getTickCount());
         changed.add(questId);
         syncChanged(player, changed);
@@ -103,11 +97,11 @@ final class RewardClaims {
         if (player == null) {
             return;
         }
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return;
         }
-        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        QuestProgressState questState = ctx.progressData().state(player.getUUID()).quest(questId);
         if (QuestRewardApplier.hasUnclaimedSelectableRewards(definition, questState)) {
             return;
         }
@@ -132,17 +126,17 @@ final class RewardClaims {
             return;
         }
 
-        for (String id : new ArrayList<>(definitionStore.quests().keySet())) {
+        for (String id : new ArrayList<>(ctx.definitionStore().quests().keySet())) {
             claimAvailableRewards(player, id);
         }
     }
 
     private void markUnselectedSingletonSelectableRewardsClaimed(ServerPlayer player, String questId, String selectedRewardId) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null || !isSingletonSelectable(definition.rewards().get(selectedRewardId))) {
             return;
         }
-        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        QuestProgressState questState = ctx.progressData().state(player.getUUID()).quest(questId);
         boolean changed = false;
         for (String rewardId : definition.rewards().keySet()) {
             if (rewardId.equals(selectedRewardId) || questState.claimedRewards().contains(rewardId)) {
@@ -163,7 +157,7 @@ final class RewardClaims {
     }
 
     private boolean isAlreadyClaimedValidSingletonChoice(ServerPlayer player, String questId, String rewardId, List<String> selectedRewardIds) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return false;
         }
@@ -172,7 +166,7 @@ final class RewardClaims {
         if (!isSingletonSelectable(reward) || !reward.canClaim(player) || !reward.isSelectableClaimValid(player, selected)) {
             return false;
         }
-        QuestProgressState questState = progressData.state(player.getUUID()).quest(questId);
+        QuestProgressState questState = ctx.progressData().state(player.getUUID()).quest(questId);
         return questState.unlocked() && questState.claimedRewards().contains(rewardId);
     }
 
@@ -184,6 +178,6 @@ final class RewardClaims {
     }
 
     private void syncChanged(ServerPlayer player, Set<String> changedQuestIds) {
-        RuntimeSyncs.syncChangedToAll(player, progressData, syncService, changedQuestIds);
+        RuntimeSyncs.syncChangedToAll(player, ctx.progressData(), ctx.syncService(), changedQuestIds);
     }
 }

@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.EnumMap;
+import java.util.Map;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.platform.Services;
@@ -21,26 +23,42 @@ public final class QuestHudLayoutManager {
     private static final Gson GSON = GsonProvider.GSON;
     private static final int UNSET = Integer.MIN_VALUE;
 
-
+    private record ElementConfig(int x, int y, int scale, int heightScale, String background, int opacity, boolean showBorders) {
+        ElementConfig {
+            background = background == null ? "" : background.trim();
+        }
+    }
 
     private static boolean loaded;
-    private static int completionX = HudConstants.DEFAULT_COMPLETION_X;
-    private static int completionY = HudConstants.DEFAULT_COMPLETION_Y;
-    private static int pinnedX = HudConstants.DEFAULT_PINNED_X;
-    private static int pinnedY = HudConstants.DEFAULT_PINNED_Y;
-    private static int completionScale = HudConstants.DEFAULT_COMPLETION_SCALE;
-    private static int completionHeightScale = HudConstants.DEFAULT_COMPLETION_HEIGHT_SCALE;
-    private static int pinnedScale = HudConstants.DEFAULT_PINNED_SCALE;
-    private static int pinnedHeightScale = HudConstants.DEFAULT_PINNED_HEIGHT_SCALE;
-    private static String completionBackground = "";
-    private static String pinnedBackground = "";
-    private static int completionOpacity = HudConstants.DEFAULT_OPACITY;
-    private static int pinnedOpacity = HudConstants.DEFAULT_OPACITY;
-    private static boolean completionShowBorders = true;
-    private static boolean pinnedShowBorders = true;
+    private static final EnumMap<Element, ElementConfig> configs = new EnumMap<>(Element.class);
     private static boolean snapToGrid = true;
 
+    static {
+        resetConfigs();
+    }
+
     private QuestHudLayoutManager() {
+    }
+
+    private static void resetConfigs() {
+        configs.put(Element.COMPLETION, new ElementConfig(
+                HudConstants.DEFAULT_COMPLETION_X,
+                HudConstants.DEFAULT_COMPLETION_Y,
+                HudConstants.DEFAULT_COMPLETION_SCALE,
+                HudConstants.DEFAULT_COMPLETION_HEIGHT_SCALE,
+                "",
+                HudConstants.DEFAULT_OPACITY,
+                true
+        ));
+        configs.put(Element.PINNED, new ElementConfig(
+                HudConstants.DEFAULT_PINNED_X,
+                HudConstants.DEFAULT_PINNED_Y,
+                HudConstants.DEFAULT_PINNED_SCALE,
+                HudConstants.DEFAULT_PINNED_HEIGHT_SCALE,
+                "",
+                HudConstants.DEFAULT_OPACITY,
+                true
+        ));
     }
 
     public static synchronized HudBox completionBox(int screenWidth, int screenHeight) {
@@ -61,23 +79,18 @@ public final class QuestHudLayoutManager {
         load();
         int clampedX = clamp(x, 0, Math.max(0, screenWidth - width));
         int clampedY = clamp(y, 0, Math.max(0, screenHeight - height));
-        if (element == Element.COMPLETION) {
-            completionX = clampedX;
-            completionY = clampedY;
-        } else {
-            pinnedX = clampedX;
-            pinnedY = clampedY;
-        }
+        ElementConfig cfg = configs.get(element);
+        configs.put(element, new ElementConfig(clampedX, clampedY, cfg.scale(), cfg.heightScale(), cfg.background(), cfg.opacity(), cfg.showBorders()));
     }
 
     public static synchronized int scalePercent(Element element) {
         load();
-        return element == Element.COMPLETION ? completionScale : pinnedScale;
+        return configs.get(element).scale();
     }
 
     public static synchronized int heightScalePercent(Element element) {
         load();
-        return element == Element.COMPLETION ? completionHeightScale : pinnedHeightScale;
+        return configs.get(element).heightScale();
     }
 
     public static synchronized float scale(Element element) {
@@ -94,57 +107,41 @@ public final class QuestHudLayoutManager {
 
     public static synchronized void setSizePercent(Element element, int widthPercent, int heightPercent) {
         load();
-        if (element == Element.COMPLETION) {
-            completionScale = Math.max(1, widthPercent);
-            completionHeightScale = Math.max(1, heightPercent);
-        } else {
-            pinnedScale = Math.max(1, widthPercent);
-            pinnedHeightScale = Math.max(1, heightPercent);
-        }
+        ElementConfig cfg = configs.get(element);
+        configs.put(element, new ElementConfig(cfg.x(), cfg.y(), Math.max(1, widthPercent), Math.max(1, heightPercent), cfg.background(), cfg.opacity(), cfg.showBorders()));
     }
 
     public static synchronized int opacityPercent(Element element) {
         load();
-        return element == Element.COMPLETION ? completionOpacity : pinnedOpacity;
+        return configs.get(element).opacity();
     }
 
     public static synchronized void setOpacityPercent(Element element, int percent) {
         load();
-        int clamped = clamp(percent, 0, 100);
-        if (element == Element.COMPLETION) {
-            completionOpacity = clamped;
-        } else {
-            pinnedOpacity = clamped;
-        }
+        ElementConfig cfg = configs.get(element);
+        configs.put(element, new ElementConfig(cfg.x(), cfg.y(), cfg.scale(), cfg.heightScale(), cfg.background(), clamp(percent, 0, 100), cfg.showBorders()));
     }
 
     public static synchronized String background(Element element) {
         load();
-        return element == Element.COMPLETION ? completionBackground : pinnedBackground;
+        return configs.get(element).background();
     }
 
     public static synchronized void setBackground(Element element, String background) {
         load();
-        String value = background == null ? "" : background.trim();
-        if (element == Element.COMPLETION) {
-            completionBackground = value;
-        } else {
-            pinnedBackground = value;
-        }
+        ElementConfig cfg = configs.get(element);
+        configs.put(element, new ElementConfig(cfg.x(), cfg.y(), cfg.scale(), cfg.heightScale(), background, cfg.opacity(), cfg.showBorders()));
     }
 
     public static synchronized boolean showBorders(Element element) {
         load();
-        return element == Element.COMPLETION ? completionShowBorders : pinnedShowBorders;
+        return configs.get(element).showBorders();
     }
 
     public static synchronized void setShowBorders(Element element, boolean show) {
         load();
-        if (element == Element.COMPLETION) {
-            completionShowBorders = show;
-        } else {
-            pinnedShowBorders = show;
-        }
+        ElementConfig cfg = configs.get(element);
+        configs.put(element, new ElementConfig(cfg.x(), cfg.y(), cfg.scale(), cfg.heightScale(), cfg.background(), cfg.opacity(), show));
     }
 
     public static synchronized boolean snapToGrid() {
@@ -166,43 +163,13 @@ public final class QuestHudLayoutManager {
     }
 
     public static synchronized void resetToDefaults() {
-        load();
-        completionX = HudConstants.DEFAULT_COMPLETION_X;
-        completionY = HudConstants.DEFAULT_COMPLETION_Y;
-        pinnedX = HudConstants.DEFAULT_PINNED_X;
-        pinnedY = HudConstants.DEFAULT_PINNED_Y;
-        completionScale = HudConstants.DEFAULT_COMPLETION_SCALE;
-        completionHeightScale = HudConstants.DEFAULT_COMPLETION_HEIGHT_SCALE;
-        pinnedScale = HudConstants.DEFAULT_PINNED_SCALE;
-        pinnedHeightScale = HudConstants.DEFAULT_PINNED_HEIGHT_SCALE;
-        completionBackground = "";
-        pinnedBackground = "";
-        completionOpacity = HudConstants.DEFAULT_OPACITY;
-        pinnedOpacity = HudConstants.DEFAULT_OPACITY;
-        completionShowBorders = true;
-        pinnedShowBorders = true;
+        resetConfigs();
         snapToGrid = true;
     }
 
     public static synchronized Snapshot snapshot() {
         load();
-        return new Snapshot(
-                completionX,
-                completionY,
-                pinnedX,
-                pinnedY,
-                completionScale,
-                completionHeightScale,
-                pinnedScale,
-                pinnedHeightScale,
-                completionBackground,
-                pinnedBackground,
-                completionOpacity,
-                pinnedOpacity,
-                completionShowBorders,
-                pinnedShowBorders,
-                snapToGrid
-        );
+        return new Snapshot(configs.clone(), snapToGrid);
     }
 
     public static synchronized void restore(Snapshot snapshot) {
@@ -211,45 +178,27 @@ public final class QuestHudLayoutManager {
             return;
         }
         loaded = true;
-        completionX = snapshot.completionX();
-        completionY = snapshot.completionY();
-        pinnedX = snapshot.pinnedX();
-        pinnedY = snapshot.pinnedY();
-        completionScale = snapshot.completionScale();
-        completionHeightScale = snapshot.completionHeightScale();
-        pinnedScale = snapshot.pinnedScale();
-        pinnedHeightScale = snapshot.pinnedHeightScale();
-        completionBackground = snapshot.completionBackground();
-        pinnedBackground = snapshot.pinnedBackground();
-        completionOpacity = snapshot.completionOpacity();
-        pinnedOpacity = snapshot.pinnedOpacity();
-        completionShowBorders = snapshot.completionShowBorders();
-        pinnedShowBorders = snapshot.pinnedShowBorders();
+        configs.clear();
+        configs.putAll(snapshot.configs());
         snapToGrid = snapshot.snapToGrid();
     }
 
     public static synchronized void save() {
         load();
         JsonObject root = new JsonObject();
-        JsonObject completion = new JsonObject();
-        completion.addProperty("x", completionX);
-        completion.addProperty("y", completionY);
-        completion.addProperty("scale", completionScale);
-        completion.addProperty("height_scale", completionHeightScale);
-        completion.addProperty("background", completionBackground);
-        completion.addProperty("opacity", completionOpacity);
-        completion.addProperty("show_borders", completionShowBorders);
-        root.add("completion", completion);
-
-        JsonObject pinned = new JsonObject();
-        pinned.addProperty("x", pinnedX);
-        pinned.addProperty("y", pinnedY);
-        pinned.addProperty("scale", pinnedScale);
-        pinned.addProperty("height_scale", pinnedHeightScale);
-        pinned.addProperty("background", pinnedBackground);
-        pinned.addProperty("opacity", pinnedOpacity);
-        pinned.addProperty("show_borders", pinnedShowBorders);
-        root.add("pinned", pinned);
+        for (Map.Entry<Element, ElementConfig> entry : configs.entrySet()) {
+            JsonObject obj = new JsonObject();
+            String name = entry.getKey().name().toLowerCase();
+            ElementConfig cfg = entry.getValue();
+            obj.addProperty("x", cfg.x());
+            obj.addProperty("y", cfg.y());
+            obj.addProperty("scale", cfg.scale());
+            obj.addProperty("height_scale", cfg.heightScale());
+            obj.addProperty("background", cfg.background());
+            obj.addProperty("opacity", cfg.opacity());
+            obj.addProperty("show_borders", cfg.showBorders());
+            root.add(name, obj);
+        }
         root.addProperty("snapToGrid", snapToGrid);
 
         Path file = configFile();
@@ -281,22 +230,22 @@ public final class QuestHudLayoutManager {
                 return;
             }
             JsonObject root = parsed.getAsJsonObject();
-            JsonObject completion = object(root, "completion");
-            completionX = JsonFieldHelper.readInt(completion, "x", completionX);
-            completionY = JsonFieldHelper.readInt(completion, "y", completionY);
-            completionScale = Math.max(1, JsonFieldHelper.readInt(completion, "scale", completionScale));
-            completionHeightScale = Math.max(1, JsonFieldHelper.readInt(completion, "height_scale", completionScale));
-            completionBackground = JsonFieldHelper.string(completion, "background", completionBackground);
-            completionOpacity = clamp(JsonFieldHelper.readInt(completion, "opacity", completionOpacity), 0, 100);
-            completionShowBorders = JsonFieldHelper.bool(completion, "show_borders", completionShowBorders);
-            JsonObject pinned = object(root, "pinned");
-            pinnedX = JsonFieldHelper.readInt(pinned, "x", pinnedX);
-            pinnedY = JsonFieldHelper.readInt(pinned, "y", pinnedY);
-            pinnedScale = Math.max(1, JsonFieldHelper.readInt(pinned, "scale", pinnedScale));
-            pinnedHeightScale = Math.max(1, JsonFieldHelper.readInt(pinned, "height_scale", pinnedScale));
-            pinnedBackground = JsonFieldHelper.string(pinned, "background", pinnedBackground);
-            pinnedOpacity = clamp(JsonFieldHelper.readInt(pinned, "opacity", pinnedOpacity), 0, 100);
-            pinnedShowBorders = JsonFieldHelper.bool(pinned, "show_borders", pinnedShowBorders);
+            for (Element element : Element.values()) {
+                String name = element.name().toLowerCase();
+                JsonObject obj = object(root, name);
+                if (obj == null) {
+                    continue;
+                }
+                ElementConfig current = configs.get(element);
+                int x = JsonFieldHelper.readInt(obj, "x", current.x());
+                int y = JsonFieldHelper.readInt(obj, "y", current.y());
+                int scale = Math.max(1, JsonFieldHelper.readInt(obj, "scale", current.scale()));
+                int heightScale = Math.max(1, JsonFieldHelper.readInt(obj, "height_scale", current.heightScale()));
+                String background = JsonFieldHelper.string(obj, "background", current.background());
+                int opacity = clamp(JsonFieldHelper.readInt(obj, "opacity", current.opacity()), 0, 100);
+                boolean showBorders = JsonFieldHelper.bool(obj, "show_borders", current.showBorders());
+                configs.put(element, new ElementConfig(x, y, scale, heightScale, background, opacity, showBorders));
+            }
             snapToGrid = JsonFieldHelper.bool(root, "snapToGrid", snapToGrid);
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("Failed reading Quests and Stuff HUD layout {}, keeping defaults", file, e);
@@ -306,8 +255,9 @@ public final class QuestHudLayoutManager {
     private static HudBox box(Element element, int screenWidth, int screenHeight, int width, int height) {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
-        int x = element == Element.COMPLETION ? completionX : pinnedX;
-        int y = element == Element.COMPLETION ? completionY : pinnedY;
+        ElementConfig cfg = configs.get(element);
+        int x = cfg.x();
+        int y = cfg.y();
         if (x == UNSET || y == UNSET) {
             x = defaultX(element, screenWidth, w);
             y = defaultY(element, screenHeight, h);
@@ -352,20 +302,7 @@ public final class QuestHudLayoutManager {
     }
 
     public record Snapshot(
-            int completionX,
-            int completionY,
-            int pinnedX,
-            int pinnedY,
-            int completionScale,
-            int completionHeightScale,
-            int pinnedScale,
-            int pinnedHeightScale,
-            String completionBackground,
-            String pinnedBackground,
-            int completionOpacity,
-            int pinnedOpacity,
-            boolean completionShowBorders,
-            boolean pinnedShowBorders,
+            Map<Element, ElementConfig> configs,
             boolean snapToGrid
     ) {
     }

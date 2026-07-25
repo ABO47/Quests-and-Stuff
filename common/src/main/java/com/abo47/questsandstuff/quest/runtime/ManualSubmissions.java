@@ -23,20 +23,14 @@ import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 
 final class ManualSubmissions {
-    private final QuestDefinitionStore definitionStore;
-    private final QuestProgressSavedData progressData;
-    private final SyncService syncService;
-    private final RuntimeEngine engine;
+    private final RuntimeContext ctx;
 
-    ManualSubmissions(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, SyncService syncService, RuntimeEngine engine) {
-        this.definitionStore = definitionStore;
-        this.progressData = progressData;
-        this.syncService = syncService;
-        this.engine = engine;
+    ManualSubmissions(RuntimeContext ctx) {
+        this.ctx = ctx;
     }
 
     void submitCheckTask(ServerPlayer player, String questId, String taskId) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return;
         }
@@ -49,7 +43,7 @@ final class ManualSubmissions {
     }
 
     void submitItemTask(ServerPlayer player, String questId, String taskId) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return;
         }
@@ -82,7 +76,7 @@ final class ManualSubmissions {
     }
 
     void submitXpTask(ServerPlayer player, String questId, String taskId) {
-        QuestDefinition definition = definitionStore.quests().get(questId);
+        QuestDefinition definition = ctx.definitionStore().quests().get(questId);
         if (definition == null) {
             return;
         }
@@ -127,10 +121,10 @@ final class ManualSubmissions {
         long tick = player.server.getTickCount();
         Set<String> changed = new HashSet<>();
         for (UUID targetId : targets) {
-            PlayerQuestState state = progressData.state(targetId);
-            engine.ensureUnlocks(player, targetId, state, changed, tick);
-            QuestDefinition definition = definitionStore.quests().get(questId);
-            if (definition == null || !engine.isVisibleFor(state, definition)) {
+            PlayerQuestState state = ctx.progressData().state(targetId);
+            ctx.engine().ensureUnlocks(player, targetId, state, changed, tick);
+            QuestDefinition definition = ctx.definitionStore().quests().get(questId);
+            if (definition == null || !ctx.engine().isVisibleFor(state, definition)) {
                 continue;
             }
             QuestProgressState questState = state.quest(questId);
@@ -139,36 +133,36 @@ final class ManualSubmissions {
             }
             questState.setTaskProgress(taskId, task, CompletionRules.completeProgress(task));
             changed.add(questId);
-            if (engine.recomputeCompletion(player, targetId, state, questId, tick, true)) {
-                engine.ensureUnlocks(player, targetId, state, changed, tick);
+            if (ctx.engine().recomputeCompletion(player, targetId, state, questId, tick, true)) {
+                ctx.engine().ensureUnlocks(player, targetId, state, changed, tick);
             }
         }
-        RuntimeSyncs.syncChangedToAll(player, progressData, syncService, changed);
+        RuntimeSyncs.syncChangedToAll(player, ctx.progressData(), ctx.syncService(), changed);
     }
 
     private void applyManualTaskProgress(ServerPlayer player, List<UUID> targets, String questId, String taskId, QuestTaskDefinition task, int accepted) {
         long tick = player.server.getTickCount();
         Set<String> changed = new HashSet<>();
         for (UUID targetId : targets) {
-            PlayerQuestState state = progressData.state(targetId);
-            engine.ensureUnlocks(player, targetId, state, changed, tick);
+            PlayerQuestState state = ctx.progressData().state(targetId);
+            ctx.engine().ensureUnlocks(player, targetId, state, changed, tick);
             QuestProgressState questState = state.quest(questId);
             if (!questState.unlocked()) {
                 continue;
             }
             questState.setTaskProgress(taskId, task, IntegerTaskStorage.INSTANCE.add(questState.getTaskProgress(taskId, task), accepted, task.safeGoal()));
             changed.add(questId);
-            if (engine.recomputeCompletion(player, targetId, state, questId, tick, true)) {
-                engine.ensureUnlocks(player, targetId, state, changed, tick);
+            if (ctx.engine().recomputeCompletion(player, targetId, state, questId, tick, true)) {
+                ctx.engine().ensureUnlocks(player, targetId, state, changed, tick);
             }
         }
-        RuntimeSyncs.syncChangedToAll(player, progressData, syncService, changed);
+        RuntimeSyncs.syncChangedToAll(player, ctx.progressData(), ctx.syncService(), changed);
     }
 
     private int remainingForTargets(List<UUID> targets, String questId, String taskId, int goal) {
         int remaining = Integer.MAX_VALUE;
         for (UUID targetId : targets) {
-            PlayerQuestState state = progressData.state(targetId);
+            PlayerQuestState state = ctx.progressData().state(targetId);
             QuestProgressState questState = state.quest(questId);
             remaining = Math.min(remaining, Math.max(0, goal - questState.getTaskCount(taskId)));
         }

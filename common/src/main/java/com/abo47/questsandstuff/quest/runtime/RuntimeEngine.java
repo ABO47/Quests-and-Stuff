@@ -43,10 +43,11 @@ public final class RuntimeEngine {
         this.definitionStore = definitionStore;
         this.progressData = progressData;
         this.syncService = syncService;
-        this.rewardClaims = new RewardClaims(definitionStore, progressData, syncService, this);
-        this.signalProgression = new SignalProgression(definitionStore, progressData, syncService, performanceTracker, this);
-        this.manualSubmissions = new ManualSubmissions(definitionStore, progressData, syncService, this);
-        this.progressAdmin = new ProgressAdminActions(definitionStore, progressData, syncService, this);
+        RuntimeContext ctx = new RuntimeContext(definitionStore, progressData, syncService, this);
+        this.rewardClaims = new RewardClaims(ctx);
+        this.signalProgression = new SignalProgression(ctx, performanceTracker);
+        this.manualSubmissions = new ManualSubmissions(ctx);
+        this.progressAdmin = new ProgressAdminActions(ctx);
         QuestTasks.bootstrapDefaults();
         QuestRewards.bootstrapDefaults();
         TeamProgressProviders.installHooks(this::onTeamMembershipChanged);

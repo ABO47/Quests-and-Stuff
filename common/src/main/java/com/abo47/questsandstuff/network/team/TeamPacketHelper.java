@@ -1,13 +1,9 @@
 package com.abo47.questsandstuff.network.team;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -36,25 +32,14 @@ public final class TeamPacketHelper {
     }
 
     public static void send(ServerPlayer player, TeamData team) {
-        CompoundTag tag = new CompoundTag();
-        if (team == null) {
-            tag.putBoolean(NbtKeys.EMPTY, true);
-        } else {
-            tag.putUUID(NbtKeys.TEAM_ID, team.teamId());
-            tag.putUUID(NbtKeys.OWNER, team.owner());
-            tag.putString(NbtKeys.INVITE_CODE, team.inviteCode());
-            tag.putLong(NbtKeys.INVITE_EXPIRY, team.inviteExpiryMs());
-            ListTag membersList = new ListTag();
-            for (TeamMember m : team.members()) {
-                CompoundTag memberTag = new CompoundTag();
-                memberTag.putUUID(NbtKeys.UUID, m.uuid());
-                memberTag.putString(NbtKeys.NAME, m.name());
-                memberTag.putString(NbtKeys.ROLE, m.role().name());
-                membersList.add(memberTag);
-            }
-            tag.put(NbtKeys.MEMBERS, membersList);
-        }
+        CompoundTag tag = team != null ? team.toNbt() : emptyTag();
         ModNetwork.sendToPlayer(new S2CTeamSyncPacket(tag), player);
+    }
+
+    private static CompoundTag emptyTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.putBoolean(NbtKeys.EMPTY, true);
+        return tag;
     }
 
     public static void broadcastToMembers(ServerLevel level, TeamData team) {
@@ -78,20 +63,6 @@ public final class TeamPacketHelper {
         if (tag == null || tag.getBoolean(NbtKeys.EMPTY)) {
             return null;
         }
-        UUID teamId = tag.getUUID(NbtKeys.TEAM_ID);
-        UUID owner = tag.getUUID(NbtKeys.OWNER);
-        String inviteCode = tag.getString(NbtKeys.INVITE_CODE);
-        long inviteExpiry = tag.getLong(NbtKeys.INVITE_EXPIRY);
-        ListTag membersList = tag.getList(NbtKeys.MEMBERS, Tag.TAG_COMPOUND);
-        List<TeamMember> members = new ArrayList<>();
-        for (int i = 0; i < membersList.size(); i++) {
-            CompoundTag memberTag = membersList.getCompound(i);
-            UUID uuid = memberTag.getUUID(NbtKeys.UUID);
-            String name = memberTag.getString(NbtKeys.NAME);
-            String roleStr = memberTag.getString(NbtKeys.ROLE);
-            TeamMember.Role role = "OWNER".equals(roleStr) ? TeamMember.Role.OWNER : TeamMember.Role.MEMBER;
-            members.add(new TeamMember(uuid, name, role));
-        }
-        return new TeamData(teamId, owner, members, inviteCode, inviteExpiry);
+        return TeamData.fromNbt(tag);
     }
 }

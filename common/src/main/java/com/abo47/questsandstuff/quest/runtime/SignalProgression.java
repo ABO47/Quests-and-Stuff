@@ -20,18 +20,12 @@ import com.abo47.questsandstuff.quest.sync.SyncService;
 import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
 
 final class SignalProgression {
-    private final QuestDefinitionStore definitionStore;
-    private final QuestProgressSavedData progressData;
-    private final SyncService syncService;
+    private final RuntimeContext ctx;
     private final PerformanceTracker performanceTracker;
-    private final RuntimeEngine engine;
 
-    SignalProgression(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, SyncService syncService, PerformanceTracker performanceTracker, RuntimeEngine engine) {
-        this.definitionStore = definitionStore;
-        this.progressData = progressData;
-        this.syncService = syncService;
+    SignalProgression(RuntimeContext ctx, PerformanceTracker performanceTracker) {
+        this.ctx = ctx;
         this.performanceTracker = performanceTracker;
-        this.engine = engine;
     }
 
     void onSignal(QuestSignal signal, QuestRuntimeIndex index) {
@@ -54,7 +48,7 @@ final class SignalProgression {
 
         for (QuestRuntimeIndex.TaskBinding binding : index.bindings(signal.type())) {
             visitedBindings++;
-            QuestDefinition definition = definitionStore.quests().get(binding.questId());
+            QuestDefinition definition = ctx.definitionStore().quests().get(binding.questId());
             if (definition == null) {
                 continue;
             }
@@ -62,9 +56,9 @@ final class SignalProgression {
             List<UUID> targets = definition.settings().individualProgress() ? List.of(actorId) : teamMembers;
 
             for (UUID targetId : targets) {
-                PlayerQuestState state = progressData.state(targetId);
+                PlayerQuestState state = ctx.progressData().state(targetId);
                 if (preparedTargets.add(targetId)) {
-                    engine.ensureUnlocks(actor, targetId, state, changedQuestIds, serverTick);
+                    ctx.engine().ensureUnlocks(actor, targetId, state, changedQuestIds, serverTick);
                 }
 
                 QuestProgressState progress = state.quest(binding.questId());
@@ -84,15 +78,15 @@ final class SignalProgression {
                 progress.setTaskProgress(binding.taskId(), binding.task(), after);
                 changedQuestIds.add(binding.questId());
 
-                boolean justCompleted = engine.recomputeCompletion(actor, targetId, state, binding.questId(), serverTick, true);
+                boolean justCompleted = ctx.engine().recomputeCompletion(actor, targetId, state, binding.questId(), serverTick, true);
                 if (justCompleted) {
                     changedQuestIds.add(binding.questId());
-                    engine.ensureUnlocks(actor, targetId, state, changedQuestIds, serverTick);
+                    ctx.engine().ensureUnlocks(actor, targetId, state, changedQuestIds, serverTick);
                 }
             }
         }
 
-        RuntimeSyncs.syncChangedToAll(actor, progressData, syncService, changedQuestIds);
+        RuntimeSyncs.syncChangedToAll(actor, ctx.progressData(), ctx.syncService(), changedQuestIds);
         performanceTracker.recordSignal(System.nanoTime() - start, visitedBindings, changedQuestIds.size());
     }
 }

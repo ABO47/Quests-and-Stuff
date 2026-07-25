@@ -169,32 +169,16 @@ public final class CanvasLayerNbtCodec {
             tag.putString("background", ec.background());
         }
         if (!ec.connectionColors().isEmpty()) {
-            CompoundTag colors = new CompoundTag();
-            for (Map.Entry<String, Integer> entry : ec.connectionColors().entrySet()) {
-                colors.putInt(entry.getKey(), entry.getValue());
-            }
-            tag.put("connection_colors", colors);
+            tag.put("connection_colors", intMapToCompound(ec.connectionColors()));
         }
         if (!ec.connectionModes().isEmpty()) {
-            CompoundTag modes = new CompoundTag();
-            for (Map.Entry<String, String> entry : ec.connectionModes().entrySet()) {
-                modes.putString(entry.getKey(), entry.getValue());
-            }
-            tag.put("connection_modes", modes);
+            tag.put("connection_modes", stringMapToCompound(ec.connectionModes()));
         }
         if (!ec.connectionTextures().isEmpty()) {
-            CompoundTag textures = new CompoundTag();
-            for (Map.Entry<String, String> entry : ec.connectionTextures().entrySet()) {
-                textures.putString(entry.getKey(), entry.getValue());
-            }
-            tag.put("connection_textures", textures);
+            tag.put("connection_textures", stringMapToCompound(ec.connectionTextures()));
         }
         if (!ec.connectionTextureSpacings().isEmpty()) {
-            CompoundTag spacings = new CompoundTag();
-            for (Map.Entry<String, Integer> entry : ec.connectionTextureSpacings().entrySet()) {
-                spacings.putInt(entry.getKey(), entry.getValue());
-            }
-            tag.put("connection_texture_spacings", spacings);
+            tag.put("connection_texture_spacings", intMapToCompound(ec.connectionTextureSpacings()));
         }
         if (!ec.hiddenConnections().isEmpty()) {
             tag.put("hidden_connections", stringsToListTag(new ArrayList<>(ec.hiddenConnections())));
@@ -215,42 +199,14 @@ public final class CanvasLayerNbtCodec {
         List<String> connections = stringsFromListTag(tag.getList("connections", Tag.TAG_STRING));
         List<String> prerequisites = stringsFromListTag(tag.getList("prerequisites", Tag.TAG_STRING));
         String background = tag.contains("background", Tag.TAG_STRING) ? tag.getString("background") : "";
-        Map<String, Integer> connectionColors = new HashMap<>();
-        if (tag.contains("connection_colors", Tag.TAG_COMPOUND)) {
-            CompoundTag colors = tag.getCompound("connection_colors");
-            for (String key : colors.getAllKeys()) {
-                if (colors.contains(key, Tag.TAG_INT)) {
-                    connectionColors.put(key, colors.getInt(key));
-                }
-            }
-        }
-        Map<String, String> connectionModes = new HashMap<>();
-        if (tag.contains("connection_modes", Tag.TAG_COMPOUND)) {
-            CompoundTag modes = tag.getCompound("connection_modes");
-            for (String key : modes.getAllKeys()) {
-                if (modes.contains(key, Tag.TAG_STRING)) {
-                    connectionModes.put(key, modes.getString(key));
-                }
-            }
-        }
-        Map<String, String> connectionTextures = new HashMap<>();
-        if (tag.contains("connection_textures", Tag.TAG_COMPOUND)) {
-            CompoundTag textures = tag.getCompound("connection_textures");
-            for (String key : textures.getAllKeys()) {
-                if (textures.contains(key, Tag.TAG_STRING)) {
-                    connectionTextures.put(key, textures.getString(key));
-                }
-            }
-        }
-        Map<String, Integer> connectionTextureSpacings = new HashMap<>();
-        if (tag.contains("connection_texture_spacings", Tag.TAG_COMPOUND)) {
-            CompoundTag spacings = tag.getCompound("connection_texture_spacings");
-            for (String key : spacings.getAllKeys()) {
-                if (spacings.contains(key, Tag.TAG_INT)) {
-                    connectionTextureSpacings.put(key, spacings.getInt(key));
-                }
-            }
-        }
+        Map<String, Integer> connectionColors = tag.contains("connection_colors", Tag.TAG_COMPOUND)
+                ? intMapFromCompound(tag.getCompound("connection_colors")) : new HashMap<>();
+        Map<String, String> connectionModes = tag.contains("connection_modes", Tag.TAG_COMPOUND)
+                ? stringMapFromCompound(tag.getCompound("connection_modes")) : new HashMap<>();
+        Map<String, String> connectionTextures = tag.contains("connection_textures", Tag.TAG_COMPOUND)
+                ? stringMapFromCompound(tag.getCompound("connection_textures")) : new HashMap<>();
+        Map<String, Integer> connectionTextureSpacings = tag.contains("connection_texture_spacings", Tag.TAG_COMPOUND)
+                ? intMapFromCompound(tag.getCompound("connection_texture_spacings")) : new HashMap<>();
         Set<String> hiddenConnections = new HashSet<>(stringsFromListTag(tag.getList("hidden_connections", Tag.TAG_STRING)));
         return new CanvasExclusiveChoice(
                 id,
@@ -348,5 +304,53 @@ public final class CanvasLayerNbtCodec {
             }
         }
         return values;
+    }
+
+    public static CompoundTag intMapToCompound(Map<String, Integer> map) {
+        CompoundTag tag = new CompoundTag();
+        if (map == null || map.isEmpty()) {
+            return tag;
+        }
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            tag.putInt(entry.getKey(), entry.getValue());
+        }
+        return tag;
+    }
+
+    public static Map<String, Integer> intMapFromCompound(CompoundTag tag) {
+        Map<String, Integer> result = new HashMap<>();
+        if (tag == null) {
+            return result;
+        }
+        for (String key : tag.getAllKeys()) {
+            if (tag.contains(key, Tag.TAG_INT)) {
+                result.put(key, tag.getInt(key));
+            }
+        }
+        return result;
+    }
+
+    public static CompoundTag stringMapToCompound(Map<String, String> map) {
+        CompoundTag tag = new CompoundTag();
+        if (map == null || map.isEmpty()) {
+            return tag;
+        }
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            tag.putString(entry.getKey(), entry.getValue());
+        }
+        return tag;
+    }
+
+    public static Map<String, String> stringMapFromCompound(CompoundTag tag) {
+        Map<String, String> result = new HashMap<>();
+        if (tag == null) {
+            return result;
+        }
+        for (String key : tag.getAllKeys()) {
+            if (tag.contains(key, Tag.TAG_STRING)) {
+                result.put(key, tag.getString(key));
+            }
+        }
+        return result;
     }
 }
