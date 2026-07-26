@@ -116,7 +116,7 @@ public final class QuestAppComposer {
 
         int initialTop = CANVAS_TOP_H_COMPACT;
         int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);
-        CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
+        CanvasViewport canvasViewport = new CanvasViewport(0, 0, Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
 
         WidgetGroup viewportBg = new WidgetGroup(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3])) {
             @Override
@@ -217,7 +217,7 @@ public final class QuestAppComposer {
             state.canvas.gridCellPx = cell;
             state.canvas.gridCols = gridCols;
             state.canvas.gridRows = gridRows;
-            canvasViewport.setSelfPosition(viewportX, viewportY);
+            canvasViewport.setSelfPosition(0, 0);
             canvasViewport.setSize(viewportW, viewportH);
             if (viewportBgRef[0] != null) {
                 viewportBgRef[0].setSelfPosition(viewportX, viewportY);
