@@ -123,7 +123,8 @@ public final class SkinEditTargetResolver {
     public static boolean isTargetable(Widget widget) {
         if (isSkinExcluded(widget)) return false;
         if (hasVisibleBackground(widget)) return true;
-        if (SkinAnchorRegistry.keyFor(widget) != null) return true;
+        String key = SkinAnchorRegistry.keyFor(widget);
+        if (key != null && !SkinOverrideKey.isSharedKey(key)) return true;
         return false;
     }
 
