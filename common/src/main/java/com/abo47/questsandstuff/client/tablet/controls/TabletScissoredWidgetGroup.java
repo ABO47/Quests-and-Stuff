@@ -29,10 +29,8 @@ public class TabletScissoredWidgetGroup extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        withScissor(graphics, () -> {
-            drawBackgroundTexture(graphics, mouseX, mouseY);
-            drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-        });
+        drawBackgroundTexture(graphics, mouseX, mouseY);
+        withScissor(graphics, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override

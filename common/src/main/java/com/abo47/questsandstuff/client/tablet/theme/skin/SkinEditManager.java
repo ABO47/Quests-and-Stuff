@@ -150,7 +150,7 @@ public final class SkinEditManager {
 
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
         CapturedOriginal cap = ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
-        int[] offsets = skinExtendOffsets(w, targetKey, cap.original());
+        int[] offsets = skinExtendOffsets(w, targetKey, w.getBackgroundTexture());
         if (offsets != null) {
             IGuiTexture inner = tex;
             int dx = offsets[0];

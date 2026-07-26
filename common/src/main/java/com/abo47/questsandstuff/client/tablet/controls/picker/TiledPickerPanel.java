@@ -56,7 +56,7 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 150), TabletColors.subtleBorder()));
+        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 150), TabletColors.BORDER_BASE));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {

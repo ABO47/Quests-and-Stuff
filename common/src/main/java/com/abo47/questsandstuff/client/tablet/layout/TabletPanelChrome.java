@@ -59,8 +59,14 @@ public final class TabletPanelChrome {
             if (panelSkinned) {
                 IGuiTexture fill = resolveFill(panel);
                 fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            } else {
+                IGuiTexture fill = SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
+                int innerLeft = x + GRID_1;
+                int innerTop = y + GRID_1;
+                int innerRight = x + Math.max(1, w - 1);
+                int innerBottom = y + Math.max(1, h - 1);
+                fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
             }
-            
         } else {
             IGuiTexture fill = SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
             int innerLeft = x + GRID_1;
@@ -110,7 +116,7 @@ public final class TabletPanelChrome {
         int holeBottom = y + Math.max(1, Math.min(h - 1, viewportY + viewportH));
 
         if (holeRight > holeLeft && holeBottom > holeTop) {
-            if (!hasPanelOverride(panel, state)) {
+            if (state == null || !isBackgroundKeySkinned(panel, state)) {
                 drawRectOutline(graphics, holeLeft - 1, holeTop - 1, holeRight - holeLeft + 2, holeBottom - holeTop + 2, TabletColors.BORDER_BASE);
             }
             if (canEdit && gridEnabled) {
@@ -131,8 +137,6 @@ public final class TabletPanelChrome {
             if (w == null) continue;
             if (w == panel) return true;
         }
-        
-        if (isBackgroundKeySkinned(panel, state)) return true;
         return false;
     }
 
