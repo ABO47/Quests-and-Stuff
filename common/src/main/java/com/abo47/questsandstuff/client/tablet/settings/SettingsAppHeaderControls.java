@@ -90,6 +90,7 @@ final class SettingsAppHeaderControls {
         searchField.setSelfPosition(SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP);
         searchField.setSize(Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H);
         searchField.setTextColor(TabletColors.TEXT_PRIMARY);
+        searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
     }
 
     void addTo(WidgetGroup mainPanel) {
