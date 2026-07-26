@@ -132,6 +132,8 @@ public final class IconRegistry {
         preloaded("file-down");
         preloadedRole("manual_check", UiThemeManager.ROLE_ICON_SUCCESS);
         preloaded("size");
+        preloaded("original_size");
+        preloaded("dynamic");
         preloaded("opacity");
         preloaded("magnet");
         preloadedRole("lock", UiThemeManager.ROLE_ICON_WARNING);

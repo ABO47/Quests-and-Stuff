@@ -296,8 +296,8 @@ public final class SkinEditManager {
                     setFillMode(state, resolvedTarget, "tile", currentAsset, root, refresher);
                 }));
         modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_center"),
-                "center_focus",
+                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
+                "original_size",
                 currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: center, asset={}", currentAsset);
