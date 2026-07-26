@@ -83,6 +83,21 @@ public class InlineRenameField extends TextFieldWidget {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    @Override
+    public TextFieldWidget setCurrentString(Object currentString) {
+        String newVal = currentString.toString();
+        if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+            int cursorPos = textField.getCursorPosition();
+            super.setCurrentString(newVal);
+            int clamped = Math.min(cursorPos, newVal.length());
+            textField.setCursorPosition(clamped);
+            textField.setHighlightPos(clamped);
+        } else {
+            super.setCurrentString(currentString);
+        }
+        return this;
+    }
+
     private void applyPendingFocus() {
         if (!focusWhenReady || getGui() == null) {
             return;

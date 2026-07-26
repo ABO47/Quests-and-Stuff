@@ -207,7 +207,6 @@ public final class SettingsOptionsPanelRenderer {
         }
         IGuiTexture tex = parsed.createTexture();
         if (tex != null) {
-            card.setBackground(IGuiTexture.EMPTY);
             list.addWidget(new ImageWidget(x - 1, y - 1, w + 2, h + 2, tex));
         }
     }

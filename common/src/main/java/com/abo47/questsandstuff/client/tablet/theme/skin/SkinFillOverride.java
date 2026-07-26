@@ -64,12 +64,16 @@ public record SkinFillOverride(String mode, String path) {
         return tex;
     }
 
+    private static final int MAX_TILE_SIZE = 64;
+
     private IGuiTexture createTileTexture() {
         net.minecraft.resources.ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
-        return new TiledGuiTexture(id, dims.width(), dims.height());
+        int tileW = Math.min(dims.width(), MAX_TILE_SIZE);
+        int tileH = Math.min(dims.height(), MAX_TILE_SIZE);
+        return new TiledGuiTexture(id, tileW, tileH);
     }
 
     private IGuiTexture createCenterTexture() {

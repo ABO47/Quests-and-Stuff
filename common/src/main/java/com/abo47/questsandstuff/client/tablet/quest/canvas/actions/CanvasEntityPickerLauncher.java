@@ -46,7 +46,7 @@ public final class CanvasEntityPickerLauncher {
 
     private static boolean changeEntity(TabletUiState state, String pickedItem, String entityId, EntityTarget parsed) {
         Set<String> targets = new LinkedHashSet<>();
-        if (parsed.imageIds() != null) {
+        if (parsed.imageIds() != null && !parsed.imageIds().isEmpty()) {
             targets.addAll(parsed.imageIds());
         } else if (!parsed.imageId().isBlank()) {
             targets.add(parsed.imageId());

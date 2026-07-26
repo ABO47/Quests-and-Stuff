@@ -164,6 +164,21 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         updateTooltip();
     }
 
+    @Override
+    public TextFieldWidget setCurrentString(Object currentString) {
+        String newVal = currentString.toString();
+        if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+            int cursorPos = textField.getCursorPosition();
+            super.setCurrentString(newVal);
+            int clamped = Math.min(cursorPos, newVal.length());
+            textField.setCursorPosition(clamped);
+            textField.setHighlightPos(clamped);
+        } else {
+            super.setCurrentString(currentString);
+        }
+        return this;
+    }
+
     private void selectAll() {
         if (isRemote() && textField != null) {
             textField.setCursorPosition(0);

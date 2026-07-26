@@ -74,6 +74,9 @@ final class QuestTaskSectionWidget {
                 if (!isMouseOverElement(mouseX, mouseY)) {
                     return super.mouseClicked(mouseX, mouseY, button);
                 }
+                if (super.mouseClicked(mouseX, mouseY, button)) {
+                    return true;
+                }
                 int lx = QuestDetailsCoordinates.localX(state, mouseX, getPositionX(), w);
                 int ly = QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), h);
                 QuestDetailsTaskEntry hitEntry = hitEntry(state, entries, kind, listY, h - bottomPad, ly);

@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.quest.model.canvas;
 
 
+
+
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public record CanvasImageLayer(String id, String asset, int x, int y, int w, int h, int rotation, int entityYaw, int entitySpinSpeed, int modelPitch, int pivotX, int pivotY) {

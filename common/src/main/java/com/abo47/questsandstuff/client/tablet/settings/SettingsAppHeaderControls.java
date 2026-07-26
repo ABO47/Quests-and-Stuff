@@ -50,7 +50,6 @@ final class SettingsAppHeaderControls {
     }
 
     static SettingsAppHeaderControls create(TabletUiState state, Runnable refresh, int headerTop, int bodyW) {
-        state.settings.tabAnimationStartMs = System.currentTimeMillis();
         TextFieldWidget searchField = StyledTextFields.search(
                 SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP, Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H,
                 () -> state.settings.search, Integer.MAX_VALUE,
@@ -90,6 +89,7 @@ final class SettingsAppHeaderControls {
         }
         searchField.setSelfPosition(SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP);
         searchField.setSize(Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H);
+        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
     }
 
     void addTo(WidgetGroup mainPanel) {
@@ -118,7 +118,7 @@ final class SettingsAppHeaderControls {
     }
 
     private WidgetGroup enlargedTabBg(int w, int fill, int border) {
-        return new WidgetGroup(0, 0, w, TAB_H) {
+        WidgetGroup bg = new WidgetGroup(0, 0, w, TAB_H) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 long elapsed = System.currentTimeMillis() - state.settings.tabAnimationStartMs;
@@ -141,6 +141,8 @@ final class SettingsAppHeaderControls {
                 SurfaceFactory.bordered(fill, border).draw(graphics, mouseX, mouseY, getPositionX(), drawY, getSizeWidth(), drawH);
             }
         };
+        bg.setBackground(SurfaceFactory.bordered(fill, border));
+        return bg;
     }
 
     private void selectTab(SettingsTabDescriptor tab) {

@@ -79,21 +79,22 @@ final class TabletRootKeyboardRouter {
             }
 
             boolean closedAnything = false;
-            int safety = 0;
-            while (safety < 50 && TabletRootWindowController.closeFrontmostWindow(state)) {
-                closedAnything = true;
-                safety++;
-            }
-            if (safety >= 50) {
-                QuestsAndStuffMod.debugLog("[QnS:UI] escape: closeFrontmostWindow hit safety limit, forcing clear");
-                forceClearStuckStates(state);
-            }
 
             if (state.root.skinEditMode) {
                 state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
                 root.closeContextMenu();
                 closedAnything = true;
+            }
+
+            int safety = 0;
+            while (!closedAnything && safety < 50 && TabletRootWindowController.closeFrontmostWindow(state)) {
+                closedAnything = true;
+                safety++;
+            }
+            if (safety >= 50) {
+                QuestsAndStuffMod.debugLog("[QnS:UI] escape: closeFrontmostWindow hit safety limit, forcing clear");
+                forceClearStuckStates(state);
             }
 
             if (cancelInteractionStates(state)) {

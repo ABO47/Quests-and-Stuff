@@ -127,6 +127,7 @@ final class TeamsAppHeaderControls {
     void layout(int headerY, int bodyW) {
         int searchW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
         searchField.setSize(searchW, TOOL_SIZE);
+        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
 
         int baX = HEADER_INSET + searchW;
         leaveBtn.setSelfPosition(baX + HEADER_GAP, headerY);

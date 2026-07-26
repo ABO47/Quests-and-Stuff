@@ -160,7 +160,9 @@ final class QuestAppHeaderControls {
 
     void refreshSurfaceFactory(TabletUiState state) {
         chapterSearchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        chapterSearchField.setTextColor(TabletColors.TEXT_PRIMARY);
         searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
         toolsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         blueprintButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
         claimAllButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));

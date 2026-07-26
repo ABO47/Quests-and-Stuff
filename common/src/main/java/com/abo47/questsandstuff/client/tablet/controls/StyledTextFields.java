@@ -48,6 +48,21 @@ public final class StyledTextFields {
                     focusResponder.accept(isFocus());
                 }
             }
+
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    int clamped = Math.min(cursorPos, newVal.length());
+                    textField.setCursorPosition(clamped);
+                    textField.setHighlightPos(clamped);
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
         };
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
@@ -122,6 +137,21 @@ public final class StyledTextFields {
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
+
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    int clamped = Math.min(cursorPos, newVal.length());
+                    textField.setCursorPosition(clamped);
+                    textField.setHighlightPos(clamped);
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
         };
     }
 
@@ -140,7 +170,22 @@ public final class StyledTextFields {
             int maxLength,
             Consumer<String> responder
     ) {
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder);
+        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder) {
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    int clamped = Math.min(cursorPos, newVal.length());
+                    textField.setCursorPosition(clamped);
+                    textField.setHighlightPos(clamped);
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
+        };
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);

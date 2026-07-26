@@ -31,19 +31,6 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (state.questDetails.entityMotionEditorOpen) {
-            int localX = localRootX(root, mouseX);
-            int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isMainCanvasHit(state, localX, localY)
-                || EntityMotionEditor.isChapterPanelHit(state, localX, localY)
-                || EntityMotionEditor.isQuestDetailsHit(state, mouseX, mouseY)) {
-                selfClick.invoke(mouseX, mouseY, button);
-                return true;
-            }
-            EntityMotionEditor.close(state);
-            refresher.run();
-            return true;
-        }
         TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY);
         if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
@@ -134,16 +121,6 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
                 frontWindowLayer.mouseWheelMove(mouseX, mouseY, wheelDelta);
-            }
-            return true;
-        }
-        if (state.questDetails.entityMotionEditorOpen) {
-            int localX = localRootX(root, mouseX);
-            int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isMainCanvasHit(state, localX, localY)
-                || EntityMotionEditor.isChapterPanelHit(state, localX, localY)
-                || EntityMotionEditor.isQuestDetailsHit(state, mouseX, mouseY)) {
-                selfWheel.invoke(mouseX, mouseY, wheelDelta);
             }
             return true;
         }

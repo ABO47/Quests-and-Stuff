@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -156,6 +157,9 @@ public final class TabletRootWidget extends WidgetGroup {
                 TabletRootDrawRouter.LayerDraw.FOREGROUND, (g, x, y, t) -> super.drawInForeground(g, x, y, t));
         if (homeBtn != null) {
             homeBtn.drawInForeground(graphics, mouseX, mouseY, partialTicks);
+        }
+        if (state != null && state.root.skinEditMode && gui != null && gui.getModularUIGui() != null) {
+            gui.getModularUIGui().tooltipTexts = null;
         }
     }
 

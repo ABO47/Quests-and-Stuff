@@ -7,6 +7,8 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 
 
+
+
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class ContextMenuPlacement {
