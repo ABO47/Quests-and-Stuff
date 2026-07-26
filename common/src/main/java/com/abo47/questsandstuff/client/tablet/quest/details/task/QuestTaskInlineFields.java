@@ -108,15 +108,12 @@ final class QuestTaskInlineFields {
             renderDisplayText(parent, x - 42, y, 36, progress, TabletColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
         }
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
-        TextFieldWidget field = StyledTextFields.numberField(
+        TextFieldWidget field = StyledTextFields.commitField(
                 x,
                 y,
                 w,
                 14,
-                amount,
-                1,
-                99999,
-                5,
+                null,
                 value -> {
                 },
                 () -> {
@@ -130,6 +127,13 @@ final class QuestTaskInlineFields {
                     refresh.run();
                 }
         );
+        field.setClientSideWidget();
+        field.setCurrentString(Integer.toString(amount));
+        field.setMaxStringLength(5);
+        field.setNumbersOnly(1, 99999);
+        field.setBordered(false);
+        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
         fieldRef[0] = field;
         parent.addWidget(field);
     }

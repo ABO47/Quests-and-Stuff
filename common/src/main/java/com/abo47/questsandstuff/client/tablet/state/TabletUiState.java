@@ -623,6 +623,11 @@ public class TabletUiState {
         public String questDetailsSelectedTaskId = "";
         public boolean questDetailsTaskDragPending;
         public boolean questDetailsTaskDragActive;
+        public boolean questDetailsTaskDragRefreshQueued;
+        public String questDetailsTaskDragPendingQuestId = "";
+        public String questDetailsTaskDragPendingTaskId = "";
+        public int questDetailsTaskDragPendingOffset;
+        public boolean questDetailsTaskDragPendingIsTask;
         public String questDetailsTaskDragKind = "";
         public String questDetailsTaskDragId = "";
         public int questDetailsTaskDragTargetIndex = -1;

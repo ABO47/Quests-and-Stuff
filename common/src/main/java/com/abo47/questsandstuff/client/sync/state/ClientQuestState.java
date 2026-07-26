@@ -11,13 +11,21 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public final class ClientQuestState {
     private static final Map<String, CompoundTag> QUESTS = new HashMap<>();
     private static final Set<String> PINNED = new TreeSet<>();
+    private static String dragReorderQuestId;
+    private static String dragReorderEntryId;
+    private static int dragReorderOffset;
+    private static boolean dragReorderIsTask;
 
     private ClientQuestState() {
     }
@@ -37,6 +45,29 @@ public final class ClientQuestState {
             return;
         }
         QUESTS.put(normalized, quest.copy());
+        if (normalized.equals(dragReorderQuestId) && dragReorderEntryId != null && !dragReorderEntryId.isBlank()) {
+            if (dragReorderIsTask) {
+                moveTask(dragReorderQuestId, dragReorderEntryId, dragReorderOffset);
+            } else {
+                moveReward(dragReorderQuestId, dragReorderEntryId, dragReorderOffset);
+            }
+            dragReorderQuestId = null;
+            dragReorderEntryId = null;
+            dragReorderOffset = 0;
+        }
+    }
+
+    public static void setDragReorderPending(String questId, String entryId, int offset, boolean isTask) {
+        dragReorderQuestId = normalizeQuestId(questId);
+        dragReorderEntryId = entryId;
+        dragReorderOffset = offset;
+        dragReorderIsTask = isTask;
+    }
+
+    public static void clearDragReorderPending() {
+        dragReorderQuestId = null;
+        dragReorderEntryId = null;
+        dragReorderOffset = 0;
     }
 
     public static CompoundTag questCopy(String questId) {
@@ -132,6 +163,87 @@ public final class ClientQuestState {
         if (!PINNED.add(normalized)) {
             PINNED.remove(normalized);
         }
+    }
+
+    public static boolean moveTask(String questId, String taskId, int offset) {
+        CompoundTag quest = QUESTS.get(normalizeQuestId(questId));
+        if (quest == null || taskId == null || taskId.isBlank() || offset == 0) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] moveTask skip quest={} task={} offset={} exist={}", questId, taskId, offset, quest != null);
+            return false;
+        }
+        ListTag order = quest.getList(SyncKeys.Quest.TASKS_ORDER, Tag.TAG_STRING);
+        if (order == null || order.isEmpty()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] moveTask no order quest={} task={}", questId, taskId);
+            return false;
+        }
+        int fromIndex = -1;
+        for (int i = 0; i < order.size(); i++) {
+            if (order.getString(i).equals(taskId)) {
+                fromIndex = i;
+                break;
+            }
+        }
+        if (fromIndex < 0) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] moveTask id not found quest={} task={} order={}", questId, taskId, order);
+            return false;
+        }
+        int target = Math.max(0, Math.min(order.size() - 1, fromIndex + offset));
+        if (target == fromIndex) {
+            return false;
+        }
+        String id = order.getString(fromIndex);
+        QuestsAndStuffMod.debugLog("[QnS:UI] moveTask before quest={} task={} order={}", questId, taskId, order);
+        if (target > fromIndex) {
+            for (int i = fromIndex; i < target; i++) {
+                order.setTag(i, StringTag.valueOf(order.getString(i + 1)));
+            }
+        } else {
+            for (int i = fromIndex; i > target; i--) {
+                order.setTag(i, StringTag.valueOf(order.getString(i - 1)));
+            }
+        }
+        order.setTag(target, StringTag.valueOf(id));
+        quest.put(SyncKeys.Quest.TASKS_ORDER, order);
+        QuestsAndStuffMod.debugLog("[QnS:UI] moveTask after quest={} task={} order={}", questId, taskId, order);
+        return true;
+    }
+
+    public static boolean moveReward(String questId, String rewardId, int offset) {
+        CompoundTag quest = QUESTS.get(normalizeQuestId(questId));
+        if (quest == null || rewardId == null || rewardId.isBlank() || offset == 0) {
+            return false;
+        }
+        ListTag order = quest.getList(SyncKeys.Quest.REWARDS_ORDER, Tag.TAG_STRING);
+        if (order == null || order.isEmpty()) {
+            return false;
+        }
+        int fromIndex = -1;
+        for (int i = 0; i < order.size(); i++) {
+            if (order.getString(i).equals(rewardId)) {
+                fromIndex = i;
+                break;
+            }
+        }
+        if (fromIndex < 0) {
+            return false;
+        }
+        int target = Math.max(0, Math.min(order.size() - 1, fromIndex + offset));
+        if (target == fromIndex) {
+            return false;
+        }
+        String id = order.getString(fromIndex);
+        if (target > fromIndex) {
+            for (int i = fromIndex; i < target; i++) {
+                order.setTag(i, StringTag.valueOf(order.getString(i + 1)));
+            }
+        } else {
+            for (int i = fromIndex; i > target; i--) {
+                order.setTag(i, StringTag.valueOf(order.getString(i - 1)));
+            }
+        }
+        order.setTag(target, StringTag.valueOf(id));
+        quest.put(SyncKeys.Quest.REWARDS_ORDER, order);
+        return true;
     }
 
     public static int completedCount() {

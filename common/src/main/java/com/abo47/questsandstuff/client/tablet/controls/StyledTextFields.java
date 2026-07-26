@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
@@ -62,6 +64,12 @@ public final class StyledTextFields {
                     super.setCurrentString(currentString);
                 }
                 return this;
+            }
+
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                setTextColor(TabletColors.TEXT_PRIMARY);
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
         field.setClientSideWidget();
@@ -184,6 +192,12 @@ public final class StyledTextFields {
                     super.setCurrentString(currentString);
                 }
                 return this;
+            }
+
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                setTextColor(TabletColors.TEXT_PRIMARY);
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
         field.setClientSideWidget();

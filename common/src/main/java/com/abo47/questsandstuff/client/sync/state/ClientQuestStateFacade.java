@@ -399,6 +399,22 @@ public final class ClientQuestStateFacade {
         ClientQuestMutator.putQuestTaskJsonLocal(questId, taskJson);
     }
 
+    public static void moveQuestTaskLocal(String questId, String taskId, int offset) {
+        ClientQuestState.moveTask(questId, taskId, offset);
+    }
+
+    public static void moveQuestRewardLocal(String questId, String rewardId, int offset) {
+        ClientQuestState.moveReward(questId, rewardId, offset);
+    }
+
+    public static void setDragReorderPending(String questId, String entryId, int offset, boolean isTask) {
+        ClientQuestState.setDragReorderPending(questId, entryId, offset, isTask);
+    }
+
+    public static void clearDragReorderPending() {
+        ClientQuestState.clearDragReorderPending();
+    }
+
     public static void putQuestRewardJsonLocal(String questId, String rewardJson) {
         ClientQuestMutator.putQuestRewardJsonLocal(questId, rewardJson);
     }

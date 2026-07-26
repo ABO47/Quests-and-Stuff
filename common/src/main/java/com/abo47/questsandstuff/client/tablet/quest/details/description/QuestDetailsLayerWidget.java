@@ -10,6 +10,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestDetailsLayerWidget extends WidgetGroup {
@@ -30,6 +32,14 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             refresh.run();
         }
         if (ToolMenuAnimation.finishClosingIfDone(state)) {
+            refresh.run();
+        }
+        if (state.questDetails.questDetailsTaskDragRefreshQueued) {
+            state.questDetails.questDetailsTaskDragRefreshQueued = false;
+            state.questDetails.questDetailsTaskDragPendingQuestId = "";
+            state.questDetails.questDetailsTaskDragPendingTaskId = "";
+            state.questDetails.questDetailsTaskDragPendingOffset = 0;
+            ClientQuestState.clearDragReorderPending();
             refresh.run();
         }
     }
@@ -70,6 +80,9 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
                 dragPendingBefore,
                 detailsContextWasOpen
         )) {
+            clearTaskSelection = false;
+        }
+        if (QuestDetailsTasksPanel.isCardHit(state, mouseX, mouseY)) {
             clearTaskSelection = false;
         }
         if (motionEditorWasOpen && (motionEditorHit || EntityMotionEditor.isDragging(state))) {

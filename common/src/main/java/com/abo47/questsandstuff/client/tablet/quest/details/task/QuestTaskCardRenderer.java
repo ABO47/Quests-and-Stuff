@@ -129,31 +129,7 @@ final class QuestTaskCardRenderer {
         WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsTasksPanel.CARD_H) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                boolean editMode = QuestDetailsEditController.canEdit(state);
-                if (button == 0 && isMouseOverElement(mouseX, mouseY)) {
-                    boolean claimChoice = claimChoiceEntry && !claimedReward;
-                    if (claimChoice) {
-                        QuestTaskSelectableRewards.selectChoice(state, id);
-                    }
-                    if (editMode) {
-                        QuestTaskListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
-                        refresh.run();
-                        return true;
-                    }
-                    if (claimChoice) {
-                        refresh.run();
-                        return true;
-                    }
-                }
-                if (button == 1 && isMouseOverElement(mouseX, mouseY) && editMode) {
-                    int lx = QuestDetailsCoordinates.localX(state, mouseX, getPositionX(), w);
-                    int ly = QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), QuestDetailsTasksPanel.CARD_H);
-                    QuestTaskListInteractions.select(state, kind, id);
-                    QuestDetailsCoordinates.openContextAtPointer(state, kind, id, mouseX, mouseY, getPositionX(), getPositionY(), lx, ly);
-                    refresh.run();
-                    return true;
-                }
-                return super.mouseClicked(mouseX, mouseY, button);
+                return false;
             }
 
             @Override
@@ -181,6 +157,12 @@ final class QuestTaskCardRenderer {
                 }
             }
         };
+        if (claimChoiceEntry && !claimedReward) {
+            card.addWidget(flatHitButton(0, 0, w, QuestDetailsTasksPanel.CARD_H, click -> {
+                QuestTaskSelectableRewards.selectChoice(state, id);
+                state.questDetails.questDetailsTaskDragRefreshQueued = true;
+            }));
+        }
         boolean editSelected = kind.startsWith(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
         boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;

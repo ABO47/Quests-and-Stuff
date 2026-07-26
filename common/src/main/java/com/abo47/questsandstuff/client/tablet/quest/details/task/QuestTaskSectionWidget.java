@@ -74,7 +74,7 @@ final class QuestTaskSectionWidget {
                 if (!isMouseOverElement(mouseX, mouseY)) {
                     return super.mouseClicked(mouseX, mouseY, button);
                 }
-                if (super.mouseClicked(mouseX, mouseY, button)) {
+                if (button == 0 && super.mouseClicked(mouseX, mouseY, button)) {
                     return true;
                 }
                 int lx = QuestDetailsCoordinates.localX(state, mouseX, getPositionX(), w);
@@ -86,17 +86,15 @@ final class QuestTaskSectionWidget {
                 boolean claimChoice = "rewards".equals(kind)
                         && !rewardsClaimed
                         && QuestTaskSelectableRewards.isClaimChoiceEntry(hitEntry);
-                if (button == 0 && !id.isBlank() && cardBodyHit) {
+                if (button == 0 && !id.isBlank()) {
                     if (claimChoice) {
                         QuestTaskSelectableRewards.selectChoice(state, id);
+                        state.questDetails.questDetailsTaskDragRefreshQueued = true;
+                        return true;
                     }
                     if (editMode) {
                         QuestTaskListInteractions.selectAndBeginDrag(state, kind, id, mouseX, mouseY);
-                        refresh.run();
-                        return true;
-                    }
-                    if (claimChoice) {
-                        refresh.run();
+                        state.questDetails.questDetailsTaskDragRefreshQueued = true;
                         return true;
                     }
                 }
@@ -114,6 +112,9 @@ final class QuestTaskSectionWidget {
                 if (isTaskScrollDragging(state, kind)) {
                     return super.mouseDragged(QuestDetailsCoordinates.screenX(state, getPositionX()) + scrollbarX(w), mouseY, button, dragX, dragY);
                 }
+                if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+                    return true;
+                }
                 int ly = QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), h);
                 if (QuestTaskListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, h - bottomPad, ly, mouseX, mouseY, button)) {
                     return true;
@@ -125,6 +126,9 @@ final class QuestTaskSectionWidget {
             public boolean mouseReleased(double mouseX, double mouseY, int button) {
                 if (isTaskScrollDragging(state, kind)) {
                     return super.mouseReleased(QuestDetailsCoordinates.screenX(state, getPositionX()) + scrollbarX(w), mouseY, button);
+                }
+                if (super.mouseReleased(mouseX, mouseY, button)) {
+                    return true;
                 }
                 if (QuestTaskListInteractions.handleRelease(player, state, refresh, questId, entries, kind)) {
                     return true;

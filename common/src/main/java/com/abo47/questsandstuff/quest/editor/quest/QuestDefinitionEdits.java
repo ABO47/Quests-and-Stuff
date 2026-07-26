@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -277,7 +278,7 @@ public final class QuestDefinitionEdits {
                 definition.hiddenConnections(),
                 definition.connectionTextures(),
                 definition.connectionTextureSpacings(),
-                definition.tasksOrder(),
+                new ArrayList<>(tasks.keySet()),
                 definition.rewardsOrder(),
                 orderedCopy(tasks),
                 definition.rewards()
@@ -298,7 +299,7 @@ public final class QuestDefinitionEdits {
                 definition.connectionTextures(),
                 definition.connectionTextureSpacings(),
                 definition.tasksOrder(),
-                definition.rewardsOrder(),
+                new ArrayList<>(rewards.keySet()),
                 definition.tasks(),
                 orderedCopy(rewards)
         );

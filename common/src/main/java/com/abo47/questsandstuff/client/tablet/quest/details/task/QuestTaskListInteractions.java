@@ -5,8 +5,10 @@ import java.util.List;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
@@ -72,7 +74,7 @@ final class QuestTaskListInteractions {
             int next = taskInsertIndexAtY(state, entries, kind, listY, listBottom, localY);
             if (next != state.questDetails.questDetailsTaskDragTargetIndex) {
                 state.questDetails.questDetailsTaskDragTargetIndex = next;
-                refresh.run();
+                state.questDetails.questDetailsTaskDragRefreshQueued = true;
             }
             return true;
         }
@@ -83,7 +85,7 @@ final class QuestTaskListInteractions {
             state.questDetails.questDetailsTaskDragPending = false;
             state.questDetails.questDetailsTaskDragActive = true;
             state.questDetails.questDetailsTaskDragTargetIndex = taskInsertIndexAtY(state, entries, kind, listY, listBottom, localY);
-            refresh.run();
+            state.questDetails.questDetailsTaskDragRefreshQueued = true;
             return true;
         }
         return false;
@@ -96,6 +98,22 @@ final class QuestTaskListInteractions {
         }
         if (state.questDetails.questDetailsTaskDragActive && state.questDetails.questDetailsTaskDragKind.equals(kind)) {
             finishDrag(player, state, questId, entries);
+            if (state.questDetails.questDetailsTaskDragPendingIsTask) {
+                ClientQuestStateFacade.moveQuestTaskLocal(
+                        state.questDetails.questDetailsTaskDragPendingQuestId,
+                        state.questDetails.questDetailsTaskDragPendingTaskId,
+                        state.questDetails.questDetailsTaskDragPendingOffset
+                );
+            } else {
+                ClientQuestStateFacade.moveQuestRewardLocal(
+                        state.questDetails.questDetailsTaskDragPendingQuestId,
+                        state.questDetails.questDetailsTaskDragPendingTaskId,
+                        state.questDetails.questDetailsTaskDragPendingOffset
+                );
+            }
+            if (!state.questDetails.questDetailsTaskDragPendingQuestId.isBlank()) {
+                state.questDetails.questDetailsTaskDragRefreshQueued = true;
+            }
             refresh.run();
             return true;
         }
@@ -164,14 +182,24 @@ final class QuestTaskListInteractions {
         String moving = state.questDetails.questDetailsTaskDragId;
         int target = Math.max(0, state.questDetails.questDetailsTaskDragTargetIndex);
         boolean task = "tasks".equals(state.questDetails.questDetailsTaskDragKind);
+        state.questDetails.questDetailsTaskDragPendingQuestId = "";
+        state.questDetails.questDetailsTaskDragPendingTaskId = "";
+        state.questDetails.questDetailsTaskDragPendingOffset = 0;
+        state.questDetails.questDetailsTaskDragPendingIsTask = true;
         clearDrag(state);
         if (moving.isBlank()) {
             return;
         }
         int offset = CardDragSortUtil.offsetForDrop(moving, entries, QuestDetailsTaskEntry::id, target);
+        QuestsAndStuffMod.debugLog("[QnS:UI] task drag finish kind={} quest={} moving={} target={} offset={} entries={}", task ? "task" : "reward", questId, moving, target, offset, entries.size());
         if (offset == 0) {
             return;
         }
+        state.questDetails.questDetailsTaskDragPendingQuestId = questId;
+        state.questDetails.questDetailsTaskDragPendingTaskId = moving;
+        state.questDetails.questDetailsTaskDragPendingOffset = offset;
+        state.questDetails.questDetailsTaskDragPendingIsTask = task;
+        ClientQuestStateFacade.setDragReorderPending(questId, moving, offset, task);
         if (task) {
             EditorQuestCommandClient.moveQuestTask(player, questId, moving, offset);
         } else {
