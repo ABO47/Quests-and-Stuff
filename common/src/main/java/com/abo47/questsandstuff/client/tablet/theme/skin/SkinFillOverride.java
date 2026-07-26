@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.resources.ResourceLocation;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -48,6 +50,8 @@ public record SkinFillOverride(String mode, String path) {
             tex = createTileTexture();
         } else if ("center".equals(mode)) {
             tex = createCenterTexture();
+        } else if ("dynamic".equals(mode)) {
+            tex = createDynamicTexture();
         } else {
             tex = createFullTexture();
         }
@@ -78,6 +82,18 @@ public record SkinFillOverride(String mode, String path) {
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         return new CenterCropTexture(id, dims.width(), dims.height());
+    }
+
+    private IGuiTexture createDynamicTexture() {
+        AssetKind kind = AssetLibrary.assetKind(path);
+        if (kind == AssetKind.GIF) {
+            return createFullTexture();
+        }
+        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) return null;
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (dims == null) return null;
+        return new DynamicClippingTexture(id, dims.width(), dims.height());
     }
 
     private IGuiTexture createFullTexture() {

@@ -387,5 +387,4 @@ final class CanvasMinimapOverlay {
         state.canvas.minimapWorldWidth = projection.world().width();
         state.canvas.minimapWorldHeight = projection.world().height();
     }
-
 }

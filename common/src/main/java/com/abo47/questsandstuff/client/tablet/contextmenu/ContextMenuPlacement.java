@@ -2,6 +2,9 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 
 
+
+
+
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class ContextMenuPlacement {
@@ -37,5 +40,4 @@ public final class ContextMenuPlacement {
     private static int maxPosition(int available, int size) {
         return Math.max(PAD, available - size - PAD);
     }
-
 }

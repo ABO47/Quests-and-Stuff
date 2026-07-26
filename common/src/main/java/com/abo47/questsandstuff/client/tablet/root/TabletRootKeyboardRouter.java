@@ -13,6 +13,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
@@ -68,40 +69,46 @@ final class TabletRootKeyboardRouter {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             if (root.isContextMenuOpen()) {
                 root.closeContextMenu();
-                refresher.run();
-                return true;
             }
+
             if (state.modal.modalWindowClosing) {
                 TabletModalState.closeAllModalsImmediately(state);
             }
             if (state.questDetails.questDetailsClosing) {
                 QuestDetailsWindow.finishCloseAnimation(state);
             }
-            if (root.isAnyModalOpen()) {
-                if (state.modal.modalWindowClosing) {
-                    TabletModalState.closeAllModalsImmediately(state);
-                } else {
-                    ModalCloseActions.closeAll(state);
-                }
-                refresher.run();
-                return true;
+
+            boolean closedAnything = false;
+            int safety = 0;
+            while (safety < 50 && TabletRootWindowController.closeFrontmostWindow(state)) {
+                closedAnything = true;
+                safety++;
             }
+            if (safety >= 50) {
+                QuestsAndStuffMod.debugLog("[QnS:UI] escape: closeFrontmostWindow hit safety limit, forcing clear");
+                forceClearStuckStates(state);
+            }
+
             if (state.root.skinEditMode) {
                 state.root.skinEditSelectedTarget = "";
                 state.root.skinEditMode = false;
                 root.closeContextMenu();
+                closedAnything = true;
+            }
+
+            if (cancelInteractionStates(state)) {
+                closedAnything = true;
+            }
+
+            QuestsAndStuffMod.debugLog("[QnS:UI] escape: closedAnything={}, skinEditMode={}, questDetailsOpen={}, modalOpen={}",
+                    closedAnything, state.root.skinEditMode, state.questDetails.questDetailsOpen, state.modal.modalWindowClosing);
+
+            if (closedAnything) {
                 TabletUiFactory.persistSkinState(state);
                 refresher.run();
                 return true;
             }
-            if (TabletRootWindowController.closeFrontmostWindow(state)) {
-                refresher.run();
-                return true;
-            }
-            if (cancelInteractionStates(state)) {
-                refresher.run();
-                return true;
-            }
+
             TabletLifecycle.closeTabletUi(state, false, "escape");
             return true;
         }
@@ -171,6 +178,21 @@ final class TabletRootKeyboardRouter {
             return false;
         }
         return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
+    }
+
+    private static void forceClearStuckStates(TabletUiState state) {
+        state.canvas.toolsMenuOpen = false;
+        state.canvas.toolsMenuClosing = false;
+        state.canvas.toolsGridSizeMenuOpen = false;
+        state.canvas.toolsGridOpacityMenuOpen = false;
+        state.chapterPanel.chapterTextMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
+        state.pickers.assetContextOpen = false;
+        state.pickers.assetRenameOpen = false;
+        state.pickers.colorPaletteContextOpen = false;
+        state.contextMenu.contextMenuOpen = false;
+        ContextMenuController.clearDeleteConfirm(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] forceClearStuckStates done");
     }
 
     private static boolean keyPressedForFrontWindow(

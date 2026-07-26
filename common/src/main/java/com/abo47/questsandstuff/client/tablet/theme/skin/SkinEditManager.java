@@ -168,6 +168,11 @@ public final class SkinEditManager {
                 }
             };
         }
+
+        if (tex instanceof DynamicClippingTexture dct) {
+            dct.setReferenceSize(w.getSizeWidth(), w.getSizeHeight());
+        }
+
         w.setBackground(tex);
         w.setDrawBackgroundWhenHover(true);
     }
@@ -299,6 +304,15 @@ public final class SkinEditManager {
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "center", currentAsset, root, refresher);
                 }));
+        modeActions.add(ContextActionFactory.action(
+                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"),
+                "dynamic",
+                currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                () -> {
+                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: dynamic, asset={}", currentAsset);
+                    root.closeContextMenu();
+                    setFillMode(state, resolvedTarget, "dynamic", currentAsset, root, refresher);
+                }));
         actions.add(ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "style",
@@ -353,6 +367,7 @@ public final class SkinEditManager {
         String encoded = override.encode();
         state.root.skinFillOverrides.put(entryKey, encoded);
         state.root.activeSkinTargets.add(targetKey);
+        SkinFillOverride.clearCache();
         QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode: target={}, mode={}, asset={}, entryKey={}, encoded={}", targetKey, mode, asset, entryKey, encoded);
         reapplyOverrides(state, root);
         if (refresher != null) refresher.run();

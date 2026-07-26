@@ -26,23 +26,28 @@ public final class TabletRootWindowController {
     public static boolean closeFrontmostWindow(TabletUiState state) {
         if (isAnyModalOpen(state)) {
             ModalCloseActions.closeAll(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed modals");
             return true;
         }
         if (state.teams.inviteCodeModalOpen) {
             state.teams.inviteCodeModalOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed teams invite modal");
             return true;
         }
         if (state.teams.confirmModalOpen) {
             state.teams.confirmModalOpen = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed teams confirm modal");
             return true;
         }
         if (state.canvas.canvasTextMenuOpen) {
             TextEditSession.closeMainCanvas(state, true);
             TextStyleSession.closeMainCanvas(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed canvas text menu");
             return true;
         }
         if (state.questDetails.questDetailsClosing) {
             QuestDetailsWindow.finishCloseAnimation(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: finished quest details close animation");
             return true;
         }
         if (state.questDetails.questDetailsOpen) {
@@ -51,25 +56,28 @@ public final class TabletRootWindowController {
                 if (!hadVisibleSubState) {
                     QuestDetailsWindow.close(state);
                     TabletLifecycle.rememberMainWindow();
-                    QuestsAndStuffMod.debugLog("[QnS:UI] quest details force-close stale sub-state");
+                    QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: force-close quest details stale sub-state");
                     return true;
                 }
+                QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed quest details sub-state");
                 return true;
             }
             QuestDetailsWindow.close(state);
             TabletLifecycle.rememberMainWindow();
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details close via escape");
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed quest details");
             return true;
         }
         if (state.pickers.assetContextOpen || state.pickers.assetRenameOpen) {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
             ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed asset context/rename");
             return true;
         }
         if (state.pickers.colorPaletteContextOpen) {
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed color palette context");
             return true;
         }
         if (state.chapterPanel.chapterTextMenuOpen) {
@@ -77,33 +85,40 @@ public final class TabletRootWindowController {
             state.chapterPanel.chapterTextMenuTarget = "";
             state.chapterPanel.chapterTextFontSizeDraftTarget = "";
             state.chapterPanel.chapterTextFontSizeFieldTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed chapter text menu");
             return true;
         }
         if (state.contextMenu.contextMenuOpen) {
             ContextMenuController.close(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed context menu");
             return true;
         }
         if (EntityMotionEditor.isMainCanvasOpen(state)) {
             EntityMotionEditor.close(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed entity motion editor");
             return true;
         }
         if (state.chapterPanel.chapterMenuOpen) {
             state.chapterPanel.chapterMenuOpen = false;
             state.chapterPanel.chapterMenuTarget = "";
             ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed chapter menu");
             return true;
         }
         if (state.canvas.toolsMenuOpen || state.canvas.toolsMenuClosing || state.canvas.toolsGridSizeMenuOpen || state.canvas.toolsGridOpacityMenuOpen) {
             ToolMenuAnimation.closeMain(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed tools menu");
             return true;
         }
         if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             EditorQuestCommandClient.cancelQuestTitleChange(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: cancelled quest title change");
             return true;
         }
         if (!state.canvas.pendingChapterRename.isBlank()) {
             state.canvas.pendingChapterRename = "";
             state.chapterPanel.chapterDraftName = state.root.selectedChapter;
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: cancelled chapter rename");
             return true;
         }
         return false;
@@ -138,7 +153,7 @@ public final class TabletRootWindowController {
     }
 
     private static boolean hasVisibleQuestDetailsSubState(TabletUiState state) {
-        return state.questDetails.questDetailsPickerSession.active()
+        boolean visible = state.questDetails.questDetailsPickerSession.active()
                 || state.questDetails.questDetailsCommandRewardEditorOpen
                 || state.questDetails.questDetailsTaskRenameOpen
                 || state.questDetails.questDetailsContextOpen
@@ -147,20 +162,25 @@ public final class TabletRootWindowController {
                 || EntityMotionEditor.isQuestDetailsOpen(state)
                 || TextStyleSession.questDetailsOpenOrEditingFont(state)
                 || TextEditSession.isAnyEditing(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] hasVisibleQuestDetailsSubState={}", visible);
+        return visible;
     }
 
     private static boolean closeQuestDetailsFrontState(TabletUiState state) {
         boolean changed = QuestDetailsTransientManager.closeFloatingPopups(state);
         if (EntityMotionEditor.isQuestDetailsOpen(state)) {
             EntityMotionEditor.close(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed entity editor");
             changed = true;
         }
         if (TextStyleSession.questDetailsOpenOrEditingFont(state)) {
             TextStyleSession.closeQuestDetails(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed text style session");
             changed = true;
         }
         if (TextEditSession.isAnyEditing(state)) {
             TextEditSession.closeAny(state, true);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed text edit session");
             changed = true;
         }
         if (state.questDetails.questDetailsTitleFocused || state.questDetails.questDetailsQuestId.equals(state.questDetails.pendingQuestTitleChangeId)) {
@@ -169,14 +189,17 @@ public final class TabletRootWindowController {
                 state.questDetails.pendingQuestTitleChangeId = "";
                 state.questDetails.questTitleDraft = "";
             }
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed title focused/change");
             changed = true;
         }
         if (!state.questDetails.questDetailsTransformKind.isBlank() || !state.questDetails.questDetailsTransformId.isBlank()) {
             CanvasTransformSessions.clearQuestDetailsSession(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: cleared transform session");
             changed = true;
         }
         if (state.questDetails.questDetailsBoxSelecting) {
             state.questDetails.questDetailsBoxSelecting = false;
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: cleared box selecting");
             changed = true;
         }
         return changed;
