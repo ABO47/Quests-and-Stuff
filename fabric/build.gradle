@@ -99,6 +99,10 @@ remapJar {
     archiveClassifier = null
 }
 
+tasks.named('runClient', JavaExec).configure {
+    jvmArgs '-Xmx4G'
+}
+
 sourcesJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     def commonSources = project(':questsandstuff-common').tasks.named('sourcesJar')
