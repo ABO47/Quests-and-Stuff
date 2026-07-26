@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
@@ -92,6 +93,9 @@ final class QuestDetailsWindowLayout {
                     }
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
+                if (!TabletPanelChrome.shouldHideViewportBorder(canvasPanel, state)) {
+                    TabletPanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, TabletColors.BORDER_BASE);
+                }
             }
         };
         canvasPanel.addWidget(viewportBg);

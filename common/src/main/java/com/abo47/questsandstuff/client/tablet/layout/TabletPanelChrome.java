@@ -116,9 +116,6 @@ public final class TabletPanelChrome {
         int holeBottom = y + Math.max(1, Math.min(h - 1, viewportY + viewportH));
 
         if (holeRight > holeLeft && holeBottom > holeTop) {
-            if (state == null || !isBackgroundKeySkinned(panel, state)) {
-                drawRectOutline(graphics, holeLeft - 1, holeTop - 1, holeRight - holeLeft + 2, holeBottom - holeTop + 2, TabletColors.BORDER_BASE);
-            }
             if (canEdit && gridEnabled) {
                 drawRectOutline(graphics, holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, gridLineColor(gridOpacityPercent, gridColor));
             }
@@ -149,6 +146,12 @@ public final class TabletPanelChrome {
         String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
         return state.root.skinFillOverrides.containsKey(bgKey)
                 || state.root.skinFillOverrides.containsKey(appPrefix + bgKey);
+    }
+
+    public static boolean shouldHideViewportBorder(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
+        if (hasBuiltinCanvasBackground(state)) return true;
+        if (state != null && isBackgroundKeySkinned(panel, state)) return true;
+        return false;
     }
 
     private static boolean hasBuiltinCanvasBackground(@javax.annotation.Nullable TabletUiState state) {

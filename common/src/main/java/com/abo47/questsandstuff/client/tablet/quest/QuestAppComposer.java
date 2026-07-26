@@ -118,7 +118,7 @@ public final class QuestAppComposer {
         int[] initialViewport = canvasViewportBounds(initialCanvasW, initialCanvasH, initialTop);
         CanvasViewport canvasViewport = new CanvasViewport(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3]), state, player);
 
-        WidgetGroup viewportBg = new WidgetGroup(0, 0, initialCanvasW, initialCanvasH) {
+        WidgetGroup viewportBg = new WidgetGroup(initialViewport[0], initialViewport[1], Math.max(64, initialViewport[2]), Math.max(32, initialViewport[3])) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 IGuiTexture bg = getBackgroundTexture();
@@ -189,9 +189,6 @@ public final class QuestAppComposer {
             chapterPanelRef[0].setSelfPosition(CHAPTER_X, CHAPTER_Y);
             canvasPanel.setSelfPosition(canvasX, CANVAS_Y);
             canvasPanel.setSize(canvasW, canvasH);
-            if (viewportBgRef[0] != null) {
-                viewportBgRef[0].setSize(canvasW, canvasH);
-            }
             chapterMenuOverlay.setSize(currentRootW, currentRootH);
             toolsMenu.setSize(currentRootW, currentRootH);
             questDetailsLayer.setSize(currentRootW, currentRootH);
@@ -222,6 +219,10 @@ public final class QuestAppComposer {
             state.canvas.gridRows = gridRows;
             canvasViewport.setSelfPosition(viewportX, viewportY);
             canvasViewport.setSize(viewportW, viewportH);
+            if (viewportBgRef[0] != null) {
+                viewportBgRef[0].setSelfPosition(viewportX, viewportY);
+                viewportBgRef[0].setSize(viewportW, viewportH);
+            }
             state.canvas.canvasViewportX = viewportX;
             state.canvas.canvasViewportY = viewportY;
             state.canvas.canvasViewportW = viewportW;
@@ -260,6 +261,7 @@ public final class QuestAppComposer {
                 SkinAnchorRegistry.register("quests_canvas_background", viewportBgRef[0]);
             }
             SkinEditManager.reapplyOverrides(state, root);
+            canvasViewport.setViewportBorderHidden(TabletPanelChrome.shouldHideViewportBorder(canvasPanel, state));
         };
         refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
