@@ -69,9 +69,10 @@ public final class SkinEditRenderer {
 
     private static void drawGlow(GuiGraphics graphics, WidgetGroup root, Widget widget, int glowColor, int mouseX, int mouseY) {
         List<Rectangle> ancestors = SkinEditTargetResolver.ancestorBounds(widget, root);
-        GlowShaderHelper.drawGlowClipped(graphics, mouseX, mouseY,
+        List<Rectangle> nestedTargets = SkinEditTargetResolver.nestedTargetBounds(widget, root);
+        GlowShaderHelper.drawGlowOccluded(graphics, mouseX, mouseY,
                 widget.getPositionX(), widget.getPositionY(),
                 widget.getSizeWidth(), widget.getSizeHeight(),
-                glowColor, ancestors);
+                glowColor, ancestors, nestedTargets);
     }
 }

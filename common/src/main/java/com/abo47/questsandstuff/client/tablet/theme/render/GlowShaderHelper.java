@@ -90,4 +90,76 @@ public final class GlowShaderHelper {
         }
         return new Rectangle(sx, sy, sw, sh);
     }
+
+    /**
+     * Draw the glow shader over [wx,wy,ww,wh], but with rectangular "holes"
+     * cut out for nested target containers (so they read as separately hoverable,
+     * not swallowed by the parent's glow).
+     *
+     * @param ancestors ancestor clip bounds (outermost -> innermost), same as drawGlowClipped
+     * @param excludes  bounds of nested target widgets to occlude, in the same
+     *                  coordinate space as wx/wy (screen space), unclipped
+     */
+    public static void drawGlowOccluded(GuiGraphics graphics, int mouseX, int mouseY,
+                                         int wx, int wy, int ww, int wh,
+                                         int glowColor, List<Rectangle> ancestors,
+                                         List<Rectangle> excludes) {
+        if (ww <= 0 || wh <= 0) return;
+
+        Rectangle base = ancestorClip(wx, wy, ww, wh, ancestors);
+        if (base == null || base.width <= 0 || base.height <= 0) return;
+
+        if (excludes == null || excludes.isEmpty()) {
+            graphics.enableScissor(base.x, base.y, base.x + base.width, base.y + base.height);
+            drawGlow(graphics, mouseX, mouseY, wx, wy, ww, wh, glowColor);
+            graphics.disableScissor();
+            return;
+        }
+
+        List<Rectangle> free = new java.util.ArrayList<>();
+        free.add(base);
+
+        for (Rectangle hole : excludes) {
+            Rectangle h = base.intersection(hole);
+            if (h.isEmpty()) continue;
+
+            List<Rectangle> next = new java.util.ArrayList<>();
+            for (Rectangle r : free) {
+                subtract(r, h, next);
+            }
+            free = next;
+        }
+
+        for (Rectangle piece : free) {
+            if (piece.width <= 0 || piece.height <= 0) continue;
+            graphics.enableScissor(piece.x, piece.y, piece.x + piece.width, piece.y + piece.height);
+            drawGlow(graphics, mouseX, mouseY, wx, wy, ww, wh, glowColor);
+            graphics.disableScissor();
+        }
+    }
+
+    private static void subtract(Rectangle rect, Rectangle hole, List<Rectangle> out) {
+        Rectangle h = rect.intersection(hole);
+        if (h.isEmpty()) {
+            out.add(rect);
+            return;
+        }
+
+        if (h.y > rect.y) {
+            out.add(new Rectangle(rect.x, rect.y, rect.width, h.y - rect.y));
+        }
+        int rectBottom = rect.y + rect.height;
+        int holeBottom = h.y + h.height;
+        if (holeBottom < rectBottom) {
+            out.add(new Rectangle(rect.x, holeBottom, rect.width, rectBottom - holeBottom));
+        }
+        if (h.x > rect.x) {
+            out.add(new Rectangle(rect.x, h.y, h.x - rect.x, h.height));
+        }
+        int rectRight = rect.x + rect.width;
+        int holeRight = h.x + h.width;
+        if (holeRight < rectRight) {
+            out.add(new Rectangle(holeRight, h.y, rectRight - holeRight, h.height));
+        }
+    }
 }

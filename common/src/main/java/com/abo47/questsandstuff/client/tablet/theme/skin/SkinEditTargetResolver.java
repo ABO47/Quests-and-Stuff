@@ -210,4 +210,35 @@ public final class SkinEditTargetResolver {
                 stopAt.getSizeWidth(), stopAt.getSizeHeight()));
         return rects;
     }
+
+    /**
+     * Find bounds of all target-widgets nested inside {@code widget} (not including widget itself).
+     * Recursion stops as soon as a target is found along a branch, since a target's own
+     * bounds already contain whatever is nested further inside it.
+     */
+    public static List<Rectangle> nestedTargetBounds(Widget widget, WidgetGroup root) {
+        List<Rectangle> out = new ArrayList<>();
+        if (widget instanceof WidgetGroup group) {
+            for (Widget child : group.widgets) {
+                collectNestedTargets(child, out);
+            }
+        }
+        return out;
+    }
+
+    private static void collectNestedTargets(Widget widget, List<Rectangle> out) {
+        if (!widget.isVisible()) return;
+
+        if (isTargetable(widget)) {
+            out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
+                    widget.getSizeWidth(), widget.getSizeHeight()));
+            return;
+        }
+
+        if (widget instanceof WidgetGroup group) {
+            for (Widget child : group.widgets) {
+                collectNestedTargets(child, out);
+            }
+        }
+    }
 }
