@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiGraphics;
 
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -13,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -78,7 +80,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         int col = 0;
         for (AppDescriptor app : apps) {
             int ix = iconsStartX + col * (APP_ICON_SIZE + GRID_16);
-            ResourceTexture tex = new ResourceTexture(app.iconTexture());
+            IGuiTexture tex = app.iconKey() != null ? IconAtlas.iconTexture(app.iconKey()) : new ResourceTexture(app.iconTexture());
             ButtonWidget appBtn = new ButtonWidget(ix, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
                     tex,
                     cd -> TabletLifecycle.openApp(app.id()));
@@ -92,10 +94,10 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
 
     private static int appAnchorOrder(AppDescriptor app) {
         if ("QUESTS".equals(app.id())) return 0;
-        if ("CHUNKCLAIMER".equals(app.id())) return 0;
-        if ("SETTINGS".equals(app.id())) return 0;
-        if ("TEAMS".equals(app.id())) return Integer.MAX_VALUE;
-        return 1;
+        if ("TEAMS".equals(app.id())) return 1;
+        if ("CHUNKCLAIMER".equals(app.id())) return 2;
+        if ("SETTINGS".equals(app.id())) return 3;
+        return 99;
     }
 
     @Override

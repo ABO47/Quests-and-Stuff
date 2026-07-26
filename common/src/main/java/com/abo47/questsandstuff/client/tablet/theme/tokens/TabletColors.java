@@ -78,6 +78,11 @@ public final class TabletColors {
     public static volatile int SCROLL_TRACK = DEFAULT_SCROLL_TRACK;
     public static volatile int SCROLL_THUMB = DEFAULT_SCROLL_THUMB;
 
+    public static volatile int APP_QUESTS = DEFAULT_INTERACTIVE;
+    public static volatile int APP_TEAMS = DEFAULT_SUCCESS;
+    public static volatile int APP_CHUNKCLAIMER = DEFAULT_WARNING;
+    public static volatile int APP_SETTINGS = DEFAULT_TEXT_MUTED;
+
     public static int elevatedSurface() {
         return mix(SURFACE_PANEL_ALT, TEXT_PRIMARY, 10);
     }

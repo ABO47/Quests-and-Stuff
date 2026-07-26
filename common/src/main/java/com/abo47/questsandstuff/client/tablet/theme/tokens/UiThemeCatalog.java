@@ -24,7 +24,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06D72"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF55BFE8"},
                         {UiThemeManager.UI_GLOW, "#FF70E0FF"},
-                        {UiThemeManager.UI_SELECTION, "#FF5AB0FF"}
+                        {UiThemeManager.UI_SELECTION, "#FF5AB0FF"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE8C060"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF60D0C0"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFC088D0"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFD08068"}
                 }),
                 new BuiltInTheme("ember", "Ember", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF1F2023"},
@@ -40,7 +44,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06B5C"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF68A9D8"},
                         {UiThemeManager.UI_GLOW, "#FFE88050"},
-                        {UiThemeManager.UI_SELECTION, "#FFFF8A3D"}
+                        {UiThemeManager.UI_SELECTION, "#FFFF8A3D"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FF68A9D8"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FFD07050"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FF98B0C8"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFE88050"}
                 }),
                 new BuiltInTheme("verdant", "Verdant", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF14251F"},
@@ -56,7 +64,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFDF7068"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF6BBAD8"},
                         {UiThemeManager.UI_GLOW, "#FF90E070"},
-                        {UiThemeManager.UI_SELECTION, "#FFB6E85A"}
+                        {UiThemeManager.UI_SELECTION, "#FFB6E85A"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE3C765"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF6BBAD8"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFB0A880"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF79D981"}
                 }),
                 new BuiltInTheme("roseglass", "Roseglass", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF211B27"},
@@ -72,7 +84,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE46E80"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF75C6E6"},
                         {UiThemeManager.UI_GLOW, "#FFFF80D0"},
-                        {UiThemeManager.UI_SELECTION, "#FFFF7FC4"}
+                        {UiThemeManager.UI_SELECTION, "#FFFF7FC4"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE1BE64"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF80C888"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FF75C6E6"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFFF90D0"}
                 }),
                 new BuiltInTheme("celestial_mint", "Celestial Mint", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF151A20"},
@@ -88,7 +104,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06B7D"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF7AB7FF"},
                         {UiThemeManager.UI_GLOW, "#FF80E0D0"},
-                        {UiThemeManager.UI_SELECTION, "#FF4FE0D0"}
+                        {UiThemeManager.UI_SELECTION, "#FF4FE0D0"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE3C45D"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF7AB7FF"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFA8C0B0"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF60D0A0"}
                 }),
                 new BuiltInTheme("tidepool", "Tidepool", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF10231F"},
@@ -104,7 +124,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE56B72"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF62A8EA"},
                         {UiThemeManager.UI_GLOW, "#FF50E0E0"},
-                        {UiThemeManager.UI_SELECTION, "#FF3FD6E8"}
+                        {UiThemeManager.UI_SELECTION, "#FF3FD6E8"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE7B85C"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF62A8EA"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FF50D0C0"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF72D889"}
                 }),
                 new BuiltInTheme("sakura_grove", "Sakura Grove", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF211F24"},
@@ -120,7 +144,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE56B82"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF77BDE8"},
                         {UiThemeManager.UI_GLOW, "#FFFF90C0"},
-                        {UiThemeManager.UI_SELECTION, "#FFFF7FA8"}
+                        {UiThemeManager.UI_SELECTION, "#FFFF7FA8"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE0C260"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF77BDE8"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFFFA0C8"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF73CF9A"}
                 }),
                 new BuiltInTheme("copper_circuit", "Copper Circuit", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF1D211F"},
@@ -136,7 +164,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06A63"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF65C8CB"},
                         {UiThemeManager.UI_GLOW, "#FFFFB060"},
-                        {UiThemeManager.UI_SELECTION, "#FFE89A5F"}
+                        {UiThemeManager.UI_SELECTION, "#FFE89A5F"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FF65C8CB"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FFE1AE5C"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFB09880"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFCE8B5F"}
                 }),
                 new BuiltInTheme("prism_slate", "Prism Slate", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF191B22"},
@@ -152,7 +184,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06D70"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF8EBAFF"},
                         {UiThemeManager.UI_GLOW, "#FFA0C0FF"},
-                        {UiThemeManager.UI_SELECTION, "#FF8AC6FF"}
+                        {UiThemeManager.UI_SELECTION, "#FF8AC6FF"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE7C25D"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF8EBAFF"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFA8A0C0"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFA6D96A"}
                 }),
                 new BuiltInTheme("solar_ink", "Solar Ink", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF181B1B"},
@@ -168,7 +204,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE66B6B"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF63C7E6"},
                         {UiThemeManager.UI_GLOW, "#FFFFD060"},
-                        {UiThemeManager.UI_SELECTION, "#FFFFD23F"}
+                        {UiThemeManager.UI_SELECTION, "#FFFFD23F"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FF63C7E6"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FFFFC857"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFB0A888"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF6DD18B"}
                 }),
                 new BuiltInTheme("harbor_ember", "Harbor Ember", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF181E23"},
@@ -184,7 +224,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE46D68"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF64C6DA"},
                         {UiThemeManager.UI_GLOW, "#FFFF9050"},
-                        {UiThemeManager.UI_SELECTION, "#FFFF9040"}
+                        {UiThemeManager.UI_SELECTION, "#FFFF9040"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FF64C6DA"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FFFFA35C"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFB09888"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FF70D48A"}
                 }),
                 new BuiltInTheme("wisteria_dawn", "Wisteria Dawn", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF1F1D24"},
@@ -200,7 +244,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE46D7D"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF75C7D8"},
                         {UiThemeManager.UI_GLOW, "#FFC0A0FF"},
-                        {UiThemeManager.UI_SELECTION, "#FFC29CFF"}
+                        {UiThemeManager.UI_SELECTION, "#FFC29CFF"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE3C765"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF75C7D8"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFD8A0C0"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFB9A7FF"}
                 }),
                 new BuiltInTheme("pine_frost", "Pine Frost", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF121E1F"},
@@ -216,7 +264,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE06D76"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF61C1E8"},
                         {UiThemeManager.UI_GLOW, "#FF80E0A0"},
-                        {UiThemeManager.UI_SELECTION, "#FF6FD0E0"}
+                        {UiThemeManager.UI_SELECTION, "#FF6FD0E0"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FFE6C45F"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FF61C1E8"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFA8C0A8"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFA5D86A"}
                 }),
                 new BuiltInTheme("ruby_graphite", "Ruby Graphite", new String[][]{
                         {UiThemeManager.UI_SURFACE_BASE, "#FF1E1F22"},
@@ -232,7 +284,11 @@ public final class UiThemeCatalog {
                         {UiThemeManager.UI_ERROR, "#FFE85D75"},
                         {UiThemeManager.UI_INTERACTIVE, "#FF71C8E8"},
                         {UiThemeManager.UI_GLOW, "#FFFF7090"},
-                        {UiThemeManager.UI_SELECTION, "#FFFF6B8A"}
+                        {UiThemeManager.UI_SELECTION, "#FFFF6B8A"},
+                        {UiThemeManager.UI_APP_QUESTS, "#FF71C8E8"},
+                        {UiThemeManager.UI_APP_TEAMS, "#FFE4BD5C"},
+                        {UiThemeManager.UI_APP_CHUNKCLAIMER, "#FFB09890"},
+                        {UiThemeManager.UI_APP_SETTINGS, "#FFE85D75"}
                 })
         );
     }

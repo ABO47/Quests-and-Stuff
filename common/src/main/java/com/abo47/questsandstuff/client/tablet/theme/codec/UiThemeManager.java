@@ -25,13 +25,17 @@ public final class UiThemeManager {
     private static final long RELOAD_CHECK_MS = TabletAnimationTimings.THEME_RELOAD_CHECK_MS;
 
     public static final String ROLE_ICON_DEFAULT = "icon_default";
-    public static final String ROLE_ICON_INTERACTIVE = "icon_interactive";
-    public static final String ROLE_ICON_SUCCESS = "icon_success";
-    public static final String ROLE_ICON_WARNING = "icon_warning";
-    public static final String ROLE_ICON_ERROR = "icon_error";
-    public static final String ROLE_ICON_MUTED = "icon_muted";
-    public static final String ROLE_ICON_SCROLL_TRACK = "icon_scroll_track";
-    public static final String ROLE_ICON_SCROLL_THUMB = "icon_scroll_thumb";
+    public static final String ROLE_ICON_INTERACTIVE = "interactive";
+    public static final String ROLE_ICON_SUCCESS = "success";
+    public static final String ROLE_ICON_WARNING = "warning";
+    public static final String ROLE_ICON_ERROR = "error";
+    public static final String ROLE_ICON_MUTED = "text_muted";
+    public static final String ROLE_ICON_SCROLL_TRACK = "scroll_track";
+    public static final String ROLE_ICON_SCROLL_THUMB = "scroll_thumb";
+    public static final String ROLE_ICON_APP_QUESTS = "app_quests";
+    public static final String ROLE_ICON_APP_TEAMS = "app_teams";
+    public static final String ROLE_ICON_APP_CHUNKCLAIMER = "app_chunkclaimer";
+    public static final String ROLE_ICON_APP_SETTINGS = "app_settings";
     public static final String UI_SURFACE_BASE = "surface_base";
     public static final String UI_SURFACE_PANEL = "surface_panel";
     public static final String UI_SURFACE_PANEL_ALT = "surface_panel_alt";
@@ -48,6 +52,10 @@ public final class UiThemeManager {
     public static final String UI_SELECTION = "selection";
     public static final String UI_SCROLL_TRACK = "scroll_track";
     public static final String UI_SCROLL_THUMB = "scroll_thumb";
+    public static final String UI_APP_QUESTS = "app_quests";
+    public static final String UI_APP_TEAMS = "app_teams";
+    public static final String UI_APP_CHUNKCLAIMER = "app_chunkclaimer";
+    public static final String UI_APP_SETTINGS = "app_settings";
 
     private static UiThemeState state = UiThemeState.defaults();
     private static boolean initialized = false;
@@ -199,6 +207,10 @@ public final class UiThemeManager {
         TabletColors.SELECTION = uiColors.getOrDefault(UI_SELECTION, TabletColors.DEFAULT_SELECTION);
         TabletColors.SCROLL_TRACK = uiColors.getOrDefault(UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
         TabletColors.SCROLL_THUMB = uiColors.getOrDefault(UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
+        TabletColors.APP_QUESTS = uiColors.getOrDefault(UI_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
+        TabletColors.APP_TEAMS = uiColors.getOrDefault(UI_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
+        TabletColors.APP_CHUNKCLAIMER = uiColors.getOrDefault(UI_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
+        TabletColors.APP_SETTINGS = uiColors.getOrDefault(UI_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
     }
 
     public record ThemeInfo(String id, String label, int panel, int panelAlt, int accent, int success, int text) {

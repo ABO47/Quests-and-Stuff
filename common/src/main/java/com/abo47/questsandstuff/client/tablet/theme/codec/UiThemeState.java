@@ -43,6 +43,10 @@ public final class UiThemeState {
         colors.put(UiThemeManager.ROLE_ICON_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
         colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, TabletColors.DEFAULT_BORDER_BASE);
         colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, TabletColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
+        colors.put(UiThemeManager.ROLE_ICON_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
+        colors.put(UiThemeManager.ROLE_ICON_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
         return colors;
     }
 
@@ -64,6 +68,10 @@ public final class UiThemeState {
         uiColors.put(UiThemeManager.UI_SELECTION, TabletColors.DEFAULT_SELECTION);
         uiColors.put(UiThemeManager.UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
         uiColors.put(UiThemeManager.UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
+        uiColors.put(UiThemeManager.UI_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
+        uiColors.put(UiThemeManager.UI_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
+        uiColors.put(UiThemeManager.UI_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
+        uiColors.put(UiThemeManager.UI_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
         return uiColors;
     }
 

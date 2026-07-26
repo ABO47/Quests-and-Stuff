@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
 import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.QuestAppComposer;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.settings.SettingsAppComposer;
@@ -51,19 +52,23 @@ public final class TabletBootstrap {
                 TabletHomeComposer::create));
         TabletAppRegistry.register(new AppDescriptor("QUESTS",
                 "ui.questsandstuff.app.quests",
-                new ResourceLocation("questsandstuff", "textures/gui/questsandstuff.png"),
+                IconAtlas.icon("app_quests"),
+                "app_quests",
                 QuestAppComposer::create));
         TabletAppRegistry.register(new AppDescriptor("TEAMS",
                 "ui.questsandstuff.app.teams",
-                new ResourceLocation("questsandstuff", "textures/gui/teams.png"),
+                IconAtlas.icon("app_teams"),
+                "app_teams",
                 TeamsAppComposer::create));
         TabletAppRegistry.register(new AppDescriptor("CHUNKCLAIMER",
                 "ui.questsandstuff.app.chunkclaimer",
-                new ResourceLocation("questsandstuff", "textures/gui/chunk_claimer.png"),
+                IconAtlas.icon("app_chunkclaimer"),
+                "app_chunkclaimer",
                 ChunkClaimerAppComposer::create));
         TabletAppRegistry.register(new AppDescriptor("SETTINGS",
                 "ui.questsandstuff.app.settings",
-                new ResourceLocation("questsandstuff", "textures/gui/icons/settings-2.png"),
+                IconAtlas.icon("app_settings"),
+                "app_settings",
                 SettingsAppComposer::create));
     }
 

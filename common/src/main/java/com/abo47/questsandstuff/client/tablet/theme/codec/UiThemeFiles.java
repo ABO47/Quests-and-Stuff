@@ -124,7 +124,7 @@ public final class UiThemeFiles {
 
     private static void writeThemeIfMissing(Gson gson, String id, JsonObject theme) throws Exception {
         Path file = THEMES_DIR.resolve(id + ".json");
-        if (!Files.exists(file)) {
+        if (!Files.exists(file) || "default".equals(id)) {
             writeString(file, gson.toJson(theme));
         }
     }
@@ -142,9 +142,12 @@ public final class UiThemeFiles {
             JsonObject colors = root.getAsJsonObject("colors");
             boolean changed = false;
             for (String[] color : theme.colors()) {
-                if (color.length >= 2 && !colors.has(color[0])) {
-                    colors.addProperty(color[0], color[1]);
-                    changed = true;
+                if (color.length >= 2) {
+                    String existing = colors.has(color[0]) ? colors.get(color[0]).getAsString() : null;
+                    if (!color[1].equals(existing)) {
+                        colors.addProperty(color[0], color[1]);
+                        changed = true;
+                    }
                 }
             }
             if (changed) {

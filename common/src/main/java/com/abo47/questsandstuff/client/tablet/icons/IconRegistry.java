@@ -187,6 +187,11 @@ public final class IconRegistry {
         registeredRole("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
         registeredRole("chapter_notice", UiThemeManager.ROLE_ICON_WARNING);
         registeredDefault("fit_grid");
+
+        preloadedRole("app_quests", UiThemeManager.ROLE_ICON_APP_QUESTS);
+        preloadedRole("app_teams", UiThemeManager.ROLE_ICON_APP_TEAMS);
+        preloadedRole("app_chunkclaimer", UiThemeManager.ROLE_ICON_APP_CHUNKCLAIMER);
+        preloadedRole("app_settings", UiThemeManager.ROLE_ICON_APP_SETTINGS);
     }
 
     private static void registerContextIcons() {
