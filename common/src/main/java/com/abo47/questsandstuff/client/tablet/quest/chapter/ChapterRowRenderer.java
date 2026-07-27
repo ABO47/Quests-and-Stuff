@@ -238,7 +238,8 @@ final class ChapterRowRenderer {
 
     private static int chapterTextY(int rowY, int fontSize) {
         int labelH = chapterLabelHeight(fontSize);
-        return rowY + Math.max(2, (TabletUiFactory.CHAPTER_CARD_H - labelH) / 2);
+        int iconCenterY = TabletUiFactory.CHAPTER_CARD_H / 2;
+        return rowY + Math.max(2, iconCenterY - labelH / 2);
     }
 
     private static int chapterLabelHeight(int fontSize) {

@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -113,20 +114,31 @@ public final class CanvasTextStyleMenu {
         boolean strikethrough = CanvasRenderer.isTextStyleFlagActive(state, text, "strikethrough");
         boolean quote = CanvasRenderer.isTextStyleFlagActive(state, text, "quote");
         boolean spoiler = CanvasRenderer.isTextStyleFlagActive(state, text, "spoiler");
-        addTextStyleButton(floating, 0, menuW, columns, "style_align_left", alignButtonBase(align, "left"), click -> updateStyle(state, logScope, text, text.withAlign("left"), updateText, refresh));
-        addTextStyleButton(floating, 1, menuW, columns, "style_align_center", alignButtonBase(align, "center"), click -> updateStyle(state, logScope, text, text.withAlign("center"), updateText, refresh));
-        addTextStyleButton(floating, 2, menuW, columns, "style_align_right", alignButtonBase(align, "right"), click -> updateStyle(state, logScope, text, text.withAlign("right"), updateText, refresh));
-        addTextStyleButton(floating, 3, menuW, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, CanvasRenderer.activeTextColor(state, text), click -> {
+        Component tooltipLeft = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_LEFT);
+        Component tooltipCenter = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_CENTER);
+        Component tooltipRight = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_RIGHT);
+        Component tooltipColor = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_COLOR);
+        Component tooltipBold = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_BOLD);
+        Component tooltipItalic = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_ITALIC);
+        Component tooltipUnderline = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_UNDERLINE);
+        Component tooltipStrikethrough = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_STRIKETHROUGH);
+        Component tooltipQuote = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_QUOTE);
+        Component tooltipSpoiler = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_SPOILER);
+        Component tooltipReset = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_RESET);
+        addTextStyleButton(floating, 0, menuW, columns, "style_align_left", alignButtonBase(align, "left"), new Component[]{tooltipLeft}, click -> updateStyle(state, logScope, text, text.withAlign("left"), updateText, refresh));
+        addTextStyleButton(floating, 1, menuW, columns, "style_align_center", alignButtonBase(align, "center"), new Component[]{tooltipCenter}, click -> updateStyle(state, logScope, text, text.withAlign("center"), updateText, refresh));
+        addTextStyleButton(floating, 2, menuW, columns, "style_align_right", alignButtonBase(align, "right"), new Component[]{tooltipRight}, click -> updateStyle(state, logScope, text, text.withAlign("right"), updateText, refresh));
+        addTextStyleButton(floating, 3, menuW, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, CanvasRenderer.activeTextColor(state, text), new Component[]{tooltipColor}, click -> {
             markStyleInteraction(state, logScope);
             openColorPicker.run();
         });
-        addTextStyleButton(floating, 4, menuW, columns, "context_style", toggleButtonBase(!bold && !italic), click -> updateStyle(state, logScope, text, CanvasRenderer.applyTextStyleSelection(state, text, "normal"), updateText, refresh));
-        addTextStyleButton(floating, 5, menuW, columns, "style_bold", toggleButtonBase(bold), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "bold"), updateText, refresh));
-        addTextStyleButton(floating, 6, menuW, columns, "style_italic", toggleButtonBase(italic), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "italic"), updateText, refresh));
-        addTextStyleButton(floating, 8, menuW, columns, "style_underline", toggleButtonBase(underline), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "underline"), updateText, refresh));
-        addTextStyleButton(floating, 9, menuW, columns, "style_strikethrough", toggleButtonBase(strikethrough), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "strikethrough"), updateText, refresh));
-        addTextStyleButton(floating, 10, menuW, columns, "style_quote", toggleButtonBase(quote), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh));
-        addTextStyleButton(floating, 11, menuW, columns, "style_spoiler", toggleButtonBase(spoiler), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh));
+        addTextStyleButton(floating, 4, menuW, columns, "style_bold", toggleButtonBase(bold), new Component[]{tooltipBold}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "bold"), updateText, refresh));
+        addTextStyleButton(floating, 5, menuW, columns, "style_italic", toggleButtonBase(italic), new Component[]{tooltipItalic}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "italic"), updateText, refresh));
+        addTextStyleButton(floating, 7, menuW, columns, "style_underline", toggleButtonBase(underline), new Component[]{tooltipUnderline}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "underline"), updateText, refresh));
+        addTextStyleButton(floating, 8, menuW, columns, "style_strikethrough", toggleButtonBase(strikethrough), new Component[]{tooltipStrikethrough}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "strikethrough"), updateText, refresh));
+        addTextStyleButton(floating, 9, menuW, columns, "style_quote", toggleButtonBase(quote), new Component[]{tooltipQuote}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh));
+        addTextStyleButton(floating, 10, menuW, columns, "style_spoiler", toggleButtonBase(spoiler), new Component[]{tooltipSpoiler}, click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh));
+        addTextStyleButton(floating, 11, menuW, columns, "context_style", toggleButtonBase(!bold && !italic && !underline && !strikethrough && !quote && !spoiler), new Component[]{tooltipReset}, click -> updateStyle(state, logScope, text, CanvasRenderer.applyTextStyleSelection(state, text, "normal"), updateText, refresh));
         addFontSizeControl(floating, state, logScope, text, menuW, columns, refresh, updateText, onPreview);
         parent.addWidget(floating);
     }
@@ -159,7 +171,7 @@ public final class CanvasTextStyleMenu {
         int fontSize = text.fontSize();
         boolean open = text.id().equals(textFontSizeFieldTarget(state, logScope));
         if (open) {
-            TextStyleButtons.addFontSizeField(parent, 7, menuWidth, columns, fontSize, value -> {
+            TextStyleButtons.addFontSizeField(parent, 6, menuWidth, columns, fontSize, value -> {
                 markStyleInteraction(state, logScope);
                 updateText.accept(CanvasTextRenderer.fitTextHeight(text.withFontSize(value)));
                 keepQuestDetailsStyleMenuOpen(state, logScope, text.id());
@@ -168,8 +180,8 @@ public final class CanvasTextStyleMenu {
             return;
         }
         int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? TabletColors.INTERACTIVE : TabletColors.SURFACE_PANEL_ALT;
-        addTextStyleButton(parent, 7, menuWidth, columns, "size", baseColor, null, new Component[]{
-                Component.literal("Font size: " + fontSize)
+        addTextStyleButton(parent, 6, menuWidth, columns, "size", baseColor, null, new Component[]{
+                Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_FONT_SIZE).append(Component.literal(": " + fontSize))
         }, click -> {
             markStyleInteraction(state, logScope);
             setTextFontSizeFieldTarget(state, logScope, text.id());
@@ -209,6 +221,10 @@ public final class CanvasTextStyleMenu {
 
     private static TextStyleSession.Surface surface(String logScope) {
         return isQuestDetailsScope(logScope) ? TextStyleSession.Surface.QUEST_DETAILS : TextStyleSession.Surface.MAIN_CANVAS;
+    }
+
+    private static Component tooltip(String key) {
+        return Component.translatable(key);
     }
 
     private static int[] menuBoundsForGeometry(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {

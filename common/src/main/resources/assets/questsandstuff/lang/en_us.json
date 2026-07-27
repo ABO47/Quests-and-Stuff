@@ -474,5 +474,17 @@
   "ui.questsandstuff.settings.chunk_claims.max_claimed": "Max Claimed Chunks",
   "ui.questsandstuff.settings.chunk_claims.max_claimed_desc": "Maximum number of chunks a team can claim.",
   "ui.questsandstuff.settings.chunk_claims.max_force_loaded": "Max Force Loaded Chunks",
-  "ui.questsandstuff.settings.chunk_claims.max_force_loaded_desc": "Maximum number of claimed chunks a team can keep force loaded."
+  "ui.questsandstuff.settings.chunk_claims.max_force_loaded_desc": "Maximum number of claimed chunks a team can keep force loaded.",
+  "ui.questsandstuff.style.tooltip.align_left": "Align Left",
+  "ui.questsandstuff.style.tooltip.align_center": "Align Center",
+  "ui.questsandstuff.style.tooltip.align_right": "Align Right",
+  "ui.questsandstuff.style.tooltip.color": "Text Color",
+  "ui.questsandstuff.style.tooltip.bold": "Bold",
+  "ui.questsandstuff.style.tooltip.italic": "Italic",
+  "ui.questsandstuff.style.tooltip.underline": "Underline",
+  "ui.questsandstuff.style.tooltip.strikethrough": "Strikethrough",
+  "ui.questsandstuff.style.tooltip.quote": "Quote",
+  "ui.questsandstuff.style.tooltip.spoiler": "Spoiler",
+  "ui.questsandstuff.style.tooltip.reset": "Reset Style",
+  "ui.questsandstuff.style.tooltip.font_size": "Font Size"
 }
