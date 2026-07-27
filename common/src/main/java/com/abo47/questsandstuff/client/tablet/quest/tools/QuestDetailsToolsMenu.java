@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
-import static com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolButtons.addToggle;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
@@ -31,7 +31,7 @@ final class QuestDetailsToolsMenu {
         final int menuPad = 1;
         final int toolGap = 1;
         final boolean editTools = QuestDetailsEditController.canEdit(state);
-        final int toolCount = editTools ? 9 : 1;
+        final int toolCount = editTools ? 9 : 2;
         final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -45,7 +45,29 @@ final class QuestDetailsToolsMenu {
         menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(TabletColors.SURFACE_BASE, 244), TabletColors.BORDER_ACCENT));
 
         if (!editTools) {
-            addReadOnlyTools(menu, state, refresh, slotX, y, toolSlot, toolButtonBorder);
+            ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
+            rows.toggle(state.questDetails.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
+                    state.questDetails.questDetailsSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
+                    !state.questDetails.questDetailsSplitterLocked,
+                    new Component[]{
+                            Component.translatable("ui.questsandstuff.tools.lock_separator"),
+                            Component.translatable(state.questDetails.questDetailsSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
+                    },
+                    () -> {
+                        state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
+                        if (state.questDetails.questDetailsSplitterLocked) {
+                            state.questDetails.questDetailsDraggingSplitter = false;
+                            TabletResizeCursor.update(false);
+                        }
+                        persistUiState(state);
+                        refresh.run();
+                    });
+            CanvasToolRows.backgroundOpacity(rows, state.questDetails.questDetailsCanvasBgOpacityPercent, rightClick -> {
+                state.questDetails.questDetailsCanvasBgOpacityPercent = cyclePercent(state.questDetails.questDetailsCanvasBgOpacityPercent, toolPercentStep(), rightClick);
+                persistUiState(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool bg-opacity percent={}", state.questDetails.questDetailsCanvasBgOpacityPercent);
+                refresh.run();
+            });
             addAnimatedMenu(toolsMenu, state, menu);
             return;
         }
@@ -121,25 +143,6 @@ final class QuestDetailsToolsMenu {
                     }
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool splitter-lock enabled={} width={}", state.questDetails.questDetailsSplitterLocked, state.questDetails.questDetailsLeftPanelWidth);
-                    refresh.run();
-                });
-    }
-
-    private static void addReadOnlyTools(WidgetGroup menu, TabletUiState state, Runnable refresh, int x, int y, int toolSlot, int border) {
-        addToggle(menu, x, y, toolSlot, border, state.questDetails.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.questDetails.questDetailsSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
-                !state.questDetails.questDetailsSplitterLocked,
-                new Component[]{
-                        Component.translatable("ui.questsandstuff.tools.lock_separator"),
-                        Component.translatable(state.questDetails.questDetailsSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
-                },
-                () -> {
-                    state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
-                    if (state.questDetails.questDetailsSplitterLocked) {
-                        state.questDetails.questDetailsDraggingSplitter = false;
-                        TabletResizeCursor.update(false);
-                    }
-                    persistUiState(state);
                     refresh.run();
                 });
     }

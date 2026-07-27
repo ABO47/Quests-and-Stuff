@@ -44,7 +44,7 @@ final class MainCanvasToolsMenu {
         final int menuPad = 1;
         final int toolGap = 1;
         final boolean editTools = state.root.canEdit;
-        final int toolCount = editTools ? 10 : 2;
+        final int toolCount = editTools ? 10 : 3;
         final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
@@ -61,6 +61,13 @@ final class MainCanvasToolsMenu {
             ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
             addReadOnlyRows(rows, state, refresh);
             addRewardRows(rows, refresh);
+            CanvasToolRows.backgroundOpacity(rows, state.canvas.canvasBgOpacityPercent, rightClick -> {
+                int next = cyclePercent(state.canvas.canvasBgOpacityPercent, toolPercentStep(), rightClick);
+                applyCanvasBgOpacityPercent(state, next);
+                persistUiState(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] tool canvas-bg-opacity percent={}", state.canvas.canvasBgOpacityPercent);
+                refresh.run();
+            });
             addAnimatedMenu(toolsMenu, state, menu);
             rememberBounds(state, menuX, menuY, menuW, menuH);
             return;
