@@ -181,7 +181,7 @@ public final class CanvasTextRenderer {
                     || color != runColor
                     || !style.equals(runStyle);
             if (startsNewRun) {
-                drawCanvasTextRun(graphics, run, runX, runY, runColor, runStyle);
+                drawCanvasTextRun(graphics, run, runX, runY, runColor, runStyle, text, inlineEditing, state);
                 run.setLength(0);
                 runX = glyph.x();
                 runY = glyph.y();
@@ -191,17 +191,33 @@ public final class CanvasTextRenderer {
             run.append(glyph.value());
             previousIndex = glyph.index();
         }
-        drawCanvasTextRun(graphics, run, runX, runY, runColor, runStyle);
+        drawCanvasTextRun(graphics, run, runX, runY, runColor, runStyle, text, inlineEditing, state);
         graphics.pose().popPose();
     }
 
-    private static void drawCanvasTextRun(GuiGraphics graphics, StringBuilder run, int x, int y, int color, String style) {
+    private static void drawCanvasTextRun(GuiGraphics graphics, StringBuilder run, int x, int y, int color, String style, CanvasTextLayer text, boolean inlineEditing, TabletUiState state) {
         if (run.length() == 0) {
             return;
         }
-        boolean spoiler = CanvasTextLayer.hasStyleFlag(style, "spoiler");
-        String display = spoiler ? run.toString().replaceAll(".", "\\u2588") : run.toString();
-        graphics.drawString(Minecraft.getInstance().font, styledCanvasTextComponent(display, style), x, y, color, false);
+        var font = Minecraft.getInstance().font;
+        String display = run.toString();
+        boolean spoilerRevealed = inlineEditing || text.id().equals(state.questDetails.questDetailsSpoilerRevealedTextId) || text.id().equals(state.canvas.canvasTextSpoilerRevealedTextId);
+        boolean spoilerActive = CanvasTextLayer.hasStyleFlag(style, "spoiler") && !spoilerRevealed;
+        boolean quote = CanvasTextLayer.hasStyleFlag(style, "quote");
+        if (spoilerActive) {
+            int textWidth = font.width(display);
+            if (quote) {
+                graphics.fill(x - 5, y, x - 2, y + font.lineHeight, withAlpha(color, 200));
+            }
+            graphics.fill(x - 1, y - 1, x + textWidth + 1, y + font.lineHeight + 1, withAlpha(color, 255));
+            return;
+        }
+        int textWidth = font.width(display);
+        if (quote) {
+            graphics.fill(x - 5, y, x - 2, y + font.lineHeight, withAlpha(color, 200));
+            graphics.fill(x - 2, y, x + textWidth + 7, y + font.lineHeight, withAlpha(color, 25));
+        }
+        graphics.drawString(font, styledCanvasTextComponent(display, style), x, y, color, false);
     }
 
     private static Component styledCanvasTextComponent(String value, String style) {
@@ -218,9 +234,6 @@ public final class CanvasTextRenderer {
         }
         if (CanvasTextLayer.hasStyleFlag(style, "strikethrough")) {
             formats.add(ChatFormatting.STRIKETHROUGH);
-        }
-        if (CanvasTextLayer.hasStyleFlag(style, "spoiler")) {
-            formats.add(ChatFormatting.OBFUSCATED);
         }
         if (formats.isEmpty()) {
             return component;

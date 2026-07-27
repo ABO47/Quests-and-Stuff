@@ -382,6 +382,7 @@ public class TabletUiState {
         public final CanvasMiniNotificationState canvasMiniNotification = new CanvasMiniNotificationState();
         public boolean canvasTextMenuOpen;
         public String canvasTextMenuTarget = "";
+        public String canvasTextSpoilerRevealedTextId = "";
         public String canvasTextFontSizeDraftTarget = "";
         public String canvasTextFontSizeDraft = "";
         public String canvasTextFontSizeFieldTarget = "";
@@ -648,6 +649,7 @@ public class TabletUiState {
         public String questDetailsTextLastClickId = "";
         public long questDetailsTextLastClickAtMs;
         public String questDetailsTextFontSizeFieldTarget = "";
+        public String questDetailsSpoilerRevealedTextId = "";
         public String questDetailsTextColorQuestId = "";
         public String questDetailsTextColorTextId = "";
         public String questDetailsTransformKind = "";

@@ -152,6 +152,15 @@ final class QuestDetailsDescriptionEventRouter {
                 return true;
             }
         }
+        if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit) {
+            CanvasTextLayer hitText = model.text(hit.id());
+            if (hitText != null && CanvasTextLayer.hasStyleFlag(hitText.style(), "spoiler")) {
+                String revealed = state.questDetails.questDetailsSpoilerRevealedTextId;
+                state.questDetails.questDetailsSpoilerRevealedTextId = revealed.equals(hit.id()) ? "" : hit.id();
+                refresh.run();
+                return true;
+            }
+        }
         if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit && handleTextDoubleClick(hit)) {
             select(hit);
             textEdit.begin(model, hit.id(), () -> surface.focus(true));
@@ -209,9 +218,6 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return surface.keyPressedFallback(keyCode, scanCode, modifiers);
-        }
         if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
             return true;
         }
@@ -219,9 +225,6 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     boolean charTyped(char codePoint, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return surface.charTypedFallback(codePoint, modifiers);
-        }
         if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
             return true;
         }

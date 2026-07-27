@@ -117,12 +117,12 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         if (!isMouseOverElement(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        setFocus(true);
         int step = wheelDelta > 0 ? 1 : -1;
         int next = clamp(parseClamped(getCurrentString(), currentValue) + step);
         currentValue = next;
         setCurrentString(Integer.toString(currentValue));
         updateTooltip();
+        onChange.accept(next);
         return true;
     }
 
@@ -155,12 +155,10 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
 
     private void commitCurrentText() {
         int next = parseClamped(getCurrentString(), currentValue);
-        if (next != currentValue) {
-            currentValue = next;
-            onChange.accept(next);
-        }
+        currentValue = next;
         setCurrentString(Integer.toString(currentValue));
         updateTooltip();
+        onChange.accept(next);
     }
 
     @Override
