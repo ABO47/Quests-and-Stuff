@@ -14,6 +14,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -39,7 +41,9 @@ final class QuestDetailsDescriptionPickActions {
         String questId = parsed.questId();
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescBackground()) {
-            model.canvasBackground = asset;
+            SkinFillOverride o = SkinFillOverride.parse(model.canvasBackground);
+            String mode = o != null ? o.mode() : "stretch";
+            model.canvasBackground = BackgroundModes.encode(mode, asset);
             QuestDetailsDescriptionModel.save(player, questId, model);
         } else if (parsed.isDescImageNew()) {
             if (!ModalTargetState.requireParts("description_asset_new", parsed, 5)) {

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.render;
 
+import java.util.function.IntSupplier;
+
 import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -14,24 +16,26 @@ public final class ChromeFactory {
     }
 
     public static ButtonWidget closeIconButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        return iconButton(x, y, w, h, "close", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_ERROR), callback);
+        return iconButton(x, y, w, h, "close", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_ERROR), callback);
     }
 
-    public static ButtonWidget iconButton(int x, int y, int w, int h, String icon, int activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+    public static ButtonWidget iconButton(int x, int y, int w, int h, String icon, IntSupplier activeColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         IGuiTexture glyph = IconAtlas.iconTexture(icon);
         IGuiTexture iconTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
+            int ac = activeColor.getAsInt();
             SurfaceFactory.fill(TabletColors.elevatedSurface()).draw(graphics, mouseX, mouseY, x0, y0, width, height);
             drawBorder(graphics, (int) x0, (int) y0, width, height, TabletColors.BORDER_BASE);
-            drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
+            drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, ac);
         };
 
         ButtonWidget btn = new ButtonWidget(x, y, w, h, iconTexture, callback);
         btn.setClientSideWidget();
         btn.setHoverTexture(GlowShaderHelper.hoverGlow());
         btn.setClickedTexture((graphics, mouseX, mouseY, x0, y0, width, height) -> {
-            SurfaceFactory.fill(TabletColors.pressedFill(activeColor)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
-            drawBorder(graphics, (int) x0, (int) y0, width, height, activeColor);
-            drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, activeColor);
+            int ac = activeColor.getAsInt();
+            SurfaceFactory.fill(TabletColors.pressedFill(ac)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
+            drawBorder(graphics, (int) x0, (int) y0, width, height, ac);
+            drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, ac);
         });
         return btn;
     }

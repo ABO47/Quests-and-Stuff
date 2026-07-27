@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
@@ -15,9 +16,12 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBr
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class ChapterContextMenuRows {
@@ -32,6 +36,30 @@ public final class ChapterContextMenuRows {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_CHAPTER_TEXTURE), "background", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
+            String chapterBg = ClientQuestStateFacade.chapterBackground(target);
+            if (!chapterBg.isBlank() && !"default".equals(chapterBg)) {
+                SkinFillOverride parsed = BackgroundModes.decode(chapterBg);
+                String currentMode = parsed != null ? parsed.mode() : "stretch";
+                String path = parsed != null ? parsed.path() : chapterBg;
+                List<ContextAction> modeActions = new ArrayList<>();
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"), "size", currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("stretch", path), 0);
+                    refresh.run();
+                }));
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "grid", currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("tile", path), 0);
+                    refresh.run();
+                }));
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"), "original_size", currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("center", path), 0);
+                    refresh.run();
+                }));
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"), "dynamic", currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("dynamic", path), 0);
+                    refresh.run();
+                }));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"), "layout-dashboard", TabletColors.TEXT_PRIMARY, modeActions));
+            }
         } else {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             return sections.build();

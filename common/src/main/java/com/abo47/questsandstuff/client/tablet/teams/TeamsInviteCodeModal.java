@@ -70,7 +70,7 @@ final class TeamsInviteCodeModal {
         int x = closeX - GAP - BTN_SIZE;
         if (state.teams.inviteCodeImportMode) {
             panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
-                    "manual_check", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS),
+                    "manual_check", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS),
                     click -> {
                         String code = state.teams.inviteCodeDraft == null ? "" : state.teams.inviteCodeDraft.trim().toUpperCase();
                         if (code.isBlank()) {
@@ -86,7 +86,7 @@ final class TeamsInviteCodeModal {
                     }));
             x -= GAP + BTN_SIZE;
             panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
-                    "paste", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
+                    "paste", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
                     click -> {
                         state.teams.inviteCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
                         state.teams.inviteCodeMessage = "";
@@ -106,7 +106,7 @@ final class TeamsInviteCodeModal {
             }
             int renewX = x - GAP - BTN_SIZE;
             panel.addWidget(ChromeFactory.iconButton(renewX, 4, BTN_SIZE, BTN_SIZE,
-                    "reset_quest", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_WARNING),
+                    "reset_quest", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_WARNING),
                     click -> {
                         state.teams.inviteCodeDraft = "";
                         state.teams.inviteCodeMessage = I18n.get("ui.questsandstuff.teams.generating_code");
@@ -115,7 +115,7 @@ final class TeamsInviteCodeModal {
                         refresh.run();
                     }));
             panel.addWidget(ChromeFactory.iconButton(x, 4, BTN_SIZE, BTN_SIZE,
-                    "copy", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
+                    "copy", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT),
                     click -> {
                         Minecraft.getInstance().keyboardHandler.setClipboard(
                                 state.teams.inviteCodeDraft == null ? "" : state.teams.inviteCodeDraft);

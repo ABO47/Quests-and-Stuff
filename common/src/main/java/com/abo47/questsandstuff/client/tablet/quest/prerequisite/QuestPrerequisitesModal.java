@@ -89,7 +89,7 @@ public final class QuestPrerequisitesModal {
         if (!state.modal.prerequisitesManagerEcMode) {
             int modeX = headerModeButtonX(w);
             String labelKey = state.modal.prerequisitesManagerExternalMode ? QuestTranslationKeys.CONNECTIONS_MODE_EXTERNAL : QuestTranslationKeys.CONNECTIONS_MODE_LOCAL;
-            ButtonWidget mode = ChromeFactory.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+            ButtonWidget mode = ChromeFactory.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.modal.prerequisitesManagerExternalMode = !state.modal.prerequisitesManagerExternalMode;
                 state.modal.prerequisitesManagerScroll = 0;
                 state.modal.prerequisitesManagerContextOpen = false;

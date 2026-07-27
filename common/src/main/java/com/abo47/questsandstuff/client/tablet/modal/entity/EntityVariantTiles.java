@@ -73,7 +73,7 @@ final class EntityVariantTiles {
     }
 
     static void addBackButton(WidgetGroup modal, int x, int y, int w, int h, Runnable action) {
-        modal.addWidget(ChromeFactory.iconButton(x, y, w, h, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
+        modal.addWidget(ChromeFactory.iconButton(x, y, w, h, "back", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
     }
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {

@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -26,7 +27,6 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_IMAGE;
 import static com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_TEXT;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
 
 public final class QuestDetailsDescriptionCanvasRenderer {
     private QuestDetailsDescriptionCanvasRenderer() {
@@ -68,7 +68,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         if (CanvasBackgroundOpacity.alpha(opacityPercent) <= 0) {
             return;
         }
-        IGuiTexture texture = chapterBackgroundTexture(model.canvasBackground);
+        IGuiTexture texture = BackgroundModes.createTexture(model.canvasBackground);
         if (texture == null) {
             CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, TabletColors.SURFACE_BASE, opacityPercent);
             return;

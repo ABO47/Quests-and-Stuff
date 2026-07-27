@@ -70,9 +70,6 @@ public final class QuestDetailsDescriptionPanel {
                     state.questDetails.questDetailsDescScrollDragging = dragging;
                 },
                 refresh,
-                TabletColors.scrollTrack(state.questDetails.questDetailsDescScrollDragging),
-                TabletColors.scrollThumb(false),
-                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

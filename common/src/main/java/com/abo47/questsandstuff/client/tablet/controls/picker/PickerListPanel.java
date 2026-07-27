@@ -120,9 +120,6 @@ public final class PickerListPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    TabletColors.scrollTrack(scroll.dragging()),
-                    TabletColors.scrollThumb(false),
-                    TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }

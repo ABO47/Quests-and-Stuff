@@ -190,7 +190,7 @@ public final class TabletAssetPickerModal {
         }, focused -> state.pickers.assetSearchFocused = focused);
 
         if (canGoBack) {
-            modal.addWidget(ChromeFactory.iconButton(backX, backY, backSize, backSize, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+            modal.addWidget(ChromeFactory.iconButton(backX, backY, backSize, backSize, "back", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.pickers.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
                 state.pickers.saveBrowseDirForMode();
                 state.pickers.assetGridScroll = 0;
@@ -390,11 +390,11 @@ public final class TabletAssetPickerModal {
     private static void addBlueprintHeaderActions(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
         int importX = headerChainButtonX(w, 1);
         int exportX = headerChainButtonX(w, 2);
-        modal.addWidget(ChromeFactory.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
+        modal.addWidget(ChromeFactory.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
             TabletBlueprintCodeModal.openExport(state, state.pickers.assetSelected);
             refresh.run();
         }));
-        modal.addWidget(ChromeFactory.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
+        modal.addWidget(ChromeFactory.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
             TabletBlueprintCodeModal.openImport(state);
             refresh.run();
         }));

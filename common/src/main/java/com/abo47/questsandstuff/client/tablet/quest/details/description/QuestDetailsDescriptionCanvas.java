@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
@@ -118,7 +119,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         String bg = model != null ? model.canvasBackground : null;
         setExtendedBackgroundTexture(bg != null && !bg.isBlank() && !"default".equals(bg)
-                ? TabletUiFactory.chapterBackgroundTexture(bg) : null);
+                ? BackgroundModes.createTexture(bg) : null);
         drawBackgroundTexture(graphics, mouseX, mouseY);
         withScissor(graphics, () -> {
             QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, mouseX, mouseY, state, model, contentX(), contentY(), contentW(), contentH());

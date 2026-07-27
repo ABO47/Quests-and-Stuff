@@ -107,19 +107,19 @@ final class TabletBlueprintCodeModal {
 
         int x = closeX - GAP - BTN;
         if (state.modal.blueprintCodeImportMode) {
-            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "manual_check", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "manual_check", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
                 applyImport(state);
                 refresh.run();
             }));
             x -= GAP + BTN;
-            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "paste", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "paste", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.modal.blueprintCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
                 state.modal.blueprintCodeMessage = "";
                 refresh.run();
             }));
             return;
         }
-        panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "copy", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+        panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "copy", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(state.modal.blueprintCodeDraft == null ? "" : state.modal.blueprintCodeDraft);
             state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_copied");
             refresh.run();

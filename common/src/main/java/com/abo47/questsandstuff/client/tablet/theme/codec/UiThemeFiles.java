@@ -150,11 +150,28 @@ public final class UiThemeFiles {
                     }
                 }
             }
+            if (ensureDerivedColor(colors, UiThemeManager.UI_SCROLL_TRACK, UiThemeManager.UI_BORDER_BASE)) changed = true;
+            if (ensureDerivedColor(colors, UiThemeManager.UI_SCROLL_THUMB, UiThemeManager.UI_INTERACTIVE)) changed = true;
+            if (ensureDerivedColor(colors, UiThemeManager.UI_APP_QUESTS, UiThemeManager.UI_INTERACTIVE)) changed = true;
+            if (ensureDerivedColor(colors, UiThemeManager.UI_APP_TEAMS, UiThemeManager.UI_SUCCESS)) changed = true;
+            if (ensureDerivedColor(colors, UiThemeManager.UI_APP_CHUNKCLAIMER, UiThemeManager.UI_WARNING)) changed = true;
+            if (ensureDerivedColor(colors, UiThemeManager.UI_APP_SETTINGS, UiThemeManager.UI_TEXT_MUTED)) changed = true;
             if (changed) {
                 writeString(file, gson.toJson(root));
             }
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed upgrading built-in theme {}", theme.id(), e);
         }
+    }
+
+    private static boolean ensureDerivedColor(JsonObject colors, String target, String source) {
+        if (colors.has(target)) {
+            return false;
+        }
+        if (!colors.has(source)) {
+            return false;
+        }
+        colors.addProperty(target, colors.get(source).getAsString());
+        return true;
     }
 }

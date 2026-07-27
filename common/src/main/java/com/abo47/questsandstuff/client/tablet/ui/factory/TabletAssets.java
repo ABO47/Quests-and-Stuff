@@ -26,6 +26,7 @@ import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
 import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 
@@ -36,7 +37,8 @@ final class TabletAssets {
     }
 
     static int chapterBackgroundFill(String background, int fallback) {
-        return switch (background == null ? "" : background) {
+        String stripped = BackgroundModes.stripMode(background);
+        return switch (stripped == null ? "" : stripped) {
             case "hexagons" -> withAlpha(TabletColors.INTERACTIVE, 86);
             case "octagons" -> withAlpha(TabletColors.WARNING, 86);
             case "circles" -> withAlpha(TabletColors.SUCCESS, 86);
@@ -46,7 +48,7 @@ final class TabletAssets {
             case "pentagons" -> withAlpha(TabletColors.INTERACTIVE, 108);
             case "rounded_squares" -> withAlpha(TabletColors.SURFACE_PANEL_ALT, 120);
             default -> {
-                if (background != null && !background.isBlank() && !"default".equals(background) && chapterBackgroundTexture(background) != null) {
+                if (stripped != null && !stripped.isBlank() && !"default".equals(stripped) && chapterBackgroundTexture(stripped) != null) {
                     yield withAlpha(TabletColors.SURFACE_PANEL_ALT, 90);
                 }
                 yield fallback;

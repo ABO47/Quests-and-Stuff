@@ -30,6 +30,12 @@ public final class UiThemeJsonCodec {
             Map<String, Integer> uiColors = new LinkedHashMap<>(defaults.uiColors);
 
             boolean hasSelection = false;
+            boolean hasScrollTrack = false;
+            boolean hasScrollThumb = false;
+            boolean hasAppQuests = false;
+            boolean hasAppTeams = false;
+            boolean hasAppChunkclaimer = false;
+            boolean hasAppSettings = false;
             JsonObject colorsJson = objectOrNull(root.get("colors"));
             if (colorsJson != null) {
                 for (Map.Entry<String, JsonElement> entry : colorsJson.entrySet()) {
@@ -42,11 +48,53 @@ public final class UiThemeJsonCodec {
                     }
                     if (UiThemeManager.UI_SELECTION.equals(uiKey)) {
                         hasSelection = true;
+                    } else if (UiThemeManager.UI_SCROLL_TRACK.equals(uiKey)) {
+                        hasScrollTrack = true;
+                    } else if (UiThemeManager.UI_SCROLL_THUMB.equals(uiKey)) {
+                        hasScrollThumb = true;
+                    } else if (UiThemeManager.UI_APP_QUESTS.equals(uiKey)) {
+                        hasAppQuests = true;
+                    } else if (UiThemeManager.UI_APP_TEAMS.equals(uiKey)) {
+                        hasAppTeams = true;
+                    } else if (UiThemeManager.UI_APP_CHUNKCLAIMER.equals(uiKey)) {
+                        hasAppChunkclaimer = true;
+                    } else if (UiThemeManager.UI_APP_SETTINGS.equals(uiKey)) {
+                        hasAppSettings = true;
                     }
                 }
             }
             if (!hasSelection) {
                 uiColors.put(UiThemeManager.UI_SELECTION, uiColors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_SELECTION));
+            }
+            if (!hasScrollTrack && uiColors.containsKey(UiThemeManager.UI_BORDER_BASE)) {
+                int derived = uiColors.get(UiThemeManager.UI_BORDER_BASE);
+                uiColors.put(UiThemeManager.UI_SCROLL_TRACK, derived);
+                colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, derived);
+            }
+            if (!hasScrollThumb && uiColors.containsKey(UiThemeManager.UI_INTERACTIVE)) {
+                int derived = uiColors.get(UiThemeManager.UI_INTERACTIVE);
+                uiColors.put(UiThemeManager.UI_SCROLL_THUMB, derived);
+                colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, derived);
+            }
+            if (!hasAppQuests && uiColors.containsKey(UiThemeManager.UI_INTERACTIVE)) {
+                int derived = uiColors.get(UiThemeManager.UI_INTERACTIVE);
+                uiColors.put(UiThemeManager.UI_APP_QUESTS, derived);
+                colors.put(UiThemeManager.ROLE_ICON_APP_QUESTS, derived);
+            }
+            if (!hasAppTeams && uiColors.containsKey(UiThemeManager.UI_SUCCESS)) {
+                int derived = uiColors.get(UiThemeManager.UI_SUCCESS);
+                uiColors.put(UiThemeManager.UI_APP_TEAMS, derived);
+                colors.put(UiThemeManager.ROLE_ICON_APP_TEAMS, derived);
+            }
+            if (!hasAppChunkclaimer && uiColors.containsKey(UiThemeManager.UI_WARNING)) {
+                int derived = uiColors.get(UiThemeManager.UI_WARNING);
+                uiColors.put(UiThemeManager.UI_APP_CHUNKCLAIMER, derived);
+                colors.put(UiThemeManager.ROLE_ICON_APP_CHUNKCLAIMER, derived);
+            }
+            if (!hasAppSettings && uiColors.containsKey(UiThemeManager.UI_TEXT_MUTED)) {
+                int derived = uiColors.get(UiThemeManager.UI_TEXT_MUTED);
+                uiColors.put(UiThemeManager.UI_APP_SETTINGS, derived);
+                colors.put(UiThemeManager.ROLE_ICON_APP_SETTINGS, derived);
             }
 
             JsonObject iconRolesJson = objectOrNull(root.get("icon_roles"));

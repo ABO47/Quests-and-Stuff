@@ -450,9 +450,6 @@ public final class ContextMenuPanel {
                     scrollState::dragging,
                     scrollState::setDragging,
                     safeRefresh,
-                    TabletColors.scrollTrack(scrollState.dragging()),
-                    TabletColors.scrollThumb(false),
-                    TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
             return;

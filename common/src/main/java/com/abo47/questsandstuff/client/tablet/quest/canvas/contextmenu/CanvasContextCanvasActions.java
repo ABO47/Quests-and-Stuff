@@ -27,6 +27,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -142,6 +144,54 @@ final class CanvasContextCanvasActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg chapter={}", selectedChapter);
             canvasViewport.refresh();
         }));
+        String currentCanvasBg = ClientQuestStateFacade.chapterCanvasBackground(selectedChapter);
+        if (!currentCanvasBg.isBlank() && !"default".equals(currentCanvasBg)) {
+            SkinFillOverride parsed = BackgroundModes.decode(currentCanvasBg);
+            String currentMode = parsed != null ? parsed.mode() : "stretch";
+            String path = parsed != null ? parsed.path() : currentCanvasBg;
+            List<ContextAction> modeActions = new ArrayList<>();
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"),
+                    "size",
+                    currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        String encoded = BackgroundModes.encode("stretch", path);
+                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
+                        canvasViewport.refresh();
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
+                    "grid",
+                    currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        String encoded = BackgroundModes.encode("tile", path);
+                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
+                        canvasViewport.refresh();
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
+                    "original_size",
+                    currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        String encoded = BackgroundModes.encode("center", path);
+                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
+                        canvasViewport.refresh();
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"),
+                    "dynamic",
+                    currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        String encoded = BackgroundModes.encode("dynamic", path);
+                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
+                        canvasViewport.refresh();
+                    }));
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
+                    "layout-dashboard",
+                    TabletColors.TEXT_PRIMARY,
+                    modeActions));
+        }
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = TabletGridControls.defaultGridColor(state);
             ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);

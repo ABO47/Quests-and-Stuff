@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -53,7 +54,7 @@ final class ChapterRowRenderer {
             return;
         }
 
-        IGuiTexture bgTexture = TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter));
+        IGuiTexture bgTexture = BackgroundModes.createTexture(ClientQuestStateFacade.chapterBackground(chapter));
         int border = bgTexture != null ? 0 : (selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE);
         int fill = bgTexture != null ? TabletColors.TRANSPARENT : TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(chapter), TabletColors.SURFACE_PANEL_ALT);
         chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
@@ -216,7 +217,7 @@ final class ChapterRowRenderer {
                 x,
                 y,
                 w,
-                TabletUiFactory.chapterBackgroundTexture(ClientQuestStateFacade.chapterBackground(chapter)),
+                BackgroundModes.createTexture(ClientQuestStateFacade.chapterBackground(chapter)),
                 ClientQuestStateFacade.chapterIcon(chapter),
                 chapter
         );

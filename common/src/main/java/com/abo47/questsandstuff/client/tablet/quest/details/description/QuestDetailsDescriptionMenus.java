@@ -39,6 +39,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -167,6 +169,53 @@ public final class QuestDetailsDescriptionMenus {
             ContextMenuController.clearDeleteConfirm(state);
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
         }));
+        if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
+            SkinFillOverride parsed = BackgroundModes.decode(model.canvasBackground);
+            String currentMode = parsed != null ? parsed.mode() : "stretch";
+            String path = parsed != null ? parsed.path() : model.canvasBackground;
+            List<ContextAction> modeActions = new ArrayList<>();
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"),
+                    "size",
+                    currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        model.canvasBackground = BackgroundModes.encode("stretch", path);
+                        QuestDetailsDescriptionModel.save(player, questId, model);
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
+                    "grid",
+                    currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        model.canvasBackground = BackgroundModes.encode("tile", path);
+                        QuestDetailsDescriptionModel.save(player, questId, model);
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
+                    "original_size",
+                    currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        model.canvasBackground = BackgroundModes.encode("center", path);
+                        QuestDetailsDescriptionModel.save(player, questId, model);
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"),
+                    "dynamic",
+                    currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        model.canvasBackground = BackgroundModes.encode("dynamic", path);
+                        QuestDetailsDescriptionModel.save(player, questId, model);
+                    }));
+            actions.add(ContextActionFactory.submenu(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
+                    "layout-dashboard",
+                    TabletColors.TEXT_PRIMARY,
+                    modeActions));
+        }
         actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             int color = TabletGridControls.defaultGridColor(state);

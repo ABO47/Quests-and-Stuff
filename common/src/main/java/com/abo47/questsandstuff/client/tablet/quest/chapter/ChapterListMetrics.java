@@ -55,9 +55,6 @@ final class ChapterListMetrics {
                 () -> state.chapterPanel.chapterScrollDragging,
                 dragging -> state.chapterPanel.chapterScrollDragging = dragging,
                 refresh,
-                TabletColors.scrollTrack(state.chapterPanel.chapterScrollDragging),
-                TabletColors.scrollThumb(false),
-                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

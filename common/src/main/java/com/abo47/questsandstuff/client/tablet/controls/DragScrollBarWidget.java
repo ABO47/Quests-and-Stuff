@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
@@ -27,9 +28,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
     private final BooleanSupplier draggingSupplier;
     private final Consumer<Boolean> draggingConsumer;
     private final Runnable refresh;
-    private final int trackColor;
-    private final int knobColor;
-    private final int activeKnobColor;
     private final int knobVisualWidth;
 
     public DragScrollBarWidget(
@@ -43,28 +41,9 @@ public final class DragScrollBarWidget extends WidgetGroup {
             IntConsumer valueConsumer,
             BooleanSupplier draggingSupplier,
             Consumer<Boolean> draggingConsumer,
-            Runnable refresh,
-            int trackColor,
-            int knobColor,
-            int activeKnobColor
+            Runnable refresh
     ) {
-        this(
-                x,
-                y,
-                width,
-                height,
-                valueSupplier,
-                maxSupplier,
-                knobHeightSupplier,
-                valueConsumer,
-                draggingSupplier,
-                draggingConsumer,
-                refresh,
-                trackColor,
-                knobColor,
-                activeKnobColor,
-                width
-        );
+        this(x, y, width, height, valueSupplier, maxSupplier, knobHeightSupplier, valueConsumer, draggingSupplier, draggingConsumer, refresh, width);
     }
 
     public DragScrollBarWidget(
@@ -79,9 +58,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
             BooleanSupplier draggingSupplier,
             Consumer<Boolean> draggingConsumer,
             Runnable refresh,
-            int trackColor,
-            int knobColor,
-            int activeKnobColor,
             int knobVisualWidth
     ) {
         super(x, y, width, height);
@@ -92,9 +68,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
         this.draggingSupplier = draggingSupplier;
         this.draggingConsumer = draggingConsumer;
         this.refresh = refresh;
-        this.trackColor = trackColor;
-        this.knobColor = knobColor;
-        this.activeKnobColor = activeKnobColor;
         this.knobVisualWidth = Math.max(1, Math.min(width, knobVisualWidth));
     }
 
@@ -113,7 +86,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int railX = x + Math.max(0, (w - railW) / 2);
         boolean active = draggingSupplier.getAsBoolean();
         boolean hovered = isMouseOverElement(mouseX, mouseY);
-        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, trackColor);
+        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, TabletColors.scrollTrack(active));
 
         int knobH = knobHeight();
         int max = Math.max(0, maxSupplier.getAsInt());
@@ -122,7 +95,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
         int knobW = Math.min(w, active || hovered ? Math.max(knobVisualWidth, WIDTH) : knobVisualWidth);
         int knobX = x + Math.max(0, (w - knobW) / 2);
-        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, active || hovered ? activeKnobColor : knobColor);
+        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, TabletColors.scrollThumb(active || hovered));
     }
 
     @Override

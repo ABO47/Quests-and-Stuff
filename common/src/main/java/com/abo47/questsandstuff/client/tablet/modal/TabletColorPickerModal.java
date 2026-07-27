@@ -127,8 +127,6 @@ public final class TabletColorPickerModal {
                     scroll::value, layout::maxStart, layout::knobH,
                     value -> scroll.setValue(value),
                     scroll::dragging, scroll::setDragging, refresh,
-                    TabletColors.scrollTrack(scroll.dragging()),
-                    TabletColors.scrollThumb(false), TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }

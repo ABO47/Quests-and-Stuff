@@ -41,6 +41,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -114,7 +115,7 @@ final class CanvasSceneRenderer {
     static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
+        IGuiTexture canvasBackground = BackgroundModes.createTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
         if (canvasViewport instanceof CanvasViewport cv) {
             cv.setExtendedBackgroundTexture(canvasBackground);
         }

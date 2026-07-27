@@ -330,9 +330,6 @@ final class QuestTaskSectionWidget {
                     }
                 },
                 refresh,
-                TabletColors.scrollTrack(tasks ? state.questDetails.questDetailsTaskScrollDragging : state.questDetails.questDetailsRewardScrollDragging),
-                TabletColors.scrollThumb(false),
-                TabletColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

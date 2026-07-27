@@ -24,6 +24,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
@@ -152,7 +153,10 @@ public final class AssetPickerApplyActions {
         String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
         if (!canvasTarget.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas background picked chapter={} background={}", canvasTarget, background);
-            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, background, 0);
+            String currentBg = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.chapterCanvasBackground(canvasTarget);
+            SkinFillOverride o = SkinFillOverride.parse(currentBg);
+            String mode = o != null ? o.mode() : "stretch";
+            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, BackgroundModes.encode(mode, background), 0);
             return;
         }
         String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
@@ -254,7 +258,13 @@ public final class AssetPickerApplyActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] connection texture applied target={} asset={}", connectionTextureTarget, background);
             return;
         }
-        TabletUiFactory.runChapterAction(player, state, "set_background", ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modal.modalChapterTarget), background, 0);
+        String chapterTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modal.modalChapterTarget);
+        if (!chapterTarget.isBlank()) {
+            String currentBg = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.chapterBackground(chapterTarget);
+            SkinFillOverride o = SkinFillOverride.parse(currentBg);
+            String mode = o != null ? o.mode() : "stretch";
+            TabletUiFactory.runChapterAction(player, state, "set_background", chapterTarget, BackgroundModes.encode(mode, background), 0);
+        }
     }
 
     private static void addCanvasImage(TabletUiState state, String chapter, String asset) {

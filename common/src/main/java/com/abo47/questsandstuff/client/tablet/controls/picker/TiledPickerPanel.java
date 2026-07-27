@@ -87,9 +87,6 @@ public final class TiledPickerPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    TabletColors.scrollTrack(scroll.dragging()),
-                    TabletColors.scrollThumb(false),
-                    TabletColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }

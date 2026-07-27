@@ -63,8 +63,8 @@ public final class UiThemeDefaults {
         if (!customScrollTrack && colorJson.has(UiThemeManager.UI_BORDER_BASE)) {
             colorJson.addProperty(UiThemeManager.UI_SCROLL_TRACK, colorJson.get(UiThemeManager.UI_BORDER_BASE).getAsString());
         }
-        if (!customScrollThumb && colorJson.has(UiThemeManager.UI_BORDER_ACCENT)) {
-            colorJson.addProperty(UiThemeManager.UI_SCROLL_THUMB, colorJson.get(UiThemeManager.UI_BORDER_ACCENT).getAsString());
+        if (!customScrollThumb && colorJson.has(UiThemeManager.UI_INTERACTIVE)) {
+            colorJson.addProperty(UiThemeManager.UI_SCROLL_THUMB, colorJson.get(UiThemeManager.UI_INTERACTIVE).getAsString());
         }
         if (!customIconScrollTrack && colorJson.has(UiThemeManager.UI_BORDER_BASE)) {
             colorJson.addProperty(UiThemeManager.ROLE_ICON_SCROLL_TRACK, colorJson.get(UiThemeManager.UI_BORDER_BASE).getAsString());
