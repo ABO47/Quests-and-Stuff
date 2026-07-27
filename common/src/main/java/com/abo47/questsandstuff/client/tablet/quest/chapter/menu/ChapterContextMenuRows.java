@@ -46,7 +46,7 @@ public final class ChapterContextMenuRows {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("stretch", path), 0);
                     refresh.run();
                 }));
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "grid", currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "brick-wall", currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("tile", path), 0);
                     refresh.run();
                 }));

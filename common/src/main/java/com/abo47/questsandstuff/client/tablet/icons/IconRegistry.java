@@ -96,6 +96,7 @@ public final class IconRegistry {
     private static void registerCoreIcons() {
         preloaded("tools");
         preloaded("grid");
+        preloaded("brick-wall");
         preloaded("editor");
         preloaded("scroll");
         preloaded("align-center-horizontal");
@@ -207,6 +208,7 @@ public final class IconRegistry {
         registeredRole("context_style_color", UiThemeManager.ROLE_ICON_INTERACTIVE, "color");
         registeredRole("context_image", UiThemeManager.ROLE_ICON_SUCCESS, "image");
         registeredCandidate("context_grid", "grid");
+        registeredCandidate("context_brick-wall", "brick-wall");
         registeredCandidate("context_fit_grid", "fit_grid");
         preloadedRole("context_focus", UiThemeManager.ROLE_ICON_INTERACTIVE, "focus");
         preloadedRole("context_backpack", UiThemeManager.ROLE_ICON_INTERACTIVE, "backpack");

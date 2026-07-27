@@ -13,7 +13,7 @@ final class TabletRootDismissals {
     private TabletRootDismissals() {
     }
 
-    static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY) {
+    static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY, Runnable refresh) {
         int rootX = TabletWidgetCoordinates.rootX(root);
         int rootY = TabletWidgetCoordinates.rootY(root);
         boolean chapterMenuWasOpen = state.chapterPanel.chapterMenuOpen;
@@ -21,7 +21,7 @@ final class TabletRootDismissals {
         boolean questDetailsWasOpen = state.questDetails.questDetailsOpen;
         boolean chapterTextMenuWasOpen = state.chapterPanel.chapterTextMenuOpen;
         boolean canvasTextMenuWasOpen = state.canvas.canvasTextMenuOpen;
-        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY, root.resolvePlayer(), refresh);
         boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean chapterTextMenuHit = chapterTextMenuWasOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean canvasTextMenuHit = canvasTextMenuWasOpen && TabletRootHitTest.isCanvasTextMenuHit(state, rootX, rootY, mouseX, mouseY);

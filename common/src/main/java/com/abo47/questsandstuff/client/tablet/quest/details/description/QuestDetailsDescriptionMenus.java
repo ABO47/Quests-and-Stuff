@@ -191,7 +191,7 @@ public final class QuestDetailsDescriptionMenus {
                     }));
             modeActions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
-                    "grid",
+                    "brick-wall",
                     currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                     () -> {
                         ContextMenuController.clearDeleteConfirm(state);

@@ -24,7 +24,7 @@ public final class ChapterContextMenu {
         if (!state.chapterPanel.chapterMenuOpen) {
             return;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height);
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height, player, refresh);
         state.chapterPanel.chapterMenuX = layout.menuX();
         state.chapterPanel.chapterMenuY = layout.menuY();
         List<ContextAction> actions = ChapterContextMenuRows.actions(layout, state, player, refresh);
@@ -55,7 +55,7 @@ public final class ChapterContextMenu {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state), player, refresh);
         return ChapterContextMenuRows.click(layout, state, player, refresh, x, y);
     }
 }

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
@@ -28,11 +30,11 @@ public final class TabletRootHitTest {
         return mouseX >= absX && mouseX <= absX + w && mouseY >= absY && mouseY <= absY + h;
     }
 
-    public static boolean isChapterMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
+    public static boolean isChapterMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY, Player player, Runnable refresh) {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state), player, refresh);
         int absMenuX = rootX + layout.menuX();
         int absMenuY = rootY + layout.menuY();
         return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()

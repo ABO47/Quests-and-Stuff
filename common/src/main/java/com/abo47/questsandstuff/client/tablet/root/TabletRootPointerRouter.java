@@ -31,7 +31,7 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY);
+        TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY, refresher);
         if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
         }
