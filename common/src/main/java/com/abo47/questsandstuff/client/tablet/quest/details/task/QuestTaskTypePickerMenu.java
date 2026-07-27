@@ -11,6 +11,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
@@ -51,24 +53,24 @@ final class QuestTaskTypePickerMenu {
             CompoundTag quest,
             String targetId
     ) {
+        ContextMenuSections sections = new ContextMenuSections();
         if (rewards) {
-            List<ContextAction> actions = new ArrayList<>();
             for (QuestDetailsTypeChoice choice : choices) {
-                actions.add(typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
+                sections.add(ContextMenuSection.PRIMARY, typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
             }
-            return actions;
+            return sections.build();
         }
 
-        List<ContextAction> actions = new ArrayList<>();
-        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(actions, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
-        return actions;
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
+        return sections.build();
     }
 
     private static void addTypeGroup(
-            List<ContextAction> actions,
+            ContextMenuSections sections,
+            ContextMenuSection section,
             String labelKey,
             String icon,
             List<QuestDetailsTypeChoice> choices,
@@ -89,7 +91,7 @@ final class QuestTaskTypePickerMenu {
             }
         }
         if (!children.isEmpty()) {
-            actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
+            sections.add(section, ContextActionFactory.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
         }
     }
 

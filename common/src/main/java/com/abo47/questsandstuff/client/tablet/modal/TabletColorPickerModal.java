@@ -14,6 +14,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -161,19 +163,20 @@ public final class TabletColorPickerModal {
         int ctxW = 96;
         int ctxX = state.pickers.colorPaletteContextX;
         int ctxY = state.pickers.colorPaletteContextY;
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", TabletColors.INTERACTIVE, () -> {
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), "add", TabletColors.INTERACTIVE, () -> {
             TabletModalPanel.applyColorPickerValue(player, state, target, state.pickers.colorPaletteContextValue);
             closeColorPicker(state);
             refresh.run();
         }));
         String key = "palette:delete:" + state.pickers.colorPaletteContextValue;
-        actions.add(ContextActionFactory.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
             state.pickers.textColorPalette.removeIf(value -> value == state.pickers.colorPaletteContextValue);
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;
             refresh.run();
         }));
+        List<ContextAction> actions = sections.build();
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);
         modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, TabletColors.BORDER_ACCENT, state, action -> {

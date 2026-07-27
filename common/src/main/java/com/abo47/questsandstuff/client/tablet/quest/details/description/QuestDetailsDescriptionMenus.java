@@ -88,17 +88,18 @@ public final class QuestDetailsDescriptionMenus {
         if (!state.questDetails.questDetailsContextOpen || kind == null || !kind.startsWith("desc") || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
-        List<ContextAction> actions = new ArrayList<>();
         int viewportOriginX = state.questDetails.questDetailsViewportOriginX;
         int viewportOriginY = state.questDetails.questDetailsViewportOriginY;
+        ContextMenuSections sections = new ContextMenuSections();
         switch (kind) {
-            case "description" -> addDescriptionActions(actions, state, player, questId, model, viewportOriginX, viewportOriginY);
-            case "desc_text" -> addTextActions(actions, state, player, questId, model);
-            case "desc_image" -> addImageActions(actions, state, player, questId, model, refresh);
-            case "desc_selection" -> addSelectionActions(actions, state, player, questId, model, viewportW, viewportH, refresh);
+            case "description" -> addDescriptionActions(sections, state, player, questId, model, viewportOriginX, viewportOriginY);
+            case "desc_text" -> addTextActions(sections, state, player, questId, model);
+            case "desc_image" -> addImageActions(sections, state, player, questId, model, refresh);
+            case "desc_selection" -> addSelectionActions(sections, state, player, questId, model, viewportW, viewportH, refresh);
             default -> {
             }
         }
+        List<ContextAction> actions = sections.build();
         if (actions.isEmpty()) {
             return;
         }
@@ -136,7 +137,7 @@ public final class QuestDetailsDescriptionMenus {
         modal.addWidget(canvasMenuLayer);
     }
 
-    private static void addDescriptionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
+    private static void addDescriptionActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
         List<ContextAction> addActions = new ArrayList<>();
         addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_TEXT_BOX), "text", TabletColors.SUCCESS, () -> {
             ContextMenuController.clearDeleteConfirm(state);
@@ -164,8 +165,8 @@ public final class QuestDetailsDescriptionMenus {
                 QuestDetailsDescriptionPanel.addRecipeCardAt(state, questId, x, y);
             }));
         }
-        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
         }));
@@ -210,13 +211,13 @@ public final class QuestDetailsDescriptionMenus {
                         model.canvasBackground = BackgroundModes.encode("dynamic", path);
                         QuestDetailsDescriptionModel.save(player, questId, model);
                     }));
-            actions.add(ContextActionFactory.submenu(
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                     "layout-dashboard",
                     TabletColors.TEXT_PRIMARY,
                     modeActions));
         }
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             int color = TabletGridControls.defaultGridColor(state);
             ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
@@ -224,21 +225,21 @@ public final class QuestDetailsDescriptionMenus {
         }));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
             String deleteKey = "quest_details_background:" + questId;
-            actions.add(ContextActionFactory.warningDelete(state, deleteKey, TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_REMOVE_BACKGROUND), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, deleteKey, TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_REMOVE_BACKGROUND), () -> {
                 model.canvasBackground = "default";
                 QuestDetailsDescriptionModel.save(player, questId, model);
             }));
         }
         if (state.clipboard.canvasClipboard.hasCanvasLayers()) {
-            actions.add(ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_PASTE), "paste", TabletColors.SUCCESS, () -> {
+            sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_PASTE), "paste", TabletColors.SUCCESS, () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsDescriptionClipboard.pasteAtContext(player, state, questId, model, x, y);
             }));
         }
     }
 
-    private static void addTextActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {
-        actions.add(ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_TEXT), "rename", TabletColors.INTERACTIVE, () -> {
+    private static void addTextActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_TEXT), "rename", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             CanvasTextLayer text = model.text(state.questDetails.questDetailsContextId);
             if (text == null) {
@@ -249,41 +250,42 @@ public final class QuestDetailsDescriptionMenus {
             TextEditSession.beginQuestDetails(state, text.id(), text.text());
             TextStyleSession.openQuestDetails(state, text.id());
         }));
-        actions.add(new ContextAction(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_TEXT_STYLE), "style", TabletColors.INTERACTIVE, false, () -> {
+        sections.add(ContextMenuSection.PRIMARY, new ContextAction(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_TEXT_STYLE), "style", TabletColors.INTERACTIVE, false, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             TextStyleSession.openQuestDetails(state, state.questDetails.questDetailsContextId);
         }));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitTextToGrid(player, state, questId, model, state.questDetails.questDetailsContextId);
         }));
-        addOrderActions(actions, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BRING_TO_FRONT), "up", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }, () -> {
+        }));
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_SEND_TO_BACK), "down", TabletColors.TEXT_MUTED, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_TEXT + state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        });
-        actions.add(ContextActionFactory.copy(() -> {
+        }));
+        sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionClipboard.copyText(state, model, state.questDetails.questDetailsContextId);
         }));
         String deleteKey = "quest_details_text:" + questId + ":" + state.questDetails.questDetailsContextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             model.removeText(state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
     }
 
-    private static void addImageActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, Runnable refresh) {
+    private static void addImageActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, Runnable refresh) {
         CanvasImageLayer contextImage = model.image(state.questDetails.questDetailsContextId);
         boolean entityImage = contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset());
         boolean itemImage = contextImage != null && (ModelAssetPreviewRenderer.isItemAsset(contextImage.asset()) || ModelAssetPreviewRenderer.isItemTagAsset(contextImage.asset()));
         boolean blockImage = contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset());
         boolean recipeImage = contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset());
-        actions.add(ContextActionFactory.promoted(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, state.questDetails.questDetailsContextId));
@@ -300,7 +302,7 @@ public final class QuestDetailsDescriptionMenus {
         if (entityImage) {
             String entityId = EntityPreviewRenderer.entityId(contextImage.asset());
             if (EntityVariantCatalog.hasVariants(entityId)) {
-                actions.add(ContextActionFactory.changeVariant(() -> {
+                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.changeVariant(() -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     String imageId = state.questDetails.questDetailsContextId;
                     QuestDetailsTransientManager.closeContext(state);
@@ -308,7 +310,7 @@ public final class QuestDetailsDescriptionMenus {
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_entity_variant quest={} image={} entity={}", questId, imageId, entityId);
                 }));
             }
-            actions.add(ContextActionFactory.editMotion(() -> {
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.editMotion(() -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 EntityMotionEditor.openQuestDetails(state, questId, state.questDetails.questDetailsContextId, state.questDetails.questDetailsContextX, state.questDetails.questDetailsContextY);
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=edit_entity_motion quest={} image={}", questId, state.questDetails.questDetailsContextId);
@@ -331,27 +333,28 @@ public final class QuestDetailsDescriptionMenus {
                     state.questDetails.questDetailsDescriptionSelection.textIds().clear();
                 }
             }, refresh);
-            actions.addAll(gizmoSections.build());
+            sections.addAll(ContextMenuSection.ARRANGE, gizmoSections.build());
         }
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitImageToGrid(player, state, questId, model, state.questDetails.questDetailsContextId);
         }));
-        addOrderActions(actions, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BRING_TO_FRONT), "up", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             model.bringToFront(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }, () -> {
+        }));
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_SEND_TO_BACK), "down", TabletColors.TEXT_MUTED, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             model.sendToBack(QuestDetailsDescriptionModel.ORDER_IMAGE + state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        });
-        actions.add(ContextActionFactory.copy(() -> {
+        }));
+        sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionClipboard.copyImage(state, model, state.questDetails.questDetailsContextId);
         }));
         String deleteKey = "quest_details_image:" + questId + ":" + state.questDetails.questDetailsContextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             model.removeImage(state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
@@ -389,14 +392,14 @@ public final class QuestDetailsDescriptionMenus {
         return "image";
     }
 
-    private static void addSelectionActions(List<ContextAction> actions, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, Runnable refresh) {
+    private static void addSelectionActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, Runnable refresh) {
         if (selectionSupportsGizmo(state, model)) {
             ContextMenuSections gizmoSections = new ContextMenuSections();
             CanvasTransformGizmoMenus.addModeActions(gizmoSections, ContextMenuSection.ARRANGE, state, refresh);
-            actions.addAll(gizmoSections.build());
+            sections.addAll(ContextMenuSection.ARRANGE, gizmoSections.build());
         }
-        addBatchDescElementActions(actions, state, questId, model);
-        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", TabletColors.INTERACTIVE, List.of(
+        addBatchDescElementActions(sections, state, questId, model);
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN_HORIZONTAL_CENTER), "align-center-horizontal", TabletColors.INTERACTIVE, () -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, true);
@@ -406,43 +409,44 @@ public final class QuestDetailsDescriptionMenus {
                     QuestDetailsDescriptionPanel.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, false);
                 })
         )));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_FIT_TO_GRID), "fit_grid", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.fitSelectionToGrid(player, state, questId, model);
         }));
-        addOrderActions(actions, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BRING_TO_FRONT), "up", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, true);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        }, () -> {
+        }));
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_SEND_TO_BACK), "down", TabletColors.TEXT_MUTED, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.moveSelectionLayers(state, model, false);
             QuestDetailsDescriptionModel.save(player, questId, model);
-        });
-        actions.add(ContextActionFactory.copy(() -> {
+        }));
+        sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.copyDescriptionSelection(state, model);
         }));
         String deleteKey = "quest_details_selection:" + questId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             QuestDetailsDescriptionPanel.deleteDescriptionSelection(state, model);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
     }
 
-    private static void addBatchDescElementActions(List<ContextAction> actions, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+    private static void addBatchDescElementActions(ContextMenuSections sections, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
         Set<String> imageIds = QuestDetailsDescriptionSelectionState.selectedImageIds(state);
         Set<String> textIds = QuestDetailsDescriptionSelectionState.selectedTextIds(state);
 
         if (imageIds.size() >= 2) {
-            addBatchDescImageOnlyActions(actions, state, questId, model, imageIds);
+            addBatchDescImageOnlyActions(sections, state, questId, model, imageIds);
         }
         if (textIds.size() >= 2) {
-            addBatchDescTextOnlyActions(actions, state, questId, textIds);
+            addBatchDescTextOnlyActions(sections, state, questId, textIds);
         }
     }
 
-    private static void addBatchDescImageOnlyActions(List<ContextAction> actions, TabletUiState state, String questId, QuestDetailsDescriptionModel model, Set<String> imageIds) {
+    private static void addBatchDescImageOnlyActions(ContextMenuSections sections, TabletUiState state, String questId, QuestDetailsDescriptionModel model, Set<String> imageIds) {
         String primaryId = state.questDetails.questDetailsDescriptionSelection.primaryImageId();
         if (primaryId.isBlank()) {
             primaryId = imageIds.iterator().next();
@@ -456,7 +460,7 @@ public final class QuestDetailsDescriptionMenus {
         boolean blockImage = ModelAssetPreviewRenderer.isBlockModelAsset(primary.asset());
         boolean recipeImage = CanvasRecipeCardAsset.isRecipeCardAsset(primary.asset());
 
-        actions.add(ContextActionFactory.action(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(changeImageLabel(entityImage, itemImage, blockImage, recipeImage), changeImageIcon(entityImage, itemImage, blockImage, recipeImage), TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             if (entityImage) {
                 QuestDetailsWindow.openIconPicker(state, ModalTargets.descEntity(questId, finalPrimaryId));
@@ -472,13 +476,13 @@ public final class QuestDetailsDescriptionMenus {
         }));
     }
 
-    private static void addBatchDescTextOnlyActions(List<ContextAction> actions, TabletUiState state, String questId, Set<String> textIds) {
+    private static void addBatchDescTextOnlyActions(ContextMenuSections sections, TabletUiState state, String questId, Set<String> textIds) {
         String primaryId = state.questDetails.questDetailsDescriptionSelection.primaryTextId();
         if (primaryId.isBlank()) {
             primaryId = textIds.iterator().next();
         }
         String finalPrimaryId = primaryId;
-        actions.add(new ContextAction(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_TEXT_STYLE), "style", TabletColors.INTERACTIVE, false, () -> {
+        sections.add(ContextMenuSection.PRIMARY, new ContextAction(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_TEXT_STYLE), "style", TabletColors.INTERACTIVE, false, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             TextStyleSession.openQuestDetails(state, finalPrimaryId);
         }));
@@ -492,11 +496,6 @@ public final class QuestDetailsDescriptionMenus {
             }
         }
         return false;
-    }
-
-    private static void addOrderActions(List<ContextAction> actions, Runnable bringToFront, Runnable sendToBack) {
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BRING_TO_FRONT), "up", TabletColors.INTERACTIVE, bringToFront));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_SEND_TO_BACK), "down", TabletColors.TEXT_MUTED, sendToBack));
     }
 
     private static int descriptionSelectionCount(TabletUiState state) {

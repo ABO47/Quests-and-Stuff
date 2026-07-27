@@ -265,6 +265,10 @@ public final class IconRegistry {
         preloadedCandidate("style_align_right", "align-right");
         preloadedCandidate("style_bold", "bold");
         preloadedCandidate("style_italic", "italic");
+        preloadedCandidate("style_underline", "underline");
+        preloadedCandidate("style_strikethrough", "strikethrough");
+        preloadedCandidate("style_quote", "quote");
+        preloadedRole("style_spoiler", UiThemeManager.ROLE_ICON_WARNING, "eye-off");
         preloadedRole("style_color", UiThemeManager.ROLE_ICON_INTERACTIVE, "color");
         registeredRole("palette_add", UiThemeManager.ROLE_ICON_SUCCESS, "add");
         registeredRole("palette_remove", UiThemeManager.ROLE_ICON_ERROR, "delete");

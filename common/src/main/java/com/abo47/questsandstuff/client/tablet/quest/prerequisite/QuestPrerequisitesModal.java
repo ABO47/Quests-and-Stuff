@@ -17,6 +17,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -164,13 +166,13 @@ public final class QuestPrerequisitesModal {
             state.modal.prerequisitesManagerContextOpen = false;
             return;
         }
-        List<ContextAction> actions = new java.util.ArrayList<>();
         String chapter = TabletStateQueries.selectedChapterName(state);
         String sourceId = row.sourceId();
         String targetId = row.targetId();
+        ContextMenuSections sections = new ContextMenuSections();
         if (!row.exclusiveChoice()) {
             boolean direct = CanvasRenderer.isConnectionDirect(state, chapter, sourceId, targetId);
-            actions.add(new ContextAction(
+            sections.add(ContextMenuSection.ARRANGE, new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
                 EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
@@ -180,7 +182,7 @@ public final class QuestPrerequisitesModal {
             }));
         } else {
             boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, chapter, sourceId, targetId);
-            actions.add(new ContextAction(
+            sections.add(ContextMenuSection.ARRANGE, new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
                 EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
@@ -190,7 +192,7 @@ public final class QuestPrerequisitesModal {
             }));
         }
         int connectionColor = CanvasRenderer.connectionColor(state, chapter, sourceId, targetId);
-        actions.add(new ContextAction(
+        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(
                 I18n.get("ui.questsandstuff.context.connection_color"),
                 "style_color", TabletColors.INTERACTIVE, () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
@@ -198,12 +200,13 @@ public final class QuestPrerequisitesModal {
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
             refresh.run();
         }));
-        actions.add(ContextActionFactory.warningDelete(
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(
                 state,
                 "connection:remove:" + row.key(),
                 TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_REMOVE_CONNECTION),
                 () -> removeConnection(player, state, row)
         ));
+        List<ContextAction> actions = sections.build();
         int ctxW = Math.min(150, Math.max(96, w - 16));
         int rowCount = ContextMenuPanel.rowActionCount(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rowCount, rowCount);

@@ -36,7 +36,7 @@ public final class CanvasTextStyleMenu {
             TextStyleSession.closeMainCanvas(state);
             return;
         }
-        int toolCount = 8;
+        int toolCount = TextStyleButtons.TOOL_COUNT;
         int[] bounds = CanvasRenderer.canvasTextMenuBounds(state, text, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight(), toolCount);
         int x = bounds[0];
         int y = bounds[1];
@@ -64,7 +64,7 @@ public final class CanvasTextStyleMenu {
             Runnable openColorPicker,
             Runnable refresh
     ) {
-        int toolCount = 8;
+        int toolCount = TextStyleButtons.TOOL_COUNT;
         CanvasTextLayer menuText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
         int[] bounds = menuBoundsForGeometry(state, menuText, viewportW, viewportH, scroll, state.questDetails.questDetailsGridSnapLocked, toolCount);
         int x = viewportX + bounds[0];
@@ -106,6 +106,10 @@ public final class CanvasTextStyleMenu {
         String align = text.align();
         boolean bold = CanvasRenderer.isTextStyleFlagActive(state, text, "bold");
         boolean italic = CanvasRenderer.isTextStyleFlagActive(state, text, "italic");
+        boolean underline = CanvasRenderer.isTextStyleFlagActive(state, text, "underline");
+        boolean strikethrough = CanvasRenderer.isTextStyleFlagActive(state, text, "strikethrough");
+        boolean quote = CanvasRenderer.isTextStyleFlagActive(state, text, "quote");
+        boolean spoiler = CanvasRenderer.isTextStyleFlagActive(state, text, "spoiler");
         addTextStyleButton(floating, 0, menuW, columns, "style_align_left", alignButtonBase(align, "left"), click -> updateStyle(state, logScope, text, text.withAlign("left"), updateText, refresh));
         addTextStyleButton(floating, 1, menuW, columns, "style_align_center", alignButtonBase(align, "center"), click -> updateStyle(state, logScope, text, text.withAlign("center"), updateText, refresh));
         addTextStyleButton(floating, 2, menuW, columns, "style_align_right", alignButtonBase(align, "right"), click -> updateStyle(state, logScope, text, text.withAlign("right"), updateText, refresh));
@@ -116,6 +120,10 @@ public final class CanvasTextStyleMenu {
         addTextStyleButton(floating, 4, menuW, columns, "context_style", toggleButtonBase(!bold && !italic), click -> updateStyle(state, logScope, text, CanvasRenderer.applyTextStyleSelection(state, text, "normal"), updateText, refresh));
         addTextStyleButton(floating, 5, menuW, columns, "style_bold", toggleButtonBase(bold), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "bold"), updateText, refresh));
         addTextStyleButton(floating, 6, menuW, columns, "style_italic", toggleButtonBase(italic), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "italic"), updateText, refresh));
+        addTextStyleButton(floating, 8, menuW, columns, "style_underline", toggleButtonBase(underline), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "underline"), updateText, refresh));
+        addTextStyleButton(floating, 9, menuW, columns, "style_strikethrough", toggleButtonBase(strikethrough), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "strikethrough"), updateText, refresh));
+        addTextStyleButton(floating, 10, menuW, columns, "style_quote", toggleButtonBase(quote), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh));
+        addTextStyleButton(floating, 11, menuW, columns, "style_spoiler", toggleButtonBase(spoiler), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh));
         addFontSizeControl(floating, state, logScope, text, menuW, columns, refresh, updateText);
         parent.addWidget(floating);
     }

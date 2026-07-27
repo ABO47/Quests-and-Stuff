@@ -123,7 +123,6 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         currentValue = next;
         setCurrentString(Integer.toString(currentValue));
         updateTooltip();
-        onChange.accept(next);
         return true;
     }
 

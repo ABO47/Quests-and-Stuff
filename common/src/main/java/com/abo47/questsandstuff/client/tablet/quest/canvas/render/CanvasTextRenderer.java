@@ -199,21 +199,33 @@ public final class CanvasTextRenderer {
         if (run.length() == 0) {
             return;
         }
-        graphics.drawString(Minecraft.getInstance().font, styledCanvasTextComponent(run.toString(), style), x, y, color, false);
+        boolean spoiler = CanvasTextLayer.hasStyleFlag(style, "spoiler");
+        String display = spoiler ? run.toString().replaceAll(".", "\\u2588") : run.toString();
+        graphics.drawString(Minecraft.getInstance().font, styledCanvasTextComponent(display, style), x, y, color, false);
     }
 
     private static Component styledCanvasTextComponent(String value, String style) {
         Component component = Component.literal(value);
-        if (isBoldStyle(style) && isItalicStyle(style)) {
-            return component.copy().withStyle(ChatFormatting.BOLD, ChatFormatting.ITALIC);
+        List<ChatFormatting> formats = new ArrayList<>();
+        if (CanvasTextLayer.hasStyleFlag(style, "bold")) {
+            formats.add(ChatFormatting.BOLD);
         }
-        if (isBoldStyle(style)) {
-            return component.copy().withStyle(ChatFormatting.BOLD);
+        if (CanvasTextLayer.hasStyleFlag(style, "italic")) {
+            formats.add(ChatFormatting.ITALIC);
         }
-        if (isItalicStyle(style)) {
-            return component.copy().withStyle(ChatFormatting.ITALIC);
+        if (CanvasTextLayer.hasStyleFlag(style, "underline")) {
+            formats.add(ChatFormatting.UNDERLINE);
         }
-        return component;
+        if (CanvasTextLayer.hasStyleFlag(style, "strikethrough")) {
+            formats.add(ChatFormatting.STRIKETHROUGH);
+        }
+        if (CanvasTextLayer.hasStyleFlag(style, "spoiler")) {
+            formats.add(ChatFormatting.OBFUSCATED);
+        }
+        if (formats.isEmpty()) {
+            return component;
+        }
+        return component.copy().withStyle(formats.toArray(new ChatFormatting[0]));
     }
 
     private static void drawCanvasTextCaret(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h) {
@@ -378,11 +390,7 @@ public final class CanvasTextRenderer {
     }
 
     private static boolean isBoldStyle(String style) {
-        return "bold".equals(style) || "bold_italic".equals(style);
-    }
-
-    private static boolean isItalicStyle(String style) {
-        return "italic".equals(style) || "bold_italic".equals(style);
+        return CanvasTextLayer.hasStyleFlag(style, "bold");
     }
 
     private record LineRun(int start, String value, int width) {

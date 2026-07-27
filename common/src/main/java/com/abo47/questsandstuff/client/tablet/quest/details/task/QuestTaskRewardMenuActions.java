@@ -10,6 +10,8 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -23,7 +25,7 @@ final class QuestTaskRewardMenuActions {
     private QuestTaskRewardMenuActions() {
     }
 
-    static List<ContextAction> actions(TabletUiState state, Player player, String questId, String contextId) {
+    static void addSections(ContextMenuSections sections, TabletUiState state, Player player, String questId, String contextId) {
         CompoundTag rewardTag = ClientQuestStateFacade.quest(questId)
                 .getCompound("rewards")
                 .getCompound(contextId);
@@ -48,30 +50,32 @@ final class QuestTaskRewardMenuActions {
                 QuestTaskSelectableRewards.makeSelectable(player, questId, contextId);
             }));
         }
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REWARD), "rename", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REWARD), "square_pen", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.openTypePicker(state, "reward_change", contextId);
         }));
-        actions.add(ContextActionFactory.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REWARD), () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REWARD), () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestTaskEditActions.openTaskRenameEditor(state, questId, contextId, false);
         }));
         if (!editActions.isEmpty()) {
-            actions.add(QuestTaskMenuSupport.editSubmenu(editActions));
+            sections.add(ContextMenuSection.PRIMARY, QuestTaskMenuSupport.editSubmenu(editActions));
         }
-        QuestTaskMenuSupport.addMoveActions(actions, () -> {
+        List<ContextAction> moveActions = new ArrayList<>();
+        QuestTaskMenuSupport.addMoveActions(moveActions, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             EditorQuestCommandClient.moveQuestReward(player, questId, contextId, -1);
         }, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             EditorQuestCommandClient.moveQuestReward(player, questId, contextId, 1);
         });
-        QuestTaskMenuSupport.addVisualActions(actions, state, questId, contextId, false);
+        sections.addAll(ContextMenuSection.ARRANGE, moveActions);
+        List<ContextAction> visualActions = new ArrayList<>();
+        QuestTaskMenuSupport.addVisualActions(visualActions, state, questId, contextId, false);
+        sections.addAll(ContextMenuSection.APPEARANCE, visualActions);
         String deleteKey = "quest_details_reward:" + questId + ":" + contextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             EditorQuestCommandClient.removeQuestReward(player, questId, contextId);
         }));
-        return actions;
     }
 }

@@ -23,6 +23,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -206,12 +208,12 @@ public final class QuestHudLayoutEditScreen extends Screen {
     }
 
     private List<ContextAction> contextActions() {
-        List<ContextAction> actions = new ArrayList<>();
+        ContextMenuSections sections = new ContextMenuSections();
         QuestHudLayoutManager.Element target = contextElement;
         if (target == null) {
-            return actions;
+            return new ArrayList<>();
         }
-        actions.add(ContextActionFactory.action(
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(
                 Component.translatable("ui.questsandstuff.hud.change_background").getString(),
                 "background", ActionTone.PRIMARY, () -> {
             dragHandler.setOpeningChild(true);
@@ -223,7 +225,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
             String deleteKey = "hud_remove_bg:" + target.name();
             boolean confirming = deleteKey.equals(hudDeleteConfirmKey);
             String label = confirming ? "Sure?" : Component.translatable("ui.questsandstuff.hud.remove_background").getString();
-            actions.add(new ContextAction(label, "delete", ActionTone.WARNING, confirming, () -> {
+            sections.add(ContextMenuSection.DANGER, new ContextAction(label, "delete", ActionTone.WARNING, confirming, () -> {
                 if (confirming) {
                     hudDeleteConfirmKey = "";
                     QuestHudLayoutManager.setBackground(target, "");
@@ -234,15 +236,15 @@ public final class QuestHudLayoutEditScreen extends Screen {
         }
         boolean bordersShown = QuestHudLayoutManager.showBorders(target);
         if (bordersShown) {
-            actions.add(ContextActionFactory.action(
+            sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.action(
                     Component.translatable("ui.questsandstuff.hud.hide_borders").getString(),
                     "eye_off", ActionTone.NEUTRAL, () -> QuestHudLayoutManager.setShowBorders(target, false)));
         } else {
-            actions.add(ContextActionFactory.action(
+            sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.action(
                     Component.translatable("ui.questsandstuff.hud.show_borders").getString(),
                     "eye", ActionTone.NEUTRAL, () -> QuestHudLayoutManager.setShowBorders(target, true)));
         }
-        return actions;
+        return sections.build();
     }
 
     private void updateSnapButtonLabel() {

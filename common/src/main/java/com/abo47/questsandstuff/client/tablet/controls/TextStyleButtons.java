@@ -16,7 +16,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TextStyleButtons {
-    public static final int TOOL_COUNT = 8;
+    public static final int TOOL_COUNT = 12;
     public static final int TEXTBOX_FRAME_GAP = 2;
     public static final int CHAPTER_FRAME_GAP = 3;
     public static final int BUTTON_SIZE = GRID_18;
@@ -25,7 +25,7 @@ public final class TextStyleButtons {
     private static final int PAD = GRID_2;
     private static final int GAP = GRID_2;
     private static final int COMPACT_COLUMNS = 4;
-    private static final int WIDE_COLUMNS = TOOL_COUNT;
+    private static final int WIDE_COLUMNS = 8;
 
     private TextStyleButtons() {
     }

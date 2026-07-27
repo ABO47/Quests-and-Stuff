@@ -20,6 +20,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -273,8 +275,8 @@ public final class SkinEditManager {
         String currentMode = currentOverride != null ? currentOverride.mode() : "stretch";
         String currentAsset = currentOverride != null ? currentOverride.path() : "";
 
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActionFactory.action(
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_texture"),
                 "image",
                 TabletColors.INTERACTIVE,
@@ -322,7 +324,7 @@ public final class SkinEditManager {
                     root.closeContextMenu();
                     setFillMode(state, resolvedTarget, "dynamic", currentAsset, root, refresher);
                 }));
-        actions.add(ContextActionFactory.submenu(
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "layout-dashboard",
                 TabletColors.TEXT_PRIMARY,
@@ -330,7 +332,7 @@ public final class SkinEditManager {
 
         if (rawOverride != null && !rawOverride.isBlank()) {
             String skinTexKey = "skin_remove_tex:" + resolvedTarget;
-            actions.add(ContextActionFactory.warningDelete(state, skinTexKey,
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, skinTexKey,
                     TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     () -> {
                         root.closeContextMenu();
@@ -346,10 +348,11 @@ public final class SkinEditManager {
                     }));
         }
 
+        List<ContextAction> built = sections.build();
         List<String> labels = new ArrayList<>();
-        for (ContextAction a : actions) labels.add(a.label());
+        for (ContextAction a : built) labels.add(a.label());
         int menuW = ContextMenuRenderer.preferredMenuWidth(labels, 90, 120);
-        int menuH = ContextMenuPanel.heightFor(actions, actions.size());
+        int menuH = ContextMenuPanel.heightFor(built, built.size());
 
         int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -357,7 +360,7 @@ public final class SkinEditManager {
         int py = ContextMenuPlacement.fitBelowOrAbove(mouseY, screenH, menuH);
 
         root.setContextMenu(
-                ContextMenuPanel.build(px, py, menuW, actions, 0, actions.size(), TabletColors.BORDER_BASE, state, a -> {
+                ContextMenuPanel.build(px, py, menuW, built, 0, built.size(), TabletColors.BORDER_BASE, state, a -> {
                     if (root.isContextMenuOpen()) {
                         buildContextMenu(state, root, refresher, mouseX, mouseY);
                     }

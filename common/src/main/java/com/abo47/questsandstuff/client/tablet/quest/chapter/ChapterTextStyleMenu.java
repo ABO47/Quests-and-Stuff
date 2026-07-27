@@ -45,6 +45,10 @@ final class ChapterTextStyleMenu {
         int fontSize = ClientQuestStateFacade.chapterTextSize(target);
         boolean bold = CanvasTextLayer.hasStyleFlag(style, "bold");
         boolean italic = CanvasTextLayer.hasStyleFlag(style, "italic");
+        boolean underline = CanvasTextLayer.hasStyleFlag(style, "underline");
+        boolean strikethrough = CanvasTextLayer.hasStyleFlag(style, "strikethrough");
+        boolean quote = CanvasTextLayer.hasStyleFlag(style, "quote");
+        boolean spoiler = CanvasTextLayer.hasStyleFlag(style, "spoiler");
         int columns = TextStyleButtons.columnsForWidth(fw);
 
         addIconToggleButton(floating, 0, fw, columns, "style_align_left", alignButtonBase(align, "left"), click -> {
@@ -68,19 +72,43 @@ final class ChapterTextStyleMenu {
             refresh.run();
         });
 
-        addIconToggleButton(floating, 4, fw, columns, "context_style", toggleButtonBase(!bold && !italic), click -> {
+        addIconToggleButton(floating, 4, fw, columns, "context_style", toggleButtonBase(!bold && !italic && !underline && !strikethrough && !quote && !spoiler), click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style=normal", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, "normal", 0);
             refresh.run();
         });
         addIconToggleButton(floating, 5, fw, columns, "style_bold", toggleButtonBase(bold), click -> {
-            String nextStyle = CanvasTextLayer.styleFromFlags(!bold, italic);
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "bold");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
         addIconToggleButton(floating, 6, fw, columns, "style_italic", toggleButtonBase(italic), click -> {
-            String nextStyle = CanvasTextLayer.styleFromFlags(bold, !italic);
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "italic");
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
+            refresh.run();
+        });
+        addIconToggleButton(floating, 8, fw, columns, "style_underline", toggleButtonBase(underline), click -> {
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "underline");
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
+            refresh.run();
+        });
+        addIconToggleButton(floating, 9, fw, columns, "style_strikethrough", toggleButtonBase(strikethrough), click -> {
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "strikethrough");
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
+            refresh.run();
+        });
+        addIconToggleButton(floating, 10, fw, columns, "style_quote", toggleButtonBase(quote), click -> {
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "quote");
+            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
+            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
+            refresh.run();
+        });
+        addIconToggleButton(floating, 11, fw, columns, "style_spoiler", toggleButtonBase(spoiler), click -> {
+            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "spoiler");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();

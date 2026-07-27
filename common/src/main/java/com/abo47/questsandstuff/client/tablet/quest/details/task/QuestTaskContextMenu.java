@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.world.entity.player.Player;
@@ -10,6 +9,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
@@ -25,15 +25,16 @@ final class QuestTaskContextMenu {
         if (!state.questDetails.questDetailsContextOpen || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
-        List<ContextAction> actions = new ArrayList<>();
+        ContextMenuSections sections = new ContextMenuSections();
         String kind = state.questDetails.questDetailsContextKind == null ? "" : state.questDetails.questDetailsContextKind;
-        actions.addAll(QuestTaskCreateMenuActions.actions(state, kind));
+        QuestTaskCreateMenuActions.addSections(sections, state, kind);
         if ("task".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
-            actions.addAll(QuestTaskMenuActions.actions(state, player, questId, state.questDetails.questDetailsContextId));
+            QuestTaskMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
         if ("reward".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
-            actions.addAll(QuestTaskRewardMenuActions.actions(state, player, questId, state.questDetails.questDetailsContextId));
+            QuestTaskRewardMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
+        List<ContextAction> actions = sections.build();
         if (actions.isEmpty()) {
             return;
         }

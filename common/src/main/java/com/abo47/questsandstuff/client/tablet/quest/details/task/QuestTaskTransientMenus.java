@@ -12,6 +12,8 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -52,17 +54,18 @@ final class QuestTaskTransientMenus {
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             return;
         }
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", TabletColors.INTERACTIVE, () -> {
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openIconPicker(state, target);
         }));
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
         }));
+        List<ContextAction> actions = sections.build();
         int rowCount = actions.size();
         int menuW = 132;
         int menuH = ContextMenuPanel.heightForRows(rowCount);
