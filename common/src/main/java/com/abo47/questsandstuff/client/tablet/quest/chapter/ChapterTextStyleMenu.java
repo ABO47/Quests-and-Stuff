@@ -101,18 +101,6 @@ final class ChapterTextStyleMenu {
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 10, fw, columns, "style_quote", toggleButtonBase(quote), click -> {
-            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "quote");
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
-            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
-            refresh.run();
-        });
-        addIconToggleButton(floating, 11, fw, columns, "style_spoiler", toggleButtonBase(spoiler), click -> {
-            String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "spoiler");
-            QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
-            EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
-            refresh.run();
-        });
         addFontSizeControl(floating, state, player, target, fw, columns, fontSize, refresh);
         overlay.addWidget(floating);
     }
