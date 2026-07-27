@@ -63,7 +63,7 @@ public final class TabletIconPickerModal {
         boolean supportsInventoryIcons = supportsInventoryIconSelection(details, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
         IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
-        int headY = 22;
+        int headY = 24;
         int headH = 18;
         int modeW = entityPicker ? 0 : headH;
         int gap = 4;

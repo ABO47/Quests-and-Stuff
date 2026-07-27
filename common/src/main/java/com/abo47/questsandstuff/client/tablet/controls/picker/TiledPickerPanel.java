@@ -56,11 +56,11 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 150), TabletColors.BORDER_BASE));
+        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 190), TabletColors.subtleBorder()));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {
-            surface.addWidget(label(8, 8, emptyText, TabletColors.TEXT_MUTED));
+            surface.addWidget(label(Math.max(4, padX), Math.max(4, padY), emptyText, TabletColors.TEXT_MUTED));
             return layout;
         }
 
