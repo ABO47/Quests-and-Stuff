@@ -10,6 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -31,7 +32,10 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     @Override
     protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         if (extendedBackgroundTexture != null) {
-            extendedBackgroundTexture.draw(graphics, mouseX, mouseY, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2);
+            CanvasBackgroundOpacity.drawTexture(graphics, extendedBackgroundTexture, mouseX, mouseY,
+                    getPositionX() - 1, getPositionY() - 1,
+                    getSizeWidth() + 2, getSizeHeight() + 2,
+                    state.questDetails.questDetailsCanvasBgOpacityPercent);
         }
         super.drawBackgroundTexture(graphics, mouseX, mouseY);
     }
