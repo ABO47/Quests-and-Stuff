@@ -31,21 +31,20 @@ final class QuestTaskRewardMenuActions {
                 .getCompound(contextId);
         JsonObject rewardJson = QuestTaskMenuSupport.parseTaskJson(rewardTag.getString("json"));
         boolean selectable = QuestTaskSelectableRewards.isSelectable(rewardJson);
-        List<ContextAction> editActions = new ArrayList<>();
         if ("command".equals(TaskJsonFactory.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
-            editActions.add(ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestTaskEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
         }
         if (QuestTaskXpEditor.isXp(rewardJson)) {
-            editActions.add(ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
-            editActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.MAKE_SELECTABLE_REWARD), "selectable", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.MAKE_SELECTABLE_REWARD), "selectable", TabletColors.INTERACTIVE, () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestTaskSelectableRewards.makeSelectable(player, questId, contextId);
             }));
@@ -58,9 +57,6 @@ final class QuestTaskRewardMenuActions {
             ContextMenuController.clearDeleteConfirm(state);
             QuestTaskEditActions.openTaskRenameEditor(state, questId, contextId, false);
         }));
-        if (!editActions.isEmpty()) {
-            sections.add(ContextMenuSection.PRIMARY, QuestTaskMenuSupport.editSubmenu(editActions));
-        }
         List<ContextAction> moveActions = new ArrayList<>();
         QuestTaskMenuSupport.addMoveActions(moveActions, () -> {
             ContextMenuController.clearDeleteConfirm(state);
