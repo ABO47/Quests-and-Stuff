@@ -168,8 +168,6 @@ final class QuestTaskCardRenderer {
         boolean selected = editSelected || claimSelected;
         int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING) : TabletColors.INTERACTIVE;
 
-        card.setBackground(SurfaceFactory.fill(TabletColors.elevatedSurface()));
-
         String skinKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
         String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
         if (rawOverride == null) {
@@ -184,6 +182,9 @@ final class QuestTaskCardRenderer {
                     card.addWidget(new ImageWidget(-1, -1, w + 2, QuestDetailsTasksPanel.CARD_H + 2, tex));
                 }
             }
+            card.setBackground(SurfaceFactory.transparentFill());
+        } else {
+            card.setBackground(SurfaceFactory.fill(TabletColors.elevatedSurface()));
         }
 
         if (claimedReward) {
