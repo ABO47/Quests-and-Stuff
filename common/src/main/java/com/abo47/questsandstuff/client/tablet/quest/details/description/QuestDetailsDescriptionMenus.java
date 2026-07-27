@@ -71,9 +71,14 @@ public final class QuestDetailsDescriptionMenus {
             return;
         }
         TextStyleSession.openQuestDetails(state, text.id());
+        int contentW = Math.max(1, w - 1);
         CanvasTextStyleMenu.renderQuestDetails(modal, state, text, x, y, w, h, state.questDetails.questDetailsDescScroll, next -> {
-            updateText(player, state, questId, model, next, Math.max(1, w - 1));
+            updateText(player, state, questId, model, next, contentW);
             TextStyleSession.openQuestDetails(state, next.id());
+        }, value -> {
+            CanvasTextLayer preview = QuestDetailsDescriptionLayout.fitAndClampText(state, text.withFontSize(value), contentW);
+            model.putText(preview);
+            QuestDetailsDescriptionModel.preview(questId, model);
         }, () -> {
             state.questDetails.questDetailsTextColorQuestId = questId;
             state.questDetails.questDetailsTextColorTextId = text.id();

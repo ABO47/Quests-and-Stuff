@@ -10,6 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
@@ -18,6 +19,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final TabletUiState state;
     private final String questId;
     private final QuestDetailsDescriptionSelection selection;
+    private final QuestDetailsDescriptionTextEdit textEdit;
     private final QuestDetailsDescriptionEventRouter events;
     private IGuiTexture extendedBackgroundTexture;
 
@@ -38,7 +40,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         this.state = state;
         this.questId = questId;
         QuestDetailsDescriptionTransform transforms = new QuestDetailsDescriptionTransform(state, this::contentX, this::contentY, this::contentW, this::contentH);
-        QuestDetailsDescriptionTextEdit textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
+        this.textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
         this.selection = new QuestDetailsDescriptionSelection(state, this::contentX, this::contentY, this::contentW, this::contentH);
         QuestDetailsDescriptionHitTest hitTest = new QuestDetailsDescriptionHitTest(state, selection, this::contentW, this::contentH);
         this.events = new QuestDetailsDescriptionEventRouter(
@@ -156,12 +158,24 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return events.keyPressed(keyCode, scanCode, modifiers);
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        return events.charTyped(codePoint, modifiers);
+        if (super.charTyped(codePoint, modifiers)) {
+            return true;
+        }
+        if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

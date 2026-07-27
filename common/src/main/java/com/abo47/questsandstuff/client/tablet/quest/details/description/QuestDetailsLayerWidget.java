@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;

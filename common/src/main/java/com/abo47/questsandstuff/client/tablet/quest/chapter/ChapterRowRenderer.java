@@ -272,12 +272,24 @@ final class ChapterRowRenderer {
 
     private static String styledChapterText(String text, String style) {
         String safe = text == null ? "" : text;
-        return switch (CanvasTextLayer.normalizeStyle(style)) {
-            case "bold" -> ChatFormatting.BOLD + safe;
-            case "italic" -> ChatFormatting.ITALIC + safe;
-            case "bold_italic" -> ChatFormatting.BOLD.toString() + ChatFormatting.ITALIC + safe;
-            default -> safe;
-        };
+        String normalized = CanvasTextLayer.normalizeStyle(style);
+        if (normalized.equals("normal") || normalized.isEmpty()) {
+            return safe;
+        }
+        StringBuilder prefix = new StringBuilder();
+        for (String flag : normalized.split("_")) {
+            ChatFormatting fmt = switch (flag) {
+                case "bold" -> ChatFormatting.BOLD;
+                case "italic" -> ChatFormatting.ITALIC;
+                case "underline" -> ChatFormatting.UNDERLINE;
+                case "strikethrough" -> ChatFormatting.STRIKETHROUGH;
+                default -> null;
+            };
+            if (fmt != null) {
+                prefix.append(fmt);
+            }
+        }
+        return prefix + safe;
     }
 
     private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String chapter, int x, int y) {

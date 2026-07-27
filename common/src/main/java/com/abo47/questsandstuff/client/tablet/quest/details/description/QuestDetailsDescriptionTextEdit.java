@@ -53,7 +53,6 @@ public final class QuestDetailsDescriptionTextEdit {
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
             TextEditSession.selectAll(state);
-            refresh.run();
             return true;
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_C) {
@@ -104,22 +103,18 @@ public final class QuestDetailsDescriptionTextEdit {
         }
         if (keyCode == GLFW.GLFW_KEY_LEFT) {
             TextEditSession.moveCursor(state, Math.max(0, TextEditSession.clampedCursor(state) - 1), isShiftDown());
-            refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_RIGHT) {
             TextEditSession.moveCursor(state, Math.min(TextEditSession.draftLength(state), TextEditSession.clampedCursor(state) + 1), isShiftDown());
-            refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_HOME) {
             TextEditSession.moveCursor(state, 0, isShiftDown());
-            refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_END) {
             TextEditSession.moveCursor(state, TextEditSession.draftLength(state), isShiftDown());
-            refresh.run();
             return true;
         }
         return true;
@@ -203,7 +198,6 @@ public final class QuestDetailsDescriptionTextEdit {
         state.questDetails.questDetailsTextEditDraft = state.canvas.canvasTextEditDraft;
         model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.withText(state.canvas.canvasTextEditDraft))));
         QuestDetailsDescriptionModel.preview(questId, model);
-        refresh.run();
     }
 
     private void copySelection() {
@@ -223,7 +217,6 @@ public final class QuestDetailsDescriptionTextEdit {
             model.putText(fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
             QuestDetailsDescriptionModel.preview(questId, model);
         }
-        refresh.run();
         return true;
     }
 

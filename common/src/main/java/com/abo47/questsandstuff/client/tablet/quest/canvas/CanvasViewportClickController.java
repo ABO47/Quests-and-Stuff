@@ -201,6 +201,13 @@ final class CanvasViewportClickController {
         }
 
         if (!state.root.canEdit) {
+            CanvasTextLayer canvasSpoilerText = CanvasRenderer.hitTestCanvasText(state, localX, localY);
+            if (canvasSpoilerText != null && CanvasTextLayer.hasStyleFlag(canvasSpoilerText.style(), "spoiler")) {
+                String revealed = state.canvas.canvasTextSpoilerRevealedTextId;
+                state.canvas.canvasTextSpoilerRevealedTextId = revealed.equals(canvasSpoilerText.id()) ? "" : canvasSpoilerText.id();
+                refresher.run();
+                return true;
+            }
             if (hit != null) {
                 state.canvas.canvasSelection.questIds().clear();
                 state.canvas.canvasSelection.questIds().add(hit.questId());

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
@@ -146,6 +147,37 @@ public final class TextStyleButtons {
             Runnable onCancel,
             Runnable onBlur
     ) {
+        return addFontSizeField(parent, index, menuWidth, columns, currentValue, onChange, null, onCommit, onCancel, onBlur, null);
+    }
+
+    public static FontSizeFieldWidget addFontSizeField(
+            WidgetGroup parent,
+            int index,
+            int menuWidth,
+            int columns,
+            int currentValue,
+            IntConsumer onChange,
+            Runnable onCommit,
+            Runnable onCancel,
+            Runnable onBlur,
+            BooleanSupplier yieldEnterToEditor
+    ) {
+        return addFontSizeField(parent, index, menuWidth, columns, currentValue, onChange, null, onCommit, onCancel, onBlur, yieldEnterToEditor);
+    }
+
+    public static FontSizeFieldWidget addFontSizeField(
+            WidgetGroup parent,
+            int index,
+            int menuWidth,
+            int columns,
+            int currentValue,
+            IntConsumer onChange,
+            IntConsumer onPreview,
+            Runnable onCommit,
+            Runnable onCancel,
+            Runnable onBlur,
+            BooleanSupplier yieldEnterToEditor
+    ) {
         int buttonW = buttonWidth(menuWidth, columns);
         FontSizeFieldWidget field = new FontSizeFieldWidget(
                 toolX(index, menuWidth, columns),
@@ -154,9 +186,11 @@ public final class TextStyleButtons {
                 BUTTON_H,
                 currentValue,
                 onChange,
+                onPreview,
                 onCommit,
                 onCancel,
-                onBlur
+                onBlur,
+                yieldEnterToEditor
         );
         parent.addWidget(field);
         return field;

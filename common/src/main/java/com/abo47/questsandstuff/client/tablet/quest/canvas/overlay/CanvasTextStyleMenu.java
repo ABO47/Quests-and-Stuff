@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import net.minecraft.network.chat.Component;
 
@@ -44,7 +45,7 @@ public final class CanvasTextStyleMenu {
         int menuH = bounds[3];
         int columns = bounds[5];
 
-        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, chapter, fitCanvasText(state, next)), () -> {
+        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, chapter, fitCanvasText(state, next)), null, () -> {
             ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(chapter, text.id()), CanvasRenderer.activeTextColor(state, text));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", chapter, text.id());
             refresh.run();
@@ -61,6 +62,7 @@ public final class CanvasTextStyleMenu {
             int viewportH,
             int scroll,
             Consumer<CanvasTextLayer> updateText,
+            IntConsumer onPreview,
             Runnable openColorPicker,
             Runnable refresh
     ) {
@@ -72,7 +74,7 @@ public final class CanvasTextStyleMenu {
         int hitX = state.questDetails.questDetailsViewportOriginX + bounds[0];
         int hitY = state.questDetails.questDetailsViewportOriginY + bounds[1];
         TextStyleSession.setQuestDetailsBounds(state, hitX, hitY, bounds[2], bounds[3]);
-        renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, openColorPicker);
+        renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, onPreview, openColorPicker);
     }
 
     private static int alignButtonBase(String currentAlign, String option) {
@@ -95,6 +97,7 @@ public final class CanvasTextStyleMenu {
             String logScope,
             Runnable refresh,
             Consumer<CanvasTextLayer> updateText,
+            IntConsumer onPreview,
             Runnable openColorPicker
     ) {
         WidgetGroup floating = TextStyleButtons.shell(x, y, menuW, menuH, click -> {
@@ -124,7 +127,7 @@ public final class CanvasTextStyleMenu {
         addTextStyleButton(floating, 9, menuW, columns, "style_strikethrough", toggleButtonBase(strikethrough), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "strikethrough"), updateText, refresh));
         addTextStyleButton(floating, 10, menuW, columns, "style_quote", toggleButtonBase(quote), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh));
         addTextStyleButton(floating, 11, menuW, columns, "style_spoiler", toggleButtonBase(spoiler), click -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh));
-        addFontSizeControl(floating, state, logScope, text, menuW, columns, refresh, updateText);
+        addFontSizeControl(floating, state, logScope, text, menuW, columns, refresh, updateText, onPreview);
         parent.addWidget(floating);
     }
 
@@ -152,7 +155,7 @@ public final class CanvasTextStyleMenu {
         TextStyleButtons.addTool(parent, index, menuWidth, columns, iconName, baseColor, iconTint, tooltips, callback);
     }
 
-    private static void addFontSizeControl(WidgetGroup parent, TabletUiState state, String logScope, CanvasTextLayer text, int menuWidth, int columns, Runnable refresh, Consumer<CanvasTextLayer> updateText) {
+    private static void addFontSizeControl(WidgetGroup parent, TabletUiState state, String logScope, CanvasTextLayer text, int menuWidth, int columns, Runnable refresh, Consumer<CanvasTextLayer> updateText, IntConsumer onPreview) {
         int fontSize = text.fontSize();
         boolean open = text.id().equals(textFontSizeFieldTarget(state, logScope));
         if (open) {
@@ -161,7 +164,7 @@ public final class CanvasTextStyleMenu {
                 updateText.accept(CanvasTextRenderer.fitTextHeight(text.withFontSize(value)));
                 keepQuestDetailsStyleMenuOpen(state, logScope, text.id());
                 QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size id={} size={}", logScope, text.id(), value);
-            }, () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh));
+            }, onPreview, () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh), () -> closeFontSizeField(state, logScope, refresh), null);
             return;
         }
         int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? TabletColors.INTERACTIVE : TabletColors.SURFACE_PANEL_ALT;

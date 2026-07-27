@@ -90,6 +90,21 @@ final class QuestDetailsDescriptionEventRouter {
             return true;
         }
         if (!QuestDetailsEditController.canEdit(state)) {
+            if (button == 0) {
+                int spoilerLx = localX(mouseX);
+                int spoilerVisibleY = localY(mouseY);
+                QuestDetailsDescriptionModel spoilerModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+                QuestDetailsDescriptionHitTest.Hit spoilerHit = hitTest.hit(spoilerModel, spoilerLx, spoilerVisibleY);
+                if (spoilerHit != null && "desc_text".equals(spoilerHit.kind())) {
+                    CanvasTextLayer hitText = spoilerModel.text(spoilerHit.id());
+                    if (hitText != null && CanvasTextLayer.hasStyleFlag(hitText.style(), "spoiler")) {
+                        String revealed = state.questDetails.questDetailsSpoilerRevealedTextId;
+                        state.questDetails.questDetailsSpoilerRevealedTextId = revealed.equals(hitText.id()) ? "" : hitText.id();
+                        refresh.run();
+                        return true;
+                    }
+                }
+            }
             return true;
         }
         int lx = localX(mouseX);
@@ -152,15 +167,6 @@ final class QuestDetailsDescriptionEventRouter {
                 return true;
             }
         }
-        if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit) {
-            CanvasTextLayer hitText = model.text(hit.id());
-            if (hitText != null && CanvasTextLayer.hasStyleFlag(hitText.style(), "spoiler")) {
-                String revealed = state.questDetails.questDetailsSpoilerRevealedTextId;
-                state.questDetails.questDetailsSpoilerRevealedTextId = revealed.equals(hit.id()) ? "" : hit.id();
-                refresh.run();
-                return true;
-            }
-        }
         if ("desc_text".equals(hit.kind()) && !resizeHit && !rotateHit && handleTextDoubleClick(hit)) {
             select(hit);
             textEdit.begin(model, hit.id(), () -> surface.focus(true));
@@ -218,17 +224,23 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (surface.keyPressedFallback(keyCode, scanCode, modifiers)) {
+            return true;
+        }
         if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
             return true;
         }
-        return surface.keyPressedFallback(keyCode, scanCode, modifiers);
+        return false;
     }
 
     boolean charTyped(char codePoint, int modifiers) {
+        if (surface.charTypedFallback(codePoint, modifiers)) {
+            return true;
+        }
         if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
             return true;
         }
-        return surface.charTypedFallback(codePoint, modifiers);
+        return false;
     }
 
     boolean mouseReleased(double mouseX, double mouseY, int button) {
