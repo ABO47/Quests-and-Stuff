@@ -69,6 +69,10 @@ public final class TabletRootWidget extends WidgetGroup {
         this.canvasViewport = canvasViewport;
     }
 
+    public CanvasViewport getCanvasViewport() {
+        return canvasViewport;
+    }
+
     public void setHomeButton(ButtonWidget btn) {
         this.homeBtn = btn;
     }

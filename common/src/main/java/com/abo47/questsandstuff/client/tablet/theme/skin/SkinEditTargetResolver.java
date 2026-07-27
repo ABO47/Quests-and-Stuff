@@ -137,6 +137,7 @@ public final class SkinEditTargetResolver {
         if (hasVisibleBackground(widget)) return true;
         String key = SkinAnchorRegistry.keyFor(widget);
         if (key != null && !SkinOverrideKey.isSharedKey(key)) return true;
+        if (key != null && SkinOverrideKey.isRootKey(key)) return true;
         return false;
     }
 

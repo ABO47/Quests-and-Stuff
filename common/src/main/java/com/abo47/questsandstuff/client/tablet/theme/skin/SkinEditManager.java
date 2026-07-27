@@ -23,6 +23,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsRootWidget;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -57,16 +58,14 @@ public final class SkinEditManager {
             root.closeContextMenu();
         }
 
+        Widget homeBtn = root.getHomeButton();
         String hitKey;
-        if (isMinimapHit(state, mouseX, mouseY)) {
-            hitKey = minimapHitKey(state, mouseX, mouseY);
+        if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
+            hitKey = "home_btn";
+        } else if (isMinimapHit(state, root, mouseX, mouseY)) {
+            hitKey = minimapHitKey(state, root, mouseX, mouseY);
         } else {
-            Widget homeBtn = root.getHomeButton();
-            if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
-                hitKey = "home_btn";
-            } else {
-                hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
-            }
+            hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
         }
 
         if (button == 0) {
@@ -388,26 +387,48 @@ public final class SkinEditManager {
         return "quests_minimap_body".equals(key) || "quests_minimap_toggle".equals(key);
     }
 
-    private static boolean isMinimapHit(TabletUiState state, int mx, int my) {
+    private static boolean isMinimapHit(TabletUiState state, TabletRootWidget root, int mx, int my) {
+        int[] abs = minimapViewportOrigin(root);
+        if (abs == null) return false;
+        int vpAbsX = abs[0];
+        int vpAbsY = abs[1];
+        int bodyX = vpAbsX + state.canvas.minimapPanelX;
+        int bodyY = vpAbsY + state.canvas.minimapPanelY;
+        int toggleX = vpAbsX + state.canvas.minimapToggleX;
+        int toggleY = vpAbsY + state.canvas.minimapToggleY;
         return (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
-                && mx >= state.canvas.minimapPanelX && mx < state.canvas.minimapPanelX + state.canvas.minimapPanelW
-                && my >= state.canvas.minimapPanelY && my < state.canvas.minimapPanelY + state.canvas.minimapPanelH)
+                && mx >= bodyX && mx < bodyX + state.canvas.minimapPanelW
+                && my >= bodyY && my < bodyY + state.canvas.minimapPanelH)
                 || (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
-                && mx >= state.canvas.minimapToggleX && mx < state.canvas.minimapToggleX + state.canvas.minimapToggleW
-                && my >= state.canvas.minimapToggleY && my < state.canvas.minimapToggleY + state.canvas.minimapToggleH);
+                && mx >= toggleX && mx < toggleX + state.canvas.minimapToggleW
+                && my >= toggleY && my < toggleY + state.canvas.minimapToggleH);
     }
 
-    private static String minimapHitKey(TabletUiState state, int mx, int my) {
-        if (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
-                && mx >= state.canvas.minimapPanelX && mx < state.canvas.minimapPanelX + state.canvas.minimapPanelW
-                && my >= state.canvas.minimapPanelY && my < state.canvas.minimapPanelY + state.canvas.minimapPanelH) {
-            return "quests_minimap_body";
-        }
+    private static String minimapHitKey(TabletUiState state, TabletRootWidget root, int mx, int my) {
+        int[] abs = minimapViewportOrigin(root);
+        if (abs == null) return null;
+        int vpAbsX = abs[0];
+        int vpAbsY = abs[1];
+        int bodyX = vpAbsX + state.canvas.minimapPanelX;
+        int bodyY = vpAbsY + state.canvas.minimapPanelY;
+        int toggleX = vpAbsX + state.canvas.minimapToggleX;
+        int toggleY = vpAbsY + state.canvas.minimapToggleY;
         if (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
-                && mx >= state.canvas.minimapToggleX && mx < state.canvas.minimapToggleX + state.canvas.minimapToggleW
-                && my >= state.canvas.minimapToggleY && my < state.canvas.minimapToggleY + state.canvas.minimapToggleH) {
+                && mx >= toggleX && mx < toggleX + state.canvas.minimapToggleW
+                && my >= toggleY && my < toggleY + state.canvas.minimapToggleH) {
             return "quests_minimap_toggle";
         }
+        if (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
+                && mx >= bodyX && mx < bodyX + state.canvas.minimapPanelW
+                && my >= bodyY && my < bodyY + state.canvas.minimapPanelH) {
+            return "quests_minimap_body";
+        }
         return null;
+    }
+
+    private static int[] minimapViewportOrigin(TabletRootWidget root) {
+        CanvasViewport vp = root.getCanvasViewport();
+        if (vp == null) return null;
+        return new int[]{vp.getPositionX(), vp.getPositionY()};
     }
 }

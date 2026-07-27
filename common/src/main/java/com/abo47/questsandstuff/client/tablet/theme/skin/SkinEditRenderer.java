@@ -12,6 +12,7 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -51,10 +52,21 @@ public final class SkinEditRenderer {
         String tooltipKey = !selectedKey.isBlank() ? selectedKey :
                 SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
         if (tooltipKey != null) {
-            Widget tw = SkinEditTargetResolver.widgetForKey(root, tooltipKey);
-            if (tw != null) {
-                int dw = tw.getSizeWidth() + 1;
-                int dh = tw.getSizeHeight() + 1;
+            int dw = 0, dh = 0;
+            if ("quests_minimap_body".equals(tooltipKey)) {
+                dw = state.canvas.minimapPanelW + 1;
+                dh = state.canvas.minimapPanelH + 1;
+            } else if ("quests_minimap_toggle".equals(tooltipKey)) {
+                dw = state.canvas.minimapToggleW + 1;
+                dh = state.canvas.minimapToggleH + 1;
+            } else {
+                Widget tw = SkinEditTargetResolver.widgetForKey(root, tooltipKey);
+                if (tw != null) {
+                    dw = tw.getSizeWidth() + 1;
+                    dh = tw.getSizeHeight() + 1;
+                }
+            }
+            if (dw > 0 && dh > 0) {
                 graphics.renderTooltip(mc.font, Component.literal(dw + " x " + dh), mouseX, mouseY);
             }
         }
@@ -68,13 +80,19 @@ public final class SkinEditRenderer {
         }
         int gx = 0, gy = 0, gw = 0, gh = 0;
         if ("quests_minimap_body".equals(key)) {
-            gx = state.canvas.minimapPanelX;
-            gy = state.canvas.minimapPanelY;
+            CanvasViewport vp = root instanceof TabletRootWidget trw ? trw.getCanvasViewport() : null;
+            if (vp != null) {
+                gx = vp.getPositionX() + state.canvas.minimapPanelX;
+                gy = vp.getPositionY() + state.canvas.minimapPanelY;
+            }
             gw = state.canvas.minimapPanelW;
             gh = state.canvas.minimapPanelH;
         } else if ("quests_minimap_toggle".equals(key)) {
-            gx = state.canvas.minimapToggleX;
-            gy = state.canvas.minimapToggleY;
+            CanvasViewport vp = root instanceof TabletRootWidget trw ? trw.getCanvasViewport() : null;
+            if (vp != null) {
+                gx = vp.getPositionX() + state.canvas.minimapToggleX;
+                gy = vp.getPositionY() + state.canvas.minimapToggleY;
+            }
             gw = state.canvas.minimapToggleW;
             gh = state.canvas.minimapToggleH;
         }
