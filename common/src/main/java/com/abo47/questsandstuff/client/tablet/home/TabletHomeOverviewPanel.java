@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
@@ -87,6 +88,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
             appBtn.setClientSideWidget();
             appBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
             appBtn.setClickedTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.pressedFill(TabletColors.INTERACTIVE))));
+            appBtn.setHoverTooltips(Component.translatable(app.translationKey()));
             addWidget(appBtn);
             col++;
         }
