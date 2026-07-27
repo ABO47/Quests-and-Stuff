@@ -64,30 +64,34 @@ final class CanvasMinimapPainter {
             int bodyX = handleX - visibleBodyW;
             int bodyY = originY + layout.panelY();
             int bodyH = layout.panelH();
-            drawBodyFill(graphics, state, bodyX, bodyY, handleX - bodyX, bodyH);
-            SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
-            SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
-            SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
+            boolean hasOverride = drawBodyFill(graphics, state, bodyX, bodyY, handleX - bodyX, bodyH);
+            if (!hasOverride) {
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
+            }
         }
         drawHandle(graphics, state, handleX, handleY, handleW, handleH, mouseX, mouseY);
     }
 
-    private static void drawBodyFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+    private static boolean drawBodyFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
         IGuiTexture override = skinOverrideTexture(state, "quests_minimap_body");
         if (override != null) {
-            override.draw(graphics, 0, 0, x, y, w, h);
-        } else {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, x, y, w, h);
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
         }
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
     }
 
-    private static void drawHandleFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+    private static boolean drawHandleFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
         IGuiTexture override = skinOverrideTexture(state, "quests_minimap_toggle");
         if (override != null) {
-            override.draw(graphics, 0, 0, x, y, w, h);
-        } else {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
         }
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
     }
 
     private static IGuiTexture skinOverrideTexture(TabletUiState state, String key) {
@@ -232,8 +236,10 @@ final class CanvasMinimapPainter {
 
     private static void drawHandle(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h, int mouseX, int mouseY) {
         boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-        drawHandleFill(graphics, state, x, y, w, h);
-        drawBorder(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, 180));
+        boolean hasOverride = drawHandleFill(graphics, state, x, y, w, h);
+        if (!hasOverride) {
+            drawBorder(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, 180));
+        }
         if (hovered) {
             GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
         }

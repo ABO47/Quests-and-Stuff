@@ -39,7 +39,7 @@ public final class SkinEditRenderer {
         if (!selectedKey.isBlank()) {
             drawGlowForKey(graphics, root, state, selectedKey, SELECTED_GLOW_COLOR, mouseX, mouseY);
         } else {
-            String hoverKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+            String hoverKey = hoverKeyAt(root, state, mouseX, mouseY);
             if (hoverKey != null) {
                 drawGlowForKey(graphics, root, state, hoverKey, GLOW_COLOR, mouseX, mouseY);
             }
@@ -49,8 +49,7 @@ public final class SkinEditRenderer {
             root.getContextMenuRoot().drawInBackground(graphics, mouseX, mouseY, mc.getFrameTime());
         }
 
-        String tooltipKey = !selectedKey.isBlank() ? selectedKey :
-                SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+        String tooltipKey = !selectedKey.isBlank() ? selectedKey : hoverKeyAt(root, state, mouseX, mouseY);
         if (tooltipKey != null) {
             int dw = 0, dh = 0;
             if ("quests_minimap_body".equals(tooltipKey)) {
@@ -70,6 +69,13 @@ public final class SkinEditRenderer {
                 graphics.renderTooltip(mc.font, Component.literal(dw + " x " + dh), mouseX, mouseY);
             }
         }
+    }
+
+    private static String hoverKeyAt(TabletRootWidget root, TabletUiState state, int mouseX, int mouseY) {
+        if (SkinEditManager.isMinimapHit(state, root, mouseX, mouseY)) {
+            return SkinEditManager.minimapHitKey(state, root, mouseX, mouseY);
+        }
+        return SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
     }
 
     private static void drawGlowForKey(GuiGraphics graphics, WidgetGroup root, TabletUiState state, String key, int glowColor, int mouseX, int mouseY) {

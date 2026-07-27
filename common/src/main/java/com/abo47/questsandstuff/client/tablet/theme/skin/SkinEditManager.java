@@ -387,7 +387,7 @@ public final class SkinEditManager {
         return "quests_minimap_body".equals(key) || "quests_minimap_toggle".equals(key);
     }
 
-    private static boolean isMinimapHit(TabletUiState state, TabletRootWidget root, int mx, int my) {
+    static boolean isMinimapHit(TabletUiState state, TabletRootWidget root, int mx, int my) {
         int[] abs = minimapViewportOrigin(root);
         if (abs == null) return false;
         int vpAbsX = abs[0];
@@ -404,7 +404,7 @@ public final class SkinEditManager {
                 && my >= toggleY && my < toggleY + state.canvas.minimapToggleH);
     }
 
-    private static String minimapHitKey(TabletUiState state, TabletRootWidget root, int mx, int my) {
+    static String minimapHitKey(TabletUiState state, TabletRootWidget root, int mx, int my) {
         int[] abs = minimapViewportOrigin(root);
         if (abs == null) return null;
         int vpAbsX = abs[0];
