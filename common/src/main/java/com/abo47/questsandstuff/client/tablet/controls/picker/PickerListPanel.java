@@ -33,7 +33,7 @@ public final class PickerListPanel {
             Runnable refresh,
             RowRenderer<T> renderer
     ) {
-        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, GRID_8, GRID_4);
+        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, GRID_4, GRID_4);
     }
 
     public static <T> WidgetGroup add(
@@ -49,9 +49,9 @@ public final class PickerListPanel {
             int wheelStep,
             Runnable refresh,
             RowRenderer<T> renderer,
-            int rightPad
+            int hPad
     ) {
-        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, rightPad, GRID_4);
+        return add(modal, x, y, w, h, rowH, entries, emptyText, scroll, wheelStep, refresh, renderer, hPad, GRID_4);
     }
 
     public static <T> WidgetGroup add(
@@ -67,14 +67,15 @@ public final class PickerListPanel {
             int wheelStep,
             Runnable refresh,
             RowRenderer<T> renderer,
-            int rightPad,
+            int hPad,
             int vPad
     ) {
         int rows = ScrollMath.listRows(h - vPad * 2, rowH, 0);
         int maxStart = Math.max(0, entries.size() - rows);
         scroll.setValue(ScrollMath.clamp(scroll.value(), maxStart));
         boolean showScroll = maxStart > 0;
-        int rowW = showScroll ? w - DragScrollBarWidget.RESERVED_WIDTH - rightPad : w;
+        int rowW = showScroll ? w - hPad * 2 - DragScrollBarWidget.RESERVED_WIDTH : w - hPad * 2;
+        int rowX = hPad;
 
         WidgetGroup list = new TabletScissoredWidgetGroup(x, y, w, h) {
             @Override
@@ -94,14 +95,16 @@ public final class PickerListPanel {
         modal.addWidget(list);
 
         if (entries.isEmpty()) {
-            list.addWidget(label(8, vPad, emptyText, TabletColors.TEXT_MUTED));
+            list.addWidget(label(rowX, vPad, emptyText, TabletColors.TEXT_MUTED));
             return list;
         }
 
         int end = Math.min(entries.size(), scroll.value() + rows);
         int rowY = vPad;
         for (int i = scroll.value(); i < end; i++) {
-            renderer.render(list, entries.get(i), i, rowY, rowW);
+            WidgetGroup row = new WidgetGroup(rowX, rowY, rowW, rowH);
+            renderer.render(row, entries.get(i), i, 0, rowW);
+            list.addWidget(row);
             rowY += rowH;
         }
 

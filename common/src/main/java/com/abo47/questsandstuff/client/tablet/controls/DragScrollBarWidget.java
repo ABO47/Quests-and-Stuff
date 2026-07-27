@@ -17,7 +17,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 
 public final class DragScrollBarWidget extends WidgetGroup {
     public static final int WIDTH = GRID_6;
-    public static final int RESERVED_WIDTH = GRID_10;
+    public static final int RESERVED_WIDTH = GRID_6;
     private static final int RAIL_WIDTH = 2;
     private static final int MIN_KNOB_HEIGHT = GRID_14;
 

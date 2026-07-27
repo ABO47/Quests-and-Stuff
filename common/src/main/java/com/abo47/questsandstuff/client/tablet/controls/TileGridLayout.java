@@ -38,7 +38,7 @@ public record TileGridLayout(
         int baseContentW = Math.max(safeTileW, width - safePadX * 2);
         int baseCols = Math.max(1, (baseContentW + safeGap) / (safeTileW + safeGap));
         boolean showScroll = safeCount > baseCols * rows;
-        int contentW = Math.max(safeTileW, width - safePadX * 2 - (showScroll ? DragScrollBarWidget.RESERVED_WIDTH + safeGap : 0));
+        int contentW = Math.max(safeTileW, width - safePadX * 2 - (showScroll ? DragScrollBarWidget.RESERVED_WIDTH : 0));
         int cols = Math.max(1, (contentW + safeGap) / (safeTileW + safeGap));
         int pageSize = Math.max(1, cols * rows);
         showScroll = safeCount > pageSize;

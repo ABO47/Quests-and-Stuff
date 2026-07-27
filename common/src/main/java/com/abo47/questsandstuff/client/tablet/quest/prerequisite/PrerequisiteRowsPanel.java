@@ -54,7 +54,7 @@ final class PrerequisiteRowsPanel {
         int contentH = Math.max(ROW_H, layout.bodyH() - PAD * 2);
         int visibleRows = Math.max(1, (contentH + ROW_GAP) / (ROW_H + ROW_GAP));
         boolean showScroll = rowCount > visibleRows;
-        int scrollReserve = showScroll ? DragScrollBarWidget.RESERVED_WIDTH + ROW_GAP : 0;
+        int scrollReserve = showScroll ? DragScrollBarWidget.RESERVED_WIDTH : 0;
         return Math.max(96, layout.rightW() - PAD * 2 - scrollReserve);
     }
 
