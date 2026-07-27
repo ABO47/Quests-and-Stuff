@@ -60,12 +60,12 @@ public final class FabricModNetwork {
     }
 
     private static void handleServerbound(ServerPlayer player, FriendlyByteBuf buffer) {
+        ModPacketType<?> type = decodeType(buffer, ModPacketType.Direction.PLAY_TO_SERVER);
+        if (type == null) {
+            return;
+        }
+        Object packet = decodeUnchecked(type, buffer);
         player.server.execute(() -> {
-            ModPacketType<?> type = decodeType(buffer, ModPacketType.Direction.PLAY_TO_SERVER);
-            if (type == null) {
-                return;
-            }
-            Object packet = decodeUnchecked(type, buffer);
             handleUnchecked(type, packet, new ModPacketContext() {
                 @Override
                 public ServerPlayer sender() {
