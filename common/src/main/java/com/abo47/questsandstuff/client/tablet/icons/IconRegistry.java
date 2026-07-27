@@ -117,6 +117,7 @@ public final class IconRegistry {
         preloaded("item_use");
         preloaded("item_interact");
         preloaded("icon");
+        preloaded("square_pen");
         preloadedRole("image", UiThemeManager.ROLE_ICON_SUCCESS);
         preloaded("background");
         preloaded("layout-dashboard");
