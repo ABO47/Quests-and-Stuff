@@ -204,7 +204,9 @@ final class QuestAppHeaderControls {
                 Component.translatable("ui.questsandstuff.blueprints.button_tooltip")
         });
 
-        layoutHeaderButton(toolsButton, toolsX, topY, toolsW, headerH, showToolsButton, null);
+        layoutHeaderButton(toolsButton, toolsX, topY, toolsW, headerH, showToolsButton, new Component[]{
+                Component.translatable("ui.questsandstuff.tools.menu")
+        });
     }
 
     void addToCanvas(WidgetGroup canvasPanel) {

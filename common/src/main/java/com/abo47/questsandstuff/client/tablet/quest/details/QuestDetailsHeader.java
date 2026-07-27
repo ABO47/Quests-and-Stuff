@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -36,32 +37,45 @@ final class QuestDetailsHeader {
         int previousX = nextX - QuestDetailsWindow.HEADER_GAP - QuestDetailsWindow.TOOL_SIZE;
         int titleW = Math.max(24, previousX - QuestDetailsWindow.HEADER_GAP - viewportX);
         addQuestTitleField(canvasPanel, state, player, refresh, questId, viewportX, QuestDetailsWindow.TOP_Y, titleW, QuestDetailsWindow.HEADER_H);
-        SkinAnchorRegistry.register("quest_details_back", addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", TabletColors.INTERACTIVE, false, click -> {
+        SkinAnchorRegistry.register("quest_details_back", addHeaderIconButton(canvasPanel, previousX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "back", TabletColors.INTERACTIVE, false, new Component[]{
+                Component.translatable("ui.questsandstuff.quest.details.previous_quest")
+        }, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, -1);
             ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         }));
-        SkinAnchorRegistry.register("quest_details_forward", addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", TabletColors.INTERACTIVE, false, click -> {
+        SkinAnchorRegistry.register("quest_details_forward", addHeaderIconButton(canvasPanel, nextX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "chevron-right", TabletColors.INTERACTIVE, false, new Component[]{
+                Component.translatable("ui.questsandstuff.quest.details.next_quest")
+        }, click -> {
             QuestDetailsWindow.openAdjacentQuest(state, questId, 1);
             ToolMenuAnimation.finishQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         }));
         boolean pinned = ClientQuestStateFacade.pinned().contains(questId);
-        SkinAnchorRegistry.register("quest_details_pin", addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, pinned, click -> {
+        SkinAnchorRegistry.register("quest_details_pin", addHeaderIconButton(canvasPanel, pinX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "window_pin", pinned ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, pinned, new Component[]{
+                Component.translatable(pinned ? "ui.questsandstuff.quest.details.unpin_quest" : "ui.questsandstuff.quest.details.pin_quest")
+        }, click -> {
             ClientQuestStateFacade.togglePinnedLocal(questId);
             ModNetwork.sendToServer(new C2STogglePinPacket(questId));
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         }));
-        SkinAnchorRegistry.register("quest_details_tools", addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, click -> {
+        SkinAnchorRegistry.register("quest_details_tools", addHeaderIconButton(canvasPanel, toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "tools", state.questDetails.questDetailsToolsOpen ? TabletColors.SUCCESS : TabletColors.INTERACTIVE, state.questDetails.questDetailsToolsOpen, new Component[]{
+                Component.translatable("ui.questsandstuff.quest.details.tools")
+        }, click -> {
             ToolMenuAnimation.toggleQuestDetails(state);
             QuestDetailsTransientManager.closeContext(state);
             refresh.run();
         }));
         if (showEditor) {
-            SkinAnchorRegistry.register("quest_details_editor", addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? TabletColors.SUCCESS : TabletColors.ERROR, state.questDetails.questDetailsEditMode, click -> {
+            SkinAnchorRegistry.register("quest_details_editor", addHeaderIconButton(canvasPanel, editorX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "editor", state.questDetails.questDetailsEditMode ? TabletColors.SUCCESS : TabletColors.ERROR, state.questDetails.questDetailsEditMode, new Component[]{
+                    Component.translatable("ui.questsandstuff.tools.editor_toggle"),
+                    Component.translatable(state.questDetails.questDetailsEditMode
+                            ? "ui.questsandstuff.quest.details.editor_on"
+                            : "ui.questsandstuff.quest.details.editor_off")
+            }, click -> {
                 if (!QuestDetailsEditController.toggle(state)) {
                     return;
                 }
@@ -81,7 +95,9 @@ final class QuestDetailsHeader {
                 refresh.run();
             }));
         }
-        SkinAnchorRegistry.register("quest_details_close", addHeaderIconButton(canvasPanel, closeX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "close", TabletColors.ERROR, false, click -> {
+        SkinAnchorRegistry.register("quest_details_close", addHeaderIconButton(canvasPanel, closeX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.TOOL_SIZE, QuestDetailsWindow.HEADER_H, "close", TabletColors.ERROR, false, new Component[]{
+                Component.translatable("ui.questsandstuff.common.close")
+        }, click -> {
             QuestDetailsWindow.close(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details close quest={}", questId);
             refresh.run();
@@ -169,7 +185,7 @@ final class QuestDetailsHeader {
         state.questDetails.questTitleDraft = title;
     }
 
-    static ButtonWidget addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+    static ButtonWidget addHeaderIconButton(WidgetGroup parent, int x, int y, int w, int h, String icon, int color, boolean active, Component[] tooltips, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         int fill = TabletColors.SURFACE_PANEL_ALT;
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
                 TabletIconTextButton.State.of(fill, active ? color : TabletColors.BORDER_BASE, color),
@@ -178,6 +194,9 @@ final class QuestDetailsHeader {
                 active ? color : -1
         );
         ButtonWidget btn = TabletIconTextButton.icon(x, y, w, h, icon, visuals, callback);
+        if (tooltips != null && tooltips.length > 0) {
+            btn.setHoverTooltips(tooltips);
+        }
         parent.addWidget(btn);
         return btn;
     }

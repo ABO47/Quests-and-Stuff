@@ -66,6 +66,7 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
         homeBtn.setClientSideWidget();
         homeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
+        homeBtn.setHoverTooltips(Component.translatable("ui.questsandstuff.common.close"));
         addWidget(homeBtn);
 
         List<AppDescriptor> apps = TabletAppRegistry.all().values().stream()
