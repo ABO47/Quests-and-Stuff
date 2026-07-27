@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
@@ -158,7 +159,10 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+        boolean superConsumed = super.keyPressed(keyCode, scanCode, modifiers);
+        QuestsAndStuffMod.debugLog("[QnS:DEBUG] canvas.keyPressed key={} superConsumed={} canEdit={} isEditing={}",
+                keyCode, superConsumed, QuestDetailsEditController.canEdit(state), textEdit.isEditing());
+        if (superConsumed) {
             return true;
         }
         if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
@@ -169,10 +173,12 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (super.charTyped(codePoint, modifiers)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details charEditing codePoint={}", Integer.valueOf(codePoint));
+            textEdit.handleChar(codePoint);
             return true;
         }
-        if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
+        if (super.charTyped(codePoint, modifiers)) {
             return true;
         }
         return false;

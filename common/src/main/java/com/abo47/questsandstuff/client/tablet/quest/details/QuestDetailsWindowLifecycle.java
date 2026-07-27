@@ -145,6 +145,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsTextLastClickAtMs = 0L;
         state.questDetails.questDetailsTextColorQuestId = "";
         state.questDetails.questDetailsTextColorTextId = "";
+        state.questDetails.questDetailsSpoilerRevealedTextId = "";
         CanvasTransformSessions.clearQuestDetailsSession(state);
         EntityMotionEditor.close(state);
         state.questDetails.questDetailsTitleFocused = false;
@@ -194,6 +195,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsBoxSelecting = false;
         state.questDetails.questDetailsTextColorQuestId = "";
         state.questDetails.questDetailsTextColorTextId = "";
+        state.questDetails.questDetailsSpoilerRevealedTextId = "";
         state.questDetails.questDetailsPickTarget = "";
         state.questDetails.questDetailsAssetPickTarget = "";
         state.questDetails.questDetailsClaimedOverrideQuestId = "";

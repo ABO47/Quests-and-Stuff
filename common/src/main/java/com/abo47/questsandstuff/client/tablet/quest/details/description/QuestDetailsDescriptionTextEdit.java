@@ -51,6 +51,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (!isEditing()) {
             return false;
         }
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details textEdit handleKey keyCode={}", keyCode);
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
             TextEditSession.selectAll(state);
             return true;
@@ -79,6 +80,7 @@ public final class QuestDetailsDescriptionTextEdit {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             applyReplacement(TextEditSession.insert(state, "\n"));
             previewTextDraft();
+            refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {

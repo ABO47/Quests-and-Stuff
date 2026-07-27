@@ -224,20 +224,24 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (surface.keyPressedFallback(keyCode, scanCode, modifiers)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details events keyEditing keyCode={}", keyCode);
+            textEdit.handleKey(keyCode);
             return true;
         }
-        if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
+        if (surface.keyPressedFallback(keyCode, scanCode, modifiers)) {
             return true;
         }
         return false;
     }
 
     boolean charTyped(char codePoint, int modifiers) {
-        if (surface.charTypedFallback(codePoint, modifiers)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details events charEditing codePoint={}", Integer.valueOf(codePoint));
+            textEdit.handleChar(codePoint);
             return true;
         }
-        if (QuestDetailsEditController.canEdit(state) && textEdit.handleChar(codePoint)) {
+        if (surface.charTypedFallback(codePoint, modifiers)) {
             return true;
         }
         return false;

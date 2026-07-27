@@ -69,12 +69,18 @@ public class InlineRenameField extends TextFieldWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            if (!isFocus()) {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
             onCommit.run();
             suppressNextBlur = true;
             setFocus(false);
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (!isFocus()) {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
             onCancel.run();
             suppressNextBlur = true;
             setFocus(false);

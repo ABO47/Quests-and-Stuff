@@ -650,6 +650,7 @@ public class TabletUiState {
         public long questDetailsTextLastClickAtMs;
         public String questDetailsTextFontSizeFieldTarget = "";
         public String questDetailsSpoilerRevealedTextId = "";
+
         public String questDetailsTextColorQuestId = "";
         public String questDetailsTextColorTextId = "";
         public String questDetailsTransformKind = "";

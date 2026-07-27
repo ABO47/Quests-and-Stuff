@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -182,12 +183,18 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!QuestDetailsWindow.isVisible(state)) {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            boolean result = super.keyPressed(keyCode, scanCode, modifiers);
+            QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed not visible key={} result={}", keyCode, result);
+            return result;
         }
         if (!QuestDetailsWindow.isInteractive(state)) {
+            QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed not interactive key={}", keyCode);
             return true;
         }
         super.keyPressed(keyCode, scanCode, modifiers);
+        boolean isEditing = TextEditSession.isQuestDetailsEditing(state);
+        boolean hasFontFocus = state.questDetails.questDetailsTextFontSizeFieldTarget != null && !state.questDetails.questDetailsTextFontSizeFieldTarget.isBlank();
+        QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed key={} editing={} fontFieldOpen={}", keyCode, isEditing, hasFontFocus);
         return true;
     }
 
