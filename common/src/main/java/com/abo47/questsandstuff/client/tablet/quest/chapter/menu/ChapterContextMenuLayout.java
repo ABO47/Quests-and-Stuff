@@ -78,7 +78,7 @@ public record ChapterContextMenuLayout(
             count++;
         }
         if (hasBackground) {
-            count++;
+            count += 2;
         }
         return count;
     }
