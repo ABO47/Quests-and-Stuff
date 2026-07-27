@@ -315,7 +315,7 @@ public final class SkinEditManager {
                 }));
         actions.add(ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
-                "style",
+                "layout-dashboard",
                 TabletColors.TEXT_PRIMARY,
                 modeActions));
 

@@ -105,7 +105,7 @@ public final class TabletRootWindowController {
             QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed chapter menu");
             return true;
         }
-        if (state.canvas.toolsMenuOpen || state.canvas.toolsMenuClosing || state.canvas.toolsGridSizeMenuOpen || state.canvas.toolsGridOpacityMenuOpen) {
+        if (state.canvas.toolsMenuOpen || state.canvas.toolsGridSizeMenuOpen || state.canvas.toolsGridOpacityMenuOpen) {
             ToolMenuAnimation.closeMain(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed tools menu");
             return true;

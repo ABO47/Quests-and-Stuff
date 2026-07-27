@@ -119,6 +119,7 @@ public final class IconRegistry {
         preloaded("icon");
         preloadedRole("image", UiThemeManager.ROLE_ICON_SUCCESS);
         preloaded("background");
+        preloaded("layout-dashboard");
         preloaded("style");
         preloaded("up");
         preloaded("down");
