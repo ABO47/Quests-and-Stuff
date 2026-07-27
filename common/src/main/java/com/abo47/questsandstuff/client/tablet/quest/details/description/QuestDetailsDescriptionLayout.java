@@ -94,23 +94,27 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static CanvasTextLayer clampTextToColumn(TabletUiState state, CanvasTextLayer text, int contentW) {
+        int cappedW = Math.min(text.w(), Math.max(24, contentW));
+        CanvasTextLayer sized = text.resizeTo(cappedW, text.h());
         CanvasPoint clamped = clampAnchorToColumn(
                 state,
-                text.x(),
-                text.y(),
-                text.w(),
-                text.h(),
-                CanvasElementGeometry.defaultPivot(text.w()),
-                CanvasElementGeometry.defaultPivot(text.h()),
-                text.rotation(),
+                sized.x(),
+                sized.y(),
+                sized.w(),
+                sized.h(),
+                CanvasElementGeometry.defaultPivot(sized.w()),
+                CanvasElementGeometry.defaultPivot(sized.h()),
+                sized.rotation(),
                 contentW
         );
-        return text.moveTo(clamped.x, clamped.y);
+        return sized.moveTo(clamped.x, clamped.y);
     }
 
     static CanvasImageLayer clampImageToColumn(TabletUiState state, CanvasImageLayer image, int contentW) {
-        CanvasPoint clamped = clampImageAnchorToColumn(state, image, contentW);
-        return image.moveTo(clamped.x, clamped.y);
+        int cappedW = Math.min(image.w(), Math.max(8, contentW));
+        CanvasImageLayer sized = image.resizeTo(cappedW, image.h());
+        CanvasPoint clamped = clampImageAnchorToColumn(state, sized, contentW);
+        return sized.moveTo(clamped.x, clamped.y);
     }
 
     static CanvasPoint clampImageAnchorToColumn(TabletUiState state, CanvasImageLayer image, int contentW) {
