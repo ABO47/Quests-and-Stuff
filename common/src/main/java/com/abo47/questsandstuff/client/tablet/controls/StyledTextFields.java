@@ -55,11 +55,17 @@ public final class StyledTextFields {
             public TextFieldWidget setCurrentString(Object currentString) {
                 String newVal = currentString.toString();
                 if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
                     int cursorPos = textField.getCursorPosition();
                     super.setCurrentString(newVal);
-                    int clamped = Math.min(cursorPos, newVal.length());
-                    textField.setCursorPosition(clamped);
-                    textField.setHighlightPos(clamped);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
                 } else {
                     super.setCurrentString(currentString);
                 }
@@ -150,11 +156,17 @@ public final class StyledTextFields {
             public TextFieldWidget setCurrentString(Object currentString) {
                 String newVal = currentString.toString();
                 if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
                     int cursorPos = textField.getCursorPosition();
                     super.setCurrentString(newVal);
-                    int clamped = Math.min(cursorPos, newVal.length());
-                    textField.setCursorPosition(clamped);
-                    textField.setHighlightPos(clamped);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
                 } else {
                     super.setCurrentString(currentString);
                 }
@@ -183,11 +195,17 @@ public final class StyledTextFields {
             public TextFieldWidget setCurrentString(Object currentString) {
                 String newVal = currentString.toString();
                 if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
                     int cursorPos = textField.getCursorPosition();
                     super.setCurrentString(newVal);
-                    int clamped = Math.min(cursorPos, newVal.length());
-                    textField.setCursorPosition(clamped);
-                    textField.setHighlightPos(clamped);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
                 } else {
                     super.setCurrentString(currentString);
                 }
