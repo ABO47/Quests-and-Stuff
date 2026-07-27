@@ -39,7 +39,7 @@ public final class ChunkClaimProtection {
     }
 
     public static boolean allowedBreakPlace(ServerPlayer actor, ServerLevel level, BlockPos pos) {
-        if (actor != null && actor.hasPermissions(2)) {
+        if (actor != null && actor.isCreative()) {
             return true;
         }
         if (!QuestsAndStuffConfig.chunkClaimProtectBreakPlace()) {
@@ -49,7 +49,7 @@ public final class ChunkClaimProtection {
     }
 
     public static boolean allowedInteract(ServerPlayer actor, ServerLevel level, BlockPos pos) {
-        if (actor != null && actor.hasPermissions(2)) {
+        if (actor != null && actor.isCreative()) {
             return true;
         }
         if (!QuestsAndStuffConfig.chunkClaimProtectInteraction()) {
@@ -59,7 +59,7 @@ public final class ChunkClaimProtection {
     }
 
     public static boolean allowedPvp(ServerPlayer attacker, ServerPlayer target, ServerLevel level, BlockPos targetPos) {
-        if (attacker != null && attacker.hasPermissions(2)) {
+        if (attacker != null && attacker.isCreative()) {
             return true;
         }
         if (!QuestsAndStuffConfig.chunkClaimProtectPvp()) {
