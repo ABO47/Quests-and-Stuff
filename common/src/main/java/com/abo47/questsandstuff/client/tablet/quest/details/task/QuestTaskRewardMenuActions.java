@@ -69,7 +69,7 @@ final class QuestTaskRewardMenuActions {
         });
         QuestTaskMenuSupport.addVisualActions(actions, state, questId, contextId, false);
         String deleteKey = "quest_details_reward:" + questId + ":" + contextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
+        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             EditorQuestCommandClient.removeQuestReward(player, questId, contextId);
         }));
         return actions;

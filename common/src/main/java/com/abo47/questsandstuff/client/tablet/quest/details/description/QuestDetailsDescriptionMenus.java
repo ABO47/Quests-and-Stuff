@@ -271,7 +271,7 @@ public final class QuestDetailsDescriptionMenus {
             QuestDetailsDescriptionClipboard.copyText(state, model, state.questDetails.questDetailsContextId);
         }));
         String deleteKey = "quest_details_text:" + questId + ":" + state.questDetails.questDetailsContextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
+        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             model.removeText(state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
@@ -351,7 +351,7 @@ public final class QuestDetailsDescriptionMenus {
             QuestDetailsDescriptionClipboard.copyImage(state, model, state.questDetails.questDetailsContextId);
         }));
         String deleteKey = "quest_details_image:" + questId + ":" + state.questDetails.questDetailsContextId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
+        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             model.removeImage(state.questDetails.questDetailsContextId);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));
@@ -424,7 +424,7 @@ public final class QuestDetailsDescriptionMenus {
             QuestDetailsDescriptionPanel.copyDescriptionSelection(state, model);
         }));
         String deleteKey = "quest_details_selection:" + questId;
-        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_DELETE), () -> {
+        actions.add(ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             QuestDetailsDescriptionPanel.deleteDescriptionSelection(state, model);
             QuestDetailsDescriptionModel.save(player, questId, model);
         }));

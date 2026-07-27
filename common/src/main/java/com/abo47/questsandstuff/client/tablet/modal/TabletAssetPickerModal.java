@@ -637,7 +637,7 @@ public final class TabletAssetPickerModal {
         }
         if (!isDir) {
             String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
-            actions.add(ContextActionFactory.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+            actions.add(ContextActionFactory.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
                 deleteAssetFile(state.pickers.assetContextFile);
                 state.pickers.assetContextOpen = false;
                 state.pickers.assetRenameOpen = false;

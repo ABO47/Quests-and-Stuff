@@ -168,7 +168,7 @@ public final class TabletColorPickerModal {
             refresh.run();
         }));
         String key = "palette:delete:" + state.pickers.colorPaletteContextValue;
-        actions.add(ContextActionFactory.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+        actions.add(ContextActionFactory.warningDelete(state, key, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
             state.pickers.textColorPalette.removeIf(value -> value == state.pickers.colorPaletteContextValue);
             state.pickers.colorPaletteContextOpen = false;
             state.pickers.colorPaletteContextValue = Integer.MIN_VALUE;

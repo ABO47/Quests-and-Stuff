@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 public final class TabletTranslationKeys {
     public static final String COMMON_CANCEL = "ui.questsandstuff.common.cancel";
     public static final String COMMON_CONFIRM = "ui.questsandstuff.common.confirm";
-    public static final String COMMON_DELETE = "ui.questsandstuff.common.delete";
+    public static final String COMMON_REMOVE = "ui.questsandstuff.common.remove";
     public static final String COMMON_DISABLED = "ui.questsandstuff.common.disabled";
     public static final String COMMON_ENABLED = "ui.questsandstuff.common.enabled";
     public static final String COMMON_OK = "ui.questsandstuff.common.ok";

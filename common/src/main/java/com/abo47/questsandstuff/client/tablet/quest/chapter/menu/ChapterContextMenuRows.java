@@ -101,7 +101,7 @@ public final class ChapterContextMenuRows {
         }
         sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.moveUp(() -> ChapterContextMenuActions.move(player, state, target, -1, refresh)));
         sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.moveDown(() -> ChapterContextMenuActions.move(player, state, target, 1, refresh)));
-        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.delete"), () -> ChapterContextMenuActions.delete(player, state, target)));
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, ChapterContextMenuLayout.deleteKey(target), tr("ui.questsandstuff.menu.remove"), () -> ChapterContextMenuActions.delete(player, state, target)));
         if (!ClientQuestStateFacade.chapterIcon(target).isBlank()) {
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, ChapterContextMenuLayout.removeIconKey(target), tr("ui.questsandstuff.menu.remove_icon"), () -> ChapterContextMenuActions.removeIcon(player, state, target)));
         }
