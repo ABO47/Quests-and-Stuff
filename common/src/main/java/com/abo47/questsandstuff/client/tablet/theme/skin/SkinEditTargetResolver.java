@@ -251,14 +251,15 @@ public final class SkinEditTargetResolver {
 
         if (widget instanceof WidgetGroup group) {
             boolean hasBackground = hasVisibleBackground(widget);
+            boolean hasChrome = hasCustomChrome(widget);
             for (Widget child : group.widgets) {
                 collectNestedTargets(child, out);
             }
-            if (hasBackground && out.isEmpty()) {
+            if (out.isEmpty() && (hasBackground || hasChrome)) {
                 out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
                         widget.getSizeWidth(), widget.getSizeHeight()));
             }
-        } else if (hasVisibleBackground(widget)) {
+        } else if (hasVisibleBackground(widget) || (widget.getSizeWidth() > 0 && widget.getSizeHeight() > 0)) {
             out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
                     widget.getSizeWidth(), widget.getSizeHeight()));
         }

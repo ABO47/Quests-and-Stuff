@@ -90,9 +90,22 @@ public final class SkinEditRenderer {
             if (vp != null) {
                 gx = vp.getPositionX() + state.canvas.minimapPanelX;
                 gy = vp.getPositionY() + state.canvas.minimapPanelY;
+                gw = state.canvas.minimapPanelW;
+                gh = state.canvas.minimapPanelH;
+                if (gw > 0 && gh > 0) {
+                    int tx = vp.getPositionX() + state.canvas.minimapToggleX;
+                    int ty = vp.getPositionY() + state.canvas.minimapToggleY;
+                    int tw = state.canvas.minimapToggleW;
+                    int th = state.canvas.minimapToggleH;
+                    if (tw > 0 && th > 0) {
+                        List<Rectangle> excludes = List.of(new Rectangle(tx, ty, tw, th));
+                        GlowShaderHelper.drawGlowOccluded(graphics, mouseX, mouseY, gx, gy, gw, gh, glowColor, List.of(), excludes);
+                        return;
+                    }
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, gx, gy, gw, gh, glowColor);
+                }
             }
-            gw = state.canvas.minimapPanelW;
-            gh = state.canvas.minimapPanelH;
+            return;
         } else if ("quests_minimap_toggle".equals(key)) {
             CanvasViewport vp = root instanceof TabletRootWidget trw ? trw.getCanvasViewport() : null;
             if (vp != null) {
@@ -103,7 +116,7 @@ public final class SkinEditRenderer {
             gh = state.canvas.minimapToggleH;
         }
         if (gw > 0 && gh > 0) {
-            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, gx, gy, gw, gh);
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, gx, gy, gw, gh, glowColor);
         }
     }
 

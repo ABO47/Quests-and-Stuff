@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
@@ -29,6 +30,8 @@ import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 
 final class QuestDetailsWindowLayout {
     private QuestDetailsWindowLayout() {
@@ -58,6 +61,13 @@ final class QuestDetailsWindowLayout {
         rememberFrame(layer, state, frame);
 
         QuestDetailsRootWidget rootWidget = new QuestDetailsRootWidget(0, 0, layer.getSizeWidth(), layer.getSizeHeight());
+
+        int HOME_BTN_SIZE = 10;
+        int homeBtnX = layer.getSizeWidth() - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
+        int homeBtnY = ROOT_PAD_Y + ((layer.getSizeHeight() - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
+        ButtonWidget qdHomeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE, IGuiTexture.EMPTY, cd -> {});
+        qdHomeBtn.setClientSideWidget();
+        rootWidget.addWidget(qdHomeBtn);
 
         int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
         int splitterX = SplitPanelLayout.splitterX(0, leftW);
