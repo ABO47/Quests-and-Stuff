@@ -64,7 +64,7 @@ public record ChapterContextMenuLayout(
         if (!hasTarget) {
             return 1;
         }
-        int count = 16;
+        int count = 12;
         if (entityVariants) {
             count++;
         }
@@ -127,7 +127,7 @@ public record ChapterContextMenuLayout(
     }
 
     private static int height(boolean hasTarget, int rowCount) {
-        int promotedCount = hasTarget ? 5 : 0;
+        int promotedCount = hasTarget ? 4 : 0;
         int rowActionCount = Math.max(0, rowCount - promotedCount);
         return ContextMenuPanel.heightForCounts(promotedCount, rowActionCount, rowActionCount);
     }
