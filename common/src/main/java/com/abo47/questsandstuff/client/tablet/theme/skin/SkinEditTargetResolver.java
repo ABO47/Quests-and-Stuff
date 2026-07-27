@@ -25,14 +25,26 @@ public final class SkinEditTargetResolver {
         Widget qdl = SkinAnchorRegistry.findByKey("quest_details_layer");
         if (qdl != null && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
-            if (hit != null && hit != qdl) return stableKeyFor(hit);
+            if (hit != null && hit != qdl) {
+                String key = stableKeyFor(hit);
+                if (!isCanvasPanelKey(key)) return key;
+                return null;
+            }
         }
         Widget hit = deepestAt(root, mouseX, mouseY);
-        if (hit != null && hit != root) return stableKeyFor(hit);
+        if (hit != null && hit != root) {
+            String key = stableKeyFor(hit);
+            if (!isCanvasPanelKey(key)) return key;
+            return null;
+        }
         if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
             return "root";
         }
         return null;
+    }
+
+    private static boolean isCanvasPanelKey(String key) {
+        return key != null && ("quests_canvas_background".equals(key) || "quest_details_canvas_background".equals(key));
     }
 
     private static Widget deepestAt(WidgetGroup group, int mouseX, int mouseY) {
@@ -237,9 +249,17 @@ public final class SkinEditTargetResolver {
         }
 
         if (widget instanceof WidgetGroup group) {
+            boolean hasBackground = hasVisibleBackground(widget);
             for (Widget child : group.widgets) {
                 collectNestedTargets(child, out);
             }
+            if (hasBackground && out.isEmpty()) {
+                out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
+                        widget.getSizeWidth(), widget.getSizeHeight()));
+            }
+        } else if (hasVisibleBackground(widget)) {
+            out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
+                    widget.getSizeWidth(), widget.getSizeHeight()));
         }
     }
 }

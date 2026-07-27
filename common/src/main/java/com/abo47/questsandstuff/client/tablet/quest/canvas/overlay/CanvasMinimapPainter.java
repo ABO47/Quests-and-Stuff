@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec2;
 
 import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
@@ -25,6 +26,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -42,6 +45,7 @@ final class CanvasMinimapPainter {
 
     static void drawPanel(
             GuiGraphics graphics,
+            TabletUiState state,
             int originX,
             int originY,
             CanvasMinimapGeometry.Layout layout,
@@ -60,12 +64,38 @@ final class CanvasMinimapPainter {
             int bodyX = handleX - visibleBodyW;
             int bodyY = originY + layout.panelY();
             int bodyH = layout.panelH();
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, bodyH);
+            drawBodyFill(graphics, state, bodyX, bodyY, handleX - bodyX, bodyH);
             SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
             SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
             SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
         }
-        drawHandle(graphics, handleX, handleY, handleW, handleH, mouseX, mouseY);
+        drawHandle(graphics, state, handleX, handleY, handleW, handleH, mouseX, mouseY);
+    }
+
+    private static void drawBodyFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_body");
+        if (override != null) {
+            override.draw(graphics, 0, 0, x, y, w, h);
+        } else {
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, x, y, w, h);
+        }
+    }
+
+    private static void drawHandleFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_toggle");
+        if (override != null) {
+            override.draw(graphics, 0, 0, x, y, w, h);
+        } else {
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        }
+    }
+
+    private static IGuiTexture skinOverrideTexture(TabletUiState state, String key) {
+        String raw = SkinOverrideKey.resolveOverride(state, key);
+        if (raw == null || raw.isBlank()) return null;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return null;
+        return override.createTexture();
     }
 
     static float stagedProgress(float progress, float start, float end) {
@@ -200,9 +230,9 @@ final class CanvasMinimapPainter {
         return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
     }
 
-    private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {
+    private static void drawHandle(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h, int mouseX, int mouseY) {
         boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        drawHandleFill(graphics, state, x, y, w, h);
         drawBorder(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, 180));
         if (hovered) {
             GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);

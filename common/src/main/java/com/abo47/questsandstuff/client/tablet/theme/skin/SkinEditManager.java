@@ -57,12 +57,16 @@ public final class SkinEditManager {
             root.closeContextMenu();
         }
 
-        Widget homeBtn = root.getHomeButton();
         String hitKey;
-        if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
-            hitKey = "home_btn";
+        if (isMinimapHit(state, mouseX, mouseY)) {
+            hitKey = minimapHitKey(state, mouseX, mouseY);
         } else {
-            hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+            Widget homeBtn = root.getHomeButton();
+            if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
+                hitKey = "home_btn";
+            } else {
+                hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+            }
         }
 
         if (button == 0) {
@@ -103,6 +107,12 @@ public final class SkinEditManager {
             if (targetKey == null) continue;
             if ("root".equals(targetKey)) continue;
             if (SkinOverrideKey.isSharedKey(targetKey) && !SkinOverrideKey.isSharedKey(entryKey)) continue;
+
+            if (isMinimapKey(targetKey)) {
+                SkinFillOverride.clearCache();
+                state.root.activeSkinTargets.add(targetKey);
+                continue;
+            }
 
             Widget w = SkinEditTargetResolver.widgetForKey(root, targetKey);
             if (w == null) {
@@ -372,5 +382,32 @@ public final class SkinEditManager {
         reapplyOverrides(state, root);
         if (refresher != null) refresher.run();
         TabletUiFactory.persistSkinState(state);
+    }
+
+    private static boolean isMinimapKey(String key) {
+        return "quests_minimap_body".equals(key) || "quests_minimap_toggle".equals(key);
+    }
+
+    private static boolean isMinimapHit(TabletUiState state, int mx, int my) {
+        return (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
+                && mx >= state.canvas.minimapPanelX && mx < state.canvas.minimapPanelX + state.canvas.minimapPanelW
+                && my >= state.canvas.minimapPanelY && my < state.canvas.minimapPanelY + state.canvas.minimapPanelH)
+                || (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
+                && mx >= state.canvas.minimapToggleX && mx < state.canvas.minimapToggleX + state.canvas.minimapToggleW
+                && my >= state.canvas.minimapToggleY && my < state.canvas.minimapToggleY + state.canvas.minimapToggleH);
+    }
+
+    private static String minimapHitKey(TabletUiState state, int mx, int my) {
+        if (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
+                && mx >= state.canvas.minimapPanelX && mx < state.canvas.minimapPanelX + state.canvas.minimapPanelW
+                && my >= state.canvas.minimapPanelY && my < state.canvas.minimapPanelY + state.canvas.minimapPanelH) {
+            return "quests_minimap_body";
+        }
+        if (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
+                && mx >= state.canvas.minimapToggleX && mx < state.canvas.minimapToggleX + state.canvas.minimapToggleW
+                && my >= state.canvas.minimapToggleY && my < state.canvas.minimapToggleY + state.canvas.minimapToggleH) {
+            return "quests_minimap_toggle";
+        }
+        return null;
     }
 }

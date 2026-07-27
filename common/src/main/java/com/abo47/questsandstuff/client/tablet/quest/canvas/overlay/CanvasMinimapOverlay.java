@@ -95,7 +95,7 @@ final class CanvasMinimapOverlay {
                 float openProgress = minimapOpenProgress(state, animationsEnabled);
                 float holderProgress = CanvasMinimapPainter.stagedProgress(openProgress, 0.0f, CanvasMinimapPainter.BODY_REVEAL_START);
                 float bodyProgress = CanvasMinimapPainter.stagedProgress(openProgress, CanvasMinimapPainter.BODY_REVEAL_START, 1.0f);
-                CanvasMinimapPainter.drawPanel(graphics, originX, originY, layout, collapsedLayout, holderProgress, bodyProgress, mouseX, mouseY);
+                CanvasMinimapPainter.drawPanel(graphics, state, originX, originY, layout, collapsedLayout, holderProgress, bodyProgress, mouseX, mouseY);
                 if (bodyProgress > 0.02f) {
                     if (chapter != null && layout != null) {
                         CanvasMinimapGeometry.WorldBounds world = CanvasMinimapGeometry.worldBounds(state, chapter, canvasViewport.cardCache());

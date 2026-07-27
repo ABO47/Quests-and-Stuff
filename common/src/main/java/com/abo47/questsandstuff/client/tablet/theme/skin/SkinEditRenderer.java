@@ -36,11 +36,11 @@ public final class SkinEditRenderer {
 
         String selectedKey = state.root.skinEditSelectedTarget;
         if (!selectedKey.isBlank()) {
-            drawGlowForKey(graphics, root, selectedKey, SELECTED_GLOW_COLOR, mouseX, mouseY);
+            drawGlowForKey(graphics, root, state, selectedKey, SELECTED_GLOW_COLOR, mouseX, mouseY);
         } else {
             String hoverKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
             if (hoverKey != null) {
-                drawGlowForKey(graphics, root, hoverKey, GLOW_COLOR, mouseX, mouseY);
+                drawGlowForKey(graphics, root, state, hoverKey, GLOW_COLOR, mouseX, mouseY);
             }
         }
 
@@ -60,10 +60,26 @@ public final class SkinEditRenderer {
         }
     }
 
-    private static void drawGlowForKey(GuiGraphics graphics, WidgetGroup root, String key, int glowColor, int mouseX, int mouseY) {
+    private static void drawGlowForKey(GuiGraphics graphics, WidgetGroup root, TabletUiState state, String key, int glowColor, int mouseX, int mouseY) {
         Widget widget = SkinEditTargetResolver.widgetForKey(root, key);
         if (widget != null) {
             drawGlow(graphics, root, widget, glowColor, mouseX, mouseY);
+            return;
+        }
+        int gx = 0, gy = 0, gw = 0, gh = 0;
+        if ("quests_minimap_body".equals(key)) {
+            gx = state.canvas.minimapPanelX;
+            gy = state.canvas.minimapPanelY;
+            gw = state.canvas.minimapPanelW;
+            gh = state.canvas.minimapPanelH;
+        } else if ("quests_minimap_toggle".equals(key)) {
+            gx = state.canvas.minimapToggleX;
+            gy = state.canvas.minimapToggleY;
+            gw = state.canvas.minimapToggleW;
+            gh = state.canvas.minimapToggleH;
+        }
+        if (gw > 0 && gh > 0) {
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, gx, gy, gw, gh);
         }
     }
 
