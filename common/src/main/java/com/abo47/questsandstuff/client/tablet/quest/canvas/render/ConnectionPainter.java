@@ -67,7 +67,7 @@ final class ConnectionPainter {
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
+                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
                 }
             }
         });
@@ -129,6 +129,8 @@ final class ConnectionPainter {
             int originY,
             TabletUiState state,
             ConnectionLine line,
+            int mouseX,
+            int mouseY,
             long now,
             int clipMinX,
             int clipMinY,
@@ -151,10 +153,21 @@ final class ConnectionPainter {
             return;
         }
 
-        if (line.hidden() && !state.root.canEdit) {
+        boolean hoveringEndpoint = isHoveringEndpoint(
+                originX,
+                originY,
+                line,
+                mouseX,
+                mouseY,
+                sourceOffsetX,
+                sourceOffsetY,
+                targetOffsetX,
+                targetOffsetY
+        );
+        if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
             return;
         }
-        int alpha = line.alpha();
+        int alpha = line.hidden() && hoveringEndpoint ? ConnectionRenderStyle.VISIBLE_ALPHA : line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
         String rawTextureStr = line.texture();
         ResourceLocation texture = resolveTexture(rawTextureStr);
@@ -186,6 +199,25 @@ final class ConnectionPainter {
             return;
         }
         drawTexturedChevrons(graphics, path, line.color(), alpha, texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+    }
+
+    private static boolean isHoveringEndpoint(
+            int originX,
+            int originY,
+            ConnectionLine line,
+            int mouseX,
+            int mouseY,
+            int sourceOffsetX,
+            int sourceOffsetY,
+            int targetOffsetX,
+            int targetOffsetY
+    ) {
+        return inside(mouseX, mouseY, originX + line.sourceX() + sourceOffsetX, originY + line.sourceY() + sourceOffsetY, line.sourceW(), line.sourceH())
+                || inside(mouseX, mouseY, originX + line.targetX() + targetOffsetX, originY + line.targetY() + targetOffsetY, line.targetW(), line.targetH());
+    }
+
+    private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
+        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
     }
 
     private static boolean inSelection(TabletUiState state, String elementId) {
