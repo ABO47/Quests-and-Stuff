@@ -61,17 +61,17 @@ final class ChapterTextStyleMenu {
         Component tooltipStrikethrough = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_STRIKETHROUGH);
         Component tooltipReset = tooltip(TabletTranslationKeys.STYLE_TOOLTIP_RESET);
 
-        addIconToggleButton(floating, 0, fw, columns, "style_align_left", alignButtonBase(align, "left"), new Component[]{tooltipLeft}, click -> {
+        addIconToggleButton(floating, 0, fw, columns, "style_align_left", alignButtonBase(align, "left"), null, new Component[]{tooltipLeft}, click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=left", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_align", target, "left", 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 1, fw, columns, "style_align_center", alignButtonBase(align, "center"), new Component[]{tooltipCenter}, click -> {
+        addIconToggleButton(floating, 1, fw, columns, "style_align_center", alignButtonBase(align, "center"), null, new Component[]{tooltipCenter}, click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=center", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_align", target, "center", 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 2, fw, columns, "style_align_right", alignButtonBase(align, "right"), new Component[]{tooltipRight}, click -> {
+        addIconToggleButton(floating, 2, fw, columns, "style_align_right", alignButtonBase(align, "right"), null, new Component[]{tooltipRight}, click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=right", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_align", target, "right", 0);
             refresh.run();
@@ -82,31 +82,31 @@ final class ChapterTextStyleMenu {
             refresh.run();
         });
 
-        addIconToggleButton(floating, 4, fw, columns, "style_bold", toggleButtonBase(bold), new Component[]{tooltipBold}, click -> {
+        addIconToggleButton(floating, 4, fw, columns, "style_bold", toggleButtonBase(bold), null, new Component[]{tooltipBold}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "bold");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 5, fw, columns, "style_italic", toggleButtonBase(italic), new Component[]{tooltipItalic}, click -> {
+        addIconToggleButton(floating, 5, fw, columns, "style_italic", toggleButtonBase(italic), null, new Component[]{tooltipItalic}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "italic");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 7, fw, columns, "style_underline", toggleButtonBase(underline), new Component[]{tooltipUnderline}, click -> {
+        addIconToggleButton(floating, 7, fw, columns, "style_underline", toggleButtonBase(underline), null, new Component[]{tooltipUnderline}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "underline");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 8, fw, columns, "style_strikethrough", toggleButtonBase(strikethrough), new Component[]{tooltipStrikethrough}, click -> {
+        addIconToggleButton(floating, 8, fw, columns, "style_strikethrough", toggleButtonBase(strikethrough), null, new Component[]{tooltipStrikethrough}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "strikethrough");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 9, fw, columns, "context_style", toggleButtonBase(!bold && !italic && !underline && !strikethrough && !quote && !spoiler), new Component[]{tooltipReset}, click -> {
+        addIconToggleButton(floating, 9, fw, columns, "context_style", toggleButtonBase(!bold && !italic && !underline && !strikethrough && !quote && !spoiler), null, new Component[]{tooltipReset}, click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style=normal", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, "normal", 0);
             refresh.run();
