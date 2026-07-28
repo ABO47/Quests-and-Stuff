@@ -52,7 +52,7 @@ final class ChapterTextStyleMenu {
                 overlay, overlayX, overlayY, fw, menuH, columns,
                 align, textColor,
                 bold, italic, underline, strikethrough, false, false,
-                fontSize, fontSizeFieldOpen, true,
+                fontSize, fontSizeFieldOpen, false,
                 TabletColors.SUCCESS,
                 traceC(++clickId, "align_left", () -> {
                     QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=left", target);
