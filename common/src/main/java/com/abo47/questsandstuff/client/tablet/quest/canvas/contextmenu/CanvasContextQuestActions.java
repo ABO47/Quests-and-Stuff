@@ -120,7 +120,7 @@ final class CanvasContextQuestActions {
         })));
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(questTag.getString("quest_background")))) {
             String removeBgKey = "quest_remove_bg:" + state.contextMenu.contextQuestId;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, removeBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), withCleanup(canvasViewport, state, () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, removeBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), withCleanup(canvasViewport, state, () -> {
                 EditorQuestCommandClient.setQuestBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_quest_background quest={}", state.contextMenu.contextQuestId);
             })));
@@ -155,7 +155,7 @@ final class CanvasContextQuestActions {
         })));
         if (!QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(currentBackground))) {
             String removeHudBgKey = "quest_remove_hud_bg:" + state.contextMenu.contextQuestId;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, removeHudBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), withCleanup(canvasViewport, state, () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, removeHudBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND), withCleanup(canvasViewport, state, () -> {
                 EditorQuestCommandClient.setQuestCompletionHudBackground(player, state.contextMenu.contextQuestId, QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_completion_hud_background quest={}", state.contextMenu.contextQuestId);
             })));

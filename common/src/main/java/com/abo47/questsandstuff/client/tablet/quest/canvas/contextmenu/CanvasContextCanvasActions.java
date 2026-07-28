@@ -201,7 +201,7 @@ final class CanvasContextCanvasActions {
         if (!ClientQuestStateFacade.chapterCanvasBackground(selectedChapter).isBlank()
                 && !"default".equals(ClientQuestStateFacade.chapterCanvasBackground(selectedChapter))) {
             String canvasBgKey = "canvas_remove_bg:" + selectedChapter;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, canvasBgKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, canvasBgKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_canvas_bg"), () -> {
                 runChapterAction(player, state, "set_canvas_background", selectedChapter, "default", 0);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_canvas_bg chapter={}", selectedChapter);
                 canvasViewport.refresh();

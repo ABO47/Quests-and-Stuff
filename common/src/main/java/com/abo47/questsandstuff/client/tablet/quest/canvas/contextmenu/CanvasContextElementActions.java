@@ -175,7 +175,7 @@ final class CanvasContextElementActions {
             ));
             if (!ec.background().isBlank()) {
                 String ecBgKey = "ec_remove_bg:" + state.contextMenu.contextCanvasExclusiveChoiceId;
-                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, ecBgKey,
+                sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, ecBgKey,
                         CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
                             CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedChapter, ec.withBackground(""));
                             CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedChapter, ec.id());

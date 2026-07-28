@@ -70,7 +70,7 @@ public final class ChapterContextMenuRows {
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
         if (chapterHasConnectionTexture(state, target)) {
             String connTexKey = "chapter:remove_conn_tex:" + target;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, connTexKey, tr("ui.questsandstuff.context.remove_connection_texture"), () -> ChapterContextMenuActions.removeConnectionTexture(player, state, target)));
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, tr("ui.questsandstuff.context.remove_connection_texture"), () -> ChapterContextMenuActions.removeConnectionTexture(player, state, target)));
         }
         sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(QuestTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),

@@ -77,7 +77,7 @@ final class CanvasContextConnectionActions {
         }));
         if (!ConnectionRenderer.connectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
             String connTexKey = "conn_remove_tex:" + sourceId + ":" + targetId;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, connTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
                 EditorCanvasCommandClient.runConnectionTextureAction(player, targetId, sourceId, "");
                 ConnectionRenderer.setConnectionTexture(state, selectedChapter, sourceId, targetId, "");
                 ContextMenuController.clearDeleteConfirm(state);
@@ -116,7 +116,7 @@ final class CanvasContextConnectionActions {
         }));
         if (!ConnectionRenderer.ecConnectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
             String ecConnTexKey = "ec_conn_remove_tex:" + sourceId + ":" + targetId;
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.warningDelete(state, ecConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, ecConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
                 EditorCanvasCommandClient.runEcConnectionTextureAction(state, sourceId, targetId, "");
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_ec_connection_texture source={} target={}", sourceId, targetId);
