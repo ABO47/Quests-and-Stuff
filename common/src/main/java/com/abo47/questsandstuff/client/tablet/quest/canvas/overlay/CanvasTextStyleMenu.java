@@ -118,7 +118,7 @@ public final class CanvasTextStyleMenu {
                 () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh),
                 () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh),
                 () -> { markStyleInteraction(state, logScope); setTextFontSizeFieldTarget(state, logScope, text.id()); QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size field id={} open=true", logScope, text.id()); refresh.run(); },
-                value -> { markStyleInteraction(state, logScope); updateText.accept(CanvasTextRenderer.fitTextHeight(text.withFontSize(value))); keepQuestDetailsStyleMenuOpen(state, logScope, text.id()); },
+                value -> { markStyleInteraction(state, logScope); updateText.accept(text.withFontSize(value)); keepQuestDetailsStyleMenuOpen(state, logScope, text.id()); },
                 onPreview,
                 () -> closeFontSizeField(state, logScope, refresh),
                 () -> closeFontSizeField(state, logScope, refresh),
