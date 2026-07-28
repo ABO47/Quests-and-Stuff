@@ -94,24 +94,24 @@ final class ChapterTextStyleMenu {
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 7, fw, columns, "style_underline", toggleButtonBase(underline), null, new Component[]{tooltipUnderline}, click -> {
+        addIconToggleButton(floating, 6, fw, columns, "style_underline", toggleButtonBase(underline), null, new Component[]{tooltipUnderline}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "underline");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
-        addIconToggleButton(floating, 8, fw, columns, "style_strikethrough", toggleButtonBase(strikethrough), null, new Component[]{tooltipStrikethrough}, click -> {
+        addIconToggleButton(floating, 7, fw, columns, "style_strikethrough", toggleButtonBase(strikethrough), null, new Component[]{tooltipStrikethrough}, click -> {
             String nextStyle = CanvasTextLayer.toggleStyleFlag(style, "strikethrough");
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style={}", target, nextStyle);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, nextStyle, 0);
             refresh.run();
         });
+        addFontSizeControl(floating, state, player, target, fw, columns, fontSize, refresh);
         addIconToggleButton(floating, 9, fw, columns, "context_style", toggleButtonBase(!bold && !italic && !underline && !strikethrough && !quote && !spoiler), null, new Component[]{tooltipReset}, click -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter text style target={} style=normal", target);
             EditorChapterCommandClient.runChapterAction(player, state, "set_text_style", target, "normal", 0);
             refresh.run();
         });
-        addFontSizeControl(floating, state, player, target, fw, columns, fontSize, refresh);
         overlay.addWidget(floating);
     }
 
@@ -139,14 +139,14 @@ final class ChapterTextStyleMenu {
     private static void addFontSizeControl(WidgetGroup parent, TabletUiState state, Player player, String target, int menuWidth, int columns, int fontSize, Runnable refresh) {
         boolean open = target.equals(state.chapterPanel.chapterTextFontSizeFieldTarget);
         if (open) {
-            TextStyleButtons.addFontSizeField(parent, 6, menuWidth, columns, fontSize, value -> {
+            TextStyleButtons.addFontSizeField(parent, 8, menuWidth, columns, fontSize, value -> {
                 QuestsAndStuffMod.debugLog("[QnS:UI] chapter text size target={} size={}", target, value);
                 EditorChapterCommandClient.runChapterAction(player, state, "set_text_size", target, String.valueOf(value), 0);
             }, () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh), () -> closeFontSizeField(state, refresh));
             return;
         }
         int baseColor = open || fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE ? TabletColors.SUCCESS : TabletColors.SURFACE_PANEL_ALT;
-        addIconToggleButton(parent, 6, menuWidth, columns, "size", baseColor, null, new Component[]{
+        addIconToggleButton(parent, 8, menuWidth, columns, "size", baseColor, null, new Component[]{
                 Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_FONT_SIZE).append(Component.literal(": " + fontSize))
         }, click -> {
             state.chapterPanel.chapterTextFontSizeFieldTarget = target;

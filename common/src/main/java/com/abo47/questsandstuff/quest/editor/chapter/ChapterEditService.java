@@ -279,10 +279,6 @@ public final class ChapterEditService {
     }
 
     private static String normalizeTextStyle(String style) {
-        String value = style == null ? "" : style.trim().toLowerCase(Locale.ROOT);
-        return switch (value) {
-            case "bold", "italic", "bold_italic" -> value;
-            default -> "normal";
-        };
+        return CanvasTextLayer.normalizeStyle(style);
     }
 }
