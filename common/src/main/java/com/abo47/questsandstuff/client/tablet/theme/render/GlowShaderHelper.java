@@ -16,16 +16,12 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class GlowShaderHelper {
     private static final ResourceLocation GLOW_SHADER = new ResourceLocation("questsandstuff", "glow");
-    private static ShaderTexture shader;
 
     private GlowShaderHelper() {
     }
 
     private static ShaderTexture shader() {
-        if (shader == null) {
-            shader = ShaderTexture.createShader(GLOW_SHADER);
-        }
-        return shader;
+        return ShaderTexture.createShader(GLOW_SHADER);
     }
 
     // IGuiTexture that draws the glow shader in the theme-driven GLOW color.
