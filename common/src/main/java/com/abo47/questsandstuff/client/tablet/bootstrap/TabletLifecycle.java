@@ -23,6 +23,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
 import com.abo47.questsandstuff.client.tablet.ui.TabletGuiContainer;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
 
 public final class TabletLifecycle {
     private static boolean uiPrewarmed;
@@ -117,6 +118,10 @@ public final class TabletLifecycle {
         Player mcPlayer = minecraft.player;
         if (!(mcPlayer instanceof LocalPlayer player)) {
             return;
+        }
+        TabletUiState currentState = TabletActiveState.getActiveTabletState();
+        if (currentState != null) {
+            TabletUiFactory.persistUiState(currentState);
         }
         TabletBootstrap.ensureAppsRegistered();
         AppDescriptor app = TabletAppRegistry.get(appId);
