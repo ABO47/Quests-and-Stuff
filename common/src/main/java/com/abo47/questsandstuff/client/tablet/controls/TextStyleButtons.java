@@ -9,9 +9,11 @@ import net.minecraft.network.chat.Component;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
@@ -194,6 +196,84 @@ public final class TextStyleButtons {
         );
         parent.addWidget(field);
         return field;
+    }
+
+    public static void renderStyleMenu(
+            WidgetGroup parent,
+            int x, int y, int menuW, int menuH,
+            int columns,
+            String align, int textColor,
+            boolean bold, boolean italic, boolean underline, boolean strikethrough, boolean quote, boolean spoiler,
+            int fontSize, boolean fontSizeFieldOpen, boolean hasQuoteSpoiler,
+            int successColor,
+            Runnable onAlignLeft, Runnable onAlignCenter, Runnable onAlignRight,
+            Runnable onColorOpen,
+            Runnable onBold, Runnable onItalic, Runnable onUnderline, Runnable onStrikethrough,
+            Runnable onQuote, Runnable onSpoiler,
+            Runnable onFontSizeClick,
+            IntConsumer onFontSizeChanged,
+            IntConsumer onFontSizePreview,
+            Runnable onFontSizeCommit,
+            Runnable onFontSizeCancel,
+            Runnable onFontSizeBlur,
+            BooleanSupplier yieldEnterToEditor,
+            Runnable onReset,
+            Runnable onShellBackground
+    ) {
+        WidgetGroup floating = shell(x, y, menuW, menuH, wrapRunnable(onShellBackground));
+
+        Component tLeft = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_LEFT);
+        Component tCenter = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_CENTER);
+        Component tRight = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_ALIGN_RIGHT);
+        Component tColor = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_COLOR);
+        Component tBold = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_BOLD);
+        Component tItalic = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_ITALIC);
+        Component tUnderline = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_UNDERLINE);
+        Component tStrikethrough = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_STRIKETHROUGH);
+        Component tQuote = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_QUOTE);
+        Component tSpoiler = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_SPOILER);
+        Component tReset = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_RESET);
+
+        addTool(floating, 0, menuW, columns, "style_align_left", align.equals("left") ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tLeft}, wrapRunnable(onAlignLeft));
+        addTool(floating, 1, menuW, columns, "style_align_center", align.equals("center") ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tCenter}, wrapRunnable(onAlignCenter));
+        addTool(floating, 2, menuW, columns, "style_align_right", align.equals("right") ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tRight}, wrapRunnable(onAlignRight));
+        addTool(floating, 3, menuW, columns, "style_color", TabletColors.SURFACE_PANEL_ALT, textColor, new Component[]{tColor}, wrapRunnable(onColorOpen));
+        addTool(floating, 4, menuW, columns, "style_bold", bold ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tBold}, wrapRunnable(onBold));
+        addTool(floating, 5, menuW, columns, "style_italic", italic ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tItalic}, wrapRunnable(onItalic));
+        addTool(floating, 6, menuW, columns, "style_underline", underline ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tUnderline}, wrapRunnable(onUnderline));
+        addTool(floating, 7, menuW, columns, "style_strikethrough", strikethrough ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tStrikethrough}, wrapRunnable(onStrikethrough));
+
+        int fontSizeIndex;
+        int clearIndex;
+        if (hasQuoteSpoiler) {
+            addTool(floating, 8, menuW, columns, "style_quote", quote ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tQuote}, wrapRunnable(onQuote));
+            addTool(floating, 9, menuW, columns, "style_spoiler", spoiler ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tSpoiler}, wrapRunnable(onSpoiler));
+            fontSizeIndex = 10;
+            clearIndex = 11;
+        } else {
+            fontSizeIndex = 8;
+            clearIndex = 9;
+        }
+
+        if (fontSizeFieldOpen) {
+            addFontSizeField(floating, fontSizeIndex, menuW, columns, fontSize,
+                    onFontSizeChanged, onFontSizePreview, onFontSizeCommit, onFontSizeCancel, onFontSizeBlur, yieldEnterToEditor);
+        } else {
+            boolean active = fontSize != CanvasTextLayer.DEFAULT_FONT_SIZE;
+            int base = active ? successColor : TabletColors.SURFACE_PANEL_ALT;
+            Component tFontSize = Component.translatable(TabletTranslationKeys.STYLE_TOOLTIP_FONT_SIZE)
+                    .append(Component.literal(": " + fontSize));
+            addTool(floating, fontSizeIndex, menuW, columns, "size", base, null, new Component[]{tFontSize}, wrapRunnable(onFontSizeClick));
+        }
+
+        boolean allClear = !bold && !italic && !underline && !strikethrough && !quote && !spoiler;
+        addTool(floating, clearIndex, menuW, columns, "context_style", allClear ? successColor : TabletColors.SURFACE_PANEL_ALT, null, new Component[]{tReset}, wrapRunnable(onReset));
+
+        parent.addWidget(floating);
+    }
+
+    private static Consumer<ClickData> wrapRunnable(Runnable r) {
+        return r != null ? c -> r.run() : c -> {};
     }
 
     private static int widthForColumns(int columns) {

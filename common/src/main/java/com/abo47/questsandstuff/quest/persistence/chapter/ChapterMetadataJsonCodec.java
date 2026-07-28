@@ -311,10 +311,7 @@ final class ChapterMetadataJsonCodec {
     }
 
     static String normalizeTextStyle(String style) {
-        return switch (style == null ? "" : style.trim().toLowerCase(Locale.ROOT)) {
-            case "bold", "italic", "bold_italic" -> style.trim().toLowerCase(Locale.ROOT);
-            default -> "normal";
-        };
+        return CanvasTextLayer.normalizeStyle(style);
     }
 
     static String normalizeTextAlign(String align) {
