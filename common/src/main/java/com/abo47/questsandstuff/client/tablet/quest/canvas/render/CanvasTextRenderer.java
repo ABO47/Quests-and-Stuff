@@ -43,9 +43,10 @@ public final class CanvasTextRenderer {
                 graphics.pose().pushPose();
                 graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
                 graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawText.rotation())));
-                drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing);
+                float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+                drawCanvasTextLines(graphics, state, drawText, w, h, inlineEditing, zoom);
                 if (inlineEditing) {
-                    drawCanvasTextCaret(graphics, state, drawText, w, h);
+                    drawCanvasTextCaret(graphics, state, drawText, w, h, zoom);
                 }
                 graphics.pose().popPose();
                 if (state.root.canEdit && CanvasSelectionActions.isTextSelected(state, drawText.id())) {
@@ -62,7 +63,7 @@ public final class CanvasTextRenderer {
     public static int canvasTextCursorAt(TabletUiState state, CanvasTextLayer text, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, x, y);
-        float scale = fontScale(text);
+        float scale = fontScale(text) * CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int layoutW = layoutSize(box.width(), scale);
         int layoutH = layoutSize(box.height(), scale);
         return cursorAtLocalPoint(text, layoutW, layoutH, (local[0] - box.width() / 2.0) / scale, (local[1] - box.height() / 2.0) / scale);
@@ -76,9 +77,9 @@ public final class CanvasTextRenderer {
     }
 
     public static void drawTextLayer(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int width, int height, boolean inlineEditing) {
-        drawCanvasTextLines(graphics, state, text, width, height, inlineEditing);
+        drawCanvasTextLines(graphics, state, text, width, height, inlineEditing, 1.0f);
         if (inlineEditing) {
-            drawCanvasTextCaret(graphics, state, text, width, height);
+            drawCanvasTextCaret(graphics, state, text, width, height, 1.0f);
         }
     }
 
@@ -153,9 +154,9 @@ public final class CanvasTextRenderer {
         return text.withColor(color);
     }
 
-    private static void drawCanvasTextLines(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h, boolean inlineEditing) {
+    private static void drawCanvasTextLines(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h, boolean inlineEditing, float zoom) {
         var font = Minecraft.getInstance().font;
-        float scale = fontScale(text);
+        float scale = fontScale(text) * zoom;
         int layoutW = layoutSize(w, scale);
         int layoutH = layoutSize(h, scale);
         TextLayout layout = layoutCanvasText(text, layoutW, layoutH, inlineEditing);
@@ -241,14 +242,14 @@ public final class CanvasTextRenderer {
         return component.copy().withStyle(formats.toArray(new ChatFormatting[0]));
     }
 
-    private static void drawCanvasTextCaret(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h) {
+    private static void drawCanvasTextCaret(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h, float zoom) {
         if ((System.currentTimeMillis() / 500L) % 2L != 0L) {
             return;
         }
         var font = Minecraft.getInstance().font;
         String value = text.text() == null ? "" : text.text();
         int cursor = Math.max(0, Math.min(TextEditSession.cursor(state), value.length()));
-        float scale = fontScale(text);
+        float scale = fontScale(text) * zoom;
         int layoutW = layoutSize(w, scale);
         int layoutH = layoutSize(h, scale);
         TextLayout layout = layoutCanvasText(text, layoutW, layoutH, true);
