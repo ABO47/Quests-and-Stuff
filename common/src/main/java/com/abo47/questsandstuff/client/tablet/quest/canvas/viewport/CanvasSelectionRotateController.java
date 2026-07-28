@@ -1,28 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.List;
+import java.util.Map;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
@@ -55,11 +54,11 @@ final class CanvasSelectionRotateController {
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedGroupName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
         state.canvas.rotateStartImageLayers.putAll(snapshot.images());
         state.canvas.rotateStartTextLayers.putAll(snapshot.texts());
-        String group = TabletStateQueries.selectedGroupName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.rotateStartEcLayers.put(ec.id(), ec);
                 CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);
@@ -143,7 +142,7 @@ final class CanvasSelectionRotateController {
                 state.canvas.rotateStartImageLayers,
                 state.canvas.rotateStartTextLayers
         );
-        CanvasLayerGroupTransform.Result result = CanvasLayerGroupTransform.rotate(
+        CanvasSelectionRotate.Result result = CanvasSelectionRotate.rotate(
                 layerSnapshot,
                 state.canvas.rotatePivotX,
                 state.canvas.rotatePivotY,

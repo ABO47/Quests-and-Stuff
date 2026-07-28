@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 
 public final class CanvasRecipeCardAsset {
     public static final String PREFIX = "recipe_card:";

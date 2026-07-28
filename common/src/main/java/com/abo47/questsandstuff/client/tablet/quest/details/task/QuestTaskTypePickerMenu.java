@@ -1,0 +1,135 @@
+package com.abo47.questsandstuff.client.tablet.quest.details.task;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+final class QuestTaskTypePickerMenu {
+    private QuestTaskTypePickerMenu() {
+    }
+
+    static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
+        if (!picker.typePicker() || !QuestDetailsEditController.canEdit(state)) {
+            return;
+        }
+        boolean rewards = picker.kind().startsWith("reward");
+        boolean change = picker.kind().endsWith("_change");
+        List<QuestDetailsTypeChoice> choices = rewards ? QuestTaskTypeCatalog.rewardChoices() : QuestTaskTypeCatalog.taskChoices();
+        List<ContextAction> typeActions = actions(choices, rewards, change, player, state, questId, quest, picker.targetId());
+        int rowCount = typeActions.size();
+        int menuW = 130;
+        int menuH = ContextMenuPanel.heightForRows(rowCount);
+        int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        modal.addWidget(menu);
+    }
+
+    private static List<ContextAction> actions(
+            List<QuestDetailsTypeChoice> choices,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        ContextMenuSections sections = new ContextMenuSections();
+        if (rewards) {
+            for (QuestDetailsTypeChoice choice : choices) {
+                sections.add(ContextMenuSection.PRIMARY, typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
+            }
+            return sections.build();
+        }
+
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
+        return sections.build();
+    }
+
+    private static void addTypeGroup(
+            ContextMenuSections sections,
+            ContextMenuSection section,
+            String labelKey,
+            String icon,
+            List<QuestDetailsTypeChoice> choices,
+            List<String> types,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        List<ContextAction> children = new ArrayList<>();
+        for (String type : types) {
+            QuestDetailsTypeChoice choice = typeChoice(choices, type);
+            if (choice != null) {
+                children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest, targetId));
+            }
+        }
+        if (!children.isEmpty()) {
+            sections.add(section, ContextActionFactory.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
+        }
+    }
+
+    private static QuestDetailsTypeChoice typeChoice(List<QuestDetailsTypeChoice> choices, String type) {
+        for (QuestDetailsTypeChoice choice : choices) {
+            if (choice.type().equals(type)) {
+                return choice;
+            }
+        }
+        return null;
+    }
+
+    private static ContextAction typeChoiceAction(
+            QuestDetailsTypeChoice choice,
+            boolean rewards,
+            boolean change,
+            Player player,
+            TabletUiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        return ContextActionFactory.action(choice.label(), choice.icon(), TabletColors.INTERACTIVE, () -> {
+            QuestDetailsTransientManager.closeTypePicker(state);
+            QuestDetailsTransientManager.closeContext(state);
+            if (rewards) {
+                if (change && !targetId.isBlank()) {
+                    QuestTaskEditActions.beginRewardChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestTaskEditActions.beginRewardAdd(player, state, questId, quest, choice.type());
+                }
+            } else {
+                if (change && !targetId.isBlank()) {
+                    QuestTaskEditActions.beginTaskChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestTaskEditActions.beginTaskAdd(player, state, questId, quest, choice.type());
+                }
+            }
+        });
+    }
+}

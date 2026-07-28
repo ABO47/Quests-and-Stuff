@@ -1,18 +1,19 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer.emi;
 
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 
 public final class EmiRecipePickOverlay {
     private static final String EMI_RECIPE_SCREEN = "dev.emi.emi.screen.RecipeScreen";

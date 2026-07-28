@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
-public record C2SEditorAddQuestPacket(String group, String questId, int x, int y, String title) {
+public record C2SEditorAddQuestPacket(String chapter, String questId, int x, int y, String title) {
     public static C2SEditorAddQuestPacket decode(FriendlyByteBuf buf) {
         return new C2SEditorAddQuestPacket(
                 buf.readUtf(),
@@ -19,17 +19,17 @@ public record C2SEditorAddQuestPacket(String group, String questId, int x, int y
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(group == null ? "" : group);
-        buf.writeUtf(questId == null ? "" : questId);
+        PacketBufHelper.writeUtfSafe(buf, chapter);
+        PacketBufHelper.writeUtfSafe(buf, questId);
         buf.writeVarInt(x);
         buf.writeVarInt(y);
-        buf.writeUtf(title == null ? "" : title);
+        PacketBufHelper.writeUtfSafe(buf, title);
     }
 
     public void handle(ModPacketContext context) {
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
-            context.enqueueWork(() -> QuestServices.editor(player.server).addQuest(player, group, questId, x, y, title));
+            context.enqueueWork(() -> QuestServiceRegistry.editor(player.server).addQuest(player, chapter, questId, x, y, title));
         }
     }
 }

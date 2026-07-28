@@ -1,24 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayoutService;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayoutService;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 final class ConnectionLayout {
     private ConnectionLayout() {
@@ -45,7 +46,7 @@ final class ConnectionLayout {
     ) {
         List<ConnectionLine> lines = new ArrayList<>();
         Set<String> rendered = new HashSet<>();
-        String group = selectedGroupName(state);
+        String chapter = selectedChapterName(state);
 
         for (QuestCardLayout quest : cards) {
             CompoundTag questTag = quest.tag();
@@ -60,8 +61,8 @@ final class ConnectionLayout {
                     continue;
                 }
 
-                ConnectionRenderStyle style = ConnectionStyleResolver.style(state, group, prerequisiteId, quest.questId(), questTag);
-                if (!rendered.add(style.edgeId())) {
+                ConnectionRenderStyle style = ConnectionStyleResolver.style(state, chapter, prerequisiteId, quest.questId(), questTag);
+                if (!rendered.add(style.connectionId())) {
                     continue;
                 }
                 if (!CanvasLayoutService.intersectsPanRenderWindow(prerequisite, viewportW, viewportH)
@@ -71,7 +72,7 @@ final class ConnectionLayout {
                 lines.add(lineFromStyle(style, prerequisite, quest, false));
             }
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
@@ -81,29 +82,32 @@ final class ConnectionLayout {
             int ecBoxBottom = (int) Math.ceil(ecBox.centerY() + ecBox.bottom());
             int ecScreenW = Math.max(1, ecBoxRight - ecBoxLeft);
             int ecScreenH = Math.max(1, ecBoxBottom - ecBoxTop);
-            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
-            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
+            double ecRot = Math.toRadians(drawEc.rotation());
+            double ecCos = Math.cos(ecRot);
+            double ecSin = Math.sin(ecRot);
+            int ecCenterX = (int) (ecBox.centerX() + ecBox.width() / 2.0 * ecCos - ecBox.height() / 2.0 * ecSin);
+            int ecCenterY = (int) (ecBox.centerY() + ecBox.width() / 2.0 * ecSin + ecBox.height() / 2.0 * ecCos);
             for (String connectedQuestId : drawEc.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
                     continue;
                 }
-                String edgeId = CanvasConnectionAnimation.edgeKey(ec.id(), connectedQuestId);
-                if (!rendered.add(edgeId)) {
+                String connectionId = CanvasConnectionAnimation.connectionKey(ec.id(), connectedQuestId);
+                if (!rendered.add(connectionId)) {
                     continue;
                 }
                 if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
                         && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, ec.id(), connectedQuestId);
-                int color = ConnectionStyleResolver.ecConnectionColor(state, group, ec.id(), connectedQuestId);
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, ec.id(), connectedQuestId);
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, ec.id(), connectedQuestId);
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, ec.id(), connectedQuestId);
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, ec.id(), connectedQuestId);
+                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, ec.id(), connectedQuestId);
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, ec.id(), connectedQuestId);
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, ec.id(), connectedQuestId);
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, ec.id(), connectedQuestId);
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
-                        edgeId, ec.id(), connectedQuestId,
+                        connectionId, ec.id(), connectedQuestId,
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
                         ecCenterX, ecCenterY,
@@ -116,22 +120,22 @@ final class ConnectionLayout {
                 if (prerequisiteQuest == null) {
                     continue;
                 }
-                String edgeId = CanvasConnectionAnimation.edgeKey(prerequisiteQuestId, ec.id());
-                if (!rendered.add(edgeId)) {
+                String connectionId = CanvasConnectionAnimation.connectionKey(prerequisiteQuestId, ec.id());
+                if (!rendered.add(connectionId)) {
                     continue;
                 }
                 if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
                         && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
                     continue;
                 }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, group, prerequisiteQuestId, ec.id());
-                int color = ConnectionStyleResolver.ecConnectionColor(state, group, prerequisiteQuestId, ec.id());
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, group, prerequisiteQuestId, ec.id());
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, group, prerequisiteQuestId, ec.id());
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, group, prerequisiteQuestId, ec.id());
+                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, prerequisiteQuestId, ec.id());
+                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, prerequisiteQuestId, ec.id());
+                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, prerequisiteQuestId, ec.id());
+                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, prerequisiteQuestId, ec.id());
+                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, prerequisiteQuestId, ec.id());
                 int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
                 lines.add(new ConnectionLine(
-                        edgeId, prerequisiteQuestId, ec.id(),
+                        connectionId, prerequisiteQuestId, ec.id(),
                         prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
                         ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
                         prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
@@ -153,7 +157,7 @@ final class ConnectionLayout {
         List<ConnectionLine> lines = prerequisiteConnectionLines(state, cards, byQuestId, viewportW, viewportH);
         List<String> keys = new ArrayList<>();
         for (ConnectionLine line : lines) {
-            keys.add(CanvasLayerOrdering.connectionKey(line.edgeId()));
+            keys.add(CanvasLayerOrdering.connectionKey(line.connectionId()));
         }
         return keys;
     }
@@ -193,7 +197,7 @@ final class ConnectionLayout {
                         source.centerY(),
                         false,
                         true,
-                        ModColors.TEXT_SECONDARY,
+                        TabletColors.TEXT_SECONDARY,
                         false,
                         245, "", 0
                 ));
@@ -210,7 +214,7 @@ final class ConnectionLayout {
 
     private static ConnectionLine lineFromStyle(ConnectionRenderStyle style, QuestCardLayout source, QuestCardLayout target, boolean pending) {
         return new ConnectionLine(
-                style.edgeId(),
+                style.connectionId(),
                 style.sourceQuestId(),
                 style.targetQuestId(),
                 source.x(),

@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SEditorControlPacket(String action) {
     public static C2SEditorControlPacket decode(FriendlyByteBuf buf) {
@@ -13,14 +13,14 @@ public record C2SEditorControlPacket(String action) {
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(action == null ? "" : action);
+        PacketBufHelper.writeUtfSafe(buf, action);
     }
 
     public void handle(ModPacketContext context) {
         ServerPlayer player = context.sender();
         if (EditorPacketGuard.canEdit(player)) {
             context.enqueueWork(() -> {
-                var editor = QuestServices.editor(player.server);
+                var editor = QuestServiceRegistry.editor(player.server);
                 String op = action == null ? "" : action;
                 if ("undo".equals(op)) {
                     editor.undo(player);

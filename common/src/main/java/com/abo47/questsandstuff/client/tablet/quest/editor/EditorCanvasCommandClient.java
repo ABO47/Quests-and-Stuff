@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.QuestServices;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 
 public final class EditorCanvasCommandClient {
     private EditorCanvasCommandClient() {
@@ -27,20 +28,20 @@ public final class EditorCanvasCommandClient {
         if (positions == null || positions.isEmpty()) {
             return;
         }
-        String groupName = EditorChapterCommandClient.selectedGroupName(state);
-        if (groupName.isBlank()) {
+        String chapterName = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapterName.isBlank()) {
             return;
         }
         Map<String, int[]> moves = new HashMap<>();
         for (Map.Entry<String, CanvasPoint> entry : positions.entrySet()) {
-            ClientQuestCache.setQuestPositionInGroupLocal(entry.getKey(), groupName, entry.getValue().x, entry.getValue().y);
+            ClientQuestStateFacade.setQuestPositionInChapterLocal(entry.getKey(), chapterName, entry.getValue().x, entry.getValue().y);
             moves.put(entry.getKey(), new int[]{entry.getValue().x, entry.getValue().y});
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).moveQuestsInGroup(serverPlayer, groupName, moves),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).moveQuestsInChapter(serverPlayer, chapterName, moves),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.moveMany(groupName, moves);
+                    CompoundTag payload = EditorCommandPayloads.moveMany(chapterName, moves);
                     EditorCommandSender.send(EditorCommandType.MOVE_MANY, payload);
                 });
     }
@@ -49,8 +50,8 @@ public final class EditorCanvasCommandClient {
         if (scales == null || scales.isEmpty()) {
             return;
         }
-        String groupName = EditorChapterCommandClient.selectedGroupName(state);
-        if (groupName.isBlank()) {
+        String chapterName = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapterName.isBlank()) {
             return;
         }
         Map<String, Float> normalized = new HashMap<>();
@@ -62,7 +63,7 @@ public final class EditorCanvasCommandClient {
             }
             float scale = Math.max(0.5f, rawScale);
             normalized.put(questId, scale);
-            ClientQuestCache.setQuestScaleInGroupLocal(questId, groupName, scale);
+            ClientQuestStateFacade.setQuestScaleInChapterLocal(questId, chapterName, scale);
         }
         if (normalized.isEmpty()) {
             return;
@@ -70,20 +71,20 @@ public final class EditorCanvasCommandClient {
 
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).scaleQuestsInGroup(serverPlayer, groupName, normalized),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).scaleQuestsInChapter(serverPlayer, chapterName, normalized),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.scaleMany(groupName, normalized);
+                    CompoundTag payload = EditorCommandPayloads.scaleMany(chapterName, normalized);
                     EditorCommandSender.send(EditorCommandType.SCALE_MANY, payload);
                 });
     }
 
-    public static void runCanvasCopyAction(Player player, String groupName, Set<String> questIds) {
+    public static void runCanvasCopyAction(Player player, String chapterName, Set<String> questIds) {
         if (questIds == null || questIds.isEmpty()) {
             return;
         }
-        String group = groupName == null ? "" : groupName.trim();
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy request group={} ids={} integratedServer={}",
-                group, questIds, IntegratedServerActions.canRunLocally(player));
+        String chapter = chapterName == null ? "" : chapterName.trim();
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy request chapter={} ids={} integratedServer={}",
+                chapter, questIds, IntegratedServerActions.canRunLocally(player));
         Set<String> normalizedQuestIds = new HashSet<>();
         for (String questId : questIds) {
             String normalized = questId == null ? "" : questId.trim();
@@ -96,41 +97,41 @@ public final class EditorCanvasCommandClient {
         }
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, group, normalizedQuestIds),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).copyQuestsToClipboard(serverPlayer, chapter, normalizedQuestIds),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.copyMany(group, normalizedQuestIds);
+                    CompoundTag payload = EditorCommandPayloads.copyMany(chapter, normalizedQuestIds);
                     EditorCommandSender.send(EditorCommandType.COPY_MANY, payload);
                 });
     }
 
-    public static void runCanvasPasteClipboardAction(Player player, String groupName, int x, int y) {
-        String group = groupName == null ? "" : groupName.trim();
-        if (group.isBlank()) {
+    public static void runCanvasPasteClipboardAction(Player player, String chapterName, int x, int y) {
+        String chapter = chapterName == null ? "" : chapterName.trim();
+        if (chapter.isBlank()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste request group={} anchor={},{} integratedServer={}",
-                group, x, y, IntegratedServerActions.canRunLocally(player));
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste request chapter={} anchor={},{} integratedServer={}",
+                chapter, x, y, IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).pasteClipboardInGroup(serverPlayer, group, x, y),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteClipboardInChapter(serverPlayer, chapter, x, y),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.pasteClipboard(group, x, y);
+                    CompoundTag payload = EditorCommandPayloads.pasteClipboard(chapter, x, y);
                     EditorCommandSender.send(EditorCommandType.PASTE_CLIPBOARD, payload);
                 });
     }
 
     public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
-        if (group.isBlank() || blueprint == null || blueprint.isEmpty()) {
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapter.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
         }
-        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request group={} anchor={},{} entries={} integratedServer={}",
-                group, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
+        QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] paste request chapter={} anchor={},{} entries={} integratedServer={}",
+                chapter, x, y, blueprint.contentCount(), IntegratedServerActions.canRunLocally(player));
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).pasteBlueprintInGroup(serverPlayer, group, x, y, blueprint),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).pasteBlueprintInChapter(serverPlayer, chapter, x, y, blueprint),
                 () -> {
-                    CompoundTag payload = EditorCommandPayloads.pasteBlueprint(group, x, y, blueprint);
+                    CompoundTag payload = EditorCommandPayloads.pasteBlueprint(chapter, x, y, blueprint);
                     EditorCommandSender.send(EditorCommandType.PASTE_BLUEPRINT, payload);
                 });
     }
@@ -141,10 +142,10 @@ public final class EditorCanvasCommandClient {
 
     public static void runPrerequisiteAction(Player player, String questId, String prerequisiteId, boolean add) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
+        ClientQuestStateFacade.setQuestPrerequisiteLocal(questId, prerequisiteId, add);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setQuestPrerequisite(serverPlayer, questId, prerequisiteId, add),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setQuestPrerequisite(serverPlayer, questId, prerequisiteId, add),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.prerequisite(questId, prerequisiteId);
                     EditorCommandSender.send(add ? EditorCommandType.PREREQUISITE_ADD : EditorCommandType.PREREQUISITE_REMOVE, payload);
@@ -153,10 +154,10 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionColorAction(Player player, String questId, String prerequisiteId, int color) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionColorLocal(questId, prerequisiteId, color);
+        ClientQuestStateFacade.setConnectionColorLocal(questId, prerequisiteId, color);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionColor(serverPlayer, questId, prerequisiteId, color),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionColor(serverPlayer, questId, prerequisiteId, color),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionColor(questId, prerequisiteId, color);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_COLOR, payload);
@@ -165,10 +166,10 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionModeAction(Player player, String questId, String prerequisiteId, boolean gridMode) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionModeLocal(questId, prerequisiteId, gridMode);
+        ClientQuestStateFacade.setConnectionModeLocal(questId, prerequisiteId, gridMode);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionMode(serverPlayer, questId, prerequisiteId, gridMode),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionMode(serverPlayer, questId, prerequisiteId, gridMode),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionMode(questId, prerequisiteId, gridMode);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_MODE, payload);
@@ -177,10 +178,10 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionHiddenAction(Player player, String questId, String prerequisiteId, boolean hidden) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
+        ClientQuestStateFacade.setConnectionHiddenLocal(questId, prerequisiteId, hidden);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionHidden(serverPlayer, questId, prerequisiteId, hidden),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionHidden(serverPlayer, questId, prerequisiteId, hidden),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionHidden(questId, prerequisiteId, hidden);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_HIDDEN, payload);
@@ -190,10 +191,10 @@ public final class EditorCanvasCommandClient {
     public static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
         QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof net.minecraft.server.level.ServerPlayer);
-        ClientQuestCache.setConnectionTextureLocal(questId, prerequisiteId, texture);
+        ClientQuestStateFacade.setConnectionTextureLocal(questId, prerequisiteId, texture);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTexture(serverPlayer, questId, prerequisiteId, texture),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionTexture(questId, prerequisiteId, texture);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE, payload);
@@ -202,19 +203,19 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionTextureSpacingAction(Player player, String questId, String prerequisiteId, int spacing) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        ClientQuestCache.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
+        ClientQuestStateFacade.setConnectionTextureSpacingLocal(questId, prerequisiteId, spacing);
         IntegratedServerActions.run(
                 player,
-                serverPlayer -> QuestServices.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),
+                serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTextureSpacing(serverPlayer, questId, prerequisiteId, spacing),
                 () -> {
                     CompoundTag payload = EditorCommandPayloads.connectionTextureSpacing(questId, prerequisiteId, spacing);
                     EditorCommandSender.send(EditorCommandType.CONNECTION_TEXTURE_SPACING, payload);
                 });
     }
 
-    private static String resolveEcId(TabletUiState state, String group, String idA, String idB) {
-        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idA) != null) return idA;
-        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, group, idB) != null) return idB;
+    private static String resolveEcId(TabletUiState state, String chapter, String idA, String idB) {
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idA) != null) return idA;
+        if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idB) != null) return idB;
         return "";
     }
 
@@ -224,40 +225,40 @@ public final class EditorCanvasCommandClient {
 
     @FunctionalInterface
     private interface EcConnectionAction {
-        void run(String group, String ecId, String questId);
+        void run(String chapter, String ecId, String questId);
     }
 
     private static void runEcConnectionAction(TabletUiState state, String sourceId, String targetId, EcConnectionAction action) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
-        if (group.isBlank()) return;
-        String ecId = resolveEcId(state, group, sourceId, targetId);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        if (chapter.isBlank()) return;
+        String ecId = resolveEcId(state, chapter, sourceId, targetId);
         if (ecId.isBlank()) return;
         String questId = resolveQuestId(ecId, sourceId, targetId);
-        action.run(group, ecId, questId);
+        action.run(chapter, ecId, questId);
     }
 
     public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color));
     }
 
     public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionMode(state, group, ecId, questId, direct));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionMode(state, chapter, ecId, questId, direct));
     }
 
     public static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionHidden(state, group, ecId, questId, hidden));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionHidden(state, chapter, ecId, questId, hidden));
     }
 
     public static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTexture(state, group, ecId, questId, texture));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionTexture(state, chapter, ecId, questId, texture));
     }
 
     public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
-        runEcConnectionAction(state, sourceId, targetId, (group, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTextureSpacing(state, group, ecId, questId, spacing));
+        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
+                ConnectionRenderer.setEcConnectionTextureSpacing(state, chapter, ecId, questId, spacing));
     }
 }

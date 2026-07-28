@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.CardReorderController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
 import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class ChapterDragController {
     private ChapterDragController() {
@@ -23,7 +24,7 @@ public final class ChapterDragController {
             return true;
         }
         if (state.chapterPanel.chapterDragPending && button == 0) {
-            if (!CardReorderController.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
+            if (!CardDragSortUtil.pastDragThreshold(mouseX, mouseY, state.chapterPanel.chapterDragStartX, state.chapterPanel.chapterDragStartY)) {
                 return true;
             }
             state.chapterPanel.chapterDragPending = false;
@@ -63,14 +64,14 @@ public final class ChapterDragController {
         if (moving.isBlank()) {
             return;
         }
-        int fromIndex = ClientQuestCache.groupOrder().indexOf(moving);
-        int size = ClientQuestCache.groupOrder().size();
-        target = CardReorderController.targetIndexAfterDrop(fromIndex, target, size);
+        int fromIndex = ClientQuestStateFacade.chapterOrder().indexOf(moving);
+        int size = ClientQuestStateFacade.chapterOrder().size();
+        target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
         if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
-            TabletUiFactory.runGroupAction(player, state, "move_to", moving, "", target);
+            TabletUiFactory.runChapterAction(player, state, "move_to", moving, "", target);
         }
-        state.root.selectedGroup = moving;
+        state.root.selectedChapter = moving;
         TabletUiFactory.persistUiState(state);
     }
 }

@@ -1,17 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.icons;
 
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
-import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;
@@ -34,6 +38,10 @@ public final class DisplayIconWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
         if (!stack.isEmpty()) {
             stackTexture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             return;
@@ -58,7 +66,7 @@ public final class DisplayIconWidget extends WidgetGroup {
 
     private static void drawIconContent(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, String iconId, float partialTicks) {
         String safeIconId = iconId == null ? "" : iconId;
-        ResourceTexture uiIcon = UiIconAtlas.iconTexture(safeIconId);
+        ResourceTexture uiIcon = IconAtlas.iconTexture(safeIconId);
         if (uiIcon != null) {
             uiIcon.draw(graphics, mouseX, mouseY, x, y, width, height);
             return;

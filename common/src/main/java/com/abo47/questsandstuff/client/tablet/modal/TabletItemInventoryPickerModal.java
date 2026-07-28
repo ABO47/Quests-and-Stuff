@@ -1,34 +1,38 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletItemInventoryPickerModal {
     private static final int TILE = 18;
@@ -37,7 +41,7 @@ public final class TabletItemInventoryPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_INVENTORY_ITEM), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_INVENTORY_ITEM), w, state, refresh);
         int sidePad = 8;
         int headY = 24;
         int headH = 18;
@@ -65,7 +69,7 @@ public final class TabletItemInventoryPickerModal {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 ScrollState.bind(
                         () -> state.pickers.itemInventoryScroll,
                         value -> state.pickers.itemInventoryScroll = value,
@@ -91,8 +95,8 @@ public final class TabletItemInventoryPickerModal {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         ItemStack preview = stack.copy();
         preview.setCount(1);
-        surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(preview)));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
+        surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(preview)));
+        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (onPick != null) {
                 onPick.accept(stack.copy());
             }
@@ -105,8 +109,8 @@ public final class TabletItemInventoryPickerModal {
                 }
             }
         };
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setHoverTooltips(tooltip(stack));
         hit.setClientSideWidget();
         surface.addWidget(hit);

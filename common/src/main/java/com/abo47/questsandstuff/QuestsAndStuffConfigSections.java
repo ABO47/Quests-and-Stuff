@@ -140,6 +140,50 @@ final class QuestsAndStuffConfigSections {
         }
     }
 
+    static final class ChunkClaims {
+        static final int DEFAULT_MAX_CLAIMED = 100;
+        static final int DEFAULT_MAX_FORCE_LOADED = 100;
+        static final int MIN_CAP = 0;
+        static final int MAX_CAP = Integer.MAX_VALUE;
+
+        boolean protectBreakPlace = true;
+        boolean protectInteraction = true;
+        boolean protectExplosions = true;
+        boolean protectMobGriefing = true;
+        boolean protectPvp = true;
+        boolean protectFire = true;
+        int maxClaimedChunks = DEFAULT_MAX_CLAIMED;
+        int maxForceLoadedChunks = DEFAULT_MAX_FORCE_LOADED;
+
+        void read(JsonObject root) {
+            protectBreakPlace = bool(root, "protectBreakPlace", protectBreakPlace);
+            protectInteraction = bool(root, "protectInteraction", protectInteraction);
+            protectExplosions = bool(root, "protectExplosions", protectExplosions);
+            protectMobGriefing = bool(root, "protectMobGriefing", protectMobGriefing);
+            protectPvp = bool(root, "protectPvp", protectPvp);
+            protectFire = bool(root, "protectFire", protectFire);
+            maxClaimedChunks = normalizeCap(intValue(root, "maxClaimedChunks", maxClaimedChunks));
+            maxForceLoadedChunks = normalizeCap(intValue(root, "maxForceLoadedChunks", maxForceLoadedChunks));
+        }
+
+        JsonObject write() {
+            JsonObject root = new JsonObject();
+            root.addProperty("protectBreakPlace", protectBreakPlace);
+            root.addProperty("protectInteraction", protectInteraction);
+            root.addProperty("protectExplosions", protectExplosions);
+            root.addProperty("protectMobGriefing", protectMobGriefing);
+            root.addProperty("protectPvp", protectPvp);
+            root.addProperty("protectFire", protectFire);
+            root.addProperty("maxClaimedChunks", maxClaimedChunks);
+            root.addProperty("maxForceLoadedChunks", maxForceLoadedChunks);
+            return root;
+        }
+
+        static int normalizeCap(int value) {
+            return Math.max(MIN_CAP, Math.min(MAX_CAP, value));
+        }
+    }
+
     static JsonObject object(JsonObject root, String key) {
         if (root != null && root.has(key) && root.get(key).isJsonObject()) {
             return root.getAsJsonObject(key);

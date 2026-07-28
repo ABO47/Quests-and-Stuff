@@ -1,14 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import com.abo47.questsandstuff.util.SafeNames;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +7,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
+import com.abo47.questsandstuff.util.naming.SafeNames;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 final class ChapterMetadataJsonCodec {
     private ChapterMetadataJsonCodec() {
@@ -90,7 +92,7 @@ final class ChapterMetadataJsonCodec {
             if (id.isBlank()) {
                 continue;
             }
-            texts.add(new CanvasTextLayer(id, stringOr(json, "text", ""), intOr(json, "x", 0), intOr(json, "y", 0), intOr(json, "w", 120), intOr(json, "h", 32), intOr(json, "rotation", 0), stringOr(json, "align", "left"), stringOr(json, "style", "normal"), intOr(json, "color", 0xFFFFFFFF), intOr(json, "font_size", CanvasTextLayer.DEFAULT_FONT_SIZE), readTextSpans(json.get("spans"))));
+            texts.add(new CanvasTextLayer(id, stringOr(json, "text", ""), intOr(json, "x", 0), intOr(json, "y", 0), intOr(json, "w", 120), intOr(json, "h", 32), intOr(json, "rotation", 0), stringOr(json, "align", "left"), stringOr(json, "style", "normal"), intOr(json, "color", TabletColors.WHITE), intOr(json, "font_size", CanvasTextLayer.DEFAULT_FONT_SIZE), readTextSpans(json.get("spans"))));
         }
         return texts;
     }
@@ -309,10 +311,7 @@ final class ChapterMetadataJsonCodec {
     }
 
     static String normalizeTextStyle(String style) {
-        return switch (style == null ? "" : style.trim().toLowerCase(Locale.ROOT)) {
-            case "bold", "italic", "bold_italic" -> style.trim().toLowerCase(Locale.ROOT);
-            default -> "normal";
-        };
+        return CanvasTextLayer.normalizeStyle(style);
     }
 
     static String normalizeTextAlign(String align) {
@@ -323,8 +322,8 @@ final class ChapterMetadataJsonCodec {
         };
     }
 
-    static String groupFileName(String group) {
-        return SafeNames.identifier(group, "ungrouped");
+    static String chapterFileName(String chapter) {
+        return SafeNames.identifier(chapter, "default");
     }
 
     private static List<CanvasTextStyleSpan> readTextSpans(JsonElement element) {
@@ -337,7 +336,7 @@ final class ChapterMetadataJsonCodec {
                 continue;
             }
             JsonObject json = child.getAsJsonObject();
-            spans.add(new CanvasTextStyleSpan(intOr(json, "start", 0), intOr(json, "end", 0), stringOr(json, "style", "normal"), intOr(json, "color", 0xFFFFFFFF)));
+            spans.add(new CanvasTextStyleSpan(intOr(json, "start", 0), intOr(json, "end", 0), stringOr(json, "style", "normal"), intOr(json, "color", TabletColors.WHITE)));
         }
         return spans;
     }

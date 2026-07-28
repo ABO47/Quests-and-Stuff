@@ -1,5 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
@@ -8,23 +18,17 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class RecipePickerGridRenderer {
-    private static final int TILE = 18;
+    private static final int TILE = GRID_18;
 
     private RecipePickerGridRenderer() {
     }
@@ -52,7 +56,7 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 scrollState(state),
                 null,
                 refresh,
@@ -74,7 +78,7 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_FLUIDS),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_FLUIDS),
                 scrollState(state),
                 null,
                 refresh,
@@ -96,7 +100,7 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_RECIPES),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_RECIPES),
                 scrollState(state),
                 null,
                 refresh,
@@ -116,11 +120,11 @@ final class RecipePickerGridRenderer {
     private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, RecipeChoiceIndex.RecipeChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
-            surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry.tag() ? "name_tag" : "recipe"));
+            surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry.tag() ? "name_tag" : "recipe"));
         } else {
-            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
+            surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
+        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (!entry.value().isBlank()) {
                 RecipePickerApplyActions.applyRecipePick(player, state, entry.value(), refresh);
             }
@@ -135,16 +139,16 @@ final class RecipePickerGridRenderer {
             }
         };
         hit.setHoverTooltips(entry.tooltip());
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);
     }
 
     private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
-        surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, entry));
-        ButtonWidget hit = new ButtonWidget(x + 1, y + 1, 16, 16, Surfaces.transparentFill(), click -> {
+        surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry));
+        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (entry != null && !entry.isBlank()) {
                 RecipePickerApplyActions.applyRecipePick(player, state, entry, refresh);
             }
@@ -159,8 +163,8 @@ final class RecipePickerGridRenderer {
             }
         };
         hit.setHoverTooltips(TabletModalPanel.iconTooltip(entry));
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);
     }

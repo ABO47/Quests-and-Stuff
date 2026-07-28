@@ -1,34 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
-import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProvider;
-import com.abo47.questsandstuff.quest.runtime.team.TeamProgressProviders;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +9,38 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
+import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProvider;
+import com.abo47.questsandstuff.team.runtime.TeamProgressProviders;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestRewardAndTeamGameTests {
@@ -312,16 +315,16 @@ public final class QuestRewardAndTeamGameTests {
             new C2SManualTaskPacket(visible.id(), "clicked").handle(immediateContext(player));
             var visibleState = bundle.progressData.state(player.getUUID()).quest(visible.id());
             if (visibleState.getTaskCount("clicked") != 1) {
-                throw new GameTestAssertException("Manual check packet should complete the clicked requirement");
+                throw new GameTestAssertException("Manual check packet should complete the clicked task");
             }
             if (visibleState.getTaskCount("same_key") != 0) {
-                throw new GameTestAssertException("Manual check packet should not complete another requirement sharing the same target key");
+                throw new GameTestAssertException("Manual check packet should not complete another task sharing the same target key");
             }
 
             new C2SManualTaskPacket(hidden.id(), "hidden").handle(immediateContext(player));
             var hiddenState = bundle.progressData.state(player.getUUID()).quest(hidden.id());
             if (hiddenState.getTaskCount("hidden") != 0 || hiddenState.completed()) {
-                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible requirements");
+                throw new GameTestAssertException("Manual check packet should not complete hidden non-visible tasks");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Failed to create quest bundle: " + e.getMessage());
@@ -591,9 +594,9 @@ public final class QuestRewardAndTeamGameTests {
         Path root = Files.createTempDirectory("qas_" + rootName + "_");
         QuestDefinitionStore store = new QuestDefinitionStore(root);
         QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-        QuestPerformanceTracker perf = new QuestPerformanceTracker();
-        QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-        QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+        PerformanceTracker perf = new PerformanceTracker();
+        SyncService sync = new SyncService(store, progressData, perf);
+        RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
         sync.setVisibilityFilter(engine::isVisibleFor);
         return new Bundle(store, progressData, engine);
     }
@@ -634,7 +637,7 @@ public final class QuestRewardAndTeamGameTests {
                         id,
                         "",
                         List.of(),
-                        Map.of("Main", ChapterDefinition.DEFAULT),
+                        Map.of("Main", ChapterDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),
@@ -667,7 +670,7 @@ public final class QuestRewardAndTeamGameTests {
     private record Bundle(
             QuestDefinitionStore store,
             QuestProgressSavedData progressData,
-            QuestRuntimeEngine engine
+            RuntimeEngine engine
     ) {
         private void close() {
             store.shutdown();

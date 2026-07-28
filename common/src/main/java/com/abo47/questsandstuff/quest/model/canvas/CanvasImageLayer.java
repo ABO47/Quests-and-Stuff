@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.model.canvas;
 
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
+
 public record CanvasImageLayer(String id, String asset, int x, int y, int w, int h, int rotation, int entityYaw, int entitySpinSpeed, int modelPitch, int pivotX, int pivotY) {
     public static final int DEFAULT_ENTITY_YAW = 0;
     public static final int DEFAULT_ENTITY_SPIN_SPEED = 60;
@@ -76,10 +78,6 @@ public record CanvasImageLayer(String id, String asset, int x, int y, int w, int
 
     public static int clampEntitySpinSpeed(int spinSpeed) {
         return clamp(spinSpeed, MIN_ENTITY_SPIN_SPEED, MAX_ENTITY_SPIN_SPEED);
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
     }
 
     private static int centerPivot(int span) {

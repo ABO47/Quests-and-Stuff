@@ -1,14 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import net.minecraft.world.entity.player.Player;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class TabletRootHitTest {
@@ -29,11 +30,11 @@ public final class TabletRootHitTest {
         return mouseX >= absX && mouseX <= absX + w && mouseY >= absY && mouseY <= absY + h;
     }
 
-    public static boolean isChapterMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY) {
+    public static boolean isChapterMenuHit(TabletUiState state, int rootX, int rootY, double mouseX, double mouseY, Player player, Runnable refresh) {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state), player, refresh);
         int absMenuX = rootX + layout.menuX();
         int absMenuY = rootY + layout.menuY();
         return mouseX >= absMenuX && mouseX <= absMenuX + layout.menuW()
@@ -55,7 +56,7 @@ public final class TabletRootHitTest {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }

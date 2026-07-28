@@ -1,6 +1,14 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
@@ -11,19 +19,14 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-import org.joml.Matrix4f;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class RecipeViewerSnapshotRenderer {
     private static final int MAX_CACHED_SNAPSHOTS = 96;

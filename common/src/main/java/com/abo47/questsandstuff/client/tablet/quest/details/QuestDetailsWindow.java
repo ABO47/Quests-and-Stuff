@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.world.entity.player.Player;
 
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+
 public final class QuestDetailsWindow {
-    static final int WINDOW_W = TabletUiFactory.ROOT_W;
-    static final int WINDOW_H = TabletUiFactory.ROOT_H;
+    static final int WINDOW_W = TabletUiFactory.BODY_W;
+    static final int WINDOW_H = TabletUiFactory.BODY_H;
     public static final int CONTENT_INSET = TabletUiFactory.PANEL_INSET;
     public static final int TOP_Y = CONTENT_INSET;
     public static final int HEADER_H = TabletUiFactory.HEADER_H;
@@ -210,6 +212,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowLifecycle.close(state);
     }
 
+    public static void finishCloseAnimation(TabletUiState state) {
+        QuestDetailsWindowLifecycle.finishClose(state);
+    }
+
     public static int leftPanelWidth(TabletUiState state) {
         return QuestDetailsWindowGeometry.leftPanelWidth(state);
     }
@@ -218,12 +224,12 @@ public final class QuestDetailsWindow {
         return QuestDetailsWindowGeometry.descriptionContentWidth(state);
     }
 
-    static int canvasPanelWidth(int leftW) {
-        return QuestDetailsWindowGeometry.canvasPanelWidth(leftW);
+    static int canvasPanelWidth(int leftW, int frameW) {
+        return QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frameW);
     }
 
-    static int[] mainCanvasViewport(TabletUiState state, int canvasW) {
-        return QuestDetailsWindowGeometry.mainCanvasViewport(state, canvasW);
+    static int[] mainCanvasViewport(int canvasW, int frameH) {
+        return QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frameH);
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {

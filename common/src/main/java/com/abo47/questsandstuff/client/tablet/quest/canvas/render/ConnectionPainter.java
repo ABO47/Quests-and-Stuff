@@ -1,31 +1,37 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
 final class ConnectionPainter {
@@ -142,8 +148,8 @@ final class ConnectionPainter {
 
         if (line.pending()) {
             int halfSize = CHEVRON_BASE_W;
-            graphics.fill(startX - halfSize, startY - halfSize, startX + halfSize + 1, startY + halfSize + 1, withAlpha(ModColors.SUCCESS, PENDING_FILL_ALPHA));
-            graphics.renderOutline(startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ModColors.SUCCESS, PENDING_OUTLINE_ALPHA));
+            SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
+            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(TabletColors.SUCCESS, PENDING_OUTLINE_ALPHA));
             return;
         }
 
@@ -186,7 +192,7 @@ final class ConnectionPainter {
             glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
             glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
-        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.edgeId(), now);
+        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
@@ -210,6 +216,10 @@ final class ConnectionPainter {
                 || inside(mouseX, mouseY, originX + line.targetX() + targetOffsetX, originY + line.targetY() + targetOffsetY, line.targetW(), line.targetH());
     }
 
+    private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
+        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+    }
+
     private static boolean inSelection(TabletUiState state, String elementId) {
         return state.canvas.canvasSelection.questIds().contains(elementId)
                 || state.canvas.canvasSelection.ecIds().contains(elementId);
@@ -219,20 +229,14 @@ final class ConnectionPainter {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
-        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
     }
 
     private static int selectionDragOffsetY(TabletUiState state, String elementId) {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
-        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
-    }
-
-    private static boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
-        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
     private static int snapScreenLocalToGrid(TabletUiState state, int localX, int cell) {
@@ -249,7 +253,7 @@ final class ConnectionPainter {
         Integer cached = TEX_WIDTH_CACHE.get(textureStr);
         if (cached != null) return cached;
         try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 TEX_WIDTH_CACHE.put(textureStr, ad.width());
@@ -266,7 +270,7 @@ final class ConnectionPainter {
         int[] cached = TEX_DIM_CACHE.get(textureStr);
         if (cached != null) return cached.length > 0 ? cached : null;
         try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 int[] dims = new int[]{ad.width(), ad.height()};
@@ -287,7 +291,7 @@ final class ConnectionPainter {
         if (parsed != null && parsed.getNamespace().equals(QuestsAndStuffMod.MODID)) {
             return parsed;
         }
-        java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR;
+        java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
         try {
             com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.ensureAssetsDirs(assetsRoot);
             IGuiTexture guiTexture = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(assetsRoot, textureStr);

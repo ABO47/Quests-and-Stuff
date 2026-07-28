@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.client.sync.mutation;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientChapterState;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestState;
-import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;
+import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class ClientEditorMutationApplier {
     private ClientEditorMutationApplier() {
@@ -21,29 +22,29 @@ public final class ClientEditorMutationApplier {
         if (normalizedId.isBlank()) {
             return;
         }
-        if (QuestSyncKeys.EditorAction.REMOVE.equals(normalizedAction)) {
+        if (SyncKeys.EditorAction.REMOVE.equals(normalizedAction)) {
             ClientQuestState.removeQuest(normalizedId);
             return;
         }
-        ensureGroupsFromQuestTag(normalizedAction, normalizedId, questTag);
+        ensureChaptersFromQuestTag(normalizedAction, normalizedId, questTag);
         CompoundTag existing = ClientQuestState.mutableQuestOrCreate(normalizedId);
         existing.merge(questTag == null ? new CompoundTag() : questTag.copy());
     }
 
-    private static void ensureGroupsFromQuestTag(String action, String questId, CompoundTag questTag) {
-        if (questTag == null || !questTag.contains(QuestSyncKeys.Quest.GROUPS, Tag.TAG_COMPOUND)) {
+    private static void ensureChaptersFromQuestTag(String action, String questId, CompoundTag questTag) {
+        if (questTag == null || !questTag.contains(SyncKeys.Quest.CHAPTERS, Tag.TAG_COMPOUND)) {
             return;
         }
-        CompoundTag groups = questTag.getCompound(QuestSyncKeys.Quest.GROUPS);
+        CompoundTag groups = questTag.getCompound(SyncKeys.Quest.CHAPTERS);
         for (String rawGroup : groups.getAllKeys()) {
-            String group = ClientChapterState.normalizeGroup(rawGroup);
-            if (group.isBlank()) {
+            String chapter = ClientChapterState.normalizeChapter(rawGroup);
+            if (chapter.isBlank()) {
                 continue;
             }
-            boolean missing = !ClientChapterState.containsGroup(group);
-            ClientQuestLocalMutations.createGroupLocal(group);
-            if (missing && ClientChapterState.containsGroup(group)) {
-                QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} group={}", action, questId, group);
+            boolean missing = !ClientChapterState.containsChapter(chapter);
+            ClientQuestMutator.createChapterLocal(chapter);
+            if (missing && ClientChapterState.containsChapter(chapter)) {
+                QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] editor mutation added missing chapter action={} quest={} chapter={}", action, questId, chapter);
             }
         }
     }

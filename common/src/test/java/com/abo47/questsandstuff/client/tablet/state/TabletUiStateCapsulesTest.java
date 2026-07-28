@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.state;
 
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,7 +35,7 @@ class TabletUiStateCapsulesTest {
     @Test
     void mainCanvasResetLeavesUnrelatedCapsulesUntouched() {
         TabletUiState state = new TabletUiState();
-        state.root.selectedGroup = "main";
+        state.root.selectedChapter = "main";
         state.chapterPanel.lastJumpQuest = "quest/a";
         state.modal.modalSession = ModalSession.open(ModalWindowManager.ModalType.ICON_PICKER);
         state.pickers.assetSearch = "icons";
@@ -49,7 +50,7 @@ class TabletUiStateCapsulesTest {
 
         assertFalse(state.canvas.draggingSelection);
         assertTrue(state.canvas.transientQuestPositions.isEmpty());
-        assertEquals("main", state.root.selectedGroup);
+        assertEquals("main", state.root.selectedChapter);
         assertEquals("quest/a", state.chapterPanel.lastJumpQuest);
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modal.modalSession.type());
         assertEquals("icons", state.pickers.assetSearch);

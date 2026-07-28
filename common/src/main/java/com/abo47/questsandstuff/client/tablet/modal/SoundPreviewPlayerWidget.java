@@ -1,17 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.function.IntSupplier;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nonnull;
-import java.util.function.IntSupplier;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class SoundPreviewPlayerWidget extends WidgetGroup {
-    private static final int MIN_ICON_SIZE = 22;
-    private static final int ICON_PAD = 8;
+    private static final int MIN_ICON_SIZE = ICON_22;
+    private static final int ICON_PAD = GRID_8;
 
     private final String soundId;
     private final IntSupplier volumePercent;
@@ -36,6 +41,10 @@ final class SoundPreviewPlayerWidget extends WidgetGroup {
         if (soundId.isBlank()) {
             return;
         }
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
         int x = getPositionX();
         int y = getPositionY();
         int w = getSizeWidth();
@@ -44,7 +53,7 @@ final class SoundPreviewPlayerWidget extends WidgetGroup {
         int iconSize = Math.max(MIN_ICON_SIZE, Math.min(w, h) - ICON_PAD);
         int iconX = x + (w - iconSize) / 2;
         int iconY = y + (h - iconSize) / 2;
-        var icon = UiIconAtlas.iconTexture(playing ? "pause" : "play");
+        var icon = IconAtlas.iconTexture(playing ? "pause" : "play");
         if (icon != null) {
             icon.draw(graphics, mouseX, mouseY, iconX, iconY, iconSize, iconSize);
         }

@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.forge;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.item.TabletItem;
-import com.abo47.questsandstuff.loot.CompletedQuestLootCondition;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.item.TabletItem;
+import com.abo47.questsandstuff.loot.CompletedQuestLootCondition;
+
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

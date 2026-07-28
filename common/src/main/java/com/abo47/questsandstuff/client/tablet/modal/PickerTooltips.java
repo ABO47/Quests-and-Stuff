@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -9,6 +8,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 final class PickerTooltips {
     private PickerTooltips() {

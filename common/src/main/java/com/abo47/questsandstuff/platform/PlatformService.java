@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.platform;
 
+import java.nio.file.Path;
+
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
-import java.nio.file.Path;
+import net.minecraft.world.level.ChunkPos;
 
 public interface PlatformService {
     Path configDir();
@@ -21,4 +23,6 @@ public interface PlatformService {
     void sendToServer(Object packet);
 
     void openTabletUi(Player player);
+
+    void setForceChunk(ServerLevel level, ChunkPos pos, boolean forced);
 }

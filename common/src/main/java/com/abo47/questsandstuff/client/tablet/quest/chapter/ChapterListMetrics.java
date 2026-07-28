@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 final class ChapterListMetrics {
     private static final int COLLAPSED_TILE_W = 28;
@@ -23,20 +24,20 @@ final class ChapterListMetrics {
 
     static List<String> filteredGroups(List<String> groups, String queryText, boolean canEdit) {
         String chapterQuery = SearchFilter.normalize(queryText);
-        List<String> chapterGroups = new ArrayList<>();
-        for (String group : groups) {
-            if (TabletUiFactory.DRAFT_CHAPTER.equals(group)) {
+        List<String> chapterList = new ArrayList<>();
+        for (String chapter : groups) {
+            if (TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
-            if (!canEdit && ClientQuestCache.groupHiddenPreview(group)) {
+            if (!canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {
                 continue;
             }
-            if (!SearchFilter.matches(chapterQuery, group)) {
+            if (!SearchFilter.matches(chapterQuery, chapter)) {
                 continue;
             }
-            chapterGroups.add(group);
+            chapterList.add(chapter);
         }
-        return chapterGroups;
+        return chapterList;
     }
 
     static void addScrollBar(WidgetGroup chapterList, TabletUiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
@@ -54,9 +55,6 @@ final class ChapterListMetrics {
                 () -> state.chapterPanel.chapterScrollDragging,
                 dragging -> state.chapterPanel.chapterScrollDragging = dragging,
                 refresh,
-                ModColors.scrollTrack(state.chapterPanel.chapterScrollDragging),
-                ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.quest.model.canvas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -253,20 +255,42 @@ public record CanvasTextLayer(String id, String text, int x, int y, int w, int h
 
     public static String normalizeStyle(String value) {
         String normalized = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
-        return switch (normalized) {
-            case "bold", "italic", "bold_italic" -> normalized;
-            default -> "normal";
-        };
+        if (normalized.isEmpty() || "normal".equals(normalized)) {
+            return "normal";
+        }
+        String[] parts = normalized.split("_");
+        List<String> flags = new ArrayList<>();
+        for (String part : parts) {
+            String flag = normalizeStyleFlag(part);
+            if (!flag.isEmpty()) {
+                flags.add(flag);
+            }
+        }
+        Collections.sort(flags);
+        if (flags.isEmpty()) {
+            return "normal";
+        }
+        return String.join("_", flags);
     }
 
+    private static final List<String> KNOWN_FLAGS = Arrays.asList("bold", "italic", "underline", "strikethrough", "quote", "spoiler");
+
     public static boolean hasStyleFlag(String style, String flag) {
-        String normalized = normalizeStyle(style);
         String normalizedFlag = normalizeStyleFlag(flag);
-        return switch (normalizedFlag) {
-            case "bold" -> "bold".equals(normalized) || "bold_italic".equals(normalized);
-            case "italic" -> "italic".equals(normalized) || "bold_italic".equals(normalized);
-            default -> false;
-        };
+        if (normalizedFlag.isEmpty()) {
+            return false;
+        }
+        String normalized = normalizeStyle(style);
+        if ("normal".equals(normalized)) {
+            return false;
+        }
+        String[] parts = normalized.split("_");
+        for (String part : parts) {
+            if (part.equals(normalizedFlag)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String toggleStyleFlag(String style, String flag) {
@@ -279,32 +303,53 @@ public record CanvasTextLayer(String id, String text, int x, int y, int w, int h
 
     public static String setStyleFlag(String style, String flag, boolean enabled) {
         String normalizedFlag = normalizeStyleFlag(flag);
-        boolean bold = hasStyleFlag(style, "bold");
-        boolean italic = hasStyleFlag(style, "italic");
-        if ("bold".equals(normalizedFlag)) {
-            bold = enabled;
-        } else if ("italic".equals(normalizedFlag)) {
-            italic = enabled;
+        if (normalizedFlag.isEmpty()) {
+            return normalizeStyle(style);
         }
-        return styleFromFlags(bold, italic);
+        List<String> flags = new ArrayList<>();
+        String normalized = normalizeStyle(style);
+        if (!"normal".equals(normalized)) {
+            flags.addAll(Arrays.asList(normalized.split("_")));
+        }
+        if (enabled) {
+            if (!flags.contains(normalizedFlag)) {
+                flags.add(normalizedFlag);
+            }
+        } else {
+            flags.remove(normalizedFlag);
+        }
+        Collections.sort(flags);
+        if (flags.isEmpty()) {
+            return "normal";
+        }
+        return String.join("_", flags);
     }
 
     public static String styleFromFlags(boolean bold, boolean italic) {
-        if (bold && italic) {
-            return "bold_italic";
+        return styleFromFlags(bold, italic, false, false, false, false);
+    }
+
+    public static String styleFromFlags(boolean bold, boolean italic, boolean underline, boolean strikethrough, boolean quote, boolean spoiler) {
+        List<String> flags = new ArrayList<>();
+        if (bold) flags.add("bold");
+        if (italic) flags.add("italic");
+        if (underline) flags.add("underline");
+        if (strikethrough) flags.add("strikethrough");
+        if (quote) flags.add("quote");
+        if (spoiler) flags.add("spoiler");
+        Collections.sort(flags);
+        if (flags.isEmpty()) {
+            return "normal";
         }
-        if (bold) {
-            return "bold";
-        }
-        return italic ? "italic" : "normal";
+        return String.join("_", flags);
     }
 
     private static String normalizeStyleFlag(String flag) {
         String normalized = flag == null ? "" : flag.trim().toLowerCase(Locale.ROOT);
-        return switch (normalized) {
-            case "bold", "italic" -> normalized;
-            default -> "";
-        };
+        if (KNOWN_FLAGS.contains(normalized)) {
+            return normalized;
+        }
+        return "";
     }
 
     private static List<CanvasTextStyleSpan> normalizeSpans(List<CanvasTextStyleSpan> value, int textLength, String defaultStyle, int defaultColor) {

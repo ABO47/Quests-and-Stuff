@@ -1,16 +1,16 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import net.minecraft.nbt.CompoundTag;
 
 public final class ClientSyncUiBridge {
     private static Runnable activeTabletRefresh = () -> {
     };
     private static Runnable activeCanvasRefresh = () -> {
     };
-    private static Supplier<String> activeSelectedGroup = () -> "";
+    private static Supplier<String> activeSelectedChapter = () -> "";
     private static Consumer<CompoundTag> pasteSelection = payload -> {
     };
 
@@ -20,14 +20,14 @@ public final class ClientSyncUiBridge {
     public static void registerTabletCallbacks(
             Runnable tabletRefresh,
             Runnable canvasRefresh,
-            Supplier<String> selectedGroup,
+            Supplier<String> selectedChapter,
             Consumer<CompoundTag> pasteSelectionHandler
     ) {
         activeTabletRefresh = tabletRefresh == null ? () -> {
         } : tabletRefresh;
         activeCanvasRefresh = canvasRefresh == null ? () -> {
         } : canvasRefresh;
-        activeSelectedGroup = selectedGroup == null ? () -> "" : selectedGroup;
+        activeSelectedChapter = selectedChapter == null ? () -> "" : selectedChapter;
         pasteSelection = pasteSelectionHandler == null ? payload -> {
         } : pasteSelectionHandler;
     }
@@ -40,8 +40,8 @@ public final class ClientSyncUiBridge {
         activeCanvasRefresh.run();
     }
 
-    public static String activeSelectedGroup() {
-        String selected = activeSelectedGroup.get();
+    public static String activeSelectedChapter() {
+        String selected = activeSelectedChapter.get();
         return selected == null ? "" : selected;
     }
 

@@ -1,25 +1,5 @@
 package com.abo47.questsandstuff.quest.editor;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteRequest;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
-import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.util.QuestNaming;
-import com.abo47.questsandstuff.util.StableIdAllocator;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -29,13 +9,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.deepCopyDefinition;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteRequest;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardPasteResult;
+import com.abo47.questsandstuff.quest.editor.clipboard.ClipboardSnapshot;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
+import com.abo47.questsandstuff.util.naming.StableIdAllocator;
+
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.clipboardSourceSummary;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedConnectionColors;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedStringMap;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDebugFormatter.sortedStrings;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.duplicateDefinition;
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.normalizeScale;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.deepCopyDefinition;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
 
 public final class ClipboardEditService {
@@ -46,16 +47,16 @@ public final class ClipboardEditService {
     }
 
     public void copyQuestsToClipboard(ServerPlayer player, Set<String> questIds) {
-        copyQuestsToClipboard(player, player == null ? "" : owner.session(player).currentGroup, questIds);
+        copyQuestsToClipboard(player, player == null ? "" : owner.session(player).currentChapter, questIds);
     }
 
-    public void copyQuestsToClipboard(ServerPlayer player, String groupName, Set<String> questIds) {
+    public void copyQuestsToClipboard(ServerPlayer player, String chapterName, Set<String> questIds) {
         if (player == null || questIds == null || questIds.isEmpty()) {
             return;
         }
-        String group = EditorSessionService.normalizeGroup(groupName);
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
         String playerName = player.getGameProfile().getName();
-        owner.clipboardDebug("COPY request player=" + playerName + " group=" + group + " requested=" + sortedStrings(questIds));
+        owner.clipboardDebug("COPY request player=" + playerName + " chapter=" + chapter + " requested=" + sortedStrings(questIds));
         EditorSessionService.EditorSession session = owner.session(player);
         List<ClipboardSnapshot.Entry> entries = new ArrayList<>();
         for (String questId : questIds) {
@@ -66,14 +67,14 @@ public final class ClipboardEditService {
             QuestDefinition definition = owner.definitionStore().quest(sourceId);
             if (definition != null) {
                 QuestDefinition snapshot = deepCopyDefinition(definition);
-                ChapterDefinition view = group.isBlank() ? null : definition.display().groups().get(group);
+                ChapterDef view = chapter.isBlank() ? null : definition.display().chapters().get(chapter);
                 if (view == null) {
-                    view = firstVisibleGroupView(definition);
+                    view = firstVisibleChapterView(definition);
                 }
-                String sourceGroup = group.isBlank() || !definition.display().groups().containsKey(group) ? firstVisibleGroup(definition) : group;
-                entries.add(new ClipboardSnapshot.Entry(sourceId, sourceGroup, view == null ? 0 : view.x(), view == null ? 0 : view.y(), view == null ? 1.0f : view.scale(), snapshot));
+                String sourceChapter = chapter.isBlank() || !definition.display().chapters().containsKey(chapter) ? firstVisibleChapter(definition) : chapter;
+                entries.add(new ClipboardSnapshot.Entry(sourceId, sourceChapter, view == null ? 0 : view.x(), view == null ? 0 : view.y(), view == null ? 1.0f : view.scale(), snapshot));
                 owner.clipboardDebug("COPY entry source=" + sourceId
-                        + " sourceGroup=" + sourceGroup
+                        + " sourceChapter=" + sourceChapter
                         + " pos=" + (view == null ? "<none>" : view.x() + "," + view.y())
                         + " scale=" + (view == null ? 1.0f : view.scale())
                         + " prerequisites=" + sortedStrings(definition.prerequisites())
@@ -97,28 +98,28 @@ public final class ClipboardEditService {
                 + " requested=" + questIds.size()
                 + " sessionEntries=" + snapshot.entries().size()
                 + " sourceIds=" + sortedStrings(snapshot.sourceIds())
-                + " externalPrerequisiteEdges=" + snapshot.countExternalPrerequisiteEdges());
-        QuestsAndStuffMod.debugLog("[QnS:Editor] copy_many player={} group={} requested={} stored={} external_prerequisite_edges={}", player.getGameProfile().getName(), group, questIds.size(), snapshot.entries().size(), snapshot.countExternalPrerequisiteEdges());
+                + " externalPrerequisiteEdges=" + snapshot.countExternalPrerequisiteConnections());
+        QuestsAndStuffMod.debugLog("[QnS:Editor] copy_many player={} chapter={} requested={} stored={} external_prerequisite_connections={}", player.getGameProfile().getName(), chapter, questIds.size(), snapshot.entries().size(), snapshot.countExternalPrerequisiteConnections());
     }
 
-    public void pasteClipboardInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY) {
-        ClipboardPasteRequest request = new ClipboardPasteRequest(EditorSessionService.normalizeGroup(groupName), anchorX, anchorY);
+    public void pasteClipboardInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY) {
+        ClipboardPasteRequest request = new ClipboardPasteRequest(EditorSessionService.normalizeChapter(chapterName), anchorX, anchorY);
         if (player == null || request.targetChapter().isBlank()) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
         String playerName = player.getGameProfile().getName();
-        owner.clipboardDebug("PASTE request player=" + playerName + " group=" + request.targetChapter() + " anchor=" + request.anchorX() + "," + request.anchorY());
+        owner.clipboardDebug("PASTE request player=" + playerName + " chapter=" + request.targetChapter() + " anchor=" + request.anchorX() + "," + request.anchorY());
         ClipboardSnapshot snapshot = session.clipboardSnapshot;
         List<ClipboardSnapshot.Entry> entries = snapshot.sortedEntries();
         if (entries.isEmpty()) {
-            owner.clipboardDebug("PASTE skipped empty session clipboard group=" + request.targetChapter());
-            QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard skipped empty group={}", request.targetChapter());
+            owner.clipboardDebug("PASTE skipped empty session clipboard chapter=" + request.targetChapter());
+            QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard skipped empty chapter={}", request.targetChapter());
             return;
         }
-        owner.ensureGroupExists(request.targetChapter());
-        int droppedExternalPrerequisiteEdges = snapshot.countExternalPrerequisiteEdges();
-        owner.clipboardDebug("PASTE read entries=" + entries.size() + " sources=" + clipboardSourceSummary(entries) + " droppedExternalPrerequisiteEdges=" + droppedExternalPrerequisiteEdges);
+        owner.ensureChapterExists(request.targetChapter());
+        int droppedExternalPrerequisiteConnections = snapshot.countExternalPrerequisiteConnections();
+        owner.clipboardDebug("PASTE read entries=" + entries.size() + " sources=" + clipboardSourceSummary(entries) + " droppedExternalPrerequisiteConnections=" + droppedExternalPrerequisiteConnections);
 
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>(owner.definitionStore().questIds());
@@ -150,7 +151,7 @@ public final class ClipboardEditService {
             int y = request.anchorY() + (entry.sourceY() - minY);
             float scale = normalizeScale(entry.scale(), 1.0f);
             QuestDefinition duplicate = duplicateDefinition(entry.definition(), newId, request.targetChapter(), x, y, scale, allocatedIds);
-            if (owner.definitionStore().groupLockUntilUnlocked(request.targetChapter())) {
+            if (owner.definitionStore().chapterLockUntilUnlocked(request.targetChapter())) {
                 duplicate = withSettings(duplicate, withHiddenMode(duplicate.settings(), QuestVisibilityMode.LOCKED));
             }
             owner.clipboardDebug("PASTE stage source=" + entry.sourceId()
@@ -184,12 +185,12 @@ public final class ClipboardEditService {
                     + " connectionColors=" + sortedConnectionColors(saved.connectionColors())
                     + " connectionModes=" + sortedStringMap(saved.connectionModes())
                     + " hiddenConnections=" + sortedStrings(saved.hiddenConnections())
-                    + " groups=" + sortedStrings(saved.display().groups().keySet()));
+                    + " chapters=" + sortedStrings(saved.display().chapters().keySet()));
         }
-        ClipboardPasteResult result = new ClipboardPasteResult(created, allocatedIds, droppedExternalPrerequisiteEdges);
+        ClipboardPasteResult result = new ClipboardPasteResult(created, allocatedIds, droppedExternalPrerequisiteConnections);
         owner.definitionStore().saveNow(result.selectionIds());
         owner.clipboardDebug("PASTE flushed files created=" + result.selectionIds().stream().sorted().toList());
-        session.currentGroup = request.targetChapter();
+        session.currentChapter = request.targetChapter();
         owner.postMutationDelta(player, Set.copyOf(result.selectionIds()), Set.of(request.targetChapter()));
         for (QuestDefinition definition : result.createdQuests()) {
             QuestDefinition synced = owner.definitionStore().quest(definition.id());
@@ -203,9 +204,9 @@ public final class ClipboardEditService {
         for (String questId : result.selectionIds()) {
             ids.add(StringTag.valueOf(questId));
         }
-        selection.putString("group", request.targetChapter());
+        selection.putString("chapter", request.targetChapter());
         selection.putInt("created_count", result.createdQuests().size());
-        selection.putInt("dropped_external_edges", result.droppedExternalPrerequisiteEdges());
+        selection.putInt("dropped_external_connections", result.droppedExternalPrerequisiteConnections());
         selection.put("quests", ids);
         CompoundTag allocated = new CompoundTag();
         for (Map.Entry<String, String> a : allocatedIds.entrySet()) {
@@ -214,45 +215,45 @@ public final class ClipboardEditService {
         selection.put("allocated_ids", allocated);
         owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "paste_select", "__paste_select", selection);
         owner.clipboardDebug("PASTE complete player=" + playerName
-                + " group=" + request.targetChapter()
+                + " chapter=" + request.targetChapter()
                 + " created=" + result.selectionIds().stream().sorted().toList()
                 + " selectionCount=" + ids.size()
-                + " droppedExternalPrerequisiteEdges=" + result.droppedExternalPrerequisiteEdges());
-        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard group={} copies={} anchor={},{} dropped_external_prerequisite_edges={}", request.targetChapter(), result.createdQuests().size(), request.anchorX(), request.anchorY(), result.droppedExternalPrerequisiteEdges());
+                + " droppedExternalPrerequisiteConnections=" + result.droppedExternalPrerequisiteConnections());
+        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_clipboard chapter={} copies={} anchor={},{} dropped_external_prerequisite_connections={}", request.targetChapter(), result.createdQuests().size(), request.anchorX(), request.anchorY(), result.droppedExternalPrerequisiteConnections());
     }
 
-    public void pasteBlueprintInGroup(ServerPlayer player, String groupName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (player == null || group.isBlank() || blueprint == null || blueprint.isEmpty()) {
+    public void pasteBlueprintInChapter(ServerPlayer player, String chapterName, int anchorX, int anchorY, CanvasBlueprint blueprint) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (player == null || chapter.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
-        owner.ensureGroupExists(group);
+        owner.ensureChapterExists(chapter);
 
-        Map<String, String> allocatedQuestIds = allocateQuestIds(group, blueprint);
-        Map<String, String> allocatedImageIds = allocateImageIds(group, blueprint);
-        Map<String, String> allocatedTextIds = allocateTextIds(group, blueprint);
-        Map<String, String> allocatedEcIds = allocateEcIds(group, blueprint);
+        Map<String, String> allocatedQuestIds = allocateQuestIds(chapter, blueprint);
+        Map<String, String> allocatedImageIds = allocateImageIds(chapter, blueprint);
+        Map<String, String> allocatedTextIds = allocateTextIds(chapter, blueprint);
+        Map<String, String> allocatedEcIds = allocateEcIds(chapter, blueprint);
         if (allocatedQuestIds.isEmpty() && allocatedImageIds.isEmpty() && allocatedTextIds.isEmpty() && allocatedEcIds.isEmpty()) {
             return;
         }
 
-        owner.capturePasteUndo(session, allocatedQuestIds.values(), allocatedImageIds.values(), allocatedTextIds.values(), group);
-        List<QuestDefinition> pastedQuests = pasteBlueprintQuests(group, anchorX, anchorY, blueprint, allocatedQuestIds);
+        owner.capturePasteUndo(session, allocatedQuestIds.values(), allocatedImageIds.values(), allocatedTextIds.values(), chapter);
+        List<QuestDefinition> pastedQuests = pasteBlueprintQuests(chapter, anchorX, anchorY, blueprint, allocatedQuestIds);
         if (!pastedQuests.isEmpty()) {
             owner.definitionStore().upsertAll(pastedQuests);
             session.currentQuest = pastedQuests.get(pastedQuests.size() - 1).id();
         }
-        List<CanvasImageLayer> pastedImages = pasteBlueprintImages(group, anchorX, anchorY, blueprint, allocatedImageIds);
-        List<CanvasTextLayer> pastedTexts = pasteBlueprintTexts(group, anchorX, anchorY, blueprint, allocatedTextIds);
-        List<CanvasExclusiveChoice> pastedEcs = pasteBlueprintEcs(group, anchorX, anchorY, blueprint, allocatedEcIds, allocatedQuestIds);
+        List<CanvasImageLayer> pastedImages = pasteBlueprintImages(chapter, anchorX, anchorY, blueprint, allocatedImageIds);
+        List<CanvasTextLayer> pastedTexts = pasteBlueprintTexts(chapter, anchorX, anchorY, blueprint, allocatedTextIds);
+        List<CanvasExclusiveChoice> pastedEcs = pasteBlueprintEcs(chapter, anchorX, anchorY, blueprint, allocatedEcIds, allocatedQuestIds);
         for (CanvasExclusiveChoice ec : pastedEcs) {
-            owner.definitionStore().putCanvasExclusiveChoice(group, ec);
+            owner.definitionStore().putCanvasExclusiveChoice(chapter, ec);
         }
-        owner.definitionStore().putCanvasLayers(group, pastedImages, pastedTexts, remappedLayerOrder(group, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds, allocatedEcIds));
+        owner.definitionStore().putCanvasLayers(chapter, pastedImages, pastedTexts, remappedLayerOrder(chapter, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds, allocatedEcIds));
         owner.definitionStore().saveNow(allocatedQuestIds.values());
-        session.currentGroup = group;
-        owner.postMutationDelta(player, Set.copyOf(allocatedQuestIds.values()), Set.of(group));
+        session.currentChapter = chapter;
+        owner.postMutationDelta(player, Set.copyOf(allocatedQuestIds.values()), Set.of(chapter));
         for (QuestDefinition definition : pastedQuests) {
             QuestDefinition synced = owner.definitionStore().quest(definition.id());
             if (synced == null) {
@@ -260,30 +261,30 @@ public final class ClipboardEditService {
             }
             owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "add", synced);
         }
-        CompoundTag selection = selectionPayload(group, pastedQuests, pastedImages, pastedTexts, pastedEcs);
+        CompoundTag selection = selectionPayload(chapter, pastedQuests, pastedImages, pastedTexts, pastedEcs);
         owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "paste_select", "__paste_select", selection);
-        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_blueprint group={} quests={} images={} texts={} ecs={} anchor={},{}",
-                group, pastedQuests.size(), pastedImages.size(), pastedTexts.size(), pastedEcs.size(), anchorX, anchorY);
+        QuestsAndStuffMod.debugLog("[QnS:Editor] paste_blueprint chapter={} quests={} images={} texts={} ecs={} anchor={},{}",
+                chapter, pastedQuests.size(), pastedImages.size(), pastedTexts.size(), pastedEcs.size(), anchorX, anchorY);
     }
 
-    private Map<String, String> allocateQuestIds(String group, CanvasBlueprint blueprint) {
+    private Map<String, String> allocateQuestIds(String chapter, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>(owner.definitionStore().questIds());
         for (CanvasBlueprint.QuestEntry entry : blueprint.quests()) {
             if (entry == null || entry.sourceId().isBlank() || entry.definition() == null) {
                 continue;
             }
-            String newId = QuestNaming.nextQuestId(group, reservedIds);
+            String newId = QuestNaming.nextQuestId(chapter, reservedIds);
             allocatedIds.put(entry.sourceId(), newId);
             reservedIds.add(newId);
         }
         return allocatedIds;
     }
 
-    private Map<String, String> allocateImageIds(String group, CanvasBlueprint blueprint) {
+    private Map<String, String> allocateImageIds(String chapter, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>();
-        for (CanvasImageLayer image : owner.definitionStore().canvasImages(group)) {
+        for (CanvasImageLayer image : owner.definitionStore().canvasImages(chapter)) {
             reservedIds.add(image.id());
         }
         for (CanvasImageLayer image : blueprint.images()) {
@@ -297,10 +298,10 @@ public final class ClipboardEditService {
         return allocatedIds;
     }
 
-    private Map<String, String> allocateTextIds(String group, CanvasBlueprint blueprint) {
+    private Map<String, String> allocateTextIds(String chapter, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>();
-        for (CanvasTextLayer text : owner.definitionStore().canvasTexts(group)) {
+        for (CanvasTextLayer text : owner.definitionStore().canvasTexts(chapter)) {
             reservedIds.add(text.id());
         }
         for (CanvasTextLayer text : blueprint.texts()) {
@@ -314,7 +315,7 @@ public final class ClipboardEditService {
         return allocatedIds;
     }
 
-    private List<QuestDefinition> pasteBlueprintQuests(String group, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedQuestIds) {
+    private List<QuestDefinition> pasteBlueprintQuests(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedQuestIds) {
         List<QuestDefinition> pasted = new ArrayList<>();
         for (CanvasBlueprint.QuestEntry entry : blueprint.quests()) {
             String newId = allocatedQuestIds.get(entry.sourceId());
@@ -324,8 +325,8 @@ public final class ClipboardEditService {
             int x = anchorX + (entry.sourceX() - blueprint.originX());
             int y = anchorY + (entry.sourceY() - blueprint.originY());
             float scale = normalizeScale(entry.scale(), 1.0f);
-            QuestDefinition duplicate = duplicateDefinition(entry.definition(), newId, group, x, y, scale, allocatedQuestIds);
-            if (owner.definitionStore().groupLockUntilUnlocked(group)) {
+            QuestDefinition duplicate = duplicateDefinition(entry.definition(), newId, chapter, x, y, scale, allocatedQuestIds);
+            if (owner.definitionStore().chapterLockUntilUnlocked(chapter)) {
                 duplicate = withSettings(duplicate, withHiddenMode(duplicate.settings(), QuestVisibilityMode.LOCKED));
             }
             pasted.add(duplicate);
@@ -333,7 +334,7 @@ public final class ClipboardEditService {
         return pasted;
     }
 
-    private List<CanvasImageLayer> pasteBlueprintImages(String group, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedImageIds) {
+    private List<CanvasImageLayer> pasteBlueprintImages(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedImageIds) {
         List<CanvasImageLayer> pasted = new ArrayList<>();
         for (CanvasImageLayer image : blueprint.images()) {
             String newId = allocatedImageIds.get(image.id());
@@ -359,7 +360,7 @@ public final class ClipboardEditService {
         return pasted;
     }
 
-    private List<CanvasTextLayer> pasteBlueprintTexts(String group, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedTextIds) {
+    private List<CanvasTextLayer> pasteBlueprintTexts(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedTextIds) {
         List<CanvasTextLayer> pasted = new ArrayList<>();
         for (CanvasTextLayer text : blueprint.texts()) {
             String newId = allocatedTextIds.get(text.id());
@@ -386,14 +387,14 @@ public final class ClipboardEditService {
     }
 
     private List<String> remappedLayerOrder(
-            String group,
+            String chapter,
             CanvasBlueprint blueprint,
             Map<String, String> questIds,
             Map<String, String> imageIds,
             Map<String, String> textIds,
             Map<String, String> ecIds
     ) {
-        List<String> existing = new ArrayList<>(owner.definitionStore().canvasLayerOrder(group));
+        List<String> existing = new ArrayList<>(owner.definitionStore().canvasLayerOrder(chapter));
         List<String> pasted = new ArrayList<>();
         for (String key : blueprint.layerOrder()) {
             String remapped = remapLayerKey(key, questIds, imageIds, textIds, ecIds);
@@ -463,10 +464,10 @@ public final class ClipboardEditService {
         return "text:" + id;
     }
 
-    private Map<String, String> allocateEcIds(String group, CanvasBlueprint blueprint) {
+    private Map<String, String> allocateEcIds(String chapter, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>();
-        for (CanvasExclusiveChoice ec : owner.definitionStore().canvasExclusiveChoices(group)) {
+        for (CanvasExclusiveChoice ec : owner.definitionStore().canvasExclusiveChoices(chapter)) {
             reservedIds.add(ec.id());
         }
         for (CanvasBlueprint.ExclusiveChoiceEntry entry : blueprint.exclusiveChoices()) {
@@ -480,7 +481,7 @@ public final class ClipboardEditService {
         return allocatedIds;
     }
 
-    private List<CanvasExclusiveChoice> pasteBlueprintEcs(String group, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedEcIds, Map<String, String> allocatedQuestIds) {
+    private List<CanvasExclusiveChoice> pasteBlueprintEcs(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedEcIds, Map<String, String> allocatedQuestIds) {
         List<CanvasExclusiveChoice> pasted = new ArrayList<>();
         for (CanvasBlueprint.ExclusiveChoiceEntry entry : blueprint.exclusiveChoices()) {
             String newId = allocatedEcIds.get(entry.sourceId());
@@ -557,9 +558,9 @@ public final class ClipboardEditService {
         return pasted;
     }
 
-    private static CompoundTag selectionPayload(String group, List<QuestDefinition> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasExclusiveChoice> ecs) {
+    private static CompoundTag selectionPayload(String chapter, List<QuestDefinition> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasExclusiveChoice> ecs) {
         CompoundTag selection = new CompoundTag();
-        selection.putString("group", group);
+        selection.putString("chapter", chapter);
         selection.putInt("created_count", quests.size());
         selection.put("quests", questSelectionIds(quests));
         selection.put("images", imageSelectionIds(images));
@@ -600,16 +601,16 @@ public final class ClipboardEditService {
         return ids;
     }
 
-    private static String firstVisibleGroup(QuestDefinition definition) {
-        if (definition == null || definition.display().groups().isEmpty()) {
+    private static String firstVisibleChapter(QuestDefinition definition) {
+        if (definition == null || definition.display().chapters().isEmpty()) {
             return "";
         }
-        return definition.display().groups().keySet().stream().sorted().findFirst().orElse("");
+        return definition.display().chapters().keySet().stream().sorted().findFirst().orElse("");
     }
 
-    private static ChapterDefinition firstVisibleGroupView(QuestDefinition definition) {
-        String group = firstVisibleGroup(definition);
-        return group.isBlank() ? null : definition.display().groups().get(group);
+    private static ChapterDef firstVisibleChapterView(QuestDefinition definition) {
+        String chapter = firstVisibleChapter(definition);
+        return chapter.isBlank() ? null : definition.display().chapters().get(chapter);
     }
 
     private static QuestSettings withHiddenMode(QuestSettings source, QuestVisibilityMode mode) {

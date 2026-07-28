@@ -1,24 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -30,14 +15,33 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_MODEL;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 
 public final class TabletBlockPickerModal {
     private static final int TILE = 18;
@@ -60,7 +64,7 @@ public final class TabletBlockPickerModal {
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletVocabulary.text(QuestVocabulary.CHOOSE_BLOCK), w, state, refresh);
+        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_BLOCK), w, state, refresh);
         int sidePad = 8;
         int headY = 24;
         int headH = 18;
@@ -109,7 +113,7 @@ public final class TabletBlockPickerModal {
                 6,
                 6,
                 entries,
-                TabletVocabulary.text(QuestVocabulary.NO_BLOCKS),
+                TabletTranslationKeys.text(QuestTranslationKeys.NO_BLOCKS),
                 ScrollState.bind(
                         () -> state.pickers.blockScroll,
                         value -> state.pickers.blockScroll = value,
@@ -126,11 +130,11 @@ public final class TabletBlockPickerModal {
     private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, BlockChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
-            surface.addWidget(new DisplayIconWidget(x + 1, y + 1, 16, 16, "box"));
+            surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, "box"));
         } else {
-            surface.addWidget(new ImageWidget(x + 1, y + 1, 16, 16, new ScopedItemStackTexture(entry.previews())));
+            surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = flatHitButton(x + 1, y + 1, 16, 16, click -> {
+        ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, GRID_16, GRID_16, click -> {
             if (!entry.value().isBlank()) {
                 String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
                 if (!canvasModelTarget.isBlank()) {
@@ -146,8 +150,9 @@ public final class TabletBlockPickerModal {
             refresh.run();
         });
         hit.setHoverTooltips(PickerTooltips.nameAndId(entry.displayName(), entry.value()));
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
+        hit.setClientSideWidget();
         surface.addWidget(hit);
     }
 

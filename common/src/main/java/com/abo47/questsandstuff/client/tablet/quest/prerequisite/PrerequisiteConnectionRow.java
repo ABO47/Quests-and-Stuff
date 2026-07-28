@@ -13,6 +13,6 @@ record PrerequisiteConnectionRow(
         boolean exclusiveChoice
 ) {
     String key() {
-        return QuestConnectionMetadata.edgeKey(sourceId, targetId);
+        return QuestConnectionMetadata.connectionKey(sourceId, targetId);
     }
 }

@@ -1,20 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
@@ -45,7 +48,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
@@ -53,12 +56,12 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasTextMenuTarget);
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
         }
-        int[] bounds = CanvasRenderer.canvasTextMenuBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), 8);
+        int[] bounds = CanvasRenderer.canvasTextMenuBounds(state, text, viewport.getSizeWidth(), viewport.getSizeHeight(), TextStyleButtons.TOOL_COUNT);
         return inside(localX, localY, bounds);
     }
 
@@ -91,7 +94,7 @@ public final class CanvasInlineTextEditor {
         if (!TextEditSession.isMainCanvasEditing(state)) {
             return null;
         }
-        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedGroupName(state), state.canvas.canvasTextEditTarget);
+        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -244,9 +247,9 @@ public final class CanvasInlineTextEditor {
         if (!replacement.changed()) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         String id = state.canvas.canvasTextEditTarget;
-        CanvasLayerMutations.updateCanvasText(state, group, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
+        CanvasLayerMutations.updateCanvasText(state, chapter, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvas.canvasTextEditDraft.length(), state.canvas.canvasTextEditCursor);
         return true;
     }

@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -56,11 +57,11 @@ class QuestDefinitionStoreTest {
         }
     }
 
-    private static QuestDefinition connectedQuest(String id, String group) {
+    private static QuestDefinition connectedQuest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                display(id, group),
+                display(id, chapter),
                 QuestSettings.DEFAULT,
                 Set.of("quest/a", "quest/b", "quest/missing"),
                 Map.of("quest/a", 0x33AAFF, "quest/missing", 0xFFAA33),
@@ -71,11 +72,11 @@ class QuestDefinitionStoreTest {
         );
     }
 
-    private static QuestDefinition quest(String id, String group) {
+    private static QuestDefinition quest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                display(id, group),
+                display(id, chapter),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),
@@ -95,7 +96,7 @@ class QuestDefinitionStoreTest {
         );
     }
 
-    private static QuestDisplay display(String title, String group) {
-        return QuestDisplay.forNewQuest(title, Map.of(group, ChapterDefinition.DEFAULT));
+    private static QuestDisplay display(String title, String chapter) {
+        return QuestDisplay.forNewQuest(title, Map.of(chapter, ChapterDef.DEFAULT));
     }
 }

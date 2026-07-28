@@ -1,27 +1,32 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudBackgroundRenderer {
     private QuestHudBackgroundRenderer() {
     }
 
-    static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected) {
+    static void draw(GuiGraphics graphics, QuestHudLayoutManager.Element element, int x, int y, int width, int height, boolean selected) {
         draw(graphics, element, x, y, width, height, selected, "");
     }
 
-    static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride) {
+    static void draw(GuiGraphics graphics, QuestHudLayoutManager.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride) {
         draw(graphics, element, x, y, width, height, selected, backgroundOverride, 255);
     }
 
-    static void draw(GuiGraphics graphics, QuestHudLayout.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride, int alpha) {
-        int opacity = QuestHudLayout.opacityPercent(element);
+    static void draw(GuiGraphics graphics, QuestHudLayoutManager.Element element, int x, int y, int width, int height, boolean selected, String backgroundOverride, int alpha) {
+        int opacity = QuestHudLayoutManager.opacityPercent(element);
         if (opacity <= 0 || alpha <= 0) {
             return;
         }
@@ -31,7 +36,7 @@ final class QuestHudBackgroundRenderer {
             return;
         }
         String override = normalizeBackground(backgroundOverride);
-        String background = override.isBlank() ? normalizeBackground(QuestHudLayout.background(element)) : override;
+        String background = override.isBlank() ? normalizeBackground(QuestHudLayoutManager.background(element)) : override;
         if (!background.isBlank()) {
             IGuiTexture texture = TabletUiFactory.chapterBackgroundTexture(background);
             if (texture != null && effectiveOpacity > 0.0f) {
@@ -39,17 +44,19 @@ final class QuestHudBackgroundRenderer {
                 graphics.setColor(1.0f, 1.0f, 1.0f, effectiveOpacity);
                 texture.draw(graphics, 0, 0, x, y, width, height);
                 resetTextureState(graphics);
-                graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity)));
+                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity))).draw(graphics, 0, 0, x, y, width, height);
             }
         } else {
             int panelAlpha = Math.round(224.0f * effectiveOpacity);
             if (panelAlpha > 0) {
-                graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_PANEL, panelAlpha));
+                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL, panelAlpha)).draw(graphics, 0, 0, x, y, width, height);
             }
         }
-        int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
-        if (borderAlpha > 0) {
-            graphics.renderOutline(x, y, width, height, withAlpha(selected ? ModColors.INTERACTIVE : ModColors.BORDER_BASE, borderAlpha));
+        if (selected || QuestHudLayoutManager.showBorders(element)) {
+            int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
+            if (borderAlpha > 0) {
+                drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? TabletColors.INTERACTIVE : TabletColors.BORDER_BASE, borderAlpha));
+            }
         }
     }
 
@@ -72,8 +79,8 @@ final class QuestHudBackgroundRenderer {
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {
         if (background == null || background.isBlank()) {
-            graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 180));
-            graphics.renderOutline(x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
+            drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, 160));
             return;
         }
         IGuiTexture texture = TabletUiFactory.assetThumbnailTexture(background);
@@ -83,8 +90,8 @@ final class QuestHudBackgroundRenderer {
         if (texture != null) {
             texture.draw(graphics, 0, 0, x, y, width, height);
         } else {
-            graphics.fill(x, y, x + width, y + height, withAlpha(ModColors.SURFACE_BASE, 180));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
         }
-        graphics.renderOutline(x, y, width, height, withAlpha(ModColors.BORDER_BASE, 160));
+        drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, 160));
     }
 }

@@ -1,24 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.SwitchWidget;
+
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class ToggleSwitchWidget extends SwitchWidget {
-    public static final int DEFAULT_WIDTH = 34;
-    public static final int DEFAULT_HEIGHT = 16;
-    private static final long ANIMATION_MS = 170L;
+    public static final int DEFAULT_WIDTH = GRID_34;
+    public static final int DEFAULT_HEIGHT = GRID_16;
+    private static final long ANIMATION_MS = TabletAnimationTimings.TOGGLE_SWITCH_MS;
     private static final Map<String, Motion> MOTIONS = new HashMap<>();
 
     private final String animationKey;
@@ -208,29 +214,29 @@ public final class ToggleSwitchWidget extends SwitchWidget {
             float pulse = visual.pulse();
             int ix = Math.round(x);
             int iy = Math.round(y);
-            int border = amount > 0.5f ? ModColors.SUCCESS : ModColors.BORDER_BASE;
-            int track = withAlpha(ModColors.SURFACE_BASE, interactive ? 210 : 130);
-            int activeTrack = withAlpha(ModColors.SUCCESS, interactive ? 70 + Math.round(amount * 78) : 70);
-            int knob = amount > 0.5f ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY;
+            int border = amount > 0.5f ? TabletColors.SUCCESS : TabletColors.BORDER_BASE;
+            int track = withAlpha(TabletColors.SURFACE_BASE, interactive ? 210 : 130);
+            int activeTrack = withAlpha(TabletColors.SUCCESS, interactive ? 70 + Math.round(amount * 78) : 70);
+            int knob = amount > 0.5f ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY;
             if (!interactive) {
                 border = withAlpha(border, 120);
                 knob = withAlpha(knob, 165);
             }
 
-            graphics.fill(ix, iy, ix + width, iy + height, border);
-            graphics.fill(ix + 1, iy + 1, ix + Math.max(2, width - 1), iy + Math.max(2, height - 1), track);
+            SurfaceFactory.fill(border).draw(graphics, 0, 0, ix, iy, width, height);
+            SurfaceFactory.fill(track).draw(graphics, 0, 0, ix + 1, iy + 1, Math.max(2, width - 1) - 1, Math.max(2, height - 1) - 1);
             int activeW = Math.round((width - 2) * amount);
             if (activeW > 2) {
-                graphics.fill(ix + 1, iy + 1, ix + 1 + activeW, iy + Math.max(2, height - 1), activeTrack);
+                SurfaceFactory.fill(activeTrack).draw(graphics, 0, 0, ix + 1, iy + 1, activeW, Math.max(2, height - 1) - 1);
             }
 
-            int knobSize = Math.max(8, height - 4 + Math.round(pulse * 2.0f));
-            int knobTravel = Math.max(0, width - knobSize - 4);
-            int knobX = ix + 2 + Math.round(knobTravel * amount);
+            int knobSize = Math.max(8, height - GRID_4 + Math.round(pulse * 2.0f));
+            int knobTravel = Math.max(0, width - knobSize - GRID_4);
+            int knobX = ix + GRID_2 + Math.round(knobTravel * amount);
             int knobY = iy + Math.max(2, (height - knobSize) / 2);
-            graphics.fill(knobX + 1, knobY + 1, knobX + knobSize + 1, knobY + knobSize + 1, withAlpha(ModColors.SURFACE_BASE, 100));
-            graphics.fill(knobX, knobY, knobX + knobSize, knobY + knobSize, knob);
-            graphics.fill(knobX + 2, knobY + 2, knobX + knobSize - 2, knobY + 3, withAlpha(ModColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 100)).draw(graphics, 0, 0, knobX + 1, knobY + 1, knobSize, knobSize);
+            SurfaceFactory.fill(knob).draw(graphics, 0, 0, knobX, knobY, knobSize, knobSize);
+            SurfaceFactory.fill(withAlpha(TabletColors.TEXT_PRIMARY, amount > 0.5f ? 90 : 48)).draw(graphics, 0, 0, knobX + 2, knobY + 2, knobSize - 4, 1);
         }
     }
 
@@ -239,7 +245,7 @@ public final class ToggleSwitchWidget extends SwitchWidget {
         public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
             int ix = Math.round(x);
             int iy = Math.round(y);
-            graphics.fill(ix - 1, iy - 1, ix + width + 1, iy + height + 1, withAlpha(ModColors.INTERACTIVE, 30));
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, ix - 1, iy - 1, width + GRID_2, height + GRID_2);
         }
     }
 

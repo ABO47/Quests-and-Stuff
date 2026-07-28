@@ -1,13 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +9,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.util.io.JsonFileTree;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 
@@ -82,7 +85,7 @@ final class QuestDefinitionSaveQueue {
             }
 
             Path target = QuestDefinitionPaths.questPath(questsDir, definition);
-            QuestDefinitionFiles.writeAtomic(target, gson.toJson(json));
+            JsonFileTree.writeAtomic(target, gson.toJson(json));
             delayedSaves.remove(questId);
         } catch (IOException e) {
             QuestsAndStuffMod.LOGGER.error("Failed to save quest {}", questId, e);

@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.sync.packet;
 
-import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.nbt.CompoundTag;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 
 public final class ClientSyncInbox {
     private static final Map<Long, ClientSyncChunkAccumulator> PENDING_FULL = new HashMap<>();
@@ -36,83 +36,75 @@ public final class ClientSyncInbox {
     }
 
     public static void acceptFullChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
-            return;
-        }
-        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_FULL, sequence, chunkCount);
-        if (accumulator == null) {
-            return;
-        }
-        accumulator.add(chunkIndex, payload);
-        if (accumulator.complete()) {
-            ClientSyncPayloadApplier.applyFullSync(accumulator.joinFullPayload());
-            lastFullSequence = sequence;
-            PENDING_FULL.remove(sequence);
-            PENDING_DELTA.entrySet().removeIf(entry -> entry.getKey() < sequence);
-        }
+        acceptChunk(PENDING_FULL, sequence, lastFullSequence, chunkIndex, chunkCount, payload,
+                ClientSyncPayloadApplier::applyFullSync, ClientSyncChunkAccumulator::joinFullPayload,
+                () -> PENDING_DELTA.entrySet().removeIf(entry -> entry.getKey() < sequence),
+                seq -> lastFullSequence = seq);
     }
 
     public static void acceptDeltaChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastDeltaSequence || sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
-            return;
-        }
-        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_DELTA, sequence, chunkCount);
-        if (accumulator == null) {
-            return;
-        }
-        accumulator.add(chunkIndex, payload);
-        if (accumulator.complete()) {
-            ClientSyncPayloadApplier.applyDeltaSync(accumulator.joinDeltaPayload());
-            lastDeltaSequence = sequence;
-            PENDING_DELTA.remove(sequence);
-        }
+        acceptChunk(PENDING_DELTA, sequence, lastFullSequence, chunkIndex, chunkCount, payload,
+                ClientSyncPayloadApplier::applyDeltaSync, ClientSyncChunkAccumulator::joinDeltaPayload,
+                null, seq -> lastDeltaSequence = seq);
     }
 
     public static void acceptDescriptionChunk(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
-        if (sequence < lastDescriptionSequence || sequence < lastFullSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
+        acceptChunk(PENDING_DESCRIPTION, sequence, lastFullSequence, chunkIndex, chunkCount, payload,
+                ClientSyncPayloadApplier::applyDescriptionSync, ClientSyncChunkAccumulator::joinDescriptionPayload,
+                null, seq -> lastDescriptionSequence = seq);
+    }
+
+    private static void acceptChunk(
+            Map<Long, ClientSyncChunkAccumulator> pending,
+            long sequence,
+            long subordinateSequence,
+            int chunkIndex,
+            int chunkCount,
+            CompoundTag payload,
+            java.util.function.Consumer<CompoundTag> applier,
+            java.util.function.Function<ClientSyncChunkAccumulator, CompoundTag> joiner,
+            Runnable extraCleanup,
+            java.util.function.LongConsumer sequenceSetter
+    ) {
+        if (sequence < subordinateSequence || !SyncPacketPayloadLimits.isValidChunkMetadata(chunkIndex, chunkCount)) {
             return;
         }
-        ClientSyncChunkAccumulator accumulator = accumulatorFor(PENDING_DESCRIPTION, sequence, chunkCount);
+        ClientSyncChunkAccumulator accumulator = accumulatorFor(pending, sequence, chunkCount);
         if (accumulator == null) {
             return;
         }
         accumulator.add(chunkIndex, payload);
         if (accumulator.complete()) {
-            ClientSyncPayloadApplier.applyDescriptionSync(accumulator.joinDescriptionPayload());
-            lastDescriptionSequence = sequence;
-            PENDING_DESCRIPTION.remove(sequence);
+            applier.accept(joiner.apply(accumulator));
+            sequenceSetter.accept(sequence);
+            pending.remove(sequence);
+            if (extraCleanup != null) {
+                extraCleanup.run();
+            }
         }
     }
 
     public static boolean acceptPinnedSequence(long sequence) {
-        if (sequence < lastPinnedSequence) {
-            return false;
-        }
-        lastPinnedSequence = sequence;
-        return true;
+        return acceptSequence(sequence, lastPinnedSequence, seq -> lastPinnedSequence = seq);
     }
 
     public static boolean acceptDisplayCacheSequence(long sequence) {
-        if (sequence < lastCacheSequence) {
-            return false;
-        }
-        lastCacheSequence = sequence;
-        return true;
+        return acceptSequence(sequence, lastCacheSequence, seq -> lastCacheSequence = seq);
     }
 
     public static boolean acceptEventSequence(long sequence) {
-        if (sequence < lastEventSequence) {
-            return false;
-        }
-        lastEventSequence = sequence;
-        return true;
+        return acceptSequence(sequence, lastEventSequence, seq -> lastEventSequence = seq);
     }
 
     public static boolean acceptEditorMutationSequence(long sequence) {
-        if (sequence < lastEditorMutationSequence) {
+        return acceptSequence(sequence, lastEditorMutationSequence, seq -> lastEditorMutationSequence = seq);
+    }
+
+    private static boolean acceptSequence(long sequence, long lastSequence, java.util.function.LongConsumer setter) {
+        if (sequence < lastSequence) {
             return false;
         }
-        lastEditorMutationSequence = sequence;
+        setter.accept(sequence);
         return true;
     }
 

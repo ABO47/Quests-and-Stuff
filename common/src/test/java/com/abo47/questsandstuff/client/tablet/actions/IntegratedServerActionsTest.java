@@ -1,8 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.actions;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

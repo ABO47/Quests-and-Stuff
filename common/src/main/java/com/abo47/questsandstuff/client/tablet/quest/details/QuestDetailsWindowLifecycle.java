@@ -1,22 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
-import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import net.minecraft.nbt.CompoundTag;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 final class QuestDetailsWindowLifecycle {
     private QuestDetailsWindowLifecycle() {
@@ -42,11 +42,10 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsClosing = false;
         state.questDetails.questDetailsOpen = true;
         state.questDetails.questDetailsQuestId = trimmedQuestId;
-        ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
         resetOpenTransientState(state);
         startOpenAnimation(state, hasSource, sourceX, sourceY, sourceW, sourceH);
         EntityMotionEditor.close(state);
-        CompoundTag quest = ClientQuestCache.quest(state.questDetails.questDetailsQuestId);
+        CompoundTag quest = ClientQuestStateFacade.quest(state.questDetails.questDetailsQuestId);
         state.questDetails.pendingQuestTitleChangeId = "";
         state.questDetails.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetails.questDetailsTitleFocused = false;
@@ -72,7 +71,7 @@ final class QuestDetailsWindowLifecycle {
         ProgressAnimations.reset(ProgressAnimations.key("details", trimmedQuestId));
         resetOpenTransientState(state);
         EntityMotionEditor.close(state);
-        CompoundTag quest = ClientQuestCache.quest(state.questDetails.questDetailsQuestId);
+        CompoundTag quest = ClientQuestStateFacade.quest(state.questDetails.questDetailsQuestId);
         state.questDetails.pendingQuestTitleChangeId = "";
         state.questDetails.questTitleDraft = quest == null ? "" : quest.getString("title");
         state.questDetails.questDetailsTitleFocused = false;
@@ -130,7 +129,7 @@ final class QuestDetailsWindowLifecycle {
     private static void applyCloseTransientState(TabletUiState state, String closingQuestId) {
         state.questDetails.questDetailsScreenX = state.questDetails.questDetailsX;
         state.questDetails.questDetailsScreenY = state.questDetails.questDetailsY;
-        QuestDetailsTransientState.closeFloatingPopups(state);
+        QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         state.questDetails.questDetailsDraggingSplitter = false;
         state.questDetails.questDetailsDescScrollDragging = false;
@@ -146,6 +145,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsTextLastClickAtMs = 0L;
         state.questDetails.questDetailsTextColorQuestId = "";
         state.questDetails.questDetailsTextColorTextId = "";
+        state.questDetails.questDetailsSpoilerRevealedTextId = "";
         CanvasTransformSessions.clearQuestDetailsSession(state);
         EntityMotionEditor.close(state);
         state.questDetails.questDetailsTitleFocused = false;
@@ -156,7 +156,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
-        List<String> ids = new ArrayList<>(ClientQuestCache.questIds());
+        List<String> ids = new ArrayList<>(ClientQuestStateFacade.questIds());
         if (ids.isEmpty()) {
             return;
         }
@@ -175,7 +175,7 @@ final class QuestDetailsWindowLifecycle {
     }
 
     private static void resetOpenTransientState(TabletUiState state) {
-        QuestDetailsTransientState.closeFloatingPopups(state);
+        QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         TextStyleSession.closeQuestDetails(state);
         state.questDetails.questDetailsTextLastClickId = "";
@@ -189,12 +189,13 @@ final class QuestDetailsWindowLifecycle {
         state.canvas.draggingSelection = false;
         state.canvas.resizingSelection = false;
         state.canvas.rotatingSelection = false;
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         TextStyleSession.closeMainCanvas(state);
         state.canvas.selectionBoundsVisible = false;
         state.questDetails.questDetailsBoxSelecting = false;
         state.questDetails.questDetailsTextColorQuestId = "";
         state.questDetails.questDetailsTextColorTextId = "";
+        state.questDetails.questDetailsSpoilerRevealedTextId = "";
         state.questDetails.questDetailsPickTarget = "";
         state.questDetails.questDetailsAssetPickTarget = "";
         state.questDetails.questDetailsClaimedOverrideQuestId = "";
@@ -221,8 +222,8 @@ final class QuestDetailsWindowLifecycle {
     }
 
     private static void clearSelectionState(TabletUiState state) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.questDetails.questDetailsSelectableRewardChoices.clear();
         state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
@@ -250,7 +251,7 @@ final class QuestDetailsWindowLifecycle {
         if (state == null || questId == null || questId.isBlank()) {
             return false;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
-        return state.root.canEdit || (!ClientQuestCache.questLockedPreview(quest) && !ClientQuestCache.questHiddenPreview(quest));
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
+        return state.root.canEdit || (!ClientQuestStateFacade.questLockedPreview(quest) && !ClientQuestStateFacade.questHiddenPreview(quest));
     }
 }

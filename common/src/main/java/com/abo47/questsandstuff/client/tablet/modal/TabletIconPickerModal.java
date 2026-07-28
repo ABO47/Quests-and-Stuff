@@ -1,30 +1,32 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.List;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_ENTITY;
@@ -32,12 +34,13 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSl
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CHAPTER;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTENT_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runGroupAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runQuestIconAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTENT_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runQuestIconAction;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class TabletIconPickerModal {
     private TabletIconPickerModal() {
@@ -54,13 +57,13 @@ public final class TabletIconPickerModal {
         boolean itemModelPicker = canvasModel.isItemModelPickerTarget() || details.isItemModelPickerTarget();
         boolean useItemPicker = IconPickerMode.isUseItemPickerTarget(details);
         String resolvedChapterTarget = ModalTargetState.target(state, CHAPTER, state.modal.modalChapterTarget);
-        final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedGroupName(state) : resolvedChapterTarget;
+        final String chapterTarget = resolvedChapterTarget.isBlank() ? selectedChapterName(state) : resolvedChapterTarget;
         String questTarget = ModalTargetState.target(state, QUEST, state.modal.modalQuestTarget);
-        boolean supportsEntityIcons = supportsEntityIconSelection(detailsTarget, questTarget, chapterTarget);
-        boolean supportsInventoryIcons = supportsInventoryIconSelection(detailsTarget, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
+        boolean supportsEntityIcons = supportsEntityIconSelection(details, questTarget, chapterTarget);
+        boolean supportsInventoryIcons = supportsInventoryIconSelection(details, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
         IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
-        int headY = 22;
+        int headY = 24;
         int headH = 18;
         int modeW = entityPicker ? 0 : headH;
         int gap = 4;
@@ -134,7 +137,7 @@ public final class TabletIconPickerModal {
                     6,
                     6,
                     entries,
-                    TabletVocabulary.text(QuestVocabulary.NO_INVENTORY_ITEMS),
+                    TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
                             () -> state.pickers.iconScroll,
                             value -> state.pickers.iconScroll = value,
@@ -178,8 +181,8 @@ public final class TabletIconPickerModal {
                 String pickedIcon = pickingEntityIcons ? pickedEntityIcon(entry) : entry;
                 String previewIcon = pickedIcon.isBlank() ? entry : pickedIcon;
                 surface.addWidget(new ImageWidget(x, y, 18, 18, SlotWidget.ITEM_SLOT_TEXTURE));
-                surface.addWidget(new DisplayIconWidget(x + 1, y + 1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, previewIcon));
-                ButtonWidget hit = flatHitButton(x + 1, y + 1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
+                surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, previewIcon));
+                ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
                     boolean doubleClick = click.button == 0
                             && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("icon", chapterTarget, questTarget, previewIcon));
                     if (!canvasModelTarget.isBlank()) {
@@ -191,7 +194,7 @@ public final class TabletIconPickerModal {
                         if (TabletModalPanel.runCanvasEntityAction(player, state, canvasEntityTarget, entry)) {
                             closeAll(state);
                         }
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity picked group={} item={}", canvasEntityTarget, entry);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas entity picked chapter={} item={}", canvasEntityTarget, entry);
                     } else if (!detailsTarget.isBlank()) {
                         String detailsPick = entityPicker ? entry : (pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry);
                         QuestDetailsWindow.applyIconPick(player, state, detailsPick);
@@ -202,7 +205,7 @@ public final class TabletIconPickerModal {
                         closeAll(state);
                         QuestsAndStuffMod.debugLog("[QnS:UI] icon picked target={} quest={} icon={}", chapterTarget, questTarget, previewIcon);
                     } else {
-                        runGroupAction(player, state, "set_icon", chapterTarget, pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry, 0);
+                        runChapterAction(player, state, "set_icon", chapterTarget, pickingEntityIcons && !pickedIcon.isBlank() ? pickedIcon : entry, 0);
                         if (doubleClick) {
                             closeAll(state);
                         }
@@ -211,8 +214,8 @@ public final class TabletIconPickerModal {
                     refresh.run();
                 });
                 hit.setHoverTooltips(TabletModalPanel.iconTooltip(previewIcon));
-                hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 66)));
-                hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+                hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+                hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });
         }
@@ -236,19 +239,17 @@ public final class TabletIconPickerModal {
                 .toList();
     }
 
-    private static boolean supportsEntityIconSelection(String detailsTarget, String questTarget, String chapterTarget) {
-        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
+    private static boolean supportsEntityIconSelection(ModalTargetParser.Target details, String questTarget, String chapterTarget) {
         if (!details.kind().isBlank()) {
             return details.supportsEntityIconSelection();
         }
         return (questTarget != null && !questTarget.isBlank()) || (chapterTarget != null && !chapterTarget.isBlank());
     }
 
-    private static boolean supportsInventoryIconSelection(String detailsTarget, String questTarget, String chapterTarget, String canvasEntityTarget, String canvasModelTarget) {
+    private static boolean supportsInventoryIconSelection(ModalTargetParser.Target details, String questTarget, String chapterTarget, String canvasEntityTarget, String canvasModelTarget) {
         if ((canvasEntityTarget != null && !canvasEntityTarget.isBlank()) || (canvasModelTarget != null && !canvasModelTarget.isBlank())) {
             return false;
         }
-        ModalTargetParser.Target details = ModalTargetParser.parse(detailsTarget);
         if (!details.kind().isBlank()) {
             return details.supportsInventoryIconSelection();
         }

@@ -1,14 +1,18 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.ItemStack;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.emi.EmiRecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.jei.JeiRecipeViewerProvider;
+import com.abo47.questsandstuff.client.compat.recipeviewer.rei.ReiRecipeViewerProvider;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 
 public final class RecipeViewerIntegrations {
     private static final List<RecipeViewerProvider> PROVIDERS = List.of(

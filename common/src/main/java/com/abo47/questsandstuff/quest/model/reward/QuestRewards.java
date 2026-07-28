@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.mojang.serialization.Codec;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class QuestRewards {
     private static final Map<ResourceLocation, QuestRewardType<? extends QuestRewardDefinition>> TYPES = new LinkedHashMap<>();

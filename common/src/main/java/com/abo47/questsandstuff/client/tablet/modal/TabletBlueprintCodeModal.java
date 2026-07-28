@@ -1,32 +1,37 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
-import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCode;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget;
-import net.minecraft.client.Minecraft;
-
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.Minecraft;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCodec;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.BUTTON_18;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.PAD_8;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class TabletBlueprintCodeModal {
     private static final int PANEL_W = 360;
     private static final int PANEL_H = 122;
-    private static final int PAD = 8;
-    private static final int BTN = 18;
-    private static final int GAP = 3;
+    private static final int PAD = PAD_8;
+    private static final int BTN = BUTTON_18;
+    private static final int GAP = GRID_3;
     private static final int CODE_Y = 32;
     private static final int CODE_H = 44;
 
@@ -35,7 +40,7 @@ final class TabletBlueprintCodeModal {
 
     static void openExport(TabletUiState state, String relativePath) {
         CanvasBlueprint blueprint = CanvasBlueprintStore.read(relativePath);
-        String code = CanvasBlueprintCode.encode(blueprint);
+        String code = CanvasBlueprintCodec.encode(blueprint);
         state.modal.blueprintCodeOpen = true;
         state.modal.blueprintCodeImportMode = false;
         state.modal.blueprintCodeTarget = relativePath == null ? "" : relativePath;
@@ -78,15 +83,15 @@ final class TabletBlueprintCodeModal {
         int panelH = PANEL_H;
         int x = Math.max(PAD, (modalW - panelW) / 2);
         int y = Math.max(24, (modalH - panelH) / 2);
-        WidgetGroup panel = Surfaces.panel(x, y, panelW, panelH, withAlpha(ModColors.elevatedSurface(), 245), ModColors.BORDER_ACCENT);
+        WidgetGroup panel = SurfaceFactory.panel(x, y, panelW, panelH, withAlpha(TabletColors.elevatedSurface(), 245), TabletColors.BORDER_ACCENT);
         panel.addWidget(label(PAD, 6, TabletModalPanel.tr(state.modal.blueprintCodeImportMode
                 ? "ui.questsandstuff.blueprints.import_code"
-                : "ui.questsandstuff.blueprints.export_code"), ModColors.TEXT_PRIMARY));
+                : "ui.questsandstuff.blueprints.export_code"), TabletColors.TEXT_PRIMARY));
 
         addHeaderButtons(panel, state, refresh, panelW);
         addCodeField(panel, state, panelW);
         if (!state.modal.blueprintCodeMessage.isBlank()) {
-            panel.addWidget(label(PAD, CODE_Y + CODE_H + 8, state.modal.blueprintCodeMessage, ModColors.WARNING));
+            panel.addWidget(label(PAD, CODE_Y + CODE_H + 8, state.modal.blueprintCodeMessage, TabletColors.WARNING));
         }
         modal.addWidget(QuestsAndStuffConfig.popupWindowAnimationsEnabled()
                 ? SourceOriginRevealWidget.windowNoShadow(panel, () -> state.modal.blueprintCodeAnimationStartMs, () -> true, () -> null)
@@ -95,26 +100,26 @@ final class TabletBlueprintCodeModal {
 
     private static void addHeaderButtons(WidgetGroup panel, TabletUiState state, Runnable refresh, int panelW) {
         int closeX = panelW - PAD - BTN;
-        panel.addWidget(WindowChrome.closeIconButton(closeX, 4, BTN, BTN, click -> {
+        panel.addWidget(ChromeFactory.closeIconButton(closeX, 4, BTN, BTN, click -> {
             close(state);
             refresh.run();
         }));
 
         int x = closeX - GAP - BTN;
         if (state.modal.blueprintCodeImportMode) {
-            panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "manual_check", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "manual_check", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
                 applyImport(state);
                 refresh.run();
             }));
             x -= GAP + BTN;
-            panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "paste", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+            panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "paste", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.modal.blueprintCodeDraft = Minecraft.getInstance().keyboardHandler.getClipboard();
                 state.modal.blueprintCodeMessage = "";
                 refresh.run();
             }));
             return;
         }
-        panel.addWidget(WindowChrome.iconButton(x, 4, BTN, BTN, "copy", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+        panel.addWidget(ChromeFactory.iconButton(x, 4, BTN, BTN, "copy", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
             Minecraft.getInstance().keyboardHandler.setClipboard(state.modal.blueprintCodeDraft == null ? "" : state.modal.blueprintCodeDraft);
             state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_copied");
             refresh.run();
@@ -124,7 +129,7 @@ final class TabletBlueprintCodeModal {
     private static void addCodeField(WidgetGroup panel, TabletUiState state, int panelW) {
         CodeEditorWidget editor = new CodeEditorWidget(PAD, CODE_Y, panelW - PAD * 2, CODE_H);
         editor.codeEditor.setLanguageDefinitionUnformatted();
-        editor.setBackground(Surfaces.bordered(ModColors.recessedSurface(), ModColors.BORDER_BASE));
+        editor.setBackground(SurfaceFactory.bordered(TabletColors.recessedSurface(), TabletColors.BORDER_BASE));
         editor.setLines(editorLines(state.modal.blueprintCodeDraft));
         editor.setOnTextChanged(lines -> state.modal.blueprintCodeDraft = rawCode(lines));
         editor.setFocus(true);
@@ -132,7 +137,7 @@ final class TabletBlueprintCodeModal {
     }
 
     private static void applyImport(TabletUiState state) {
-        CanvasBlueprint blueprint = CanvasBlueprintCode.decode(state.modal.blueprintCodeDraft);
+        CanvasBlueprint blueprint = CanvasBlueprintCodec.decode(state.modal.blueprintCodeDraft);
         if (blueprint.isEmpty()) {
             state.modal.blueprintCodeMessage = TabletModalPanel.tr("ui.questsandstuff.blueprints.code_invalid");
             return;

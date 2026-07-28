@@ -1,10 +1,14 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.network.ModPacketType;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ClientNetworkBridge;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.ModPacketType;
+
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public final class FabricModNetworkClient {
     private static boolean registered;
@@ -17,6 +21,7 @@ public final class FabricModNetworkClient {
             return;
         }
         registered = true;
+        ModNetwork.setClientNetwork(FabricModNetworkClient::sendToServer);
         ClientPlayNetworking.registerGlobalReceiver(FabricModNetwork.CHANNEL, (client, handler, buffer, responseSender) -> {
             ModPacketType<?> type = FabricModNetwork.decodeType(buffer, ModPacketType.Direction.PLAY_TO_CLIENT);
             if (type == null) {

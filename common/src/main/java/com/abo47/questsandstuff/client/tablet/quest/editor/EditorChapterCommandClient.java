@@ -1,71 +1,72 @@
 package com.abo47.questsandstuff.client.tablet.quest.editor;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.actions.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorGroupPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenGroupPacket;
-import com.abo47.questsandstuff.quest.QuestServices;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenChapterPacket;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public final class EditorChapterCommandClient {
     private EditorChapterCommandClient() {
     }
 
-    public static void cycleGroup(TabletUiState state, int dir) {
-        List<String> groups = ClientQuestCache.selectableGroupOrder(state != null && state.root.canEdit);
+    public static void cycleChapter(TabletUiState state, int dir) {
+        List<String> groups = ClientQuestStateFacade.selectableChapterOrder(state != null && state.root.canEdit);
         if (groups.isEmpty()) {
-            state.root.selectedGroup = "";
-            state.chapterPanel.groupDraft = "";
+            state.root.selectedChapter = "";
+            state.chapterPanel.chapterDraft = "";
             return;
         }
-        int idx = groups.indexOf(state.root.selectedGroup);
+        int idx = groups.indexOf(state.root.selectedChapter);
         if (idx < 0) {
             idx = 0;
         }
         idx = (idx + dir + groups.size()) % groups.size();
-        state.root.selectedGroup = groups.get(idx);
-        state.chapterPanel.groupDraft = state.root.selectedGroup;
+        state.root.selectedChapter = groups.get(idx);
+        state.chapterPanel.chapterDraft = state.root.selectedChapter;
     }
 
-    public static String selectedGroupName(TabletUiState state) {
-        return TabletStateQueries.selectedGroupName(state);
+    public static String selectedChapterName(TabletUiState state) {
+        return TabletStateQueries.selectedChapterName(state);
     }
 
-    public static boolean canEditGroups(TabletUiState state) {
+    public static boolean canEditChapters(TabletUiState state) {
         return state.root.canEdit;
     }
 
-    public static boolean canManageGroups(TabletUiState state) {
+    public static boolean canManageChapters(TabletUiState state) {
         return state.root.canEdit;
     }
 
-    public static String resolveGroupDraft(TabletUiState state, String fallback) {
-        String sanitized = sanitizeGroupName(state.chapterPanel.groupDraft);
+    public static String resolveChapterDraft(TabletUiState state, String fallback) {
+        String sanitized = sanitizeChapterName(state.chapterPanel.chapterDraft);
         if (!sanitized.isBlank()) {
             return sanitized;
         }
-        return sanitizeGroupName(fallback);
+        return sanitizeChapterName(fallback);
     }
 
-    public static String nextGroupName() {
-        return nextGroupName("chapter");
+    public static String nextChapterName() {
+        return nextChapterName("chapter");
     }
 
-    public static String nextGroupName(String baseName) {
-        String base = sanitizeGroupName(baseName);
+    public static String nextChapterName(String baseName) {
+        String base = sanitizeChapterName(baseName);
         if (base.isBlank()) {
             base = "chapter";
         }
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.chapterOrder());
         if (!groups.contains(base)) {
             return base;
         }
@@ -79,13 +80,13 @@ public final class EditorChapterCommandClient {
         }
     }
 
-    public static String uniqueGroupName(String preferred, String excludeCurrent) {
-        String candidate = sanitizeGroupName(preferred);
+    public static String uniqueChapterName(String preferred, String excludeCurrent) {
+        String candidate = sanitizeChapterName(preferred);
         if (candidate.isBlank()) {
             candidate = tr("ui.questsandstuff.chapter.default_name");
         }
-        String excluded = sanitizeGroupName(excludeCurrent);
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        String excluded = sanitizeChapterName(excludeCurrent);
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.chapterOrder());
         if (!excluded.isBlank()) {
             groups.remove(excluded);
         }
@@ -102,12 +103,12 @@ public final class EditorChapterCommandClient {
         }
     }
 
-    public static String nextRenamedGroup(String source) {
-        String base = sanitizeGroupName(source);
+    public static String nextRenamedChapter(String source) {
+        String base = sanitizeChapterName(source);
         if (base.isBlank()) {
             base = "chapter";
         }
-        Set<String> groups = new HashSet<>(ClientQuestCache.groupOrder());
+        Set<String> groups = new HashSet<>(ClientQuestStateFacade.chapterOrder());
         String first = base + "_renamed";
         if (!groups.contains(first)) {
             return first;
@@ -122,16 +123,16 @@ public final class EditorChapterCommandClient {
         }
     }
 
-    public static String sanitizeGroupName(String value) {
-        return TabletStateQueries.sanitizeGroupName(value);
+    public static String sanitizeChapterName(String value) {
+        return TabletStateQueries.sanitizeChapterName(value);
     }
 
-    public static void runGroupAction(Player player, TabletUiState state, String action, String group, String value, int offset) {
+    public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
         String op = action == null ? "" : action;
-        String from = sanitizeGroupName(group);
+        String from = sanitizeChapterName(chapter);
         String rawValue = value == null ? "" : value.trim();
         String to = switch (op) {
-            case "create", "rename" -> sanitizeGroupName(value);
+            case "create", "rename" -> sanitizeChapterName(value);
             default -> rawValue;
         };
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter action op={} from={} to={} offset={}", op, from, to, offset);
@@ -147,11 +148,11 @@ public final class EditorChapterCommandClient {
         };
         Runnable optimisticApply = () -> applyLocalGroupAction(state, op, from, to, offset);
         Runnable sendToServer = () -> {
-            ModNetwork.sendToServer(new C2SEditorGroupPacket(op, packetGroup, packetValue, offset));
+            ModNetwork.sendToServer(new C2SEditorChapterPacket(op, packetGroup, packetValue, offset));
             if ("create".equals(op) || "rename".equals(op) || "move".equals(op)) {
                 String openTarget = "create".equals(op) || "rename".equals(op) ? to : from;
                 if (!openTarget.isBlank()) {
-                    ModNetwork.sendToServer(new C2SEditorOpenGroupPacket(openTarget));
+                    ModNetwork.sendToServer(new C2SEditorOpenChapterPacket(openTarget));
                 }
             }
         };
@@ -159,50 +160,50 @@ public final class EditorChapterCommandClient {
         IntegratedServerActions.run(
                 player,
                 integratedServerGroupAction(state, op, from, to, offset),
-                () -> EditorPreviewBus.dispatch("group:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
+                () -> EditorPreviewDeduplicator.dispatch("chapter:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
     }
 
     private static IntegratedServerActions.LocalAction integratedServerGroupAction(TabletUiState state, String op, String from, String to, int offset) {
         return serverPlayer -> {
-            var editor = QuestServices.editor(serverPlayer.server);
+            var editor = QuestServiceRegistry.editor(serverPlayer.server);
             switch (op) {
                 case "create" -> {
-                    editor.createGroup(serverPlayer, to);
+                    editor.createChapter(serverPlayer, to);
                     if (!to.isBlank()) {
-                        state.chapterPanel.recentlyCreatedGroups.add(to);
+                        state.chapterPanel.recentlyCreatedChapters.add(to);
                     }
                 }
                 case "rename" -> {
-                    editor.renameGroup(serverPlayer, from, to);
-                    if (state.chapterPanel.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
-                        state.chapterPanel.recentlyCreatedGroups.add(to);
+                    editor.renameChapter(serverPlayer, from, to);
+                    if (state.chapterPanel.recentlyCreatedChapters.remove(from) && !to.isBlank()) {
+                        state.chapterPanel.recentlyCreatedChapters.add(to);
                     }
                 }
                 case "delete" -> {
-                    editor.deleteGroup(serverPlayer, from);
-                    state.chapterPanel.recentlyCreatedGroups.remove(from);
+                    editor.deleteChapter(serverPlayer, from);
+                    state.chapterPanel.recentlyCreatedChapters.remove(from);
                 }
-                case "move" -> editor.moveGroup(serverPlayer, from, offset);
-                case "move_to" -> editor.moveGroupToIndex(serverPlayer, from, offset);
-                case "set_icon" -> editor.setGroupIcon(serverPlayer, from, to);
-                case "set_background" -> editor.setGroupBackground(serverPlayer, from, to);
-                case "set_canvas_background" -> editor.setGroupCanvasBackground(serverPlayer, from, to);
-                case "set_text_align" -> editor.setGroupTextAlign(serverPlayer, from, to);
+                case "move" -> editor.moveChapter(serverPlayer, from, offset);
+                case "move_to" -> editor.moveChapterToIndex(serverPlayer, from, offset);
+                case "set_icon" -> editor.setChapterIcon(serverPlayer, from, to);
+                case "set_background" -> editor.setChapterBackground(serverPlayer, from, to);
+                case "set_canvas_background" -> editor.setChapterCanvasBackground(serverPlayer, from, to);
+                case "set_text_align" -> editor.setChapterTextAlign(serverPlayer, from, to);
                 case "set_text_color" -> {
                     try {
-                        editor.setGroupTextColor(serverPlayer, from, Integer.parseInt(to));
+                        editor.setChapterTextColor(serverPlayer, from, Integer.parseInt(to));
                     } catch (NumberFormatException ignored) {
                     }
                 }
-                case "set_text_style" -> editor.setGroupTextStyle(serverPlayer, from, to);
+                case "set_text_style" -> editor.setChapterTextStyle(serverPlayer, from, to);
                 case "set_text_size" -> {
                     try {
-                        editor.setGroupTextSize(serverPlayer, from, Integer.parseInt(to));
+                        editor.setChapterTextSize(serverPlayer, from, Integer.parseInt(to));
                     } catch (NumberFormatException ignored) {
                     }
                 }
-                case "set_lock_until_unlocked" -> editor.setGroupLockUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
-                case "set_hide_until_unlocked" -> editor.setGroupHideUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
+                case "set_lock_until_unlocked" -> editor.setChapterLockUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
+                case "set_hide_until_unlocked" -> editor.setChapterHideUntilUnlocked(serverPlayer, from, Boolean.parseBoolean(to));
                 default -> {
                 }
             }
@@ -212,42 +213,42 @@ public final class EditorChapterCommandClient {
     private static void applyLocalGroupAction(TabletUiState state, String op, String from, String to, int offset) {
         switch (op) {
             case "create" -> {
-                ClientQuestCache.createGroupLocal(to);
+                ClientQuestStateFacade.createChapterLocal(to);
                 if (!to.isBlank()) {
-                    state.chapterPanel.recentlyCreatedGroups.add(to);
+                    state.chapterPanel.recentlyCreatedChapters.add(to);
                 }
             }
             case "rename" -> {
-                ClientQuestCache.renameGroupLocal(from, to);
-                if (state.chapterPanel.recentlyCreatedGroups.remove(from) && !to.isBlank()) {
-                    state.chapterPanel.recentlyCreatedGroups.add(to);
+                ClientQuestStateFacade.renameChapterLocal(from, to);
+                if (state.chapterPanel.recentlyCreatedChapters.remove(from) && !to.isBlank()) {
+                    state.chapterPanel.recentlyCreatedChapters.add(to);
                 }
             }
             case "delete" -> {
-                ClientQuestCache.deleteGroupLocal(from);
-                state.chapterPanel.recentlyCreatedGroups.remove(from);
+                ClientQuestStateFacade.deleteChapterLocal(from);
+                state.chapterPanel.recentlyCreatedChapters.remove(from);
             }
-            case "move" -> ClientQuestCache.moveGroupLocal(from, offset);
-            case "move_to" -> ClientQuestCache.moveGroupToIndexLocal(from, offset);
-            case "set_icon" -> ClientQuestCache.setGroupIconLocal(from, to);
-            case "set_background" -> ClientQuestCache.setGroupBackgroundLocal(from, to);
-            case "set_canvas_background" -> ClientQuestCache.setGroupCanvasBackgroundLocal(from, to);
-            case "set_text_align" -> ClientQuestCache.setGroupTextAlignLocal(from, to);
+            case "move" -> ClientQuestStateFacade.moveChapterLocal(from, offset);
+            case "move_to" -> ClientQuestStateFacade.moveChapterToIndexLocal(from, offset);
+            case "set_icon" -> ClientQuestStateFacade.setChapterIconLocal(from, to);
+            case "set_background" -> ClientQuestStateFacade.setChapterBackgroundLocal(from, to);
+            case "set_canvas_background" -> ClientQuestStateFacade.setChapterCanvasBackgroundLocal(from, to);
+            case "set_text_align" -> ClientQuestStateFacade.setChapterTextAlignLocal(from, to);
             case "set_text_color" -> {
                 try {
-                    ClientQuestCache.setGroupTextColorLocal(from, Integer.parseInt(to));
+                    ClientQuestStateFacade.setChapterTextColorLocal(from, Integer.parseInt(to));
                 } catch (NumberFormatException ignored) {
                 }
             }
-            case "set_text_style" -> ClientQuestCache.setGroupTextStyleLocal(from, to);
+            case "set_text_style" -> ClientQuestStateFacade.setChapterTextStyleLocal(from, to);
             case "set_text_size" -> {
                 try {
-                    ClientQuestCache.setGroupTextSizeLocal(from, Integer.parseInt(to));
+                    ClientQuestStateFacade.setChapterTextSizeLocal(from, Integer.parseInt(to));
                 } catch (NumberFormatException ignored) {
                 }
             }
-            case "set_lock_until_unlocked" -> ClientQuestCache.setGroupLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
-            case "set_hide_until_unlocked" -> ClientQuestCache.setGroupHideUntilUnlockedLocal(from, Boolean.parseBoolean(to));
+            case "set_lock_until_unlocked" -> ClientQuestStateFacade.setChapterLockUntilUnlockedLocal(from, Boolean.parseBoolean(to));
+            case "set_hide_until_unlocked" -> ClientQuestStateFacade.setChapterHideUntilUnlockedLocal(from, Boolean.parseBoolean(to));
             default -> {
             }
         }

@@ -1,21 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestMatch;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,8 +8,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestMatch;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasLayoutService {
     private static final int MIN_PAN_RENDER_OVERSCAN = 192;
@@ -39,15 +40,15 @@ public final class CanvasLayoutService {
 
         QuestMatch inGroup = null;
         QuestMatch crossGroup = null;
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
         for (Map.Entry<String, CompoundTag> quest : quests) {
             if (!matchesSearchOnly(quest.getValue(), state.root.search)) {
                 continue;
             }
-            Set<String> groups = quest.getValue().getCompound("groups").getAllKeys();
-            if (groups.contains(state.root.selectedGroup)) {
-                inGroup = new QuestMatch(quest.getKey(), state.root.selectedGroup);
+            Set<String> groups = quest.getValue().getCompound("chapters").getAllKeys();
+            if (groups.contains(state.root.selectedChapter)) {
+                inGroup = new QuestMatch(quest.getKey(), state.root.selectedChapter);
                 break;
             }
             String firstGroup = groups.stream().sorted().findFirst().orElse("");
@@ -60,9 +61,9 @@ public final class CanvasLayoutService {
         if (selected == null) {
             return false;
         }
-        state.root.selectedGroup = selected.group();
+        state.root.selectedChapter = selected.chapter();
         state.chapterPanel.lastJumpQuest = selected.questId();
-        state.canvas.pendingCameraGroup = selected.group();
+        state.canvas.pendingCameraGroup = selected.chapter();
         state.canvas.pendingCameraQuestId = selected.questId();
         persistUiState(state);
         return true;
@@ -81,22 +82,22 @@ public final class CanvasLayoutService {
             TabletUiState state
     ) {
         List<QuestCardLayout> visibleCards = new ArrayList<>();
-        String selectedGroup = selectedGroupName(state);
+        String selectedChapter = selectedChapterName(state);
         for (Map.Entry<String, CompoundTag> entry : quests) {
             if (!CanvasRenderer.matchesFilters(entry.getValue(), state)) {
                 continue;
             }
-            visibleCards.add(CanvasGeometry.layoutQuest(entry.getKey(), entry.getValue(), state, selectedGroup));
+            visibleCards.add(CanvasGeometry.layoutQuest(entry.getKey(), entry.getValue(), state, selectedChapter));
         }
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapter, List.of());
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : visibleCards) {
             byQuestId.put(card.questId(), card);
         }
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, visibleCards, byQuestId, 1_000_000, 1_000_000);
-        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroup, List.of());
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedGroup, visibleCards, images, texts, connectionKeys, exclusiveChoices);
+        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapter, List.of());
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedChapter, visibleCards, images, texts, connectionKeys, exclusiveChoices);
         Map<String, Integer> layerIndexes = CanvasLayerOrdering.indexMap(layerOrder);
         visibleCards.sort(Comparator.comparingInt(card -> CanvasLayerOrdering.layerIndex(layerIndexes, CanvasLayerOrdering.questKey(card.questId()))));
         return visibleCards;
@@ -120,8 +121,8 @@ public final class CanvasLayoutService {
     }
 
     public static void clampCanvasOffset(TabletUiState state, List<QuestCardLayout> cards, int contentW, int contentH) {
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroupName(state), List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroupName(state), List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapterName(state), List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapterName(state), List.of());
         if (cards.isEmpty() && images.isEmpty() && texts.isEmpty()) {
             int worldW = Math.max(1, Math.round(contentW / CanvasRenderer.clampZoom(state.canvas.canvasZoom)));
             int worldH = Math.max(1, Math.round(contentH / CanvasRenderer.clampZoom(state.canvas.canvasZoom)));

@@ -12,7 +12,7 @@ public final class CanvasTransformAxisDelta {
         if (CanvasTransformGizmo.AXIS_MOVE_FREE.equals(moveAxis)) {
             return new CanvasPoint(dx, dy);
         }
-        double radians = Math.toRadians(normalize(rotationDegrees));
+        double radians = Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double axisX = CanvasTransformGizmo.AXIS_MOVE_X.equals(moveAxis) ? cos : -sin;
@@ -23,9 +23,5 @@ public final class CanvasTransformAxisDelta {
             distance = Math.round(distance / grid) * grid;
         }
         return new CanvasPoint((int) Math.round(distance * axisX), (int) Math.round(distance * axisY));
-    }
-
-    private static int normalize(int degrees) {
-        return ((degrees % 360) + 360) % 360;
     }
 }

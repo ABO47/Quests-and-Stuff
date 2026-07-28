@@ -1,15 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterDragController;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.objective.QuestObjectiveDragDispatcher;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModalState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterDragController;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDragDispatcher;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 
 final class TabletRootPointerRouter {
     private TabletRootPointerRouter() {
@@ -30,18 +31,7 @@ final class TabletRootPointerRouter {
             }
             return true;
         }
-        if (EntityMotionEditor.isChapterPanelOpen(state)) {
-            int localX = localRootX(root, mouseX);
-            int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isChapterPanelHit(state, localX, localY)) {
-                selfClick.invoke(mouseX, mouseY, button);
-                return true;
-            }
-            EntityMotionEditor.close(state);
-            refresher.run();
-            return true;
-        }
-        TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY);
+        TabletRootDismissals.ClickDismissState dismissState = TabletRootDismissals.capture(root, state, mouseX, mouseY, refresher);
         if (button == 0 && beginChapterScrollDrag(root, state, refresher, mouseX, mouseY)) {
             return TabletRootDismissals.handleAfterClick(root, state, refresher, dismissState, mouseX, mouseY, button, true);
         }
@@ -64,7 +54,7 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
             }
-            if (QuestObjectiveDragDispatcher.handleDrag(root.resolvePlayer(), state, refresher, mouseX, mouseY, button)) {
+            if (QuestTaskDragDispatcher.handleDrag(root.resolvePlayer(), state, refresher, mouseX, mouseY, button)) {
                 return true;
             }
             if (frontWindowLayer != null) {
@@ -97,7 +87,7 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
             }
-            if (QuestObjectiveDragDispatcher.handleRelease(root.resolvePlayer(), state, refresher)) {
+            if (QuestTaskDragDispatcher.handleRelease(root.resolvePlayer(), state, refresher)) {
                 return true;
             }
             if (frontWindowLayer != null) {
@@ -131,14 +121,6 @@ final class TabletRootPointerRouter {
             if (frontWindowLayer != null) {
                 QuestDetailsWindow.syncScreenOrigin(frontWindowLayer, state);
                 frontWindowLayer.mouseWheelMove(mouseX, mouseY, wheelDelta);
-            }
-            return true;
-        }
-        if (EntityMotionEditor.isChapterPanelOpen(state)) {
-            int localX = localRootX(root, mouseX);
-            int localY = localRootY(root, mouseY);
-            if (EntityMotionEditor.isChapterPanelHit(state, localX, localY)) {
-                selfWheel.invoke(mouseX, mouseY, wheelDelta);
             }
             return true;
         }

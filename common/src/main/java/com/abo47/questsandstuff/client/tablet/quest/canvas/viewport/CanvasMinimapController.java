@@ -2,13 +2,14 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public final class CanvasMinimapController {
-    public static final long ANIMATION_MS = 180L;
+    public static final long ANIMATION_MS = TabletAnimationTimings.MINIMAP_MS;
 
     private CanvasMinimapController() {
     }

@@ -1,16 +1,23 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeTokens;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
+
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class RecipePickButtonOverlay {
     public static final int BUTTON_SIZE = 11;
@@ -31,18 +38,17 @@ public final class RecipePickButtonOverlay {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         boolean hovered = contains(button, mouseX, mouseY);
-        int border = hovered ? UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 105) : ModColors.subtleBorder();
-        int fill = UiThemeTokens.withAlpha(ModColors.SURFACE_PANEL_ALT, 218);
-        int hoverOverlay = UiThemeTokens.withAlpha(ModColors.INTERACTIVE, 16);
+        int border = TabletColors.subtleBorder();
+        int fill = UiThemeTokens.withAlpha(TabletColors.SURFACE_PANEL_ALT, 218);
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, 350.0F);
         try {
-            graphics.fill(button.getX(), button.getY(), button.getX() + button.getWidth(), button.getY() + button.getHeight(), border);
-            graphics.fill(button.getX() + 1, button.getY() + 1, button.getX() + button.getWidth() - 1, button.getY() + button.getHeight() - 1, fill);
+            SurfaceFactory.fill(border).draw(graphics, 0, 0, button.getX(), button.getY(), button.getWidth(), button.getHeight());
+            SurfaceFactory.fill(fill).draw(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             if (hovered) {
-                graphics.fill(button.getX() + 1, button.getY() + 1, button.getX() + button.getWidth() - 1, button.getY() + button.getHeight() - 1, hoverOverlay);
+                GlowShaderHelper.drawGlow(graphics, 0, 0, button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2);
             }
-            IGuiTexture icon = UiIconAtlas.iconTexture("add");
+            IGuiTexture icon = IconAtlas.iconTexture("add");
             if (icon != null) {
                 int iconSize = centeredIconSize(button);
                 int iconX = button.getX() + (button.getWidth() - iconSize) / 2;
@@ -220,10 +226,4 @@ public final class RecipePickButtonOverlay {
         return clamp(size, MIN_NATIVE_BUTTON_SIZE, MAX_NATIVE_BUTTON_SIZE);
     }
 
-    private static int clamp(int value, int min, int max) {
-        if (max < min) {
-            return min;
-        }
-        return Math.max(min, Math.min(max, value));
-    }
 }

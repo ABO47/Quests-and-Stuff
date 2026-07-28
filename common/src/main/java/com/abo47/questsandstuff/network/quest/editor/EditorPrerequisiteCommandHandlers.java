@@ -1,99 +1,86 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 final class EditorPrerequisiteCommandHandlers {
     private EditorPrerequisiteCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.PREREQUISITE_ADD, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::addPrerequisite);
-        registrar.register(EditorCommandType.PREREQUISITE_REMOVE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::removePrerequisite);
-        registrar.register(EditorCommandType.CONNECTION_COLOR, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionColor);
-        registrar.register(EditorCommandType.CONNECTION_MODE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionMode);
-        registrar.register(EditorCommandType.CONNECTION_HIDDEN, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionHidden);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTexture);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE_MANY, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextures);
-        registrar.register(EditorCommandType.CONNECTION_TEXTURE_SPACING, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextureSpacing);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PREREQUISITE_ADD, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::addPrerequisite));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PREREQUISITE_REMOVE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::removePrerequisite));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_COLOR, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionColor));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_MODE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionMode));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_HIDDEN, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionHidden));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTexture));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE_MANY, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextures));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.CONNECTION_TEXTURE_SPACING, EditorCommandFamily.PREREQUISITE, EditorPrerequisiteCommandHandlers::connectionTextureSpacing));
     }
 
     private static void addPrerequisite(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestPrerequisite(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.prerequisite(payload), true);
+        editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), true);
     }
 
     private static void removePrerequisite(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        editor.setQuestPrerequisite(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.prerequisite(payload), false);
+        editor.setQuestPrerequisite(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.prerequisite(payload), false);
     }
 
     private static void connectionColor(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionColor(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.COLOR)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.COLOR)
         );
     }
 
     private static void connectionMode(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionMode(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.GRID)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.GRID)
         );
     }
 
     private static void connectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionHidden(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.bool(payload, EditorCommandPayloadKeys.HIDDEN)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.bool(payload, EditorCommandPayloads.HIDDEN)
         );
     }
 
     private static void connectionTexture(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionTexture(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.string(payload, EditorCommandPayloadKeys.TEXTURE)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.string(payload, EditorCommandPayloads.TEXTURE)
         );
     }
 
     private static void connectionTextures(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        Map<String, Map<String, String>> questTextures = new HashMap<>();
-        ListTag list = payload.getList(EditorCommandPayloadKeys.TEXTURES, Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            String quest = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.QUEST);
-            String prerequisite = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.PREREQUISITE);
-            String texture = EditorCommandPayloadReader.string(entry, EditorCommandPayloadKeys.TEXTURE);
-            if (quest.isBlank() || prerequisite.isBlank()) continue;
-            questTextures.computeIfAbsent(quest, k -> new HashMap<>()).put(prerequisite, texture == null ? "" : texture);
-        }
-        QuestsAndStuffMod.debugLog("[QnS:Editor] CONNECTION_TEXTURE_MANY handler quests={} entries={}", questTextures.size(), list.size());
+        Map<String, Map<String, String>> questTextures = EditorCommandPayloads.connectionTextureMap(payload);
         editor.setConnectionTextures(player, questTextures);
     }
 
     private static void connectionTextureSpacing(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         editor.setConnectionTextureSpacing(
                 player,
-                EditorCommandPayloadReader.quest(payload),
-                EditorCommandPayloadReader.prerequisite(payload),
-                EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.SPACING)
+                EditorCommandPayloads.quest(payload),
+                EditorCommandPayloads.prerequisite(payload),
+                EditorCommandPayloads.integer(payload, EditorCommandPayloads.SPACING)
         );
     }
 }

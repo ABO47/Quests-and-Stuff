@@ -1,18 +1,22 @@
 package com.abo47.questsandstuff.quest.model.task;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.task.fallback.UnsupportedQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.CompositeQuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.item.GatherItemQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.LocationQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.StatQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.player.XpQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.CheckQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.CompositeQuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.progress.SimpleQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.mojang.serialization.Codec;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import net.minecraft.resources.ResourceLocation;
 
 public final class QuestTasks {
     private static final Map<ResourceLocation, QuestTaskType<? extends QuestTaskDefinition>> TYPES = new LinkedHashMap<>();

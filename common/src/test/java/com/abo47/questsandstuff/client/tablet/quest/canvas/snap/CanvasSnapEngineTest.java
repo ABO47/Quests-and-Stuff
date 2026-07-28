@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.snap;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +26,7 @@ class CanvasSnapEngineTest {
     }
 
     @Test
-    void sameSnapContextProducesSameGuidesForBothCanvasSurfaces() {
+    void sameSnapContextProducesSameGuidesForBothCanvasSurfaceFactory() {
         CanvasSnapEngine.SnapContext mainCanvas = context();
         CanvasSnapEngine.SnapContext descriptionCanvas = context();
 

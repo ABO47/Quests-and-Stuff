@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -7,10 +9,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoi
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.util.QuestIdentity;
-
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public final class CanvasCameraController {
     private static final float[] ZOOM_STOPS = {0.5f, 0.67f, 0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f};
@@ -22,8 +22,8 @@ public final class CanvasCameraController {
         rememberCurrentGroup(state);
     }
 
-    public static void afterCanvasLayout(TabletUiState state, String group) {
-        String normalizedGroup = normalizeGroup(group);
+    public static void afterCanvasLayout(TabletUiState state, String chapter) {
+        String normalizedGroup = normalizeChapter(chapter);
         state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         state.canvas.canvasLivePanX = 0;
         state.canvas.canvasLivePanY = 0;
@@ -41,7 +41,7 @@ public final class CanvasCameraController {
         clampCameraOffset(state);
         rememberCurrentGroup(state);
         if (groupChanged) {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera group={} new_view", normalizedGroup);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera chapter={} new_view", normalizedGroup);
         }
     }
 
@@ -49,12 +49,12 @@ public final class CanvasCameraController {
         if (state == null || state.canvas.canvasContentW <= 0 || state.canvas.canvasContentH <= 0) {
             return;
         }
-        String group = normalizeGroup(state.canvas.canvasCameraGroup);
-        if (group.isBlank()) {
+        String chapter = normalizeChapter(state.canvas.canvasCameraGroup);
+        if (chapter.isBlank()) {
             return;
         }
-        state.canvas.canvasCameraCentersByGroup.put(group, currentCenter(state));
-        state.canvas.canvasCameraZoomsByGroup.put(group, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
+        state.canvas.canvasCameraCentersByGroup.put(chapter, currentCenter(state));
+        state.canvas.canvasCameraZoomsByGroup.put(chapter, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
     }
 
     public static CanvasPoint previewPanDelta(TabletUiState state, int requestedLivePanX, int requestedLivePanY) {
@@ -177,11 +177,11 @@ public final class CanvasCameraController {
         finishCameraChange(state, persist);
     }
 
-    public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String group) {
+    public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String chapter) {
         String questId = QuestIdentity.questId(state.canvas.pendingCameraQuestId);
-        String pendingGroup = normalizeGroup(state.canvas.pendingCameraGroup);
-        String selectedGroup = normalizeGroup(group);
-        if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedGroup))) {
+        String pendingGroup = normalizeChapter(state.canvas.pendingCameraGroup);
+        String selectedChapter = normalizeChapter(chapter);
+        if (questId.isBlank() || (!pendingGroup.isBlank() && !pendingGroup.equals(selectedChapter))) {
             return false;
         }
         for (QuestCardLayout card : cards) {
@@ -191,7 +191,7 @@ public final class CanvasCameraController {
             centerOn(state, card.logicalCenterX(), card.logicalCenterY(), true);
             state.canvas.pendingCameraQuestId = "";
             state.canvas.pendingCameraGroup = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera center quest={} group={}", questId, selectedGroup);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas camera center quest={} chapter={}", questId, selectedChapter);
             return true;
         }
         return false;
@@ -250,7 +250,7 @@ public final class CanvasCameraController {
         return ZOOM_STOPS[0];
     }
 
-    private static String normalizeGroup(String group) {
-        return QuestIdentity.groupName(group);
+    private static String normalizeChapter(String chapter) {
+        return QuestIdentity.chapterName(chapter);
     }
 }

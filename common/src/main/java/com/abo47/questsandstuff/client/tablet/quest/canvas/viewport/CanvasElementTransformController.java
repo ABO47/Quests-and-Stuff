@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import java.util.List;
+import java.util.Set;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.input.TabletModifierKeys;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -15,14 +16,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-
-import java.util.List;
-import java.util.Set;
 
 public final class CanvasElementTransformController {
     private final TabletUiState state;
@@ -99,8 +98,8 @@ public final class CanvasElementTransformController {
     }
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
-        CanvasImageLayer image = findImage(group, state.canvas.canvasSelection.primaryImageId());
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        CanvasImageLayer image = findImage(chapter, state.canvas.canvasSelection.primaryImageId());
         if (image == null) {
             return;
         }
@@ -114,7 +113,7 @@ public final class CanvasElementTransformController {
                     ? modelDragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, dx, dy)
                     : dragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartPivotX, state.canvas.canvasImageStartPivotY, state.canvas.canvasImageStartRotation, dx, dy);
             next = new CanvasImageLayer(image.id(), image.asset(), anchor.x, anchor.y, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartRotation, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
-            next = applySmartSnapToImage(next, cards, group);
+            next = applySmartSnapToImage(next, cards, chapter);
         } else if (state.canvas.resizingCanvasImage) {
             clearSnapGuides();
             next = resizeImageFromHandle(image, localX, localY);
@@ -154,11 +153,11 @@ public final class CanvasElementTransformController {
         ));
     }
 
-    public CanvasImageLayer findImage(String group, String imageId) {
-        if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
+    public CanvasImageLayer findImage(String chapter, String imageId) {
+        if (chapter == null || chapter.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()).stream()
                 .filter(entry -> entry.id().equals(imageId))
                 .findFirst()
                 .orElse(null);
@@ -225,8 +224,8 @@ public final class CanvasElementTransformController {
     }
 
     public void updateExclusiveChoiceTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
         if (ec == null) {
             return;
         }
@@ -239,7 +238,7 @@ public final class CanvasElementTransformController {
             CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH), state.canvas.canvasEcStartRotation, dx, dy);
             next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections());
             next = fittedExclusiveChoiceIfGridLocked(next);
-            next = applySmartSnapToExclusiveChoice(next, cards, group);
+            next = applySmartSnapToExclusiveChoice(next, cards, chapter);
         } else if (state.canvas.resizingCanvasExclusiveChoice) {
             clearSnapGuides();
             next = resizeExclusiveChoiceFromHandle(ec, localX, localY);
@@ -260,8 +259,8 @@ public final class CanvasElementTransformController {
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String group = TabletStateQueries.selectedGroupName(state);
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
         if (text == null) {
             return;
         }
@@ -273,7 +272,7 @@ public final class CanvasElementTransformController {
         if (state.canvas.draggingCanvasText) {
             CanvasPoint anchor = dragAnchor(state.canvas.canvasTextStartX, state.canvas.canvasTextStartY, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartH), state.canvas.canvasTextStartRotation, dx, dy);
             next = new CanvasTextLayer(text.id(), text.text(), anchor.x, anchor.y, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, state.canvas.canvasTextStartRotation, text.align(), text.style(), text.color(), text.fontSize(), text.spans());
-            next = applySmartSnapToText(next, cards, group);
+            next = applySmartSnapToText(next, cards, chapter);
         } else if (state.canvas.resizingCanvasText) {
             clearSnapGuides();
             next = resizeTextFromHandle(text, localX, localY);
@@ -293,12 +292,12 @@ public final class CanvasElementTransformController {
         CanvasLayerMutations.putTransientCanvasText(state, next);
     }
 
-    private CanvasImageLayer applySmartSnapToImage(CanvasImageLayer image, List<QuestCardLayout> cards, String group) {
+    private CanvasImageLayer applySmartSnapToImage(CanvasImageLayer image, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForImage(state, image),
                 cards,
-                group,
+                chapter,
                 Set.of(),
                 Set.of(image.id()),
                 Set.of()
@@ -322,12 +321,12 @@ public final class CanvasElementTransformController {
         return image.moveTo(clamped.x, clamped.y);
     }
 
-    private CanvasExclusiveChoice applySmartSnapToExclusiveChoice(CanvasExclusiveChoice ec, List<QuestCardLayout> cards, String group) {
+    private CanvasExclusiveChoice applySmartSnapToExclusiveChoice(CanvasExclusiveChoice ec, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForExclusiveChoice(state, ec),
                 cards,
-                group,
+                chapter,
                 Set.of(),
                 Set.of(),
                 Set.of(),
@@ -345,12 +344,12 @@ public final class CanvasElementTransformController {
         return ec.moveTo(clamped.x, clamped.y);
     }
 
-    private CanvasTextLayer applySmartSnapToText(CanvasTextLayer text, List<QuestCardLayout> cards, String group) {
+    private CanvasTextLayer applySmartSnapToText(CanvasTextLayer text, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForText(state, text),
                 cards,
-                group,
+                chapter,
                 Set.of(),
                 Set.of(),
                 Set.of(text.id())

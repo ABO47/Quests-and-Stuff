@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
+import java.util.List;
+import java.util.Map;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 public record CanvasSelectionSnapshot(
         CanvasSelectionSet selection,
@@ -23,7 +23,7 @@ public record CanvasSelectionSnapshot(
 
     public static CanvasSelectionSnapshot capture(
             TabletUiState state,
-            String group,
+            String chapter,
             Map<String, QuestCardLayout> byQuestId
     ) {
         CanvasSelectionSet selection = CanvasSelectionSet.current(state);
@@ -46,8 +46,8 @@ public record CanvasSelectionSnapshot(
         CanvasLayerSelectionSnapshot layers = CanvasLayerSelectionSnapshot.capture(
                 selection.imageIds(),
                 selection.textIds(),
-                state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()),
-                state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())
+                state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()),
+                state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())
         );
         if (layers.hasBounds()) {
             minX = Math.min(minX, layers.left());

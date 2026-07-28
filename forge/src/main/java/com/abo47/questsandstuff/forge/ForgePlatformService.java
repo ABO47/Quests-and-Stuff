@@ -1,16 +1,20 @@
 package com.abo47.questsandstuff.forge;
 
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
-import com.abo47.questsandstuff.platform.PlatformService;
+import java.nio.file.Path;
+
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.platform.PlatformService;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.versions.forge.ForgeVersion;
-
-import java.nio.file.Path;
 
 public final class ForgePlatformService implements PlatformService {
     @Override
@@ -54,6 +58,13 @@ public final class ForgePlatformService implements PlatformService {
 
     @Override
     public void openTabletUi(Player player) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> TabletClientHooks.openTabletUiFromItem(player));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> TabletLifecycle.openTabletUiFromItem(player));
+    }
+
+    @Override
+    public void setForceChunk(ServerLevel level, ChunkPos pos, boolean forced) {
+        if (level != null) {
+            level.setChunkForced(pos.x, pos.z, forced);
+        }
     }
 }

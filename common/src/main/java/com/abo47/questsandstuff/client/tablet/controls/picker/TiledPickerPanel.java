@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
-import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 public final class TiledPickerPanel {
     private TiledPickerPanel() {
@@ -37,13 +39,13 @@ public final class TiledPickerPanel {
     ) {
         TileGridLayout layout = TileGridLayout.calculate(w, h, tileW, tileH, gap, padX, padY, entries.size(), scroll.value());
         scroll.setValue(layout.scrollStart());
-        WidgetGroup surface = new WidgetGroup(x, y, w, h) {
+        WidgetGroup surface = new TabletScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
                 if (!isMouseOverElement(mouseX, mouseY) || layout.maxStart() <= 0) {
                     return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
                 }
-                int next = ScrollController.wheel(scroll.value(), layout.maxStart(), layout.wheelStep(), wheelDelta);
+                int next = ScrollMath.wheel(scroll.value(), layout.maxStart(), layout.wheelStep(), wheelDelta);
                 if (next != scroll.value()) {
                     scroll.setValue(next);
                     if (onScroll != null) {
@@ -54,11 +56,11 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(Surfaces.bordered(withAlpha(ModColors.elevatedSurface(), 150), ModColors.subtleBorder()));
+        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 190), TabletColors.subtleBorder()));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {
-            surface.addWidget(label(8, 8, emptyText, ModColors.TEXT_MUTED));
+            surface.addWidget(label(Math.max(4, padX), Math.max(4, padY), emptyText, TabletColors.TEXT_MUTED));
             return layout;
         }
 
@@ -68,9 +70,9 @@ public final class TiledPickerPanel {
         }
 
         if (layout.showScroll()) {
-            parent.addWidget(new DragScrollBarWidget(
-                    x + layout.scrollBarX() + 1,
-                    y + layout.scrollBarY(),
+            surface.addWidget(new DragScrollBarWidget(
+                    layout.scrollBarX() + 1,
+                    layout.scrollBarY(),
                     DragScrollBarWidget.RESERVED_WIDTH,
                     layout.scrollBarH(),
                     scroll::value,
@@ -85,9 +87,6 @@ public final class TiledPickerPanel {
                     scroll::dragging,
                     scroll::setDragging,
                     refresh,
-                    ModColors.scrollTrack(scroll.dragging()),
-                    ModColors.scrollThumb(false),
-                    ModColors.scrollThumb(true),
                     DragScrollBarWidget.WIDTH
             ));
         }

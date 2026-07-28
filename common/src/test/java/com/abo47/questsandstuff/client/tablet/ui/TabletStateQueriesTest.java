@@ -1,10 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.util.QuestIdentity;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,13 +29,13 @@ class TabletStateQueriesTest {
     }
 
     @Test
-    void selectedGroupNameUsesSanitizedEditableSelection() {
+    void selectedChapterNameUsesSanitizedEditableSelection() {
         TabletUiState state = new TabletUiState();
         state.root.canEdit = true;
-        state.root.selectedGroup = "  main\nchapter with a very very very very very very long suffix  ";
+        state.root.selectedChapter = "  main\nchapter with a very very very very very very long suffix  ";
 
-        assertEquals(QuestIdentity.uiGroupName(state.root.selectedGroup), TabletStateQueries.sanitizeGroupName(state.root.selectedGroup));
-        assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedGroupName(state));
+        assertEquals(QuestIdentity.uiChapterName(state.root.selectedChapter), TabletStateQueries.sanitizeChapterName(state.root.selectedChapter));
+        assertEquals("main chapter with a very very very very ", TabletStateQueries.selectedChapterName(state));
     }
 
     @Test

@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class PickerTileText {
     private PickerTileText() {
@@ -17,8 +18,10 @@ public final class PickerTileText {
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 var font = Minecraft.getInstance().font;
                 String fitted = fitText(safeText, Math.max(1, getSizeWidth()));
-                int drawX = getPositionX() + Math.max(0, (getSizeWidth() - font.width(fitted)) / 2);
-                graphics.drawString(font, fitted, drawX, getPositionY(), color, true);
+                int textWidth = font.width(fitted);
+                int drawX = getPositionX() + Math.max(0, (getSizeWidth() - textWidth) / 2);
+                int drawY = getPositionY() + Math.max(0, (10 - font.lineHeight) / 2);
+                graphics.drawString(font, fitted, drawX, drawY, color, false);
             }
         };
     }

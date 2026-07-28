@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.util.QuestNaming;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.groupFolderName;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.util.naming.QuestNaming;
+
+import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.chapterFolderName;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeQuestId;
-import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.primaryGroup;
+import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.primaryChapter;
 
 final class QuestDefinitionPaths {
     private QuestDefinitionPaths() {
@@ -16,14 +16,14 @@ final class QuestDefinitionPaths {
 
     static Path questPath(Path questsDir, QuestDefinition definition) throws IOException {
         String canonicalId = normalizeQuestId(definition.id());
-        String group = primaryGroup(definition);
-        String managedFileName = QuestNaming.managedQuestFileName(canonicalId, group);
+        String chapter = primaryChapter(definition);
+        String managedFileName = QuestNaming.managedQuestFileName(canonicalId, chapter);
         Path relative;
         if (!managedFileName.isBlank()) {
-            relative = Path.of(QuestNaming.chapterFolderName(group)).resolve(managedFileName);
+            relative = Path.of(QuestNaming.chapterFolderName(chapter)).resolve(managedFileName);
         } else {
             String slug = canonicalId.replace('/', '_');
-            relative = Path.of(groupFolderName(group)).resolve(slug + ".json");
+            relative = Path.of(chapterFolderName(chapter)).resolve(slug + ".json");
         }
         if (relative.isAbsolute()) {
             throw new IOException("Quest id cannot resolve to an absolute path: " + definition.id());

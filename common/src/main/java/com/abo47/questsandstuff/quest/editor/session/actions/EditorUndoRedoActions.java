@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService.EditorSession;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.SyncService;
 
 public final class EditorUndoRedoActions {
     private static final int MAX_HISTORY = 24;
@@ -21,14 +22,14 @@ public final class EditorUndoRedoActions {
 
     private final EditorSessionService service;
     private final QuestDefinitionStore definitionStore;
-    private final QuestRuntimeEngine runtimeEngine;
-    private final QuestSyncService syncService;
+    private final RuntimeEngine runtimeEngine;
+    private final SyncService syncService;
 
     public EditorUndoRedoActions(
             EditorSessionService service,
             QuestDefinitionStore definitionStore,
-            QuestRuntimeEngine runtimeEngine,
-            QuestSyncService syncService
+            RuntimeEngine runtimeEngine,
+            SyncService syncService
     ) {
         this.service = service;
         this.definitionStore = definitionStore;
@@ -77,9 +78,9 @@ public final class EditorUndoRedoActions {
             Collection<String> questIds,
             Collection<String> imageIds,
             Collection<String> textIds,
-            String group
+            String chapter
     ) {
-        session.undo.push(new PasteUndoEntry(questIds, imageIds, textIds, group));
+        session.undo.push(new PasteUndoEntry(questIds, imageIds, textIds, chapter));
         while (session.undo.size() > MAX_HISTORY) {
             session.undo.removeLast();
         }
@@ -93,11 +94,11 @@ public final class EditorUndoRedoActions {
         syncService.syncFull(players);
     }
 
-    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedGroups) {
+    public void postMutationDelta(ServerPlayer player, Set<String> changedQuestIds, Set<String> changedChapters) {
         runtimeEngine.refreshIndex(changedQuestIds);
         List<ServerPlayer> players = player.server.getPlayerList().getPlayers();
         Set<String> syncedQuestIds = runtimeEngine.preparePlayersForDeltaSync(players, changedQuestIds);
-        syncService.syncDeltaWithMetadata(players, syncedQuestIds, changedGroups);
+        syncService.syncDeltaWithMetadata(players, syncedQuestIds, changedChapters);
     }
 
     private record FullSnapshotEntry(QuestDefinitionStore.EditorSnapshot snapshot) implements EditorHistoryEntry {
@@ -111,10 +112,10 @@ public final class EditorUndoRedoActions {
             Set<String> questIds,
             Set<String> imageIds,
             Set<String> textIds,
-            String group
+            String chapter
     ) implements EditorHistoryEntry {
-        PasteUndoEntry(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, String group) {
-            this(copyOf(questIds), copyOf(imageIds), copyOf(textIds), group == null ? "" : group.trim());
+        PasteUndoEntry(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, String chapter) {
+            this(copyOf(questIds), copyOf(imageIds), copyOf(textIds), chapter == null ? "" : chapter.trim());
         }
 
         @Override
@@ -122,14 +123,14 @@ public final class EditorUndoRedoActions {
             for (String questId : questIds) {
                 definitionStore.remove(questId);
             }
-            if (group.isBlank()) {
+            if (chapter.isBlank()) {
                 return;
             }
             for (String imageId : imageIds) {
-                definitionStore.removeCanvasImage(group, imageId);
+                definitionStore.removeCanvasImage(chapter, imageId);
             }
             for (String textId : textIds) {
-                definitionStore.removeCanvasText(group, textId);
+                definitionStore.removeCanvasText(chapter, textId);
             }
         }
 

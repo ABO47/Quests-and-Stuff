@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.function.Consumer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 final class AssetPathResolver {
     private AssetPathResolver() {

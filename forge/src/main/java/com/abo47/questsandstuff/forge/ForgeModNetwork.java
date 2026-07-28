@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.forge;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.ModPacketType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
@@ -33,7 +35,7 @@ public final class ForgeModNetwork {
     }
 
     public static void sendToPlayer(Object packet, ServerPlayer player) {
-        if (player == null || player.connection == null || player.connection.connection == null) {
+        if (player.connection.connection == null) {
             return;
         }
         if (!player.connection.connection.isConnected() || player.connection.connection.channel() == null) {

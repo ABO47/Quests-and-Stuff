@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
+import java.util.Map;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Map;
 
 public record UnsupportedQuestRewardDefinition(
         String id,

@@ -1,6 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -13,21 +20,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElemen
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
-import java.util.Map;
 
 final class CanvasViewportClickController {
     private CanvasViewportClickController() {
@@ -177,10 +178,10 @@ final class CanvasViewportClickController {
         if (ecHit == null && state.root.canEdit) {
             ecHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
         }
-        String selectedGroup = TabletStateQueries.selectedGroupName(state);
-        List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByGroup.getOrDefault(selectedGroup, List.of());
-        List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(selectedGroup, List.of());
+        String selectedChapter = TabletStateQueries.selectedChapterName(state);
+        List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
+        List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapter, List.of());
+        List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapter, List.of());
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(
                 state,
                 cards,
@@ -188,7 +189,7 @@ final class CanvasViewportClickController {
                 canvasViewport.getSize().width,
                 canvasViewport.getSize().height
         );
-        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedGroup, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
+        CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedChapter, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
                 .resolveElementHit(hit, imageHit, textHit, ecHit);
         hit = layerHit.quest();
         imageHit = layerHit.image();
@@ -200,11 +201,18 @@ final class CanvasViewportClickController {
         }
 
         if (!state.root.canEdit) {
+            CanvasTextLayer canvasSpoilerText = CanvasRenderer.hitTestCanvasText(state, localX, localY);
+            if (canvasSpoilerText != null && CanvasTextLayer.hasStyleFlag(canvasSpoilerText.style(), "spoiler")) {
+                String revealed = state.canvas.canvasTextSpoilerRevealedTextId;
+                state.canvas.canvasTextSpoilerRevealedTextId = revealed.equals(canvasSpoilerText.id()) ? "" : canvasSpoilerText.id();
+                refresher.run();
+                return true;
+            }
             if (hit != null) {
                 state.canvas.canvasSelection.questIds().clear();
                 state.canvas.canvasSelection.questIds().add(hit.questId());
                 state.chapterPanel.lastJumpQuest = hit.questId();
-                if (button == 0 && !ClientQuestCache.questLockedPreview(hit.tag()) && !ClientQuestCache.questHiddenPreview(hit.tag())) {
+                if (button == 0 && !ClientQuestStateFacade.questLockedPreview(hit.tag()) && !ClientQuestStateFacade.questHiddenPreview(hit.tag())) {
                     int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
                     int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
                     QuestDetailsWindow.openAtSource(

@@ -1,44 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.command.QuestCommands;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.QuestServices;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +11,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
+import com.abo47.questsandstuff.command.QuestCommands;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPersistenceSyncAndCommandGameTests {
@@ -148,10 +151,10 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store = new QuestDefinitionStore(root);
             store.load();
 
-            if (!store.groupOrder().contains("Main")) {
+            if (!store.chapterOrder().contains("Main")) {
                 throw new GameTestAssertException("Chapter metadata should load chapter order");
             }
-            if (store.groupTextSize("Main") != 17) {
+            if (store.chapterTextSize("Main") != 17) {
                 throw new GameTestAssertException("Chapter metadata should load text_size");
             }
             if (store.canvasImages("Main").size() != 1 || store.canvasLayerOrder("Main").size() != 1) {
@@ -216,7 +219,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                 throw new GameTestAssertException("Manifest should include mod, targets, required mods, and optional mods");
             }
             if (manifest.getAsJsonArray("required_mods").size() < 4 || manifest.getAsJsonArray("optional_mods").size() != 1) {
-                throw new GameTestAssertException("Manifest mod requirements should be written");
+                throw new GameTestAssertException("Manifest mod tasks should be written");
             }
         } catch (IOException e) {
             throw new GameTestAssertException("Manifest test setup failed: " + e.getMessage());
@@ -239,9 +242,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(quest(questId));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
 
@@ -274,7 +277,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         CanvasTextLayer layer = new CanvasTextLayer("poem", poem, 12, 16, 112, 32, 0, "center", "bold", -1);
         CompoundTag quest = new CompoundTag();
         ListTag description = new ListTag();
-        description.add(StringTag.valueOf("@qas_desc_text:" + CanvasLayerNbt.textToTag(layer)));
+        description.add(StringTag.valueOf("@qas_desc_text:" + CanvasLayerNbtCodec.textToTag(layer)));
         quest.put("description", description);
 
         QuestDetailsDescriptionModel decoded = QuestDetailsDescriptionModel.decode(quest);
@@ -315,7 +318,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                             source.display().title(),
                             source.display().subtitle(),
                             List.of(detailLine),
-                            source.display().groups(),
+                            source.display().chapters(),
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
@@ -333,8 +336,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             store.upsert(withDescription);
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
             sync.setEditorVisibilityPredicate(ignored -> true);
             ServerPlayer player = detachedPlayer(helper);
             List<Object> packets = Collections.synchronizedList(new ArrayList<>());
@@ -370,7 +373,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     public static void syncSupportsChunkingDeltaAndReconnect(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_sync_");
             store = new QuestDefinitionStore(root);
 
@@ -381,8 +384,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             }
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
             sync.setVisibilityFilter((state, definition) -> true);
 
             ServerPlayer player = detachedPlayer(helper);
@@ -403,13 +406,13 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                 throw new GameTestAssertException("Expected 5 description chunks, got " + fullDescriptions.size());
             }
 
-            ClientQuestCache.applyFullSync(emptyFullPayload());
+            ClientQuestStateFacade.applyFullSync(emptyFullPayload());
             List<S2CFullSyncPacket> reversedFull = new ArrayList<>(fullPackets);
             Collections.reverse(reversedFull);
             for (S2CFullSyncPacket packet : reversedFull) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (ClientQuestCache.totalCount() != totalQuests) {
+            if (ClientQuestStateFacade.totalCount() != totalQuests) {
                 throw new GameTestAssertException("Client full sync reconstruction mismatch");
             }
 
@@ -430,9 +433,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             List<S2CDeltaSyncPacket> reversedDelta = new ArrayList<>(deltaPackets);
             Collections.reverse(reversedDelta);
             for (S2CDeltaSyncPacket packet : reversedDelta) {
-                ClientQuestCache.acceptDeltaChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptDeltaChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (ClientQuestCache.totalCount() != totalQuests) {
+            if (ClientQuestStateFacade.totalCount() != totalQuests) {
                 throw new GameTestAssertException("Delta merge should preserve quest count for non-existing removals");
             }
 
@@ -442,16 +445,16 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             sync.syncFull(player);
             List<S2CFullSyncPacket> reconnectFull = packetsOf(packets.subList(beforeReconnect, packets.size()), S2CFullSyncPacket.class);
             for (S2CFullSyncPacket packet : reconnectFull) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (ClientQuestCache.totalCount() != totalQuests - 1) {
+            if (ClientQuestStateFacade.totalCount() != totalQuests - 1) {
                 throw new GameTestAssertException("Reconnect full sync should reflect server-side quest removal");
             }
 
             for (S2CDeltaSyncPacket packet : deltaPackets) {
-                ClientQuestCache.acceptDeltaChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptDeltaChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (ClientQuestCache.totalCount() != totalQuests - 1) {
+            if (ClientQuestStateFacade.totalCount() != totalQuests - 1) {
                 throw new GameTestAssertException("Client should ignore stale delta packets after newer full sync");
             }
 
@@ -475,16 +478,16 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     public static void preparedFullSyncIncludesFreshNoPrerequisiteQuests(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_sync_unlock_");
             store = new QuestDefinitionStore(root);
             String questId = "editor/fresh_visible";
             store.upsert(quest(questId));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
 
             ServerPlayer player = detachedPlayer(helper);
@@ -497,9 +500,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
             sync.syncFull(player);
             for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            CompoundTag lockedPreview = ClientQuestCache.quests().get(questId);
+            CompoundTag lockedPreview = ClientQuestStateFacade.quests().get(questId);
             if (lockedPreview == null) {
                 throw new GameTestAssertException("Fresh locked quest should sync as a locked preview before unlock preparation");
             }
@@ -508,14 +511,14 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             }
 
             packets.clear();
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             engine.preparePlayerForFullSync(player);
             sync.syncFull(player);
             for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
 
-            CompoundTag quest = ClientQuestCache.quests().get(questId);
+            CompoundTag quest = ClientQuestStateFacade.quests().get(questId);
             if (quest == null) {
                 throw new GameTestAssertException("Prepared full sync should include newly unlockable quests");
             }
@@ -538,16 +541,16 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     public static void editorFullSyncIncludesLockedPrerequisiteChain(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_editor_sync_");
             store = new QuestDefinitionStore(root);
             store.upsert(quest("editor/root", "Main", 32, 32, Set.of(), Map.of(), Map.of(), Set.of()));
             store.upsert(quest("editor/child", "Main", 64, 32, Set.of("editor/root"), Map.of(), Map.of(), Set.of()));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             sync.setEditorVisibilityPredicate(ignored -> true);
 
@@ -561,12 +564,12 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
             sync.syncFull(player);
             for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
-            if (!ClientQuestCache.quests().containsKey("editor/root") || !ClientQuestCache.quests().containsKey("editor/child")) {
+            if (!ClientQuestStateFacade.quests().containsKey("editor/root") || !ClientQuestStateFacade.quests().containsKey("editor/child")) {
                 throw new GameTestAssertException("Editor full sync should include locked prerequisite chains for canvas editing");
             }
-            CompoundTag child = ClientQuestCache.quests().get("editor/child");
+            CompoundTag child = ClientQuestStateFacade.quests().get("editor/child");
             if (child == null || !child.getList(QuestDefinition.PREREQUISITES_FIELD, net.minecraft.nbt.Tag.TAG_STRING).contains(net.minecraft.nbt.StringTag.valueOf("editor/root"))) {
                 throw new GameTestAssertException("Editor full sync should preserve prerequisite edges for locked pasted-style quests");
             }
@@ -586,13 +589,13 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     public static void editorCreatedQuestStartsEmpty(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_empty_editor_");
             store = new QuestDefinitionStore(root);
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
@@ -635,12 +638,12 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             sync.syncFull(player);
             sync.broadcastEditorMutation(List.of(player), "add", created);
             for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-                ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+                ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
             }
             for (S2CEditorMutationPacket packet : packetsOf(packets, S2CEditorMutationPacket.class)) {
-                ClientQuestCache.applyEditorMutation(packet.sequence(), packet.action(), packet.questId(), packet.questTag());
+                ClientQuestStateFacade.applyEditorMutation(packet.sequence(), packet.action(), packet.questId(), packet.questTag());
             }
-            CompoundTag synced = ClientQuestCache.quests().get(created.id());
+            CompoundTag synced = ClientQuestStateFacade.quests().get(created.id());
             if (synced == null) {
                 throw new GameTestAssertException("Editor-created quest should sync to the client");
             }
@@ -668,7 +671,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         try {
             Path root = Files.createTempDirectory("qas_clipboard_");
             store = new QuestDefinitionStore(root);
-            store.setGroupOrder(List.of("Original"));
+            store.setChapterOrder(List.of("Original"));
             store.upsert(quest("source/external", "Original", 96, 32, Set.of(), Map.of(), Map.of(), Set.of()));
             store.upsert(quest("source/a", "Original", 32, 32, Set.of("source/external"), Map.of("source/external", 0xFF00FF), Map.of("source/external", "grid"), Set.of("source/external")));
             store.upsert(quest(
@@ -683,9 +686,9 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             ));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             EditorSessionService editor = new EditorSessionService(store, engine, sync);
             ServerPlayer player = detachedPlayer(helper);
@@ -693,8 +696,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             editor.copyQuestsToClipboard(player, "Original", new LinkedHashSet<>(List.of("source/a", "source/b")));
             store.remove("source/a");
             store.remove("source/b");
-            editor.createGroup(player, "After Copy");
-            editor.pasteClipboardInGroup(player, "After Copy", 200, 300);
+            editor.createChapter(player, "After Copy");
+            editor.pasteClipboardInChapter(player, "After Copy", 200, 300);
 
             List<QuestDefinition> firstPaste = pastedByTitle(store, "After Copy");
             if (firstPaste.size() != 2) {
@@ -719,12 +722,12 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             }
             assertClipboardGraph(redoPaste);
 
-            editor.pasteClipboardInGroup(player, "After Copy", 240, 340);
+            editor.pasteClipboardInChapter(player, "After Copy", 240, 340);
             List<QuestDefinition> secondPaste = pastedByTitle(store, "After Copy");
             if (secondPaste.size() != 4) {
                 throw new GameTestAssertException("Repeated paste should create unique quests; expected 4, got " + secondPaste.size());
             }
-            if (!store.groupOrder().contains("After Copy")) {
+            if (!store.chapterOrder().contains("After Copy")) {
                 throw new GameTestAssertException("Paste target chapter should exist after copy-created chapter paste");
             }
         } catch (IOException e) {
@@ -740,8 +743,8 @@ public final class QuestPersistenceSyncAndCommandGameTests {
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
     public static void editorMutationAddsMissingClientChapter(GameTestHelper helper) {
-        ClientQuestCache.resetStateForTests();
-        ClientQuestCache.applyFullSync(emptyFullPayload());
+        ClientQuestStateFacade.resetStateForTests();
+        ClientQuestStateFacade.applyFullSync(emptyFullPayload());
 
         CompoundTag groupView = new CompoundTag();
         groupView.putBoolean("visible", true);
@@ -753,13 +756,13 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
         CompoundTag questTag = new CompoundTag();
         questTag.putString("title", "source/a");
-        questTag.put("groups", groups);
+        questTag.put("chapters", groups);
 
-        ClientQuestCache.applyEditorMutation(1L, "add", "after_copy/source_a_copy", questTag);
-        if (!ClientQuestCache.groupOrder().contains("After Copy")) {
+        ClientQuestStateFacade.applyEditorMutation(1L, "add", "after_copy/source_a_copy", questTag);
+        if (!ClientQuestStateFacade.chapterOrder().contains("After Copy")) {
             throw new GameTestAssertException("Editor add mutation should create missing client chapter metadata");
         }
-        if (!ClientQuestCache.quests().containsKey("after_copy/source_a_copy")) {
+        if (!ClientQuestStateFacade.quests().containsKey("after_copy/source_a_copy")) {
             throw new GameTestAssertException("Editor add mutation should add pasted quest to client cache");
         }
         helper.succeed();
@@ -784,7 +787,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
         ServerPlayer player = detachedPlayer(helper);
         CommandSourceStack playerSource = player.createCommandSourceStack().withPermission(0);
 
-        String questId = QuestServices.engine(server).questIds().stream().findFirst().orElse("starter/logging_basics");
+        String questId = QuestServiceRegistry.engine(server).questIds().stream().findFirst().orElse("starter/logging_basics");
         String quotedQuestId = quoteArg(questId);
         try {
             int result = dispatcher.execute("questsandstuff pin " + quotedQuestId, playerSource);
@@ -849,7 +852,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                         id,
                         "bulk",
                         List.of("sync"),
-                        Map.of(chapter, new ChapterDefinition(true, x, y, 1.0f)),
+                        Map.of(chapter, new ChapterDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),
@@ -865,7 +868,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
 
     private static List<QuestDefinition> pastedByTitle(QuestDefinitionStore store, String chapter) {
         return store.quests().values().stream()
-                .filter(quest -> quest.display().groups().containsKey(chapter))
+                .filter(quest -> quest.display().chapters().containsKey(chapter))
                 .filter(quest -> "source/a".equals(quest.display().title()) || "source/b".equals(quest.display().title()))
                 .toList();
     }
@@ -887,20 +890,20 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             throw new GameTestAssertException("Pasted source/b should use only pasted source/a as a prerequisite, got " + pastedB.prerequisites());
         }
         if (!pastedB.connectionColors().keySet().equals(Set.of(pastedA.id()))) {
-            throw new GameTestAssertException("Connection colors should only keep the remapped internal edge");
+            throw new GameTestAssertException("Connection colors should only keep the remapped internal connection");
         }
         if (!pastedB.connectionModes().equals(Map.of(pastedA.id(), "grid"))) {
-            throw new GameTestAssertException("Connection mode should follow the remapped internal edge");
+            throw new GameTestAssertException("Connection mode should follow the remapped internal connection");
         }
         if (!pastedB.hiddenConnections().equals(Set.of(pastedA.id()))) {
-            throw new GameTestAssertException("Hidden connection should follow the remapped internal edge");
+            throw new GameTestAssertException("Hidden connection should follow the remapped internal connection");
         }
     }
 
     private static CompoundTag emptyFullPayload() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("schema", QuestDefinition.CURRENT_SCHEMA);
-        tag.put("groups", new ListTag());
+        tag.put("chapters", new ListTag());
         tag.put("quests", new CompoundTag());
         return tag;
     }

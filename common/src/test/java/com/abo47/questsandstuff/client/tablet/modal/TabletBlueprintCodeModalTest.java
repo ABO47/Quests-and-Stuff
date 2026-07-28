@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCode;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprintCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,12 +24,12 @@ class TabletBlueprintCodeModalTest {
                 List.of(),
                 List.of("image:img_1")
         );
-        String code = CanvasBlueprintCode.encode(blueprint);
+        String code = CanvasBlueprintCodec.encode(blueprint);
         assertTrue(code.length() > 92);
 
         List<String> lines = TabletBlueprintCodeModal.editorLines(code);
         String roundTripped = TabletBlueprintCodeModal.rawCode(lines);
-        CanvasBlueprint decoded = CanvasBlueprintCode.decode(roundTripped);
+        CanvasBlueprint decoded = CanvasBlueprintCodec.decode(roundTripped);
 
         assertEquals(List.of(code), lines);
         assertEquals(code, roundTripped);

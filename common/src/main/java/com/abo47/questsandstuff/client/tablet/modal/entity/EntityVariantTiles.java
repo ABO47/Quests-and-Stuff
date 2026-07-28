@@ -1,44 +1,48 @@
 package com.abo47.questsandstuff.client.tablet.modal.entity;
 
+import java.util.Locale;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-import java.util.Locale;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 final class EntityVariantTiles {
     static final int RIGHT_X = 166;
-    private static final int PAD = 8;
+    private static final int PAD = GRID_8;
     private static final int LEFT_W = 150;
     private static final int TILE_COLUMNS = 3;
     private static final int TILE_ROWS = 3;
-    private static final int TILE_GAP = 6;
-    private static final int TILE_PAD = 8;
+    private static final int TILE_GAP = GRID_6;
+    private static final int TILE_PAD = GRID_8;
     private static final int ENTITY_FRONT_YAW = EntityPreviewRenderer.FRONT_ENTITY_YAW;
     private static final int PREVIEW_SPIN_SPEED = 36;
 
@@ -46,9 +50,9 @@ final class EntityVariantTiles {
     }
 
     static void addPreview(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int h) {
-        WidgetGroup preview = panel(PAD, 22, LEFT_W, h - 48, withAlpha(ModColors.SURFACE_PANEL_ALT, 120), ModColors.BORDER_BASE);
-        preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), ModColors.TEXT_SECONDARY));
-        preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), ModColors.TEXT_PRIMARY));
+        WidgetGroup preview = panel(PAD, 22, LEFT_W, h - 48, withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
+        preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), TabletColors.TEXT_PRIMARY));
         preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 98)) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -69,7 +73,7 @@ final class EntityVariantTiles {
     }
 
     static void addBackButton(WidgetGroup modal, int x, int y, int w, int h, Runnable action) {
-        modal.addWidget(WindowChrome.iconButton(x, y, w, h, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
+        modal.addWidget(ChromeFactory.iconButton(x, y, w, h, "back", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
     }
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
@@ -131,8 +135,8 @@ final class EntityVariantTiles {
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder opened target={} entity={} folder={}", model.target(), model.entityId(), folder.key());
             refresh.run();
         });
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
     }
 
@@ -148,35 +152,35 @@ final class EntityVariantTiles {
             }
             refresh.run();
         });
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 64)));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 90)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
     }
 
     private static WidgetGroup folderTile(EntityVariantCatalog.VariantFolder folder, boolean active, int x, int y, int tileW, int tileH) {
         WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
         if (active) {
-            tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 86)));
+            tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 86)));
         }
         int labelH = 14;
         int iconAreaH = Math.max(24, tileH - labelH - 8);
         int iconSize = Math.max(20, Math.min(44, Math.min(tileW - 18, iconAreaH - 8)));
         int iconX = Math.max(0, (tileW - iconSize) / 2);
         int iconY = Math.max(4, (iconAreaH - iconSize) / 2);
-        var folderIcon = UiIconAtlas.iconTexture("folder");
+        var folderIcon = IconAtlas.iconTexture("folder");
         if (folderIcon != null) {
             tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
         } else {
-            tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, tileW, "[dir]", ModColors.TEXT_MUTED));
+            tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, tileW, "[dir]", TabletColors.TEXT_MUTED));
         }
-        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, folder.label(), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, folder.label(), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY));
         return tile;
     }
 
     private static WidgetGroup variantTile(String entityId, EntityVariantCatalog.VariantEntry entry, boolean active, int x, int y, int tileW, int tileH, String folderKey) {
         WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
         if (active) {
-            tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 86)));
+            tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 86)));
         }
         int labelH = 14;
         int previewH = Math.max(28, tileH - labelH - 8);
@@ -197,7 +201,7 @@ final class EntityVariantTiles {
                 );
             }
         });
-        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, tileLabel(entityId, entry, folderKey), active ? ModColors.TEXT_PRIMARY : ModColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, tileLabel(entityId, entry, folderKey), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY));
         return tile;
     }
 

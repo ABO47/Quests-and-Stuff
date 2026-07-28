@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class ModalTargetState {
     private static final Set<String> MALFORMED_TARGET_LOG_KEYS = ConcurrentHashMap.newKeySet();

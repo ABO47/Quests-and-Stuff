@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EntityMotionTargetsTest {
 

@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.quest.persistence.chapter;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.abo47.questsandstuff.util.io.JsonFileTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,7 +26,7 @@ class ChapterMetadataFilesTest {
         Files.writeString(two, "{}");
         Files.writeString(root.resolve("notes.txt"), "ignored");
 
-        Set<Path> found = Set.copyOf(ChapterMetadataFiles.jsonFiles(root));
+        Set<Path> found = Set.copyOf(JsonFileTree.jsonFiles(root));
 
         assertEquals(Set.of(one, two), found);
     }
@@ -34,7 +36,7 @@ class ChapterMetadataFilesTest {
         Path file = root.resolve("chapter.json");
         Files.writeString(file, "old");
 
-        ChapterMetadataFiles.writeAtomic(file, "new");
+        JsonFileTree.writeAtomic(file, "new");
 
         assertEquals("new", Files.readString(file));
         assertFalse(Files.exists(root.resolve("chapter.json.tmp")));
@@ -47,7 +49,7 @@ class ChapterMetadataFilesTest {
         Files.writeString(keep, "{}");
         Files.writeString(stale, "{}");
 
-        assertEquals(Set.of(stale), Set.copyOf(ChapterMetadataFiles.deleteStaleJsonFiles(root, Set.of(keep))));
+        assertEquals(Set.of(stale), Set.copyOf(JsonFileTree.deleteStaleJsonFiles(root, Set.of(keep), false)));
 
         assertTrue(Files.exists(keep));
         assertFalse(Files.exists(stale));

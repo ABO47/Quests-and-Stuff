@@ -1,18 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import java.util.function.LongSupplier;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import java.util.function.LongSupplier;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ContextMenuPopWidget extends WidgetGroup {
-    private static final long MENU_MS = 95L;
+    private static final long MENU_MS = TabletAnimationTimings.CONTEXT_MENU_POP_MS;
     private static final float START_SCALE = 0.97f;
     private static final float MENU_Z = 240.0f;
     private static final int SHADOW_ALPHA = 58;
@@ -103,7 +108,7 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x + 2, y + 3, x + getSizeWidth() + 2, y + getSizeHeight() + 3, withAlpha(ModColors.SURFACE_BASE, alpha));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x + 2, y + 3, getSizeWidth(), getSizeHeight());
     }
 
     private void drawVeil(GuiGraphics graphics, float amount) {
@@ -113,7 +118,7 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
     }
 
     private long startMs() {

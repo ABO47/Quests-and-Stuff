@@ -1,28 +1,24 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
 
-public record S2CDescriptionSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
+public final class S2CDescriptionSyncPacket extends ChunkedSyncPacket {
+    public S2CDescriptionSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
+        super(sequence, chunkIndex, chunkCount, payload);
+    }
+
+    public S2CDescriptionSyncPacket(Data d) {
+        super(d);
+    }
+
     public static S2CDescriptionSyncPacket decode(FriendlyByteBuf buf) {
-        long sequence = buf.readLong();
-        int chunkIndex = buf.readVarInt();
-        int chunkCount = buf.readVarInt();
-        SyncPacketPayloadLimits.requireValidChunkMetadata(chunkIndex, chunkCount);
-        return new S2CDescriptionSyncPacket(sequence, chunkIndex, chunkCount, SyncPacketPayloadLimits.readNbt(buf));
+        return ChunkedSyncPacket.decode(buf, S2CDescriptionSyncPacket::new);
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        SyncPacketPayloadLimits.requireValidChunkMetadata(chunkIndex, chunkCount);
-        buf.writeLong(sequence);
-        buf.writeVarInt(chunkIndex);
-        buf.writeVarInt(chunkCount);
-        buf.writeNbt(payload);
-    }
-
+    @Override
     public void handle(ModPacketContext context) {
         context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleDescription(sequence, chunkIndex, chunkCount, payload));
     }

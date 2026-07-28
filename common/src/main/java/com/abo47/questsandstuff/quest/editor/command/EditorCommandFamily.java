@@ -6,6 +6,6 @@ public enum EditorCommandFamily {
     PREREQUISITE,
     QUEST,
     DESCRIPTION,
-    OBJECTIVE,
+    TASK,
     CANVAS_LAYER
 }

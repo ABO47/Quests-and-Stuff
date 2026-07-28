@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.platform;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public final class Services {
     private static volatile PlatformService platform = new FallbackPlatformService();
@@ -56,6 +56,10 @@ public final class Services {
 
         @Override
         public void openTabletUi(Player player) {
+        }
+
+        @Override
+        public void setForceChunk(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.ChunkPos pos, boolean forced) {
         }
     }
 }

@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
-import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
-import com.abo47.questsandstuff.client.tablet.context.ContextAction;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.List;
+
 import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 
 public final class ChapterContextMenu {
     private ChapterContextMenu() {
@@ -22,7 +24,7 @@ public final class ChapterContextMenu {
         if (!state.chapterPanel.chapterMenuOpen) {
             return;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height);
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, overlay.getSize().width, overlay.getSize().height, player, refresh);
         state.chapterPanel.chapterMenuX = layout.menuX();
         state.chapterPanel.chapterMenuY = layout.menuY();
         List<ContextAction> actions = ChapterContextMenuRows.actions(layout, state, player, refresh);
@@ -33,10 +35,15 @@ public final class ChapterContextMenu {
                 actions,
                 0,
                 ContextMenuPanel.rowActionCount(actions),
-                ModColors.BORDER_BASE,
+                TabletColors.BORDER_BASE,
                 state,
-                null,
-                ContextMenuAnimation.CHAPTER_KEY
+                action -> {
+                    if (action.closeAfterClick()) {
+                        state.chapterPanel.chapterMenuOpen = false;
+                    }
+                    refresh.run();
+                },
+                ContextMenuAnimationBridge.CHAPTER_KEY
         ));
     }
 
@@ -48,7 +55,7 @@ public final class ChapterContextMenu {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state));
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state), player, refresh);
         return ChapterContextMenuRows.click(layout, state, player, refresh, x, y);
     }
 }

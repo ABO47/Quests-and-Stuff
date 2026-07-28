@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
+import java.util.List;
+
 import net.minecraft.client.gui.GuiGraphics;
 
-import java.util.List;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 
 public final class CanvasRecipeCardRenderer {
     private CanvasRecipeCardRenderer() {

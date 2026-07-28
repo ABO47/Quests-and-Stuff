@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 
 public record CanvasLayerSelection(Set<CanvasLayerKey> keys) {
     public CanvasLayerSelection {

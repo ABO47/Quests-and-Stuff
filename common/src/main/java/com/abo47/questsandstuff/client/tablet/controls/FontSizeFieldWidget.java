@@ -1,24 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntConsumer;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.function.IntConsumer;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class FontSizeFieldWidget extends TextFieldWidget {
     public static final int MIN = 1;
     public static final int MAX = 100;
 
     private final IntConsumer onChange;
+    private final IntConsumer onPreview;
     private final Runnable onCommit;
     private final Runnable onCancel;
     private final Runnable onBlur;
+    private final BooleanSupplier yieldEnterToEditor;
     private boolean suppressNextBlur;
     private boolean focusWhenReady = true;
     private int currentValue;
@@ -34,23 +40,56 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
             Runnable onCancel,
             Runnable onBlur
     ) {
+        this(x, y, width, height, currentValue, onChange, null, onCommit, onCancel, onBlur, null);
+    }
+
+    public FontSizeFieldWidget(
+            int x,
+            int y,
+            int width,
+            int height,
+            int currentValue,
+            IntConsumer onChange,
+            Runnable onCommit,
+            Runnable onCancel,
+            Runnable onBlur,
+            BooleanSupplier yieldEnterToEditor
+    ) {
+        this(x, y, width, height, currentValue, onChange, null, onCommit, onCancel, onBlur, yieldEnterToEditor);
+    }
+
+    public FontSizeFieldWidget(
+            int x,
+            int y,
+            int width,
+            int height,
+            int currentValue,
+            IntConsumer onChange,
+            IntConsumer onPreview,
+            Runnable onCommit,
+            Runnable onCancel,
+            Runnable onBlur,
+            BooleanSupplier yieldEnterToEditor
+    ) {
         super(x, y, width, height, null, null);
         this.currentValue = clamp(currentValue);
         this.onChange = onChange == null ? value -> {
         } : onChange;
+        this.onPreview = onPreview != null ? onPreview : this.onChange;
         this.onCommit = onCommit == null ? () -> {
         } : onCommit;
         this.onCancel = onCancel == null ? () -> {
         } : onCancel;
         this.onBlur = onBlur == null ? this.onCommit : onBlur;
+        this.yieldEnterToEditor = yieldEnterToEditor;
         setClientSideWidget();
         setBordered(false);
         setMaxStringLength(3);
         StyledTextFields.applyIntegerValidator(this, MIN, MAX);
         setTextResponder(this::handleChanged);
         setCurrentString(Integer.toString(this.currentValue));
-        setBackground(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 150), ModColors.BORDER_ACCENT));
-        setTextColor(ModColors.TEXT_PRIMARY);
+        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 150), TabletColors.BORDER_ACCENT));
+        setTextColor(TabletColors.TEXT_PRIMARY);
         updateTooltip();
     }
 
@@ -83,6 +122,12 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            if (!isFocus()) {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
+            if (yieldEnterToEditor != null && yieldEnterToEditor.getAsBoolean()) {
+                return false;
+            }
             commitCurrentText();
             onCommit.run();
             suppressNextBlur = true;
@@ -114,13 +159,12 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         if (!isMouseOverElement(mouseX, mouseY)) {
             return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        setFocus(true);
         int step = wheelDelta > 0 ? 1 : -1;
         int next = clamp(parseClamped(getCurrentString(), currentValue) + step);
         currentValue = next;
         setCurrentString(Integer.toString(currentValue));
         updateTooltip();
-        onChange.accept(next);
+        onPreview.accept(next);
         return true;
     }
 
@@ -153,12 +197,25 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
 
     private void commitCurrentText() {
         int next = parseClamped(getCurrentString(), currentValue);
-        if (next != currentValue) {
-            currentValue = next;
-            onChange.accept(next);
-        }
+        currentValue = next;
         setCurrentString(Integer.toString(currentValue));
         updateTooltip();
+        onChange.accept(next);
+    }
+
+    @Override
+    public TextFieldWidget setCurrentString(Object currentString) {
+        String newVal = currentString.toString();
+        if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+            int cursorPos = textField.getCursorPosition();
+            super.setCurrentString(newVal);
+            int clamped = Math.min(cursorPos, newVal.length());
+            textField.setCursorPosition(clamped);
+            textField.setHighlightPos(clamped);
+        } else {
+            super.setCurrentString(currentString);
+        }
+        return this;
     }
 
     private void selectAll() {

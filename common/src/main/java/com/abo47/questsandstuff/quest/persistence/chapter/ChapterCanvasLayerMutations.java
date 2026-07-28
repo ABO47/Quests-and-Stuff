@@ -9,8 +9,8 @@ final class ChapterCanvasLayerMutations {
     private ChapterCanvasLayerMutations() {
     }
 
-    static <T> boolean put(ChapterMetadataState state, String group, T layer, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
-        String normalized = state.ensureGroup(group);
+    static <T> boolean put(ChapterMetadataState state, String chapter, T layer, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
+        String normalized = state.ensureChapter(chapter);
         if (normalized.isBlank() || id == null || id.isBlank()) {
             return false;
         }
@@ -31,8 +31,8 @@ final class ChapterCanvasLayerMutations {
         return true;
     }
 
-    static <T> boolean remove(ChapterMetadataState state, String group, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
-        String normalized = ChapterMetadataState.normalizeGroupName(group);
+    static <T> boolean remove(ChapterMetadataState state, String chapter, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
+        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
         if (normalized.isBlank() || id == null || id.isBlank()) {
             return false;
         }
@@ -46,7 +46,7 @@ final class ChapterCanvasLayerMutations {
         return true;
     }
 
-    static void setOrder(ChapterMetadataState state, String group, List<String> order) {
+    static void setOrder(ChapterMetadataState state, String chapter, List<String> order) {
         List<String> sanitized = new ArrayList<>();
         if (order != null) {
             for (String key : order) {
@@ -55,27 +55,27 @@ final class ChapterCanvasLayerMutations {
                 }
             }
         }
-        ChapterMetadataState.putOrRemove(state.canvasLayerOrderByGroup, group, sanitized);
+        ChapterMetadataState.putOrRemove(state.canvasLayerOrderByChapter, chapter, sanitized);
     }
 
-    private static void ensureOrderEntry(ChapterMetadataState state, String group, String key) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    private static void ensureOrderEntry(ChapterMetadataState state, String chapter, String key) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         if (!order.contains(key)) {
             order.add(key);
-            state.canvasLayerOrderByGroup.put(group, List.copyOf(order));
+            state.canvasLayerOrderByChapter.put(chapter, List.copyOf(order));
         }
     }
 
-    private static void removeOrderEntry(ChapterMetadataState state, String group, String key) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    private static void removeOrderEntry(ChapterMetadataState state, String chapter, String key) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         if (order.remove(key)) {
-            ChapterMetadataState.putOrRemove(state.canvasLayerOrderByGroup, group, order);
+            ChapterMetadataState.putOrRemove(state.canvasLayerOrderByChapter, chapter, order);
         }
     }
 }

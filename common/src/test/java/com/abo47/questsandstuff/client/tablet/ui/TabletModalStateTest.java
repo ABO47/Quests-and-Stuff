@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
-import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -230,7 +232,6 @@ class TabletModalStateTest {
         assertEquals(Integer.MIN_VALUE, state.pickers.colorPaletteContextValue);
         assertFalse(state.pickers.colorPaletteScrollDragging);
         assertFalse(state.modal.themeScrollDragging);
-        assertFalse(state.modal.settingsScrollDragging);
         assertEquals("", state.modal.prerequisitesManagerQuestId);
         assertEquals("", state.modal.prerequisitesManagerSearch);
         assertFalse(state.modal.prerequisitesManagerExternalMode);
@@ -299,7 +300,6 @@ class TabletModalStateTest {
         state.pickers.colorPaletteContextValue = 0xFF00FF00;
         state.pickers.colorPaletteScrollDragging = true;
         state.modal.themeScrollDragging = true;
-        state.modal.settingsScrollDragging = true;
         state.modal.prerequisitesManagerQuestId = "quest";
         state.modal.prerequisitesManagerSearch = "query";
         state.modal.prerequisitesManagerExternalMode = true;

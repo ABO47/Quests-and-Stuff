@@ -1,28 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public final class CanvasSelectionActions {
     private CanvasSelectionActions() {
@@ -83,12 +83,12 @@ public final class CanvasSelectionActions {
         if (state == null || totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        if (group.isBlank()) {
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        if (chapter.isBlank()) {
             return false;
         }
 
-        SelectionBounds bounds = selectedBounds(state, group);
+        SelectionBounds bounds = selectedBounds(state, chapter);
         if (!bounds.valid()) {
             return false;
         }
@@ -100,11 +100,11 @@ public final class CanvasSelectionActions {
         boolean changed = false;
         Map<String, CanvasPoint> questPositions = new LinkedHashMap<>();
         for (String questId : state.canvas.canvasSelection.questIds()) {
-            if (!ClientQuestCache.containsQuest(questId)) {
+            if (!ClientQuestStateFacade.containsQuest(questId)) {
                 continue;
             }
-            CompoundTag tag = ClientQuestCache.quest(questId);
-            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
+            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, chapter);
             CanvasPoint aligned = movedQuestPosition(state, card, offset, verticalCenterLine);
             if (aligned.x != card.logicalX() || aligned.y != card.logicalY()) {
                 questPositions.put(questId, aligned);
@@ -113,37 +113,37 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
             CanvasImageLayer aligned = movedImage(state, image, offset, verticalCenterLine);
             if (!aligned.equals(image)) {
-                CanvasLayerMutations.putCanvasImage(state, group, aligned);
+                CanvasLayerMutations.putCanvasImage(state, chapter, aligned);
                 changed = true;
             }
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
             CanvasTextLayer aligned = movedText(state, text, offset, verticalCenterLine);
             if (!aligned.equals(text)) {
-                CanvasLayerMutations.putCanvasText(state, group, aligned);
+                CanvasLayerMutations.putCanvasText(state, chapter, aligned);
                 changed = true;
             }
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }
             CanvasExclusiveChoice aligned = movedExclusiveChoice(state, ec, offset, verticalCenterLine);
             if (!aligned.equals(ec)) {
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, aligned);
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, aligned);
                 changed = true;
             }
         }
@@ -152,24 +152,24 @@ public final class CanvasSelectionActions {
             EditorCanvasCommandClient.runCanvasMoveAction(player, state, questPositions);
         }
         if (changed) {
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
         }
         return changed;
     }
 
-    private static SelectionBounds selectedBounds(TabletUiState state, String group) {
+    private static SelectionBounds selectedBounds(TabletUiState state, String chapter) {
         SelectionBounds bounds = new SelectionBounds();
         for (String questId : state.canvas.canvasSelection.questIds()) {
-            if (!ClientQuestCache.containsQuest(questId)) {
+            if (!ClientQuestStateFacade.containsQuest(questId)) {
                 continue;
             }
-            CompoundTag tag = ClientQuestCache.quest(questId);
-            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, group);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
+            QuestCardLayout card = CanvasGeometry.layoutQuest(questId, tag, state, chapter);
             bounds.include(card.visualLogicalX(), card.visualLogicalY(), card.logicalRight(), card.logicalBottom());
         }
 
         Set<String> imageIds = selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
@@ -178,7 +178,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> textIds = selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
@@ -187,7 +187,7 @@ public final class CanvasSelectionActions {
         }
 
         Set<String> ecIds = selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }

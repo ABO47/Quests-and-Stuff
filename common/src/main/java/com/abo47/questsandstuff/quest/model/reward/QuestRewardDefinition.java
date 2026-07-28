@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.quest.model.reward;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.List;
 import java.util.Map;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface QuestRewardDefinition {
     Codec<QuestRewardDefinition> CODEC = QuestRewards.CODEC;

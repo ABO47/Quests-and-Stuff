@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.quest.editor.session;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,7 +28,7 @@ class EditorSessionStateTest {
 
             EditorSessionService.EditorSession session = state.createSession();
 
-            assertEquals("main", session.currentGroup);
+            assertEquals("main", session.currentChapter);
             assertEquals("alpha", session.currentQuest);
         } finally {
             store.shutdown();
@@ -40,7 +41,7 @@ class EditorSessionStateTest {
         try {
             EditorSessionState state = new EditorSessionState(store);
             EditorSessionService.EditorSession session = new EditorSessionService.EditorSession();
-            session.currentGroup = "side";
+            session.currentChapter = "side";
             session.currentQuest = "zeta";
 
             state.normalizeQuestSelection(session);
@@ -50,7 +51,7 @@ class EditorSessionStateTest {
             state.normalizeQuestSelection(session);
             assertEquals("sideQuest", session.currentQuest);
 
-            session.currentGroup = "missing";
+            session.currentChapter = "missing";
             state.normalizeQuestSelection(session);
             assertEquals("-", session.currentQuest);
         } finally {
@@ -64,25 +65,25 @@ class EditorSessionStateTest {
         try {
             EditorSessionState state = new EditorSessionState(store);
 
-            assertEquals(List.of("main", "side"), state.groups());
-            assertEquals(List.of("alpha", "main_0"), state.questIdsInGroup("main"));
-            assertEquals(List.of("sideQuest"), state.questIdsInGroup("side"));
+            assertEquals(List.of("main", "side"), state.chapters());
+            assertEquals(List.of("alpha", "main_0"), state.questIdsInChapter("main"));
+            assertEquals(List.of("sideQuest"), state.questIdsInChapter("side"));
         } finally {
             store.shutdown();
         }
     }
 
     @Test
-    void ensureGroupExistsIgnoresBlankAndAppendsNewGroup() {
+    void ensureChapterExistsIgnoresBlankAndAppendsNewGroup() {
         QuestDefinitionStore store = storeWithQuests();
         try {
             EditorSessionState state = new EditorSessionState(store);
 
-            state.ensureGroupExists("  ");
-            assertEquals(List.of("main", "side"), store.groupOrder());
+            state.ensureChapterExists("  ");
+            assertEquals(List.of("main", "side"), store.chapterOrder());
 
-            state.ensureGroupExists(" extra ");
-            assertEquals(List.of("main", "side", "extra"), store.groupOrder());
+            state.ensureChapterExists(" extra ");
+            assertEquals(List.of("main", "side", "extra"), store.chapterOrder());
         } finally {
             store.shutdown();
         }
@@ -106,15 +107,15 @@ class EditorSessionStateTest {
         store.upsert(quest("alpha", "main"));
         store.upsert(quest("main_0", "main"));
         store.upsert(quest("sideQuest", "side"));
-        store.setGroupOrder(List.of("main", "side"));
+        store.setChapterOrder(List.of("main", "side"));
         return store;
     }
 
-    private static QuestDefinition quest(String id, String group) {
+    private static QuestDefinition quest(String id, String chapter) {
         return new QuestDefinition(
                 QuestDefinition.CURRENT_SCHEMA,
                 id,
-                QuestDisplay.forNewQuest(id, Map.of(group, ChapterDefinition.DEFAULT)),
+                QuestDisplay.forNewQuest(id, Map.of(chapter, ChapterDef.DEFAULT)),
                 QuestSettings.DEFAULT,
                 Set.of(),
                 Map.of(),

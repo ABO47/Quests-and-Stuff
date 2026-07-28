@@ -4,13 +4,11 @@ import com.abo47.questsandstuff.client.tablet.layout.BaseSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.snapExpandedChapterWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
 
 final class QuestDetailsSplitterWidget extends BaseSplitterWidget {
-    QuestDetailsSplitterWidget(int x, TabletUiState state, Runnable refresh) {
-        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
+    QuestDetailsSplitterWidget(int x, int y, int h, TabletUiState state, Runnable refresh) {
+        super(x, y, SPLITTER_W, h, state, refresh);
     }
 
     @Override

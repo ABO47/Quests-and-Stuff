@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-final class CanvasRotationMath {
+public final class CanvasRotationMath {
     private CanvasRotationMath() {
     }
 
@@ -60,7 +60,7 @@ final class CanvasRotationMath {
         return normalized == 0 || normalized == 90 || normalized == 180 || normalized == 270;
     }
 
-    static int normalizeDegrees(int degrees) {
+    public static int normalizeDegrees(int degrees) {
         return ((degrees % 360) + 360) % 360;
     }
 

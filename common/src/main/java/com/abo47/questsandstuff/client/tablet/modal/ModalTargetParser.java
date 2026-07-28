@@ -91,12 +91,12 @@ public final class ModalTargetParser {
             return is(ModalTargets.REWARD_COMMAND_EDITOR_ICON);
         }
 
-        public boolean isObjectiveTask() {
-            return is(ModalTargets.OBJECTIVE_TASK);
+        public boolean isTaskTask() {
+            return is(ModalTargets.TASK_TASK);
         }
 
-        public boolean isObjectiveReward() {
-            return is(ModalTargets.OBJECTIVE_REWARD);
+        public boolean isTaskReward() {
+            return is(ModalTargets.TASK_REWARD);
         }
 
         public boolean isQuestIcon() {

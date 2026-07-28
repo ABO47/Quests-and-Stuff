@@ -1,16 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
 
 final class QuestDetailsWindowHitTest {
     private QuestDetailsWindowHitTest() {
@@ -83,17 +83,19 @@ final class QuestDetailsWindowHitTest {
         if (questId.isBlank() || normalizedTextId.isBlank()) {
             return false;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(normalizedTextId);
         if (text == null) {
             return false;
         }
         int leftW = QuestDetailsWindow.leftPanelWidth(state);
-        int canvasX = CHAPTER_X + leftW + GAP;
-        int canvasW = QuestDetailsWindow.canvasPanelWidth(leftW);
-        int[] viewport = QuestDetailsWindow.mainCanvasViewport(state, canvasW);
+        int canvasX = leftW + GAP;
+        int frameW = state.questDetails.questDetailsW > 0 ? state.questDetails.questDetailsW : BODY_W;
+        int frameH = state.questDetails.questDetailsH > 0 ? state.questDetails.questDetailsH : BODY_H;
+        int canvasW = QuestDetailsWindow.canvasPanelWidth(leftW, frameW);
+        int[] viewport = QuestDetailsWindow.mainCanvasViewport(canvasW, frameH);
         int vx = state.questDetails.questDetailsScreenX + canvasX + viewport[0];
-        int vy = state.questDetails.questDetailsScreenY + CANVAS_Y + viewport[1];
+        int vy = state.questDetails.questDetailsScreenY + viewport[1];
         int lx = (int) Math.round(mouseX - vx);
         int ly = (int) Math.round(mouseY - vy);
         if (lx < 0 || ly < 0 || lx > viewport[2] || ly > viewport[3]) {

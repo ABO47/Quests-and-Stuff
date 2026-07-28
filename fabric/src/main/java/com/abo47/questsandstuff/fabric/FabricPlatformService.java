@@ -1,13 +1,17 @@
 package com.abo47.questsandstuff.fabric;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.platform.PlatformService;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.platform.PlatformService;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class FabricPlatformService implements PlatformService {
     @Override
@@ -51,11 +55,18 @@ public final class FabricPlatformService implements PlatformService {
     @Override
     public void openTabletUi(Player player) {
         try {
-            Class<?> hooks = Class.forName("com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks");
+            Class<?> hooks = Class.forName("com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle");
             Method method = hooks.getMethod("openTabletUiFromItem", Player.class);
             method.invoke(null, player);
         } catch (ReflectiveOperationException e) {
             QuestsAndStuffMod.LOGGER.warn("Failed to open tablet UI on Fabric", e);
+        }
+    }
+
+    @Override
+    public void setForceChunk(ServerLevel level, ChunkPos pos, boolean forced) {
+        if (level != null) {
+            level.setChunkForced(pos.x, pos.z, forced);
         }
     }
 }

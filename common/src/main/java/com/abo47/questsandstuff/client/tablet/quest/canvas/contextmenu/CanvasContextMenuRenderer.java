@@ -1,29 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.context.ContextAction;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import java.util.List;
+
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 final class CanvasContextMenuRenderer {
     private CanvasContextMenuRenderer() {
     }
 
     static void renderCanvasContextMenu(CanvasViewport canvasViewport, TabletUiState state) {
-        if (!ContextMenuState.isOpen(state)) {
-            ContextMenuState.resetClosedMetrics(state);
+        if (!ContextMenuController.isOpen(state)) {
+            ContextMenuController.resetClosedMetrics(state);
             return;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return;
         }
         int rowCount = ContextMenuPanel.rowActionCount(actions);
@@ -38,18 +39,18 @@ final class CanvasContextMenuRenderer {
         int menuH = ContextMenuPanel.heightFor(actions, visibleRows);
         int menuX = ContextMenuPlacement.fitRightOrLeft(state.contextMenu.contextMenuAnchorX, canvasViewport.getSize().width, menuW);
         int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenu.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
-        ContextMenuState.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
+        ContextMenuController.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
 
         canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> close(state)));
-        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, ModColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 close(state);
             }
-        }, canvasViewport.getSize().width, canvasViewport.getSize().height, ContextMenuState.scrollState(state), canvasViewport::refresh);
+        }, canvasViewport.getSize().width, canvasViewport.getSize().height, ContextMenuController.scrollState(state), canvasViewport::refresh);
         canvasViewport.addWidget(menu);
     }
 
     private static void close(TabletUiState state) {
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
     }
 }

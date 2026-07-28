@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff;
 
-import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,6 +66,36 @@ class QuestsAndStuffConfigSectionsTest {
         securitySource.addProperty("commandRewards", false);
         security.read(securitySource);
         assertFalse(security.write().get("commandRewards").getAsBoolean());
+    }
+
+    @Test
+    void chunkClaimsSectionOwnsProtectionFlagsAndCaps() {
+        QuestsAndStuffConfigSections.ChunkClaims chunkClaims = new QuestsAndStuffConfigSections.ChunkClaims();
+        JsonObject source = new JsonObject();
+        source.addProperty("protectBreakPlace", false);
+        source.addProperty("protectInteraction", false);
+        source.addProperty("protectExplosions", false);
+        source.addProperty("protectMobGriefing", false);
+        source.addProperty("protectPvp", false);
+        source.addProperty("maxClaimedChunks", 10);
+        source.addProperty("maxForceLoadedChunks", 3);
+
+        chunkClaims.read(source);
+        JsonObject written = chunkClaims.write();
+
+        assertFalse(written.get("protectBreakPlace").getAsBoolean());
+        assertFalse(written.get("protectInteraction").getAsBoolean());
+        assertFalse(written.get("protectExplosions").getAsBoolean());
+        assertFalse(written.get("protectMobGriefing").getAsBoolean());
+        assertFalse(written.get("protectPvp").getAsBoolean());
+        assertEquals(10, written.get("maxClaimedChunks").getAsInt());
+        assertEquals(3, written.get("maxForceLoadedChunks").getAsInt());
+        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_CLAIMED, 100);
+        assertEquals(QuestsAndStuffConfigSections.ChunkClaims.DEFAULT_MAX_FORCE_LOADED, 100);
+        assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(-5));
+        assertEquals(999999, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(999999));
+        assertEquals(Integer.MAX_VALUE, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(Integer.MAX_VALUE));
+        assertEquals(0, QuestsAndStuffConfigSections.ChunkClaims.normalizeCap(Integer.MIN_VALUE));
     }
 
     @Test

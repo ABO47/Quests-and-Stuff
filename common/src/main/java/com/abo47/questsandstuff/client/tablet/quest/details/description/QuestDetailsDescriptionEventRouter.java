@@ -1,23 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.input.TabletModifierKeys;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientState;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionEventRouter {
     private final TabletUiState state;
@@ -62,7 +63,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (!surface.isMouseOverElement(mouseX, mouseY)) {
             return surface.mouseWheelMoveFallback(mouseX, mouseY, wheelDelta);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (QuestDetailsDescriptionInteractionState.scrollByWheel(state, model, surface.contentH(), wheelDelta)) {
             refresh.run();
         }
@@ -84,17 +85,32 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (button == 2) {
             QuestDetailsDescriptionInteractionState.beginPanning(state, mouseX, mouseY);
-            QuestDetailsTransientState.closeContext(state);
+            QuestDetailsTransientManager.closeContext(state);
             ToolMenuAnimation.closeQuestDetails(state);
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
+            if (button == 0) {
+                int spoilerLx = localX(mouseX);
+                int spoilerVisibleY = localY(mouseY);
+                QuestDetailsDescriptionModel spoilerModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+                QuestDetailsDescriptionHitTest.Hit spoilerHit = hitTest.hit(spoilerModel, spoilerLx, spoilerVisibleY);
+                if (spoilerHit != null && "desc_text".equals(spoilerHit.kind())) {
+                    CanvasTextLayer hitText = spoilerModel.text(spoilerHit.id());
+                    if (hitText != null && CanvasTextLayer.hasStyleFlag(hitText.style(), "spoiler")) {
+                        String revealed = state.questDetails.questDetailsSpoilerRevealedTextId;
+                        state.questDetails.questDetailsSpoilerRevealedTextId = revealed.equals(hitText.id()) ? "" : hitText.id();
+                        refresh.run();
+                        return true;
+                    }
+                }
+            }
             return true;
         }
         int lx = localX(mouseX);
         int visibleY = localY(mouseY);
         int ly = visibleY + state.questDetails.questDetailsDescScroll;
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         QuestDetailsDescriptionHitTest.Hit hit = hitTest.hit(model, lx, visibleY);
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
@@ -120,8 +136,8 @@ final class QuestDetailsDescriptionEventRouter {
         if (button != 0) {
             return true;
         }
-        QuestDetailsTransientState.closeContext(state);
-        QuestDetailsTransientState.closeTypePicker(state);
+        QuestDetailsTransientManager.closeContext(state);
+        QuestDetailsTransientManager.closeTypePicker(state);
         if (hit == null) {
             return handleCanvasClick(model, lx, visibleY);
         }
@@ -181,7 +197,7 @@ final class QuestDetailsDescriptionEventRouter {
             setScroll(state.questDetails.questDetailsPanStartScroll - dy);
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             return surface.mouseDraggedFallback(mouseX, mouseY, button, dragX, dragY);
         }
         if (textEdit.dragSelectionTo(localX(mouseX), localY(mouseY))) {
@@ -189,12 +205,14 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (state.questDetails.questDetailsBoxSelecting) {
             QuestDetailsDescriptionInteractionState.updateBoxSelection(state, localX(mouseX), localY(mouseY));
+            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            selection.updateDuringBoxDrag(model);
             return true;
         }
         if (state.questDetails.questDetailsTransformId.isBlank()) {
             return surface.mouseDraggedFallback(mouseX, mouseY, button, dragX, dragY);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         transforms.applyTransform(model, pointerScreenX(mouseX), pointerScreenY(mouseY));
         QuestDetailsDescriptionTransformApply.preview(state, model);
         if ("desc_text".equals(state.questDetails.questDetailsTransformKind)
@@ -206,23 +224,27 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return surface.keyPressedFallback(keyCode, scanCode, modifiers);
-        }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleKey(keyCode)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details events keyEditing keyCode={}", keyCode);
+            textEdit.handleKey(keyCode);
             return true;
         }
-        return surface.keyPressedFallback(keyCode, scanCode, modifiers);
+        if (surface.keyPressedFallback(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        return false;
     }
 
     boolean charTyped(char codePoint, int modifiers) {
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return surface.charTypedFallback(codePoint, modifiers);
-        }
-        if (QuestDetailsEditState.canEdit(state) && textEdit.handleChar(codePoint)) {
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details events charEditing codePoint={}", Integer.valueOf(codePoint));
+            textEdit.handleChar(codePoint);
             return true;
         }
-        return surface.charTypedFallback(codePoint, modifiers);
+        if (surface.charTypedFallback(codePoint, modifiers)) {
+            return true;
+        }
+        return false;
     }
 
     boolean mouseReleased(double mouseX, double mouseY, int button) {
@@ -238,7 +260,7 @@ final class QuestDetailsDescriptionEventRouter {
             refresh.run();
             return true;
         }
-        if (!QuestDetailsEditState.canEdit(state)) {
+        if (!QuestDetailsEditController.canEdit(state)) {
             QuestDetailsDescriptionTransformApply.clearEditDragState(state);
             return surface.mouseReleasedFallback(mouseX, mouseY, button);
         }
@@ -249,7 +271,7 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (state.questDetails.questDetailsBoxSelecting) {
             state.questDetails.questDetailsBoxSelecting = false;
-            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
             selection.finishBoxSelection(model);
             refresh.run();
             return true;
@@ -257,7 +279,7 @@ final class QuestDetailsDescriptionEventRouter {
         if (state.questDetails.questDetailsTransformId.isBlank()) {
             return surface.mouseReleasedFallback(mouseX, mouseY, button);
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         QuestDetailsDescriptionTransformApply.CommitInfo info = QuestDetailsDescriptionTransformApply.commit(
                 player,
                 state,
@@ -298,7 +320,7 @@ final class QuestDetailsDescriptionEventRouter {
         boolean selectionHit = (hit == null && selection.selectionBoundsHit(model, lx, visibleY))
                 || (hit != null && selection.count() > 1 && hitTest.isHitSelected(hit));
         storeContextPosition(mouseX, mouseY, lx, visibleY);
-        QuestDetailsTransientState.openContext(
+        QuestDetailsTransientManager.openContext(
                 state,
                 selectionHit ? "desc_selection" : (hit == null ? "description" : hit.kind()),
                 hit == null ? "" : hit.id(),
@@ -361,8 +383,8 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void select(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.questDetails.questDetailsDescRangeAnchorKind = hit.kind();
         state.questDetails.questDetailsDescRangeAnchorId = hit.id();
         if ("desc_text".equals(hit.kind())) {
@@ -390,8 +412,8 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private void toggleSelection(QuestDetailsDescriptionHitTest.Hit hit) {
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         if ("desc_text".equals(hit.kind())) {
             toggle(state.questDetails.questDetailsDescriptionSelection.textIds(), hit.id());
             state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(state.questDetails.questDetailsDescriptionSelection.textIds().contains(hit.id()) ? hit.id() : state.questDetails.questDetailsDescriptionSelection.textIds().stream().findFirst().orElse(""));
@@ -459,28 +481,28 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private int localX(double mouseX) {
-        return QuestDetailsMouse.localX(state, mouseX, surface.contentX(), surface.contentW());
+        return QuestDetailsCoordinates.localX(state, mouseX, surface.contentX(), surface.contentW());
     }
 
     private int localY(double mouseY) {
-        return QuestDetailsMouse.localY(state, mouseY, surface.contentY(), surface.contentH());
+        return QuestDetailsCoordinates.localY(state, mouseY, surface.contentY(), surface.contentH());
     }
 
     private int pointerScreenX(double mouseX) {
-        return QuestDetailsMouse.screenX(state, surface.contentX()) + localX(mouseX);
+        return QuestDetailsCoordinates.screenX(state, surface.contentX()) + localX(mouseX);
     }
 
     private int pointerScreenY(double mouseY) {
-        return QuestDetailsMouse.screenY(state, surface.contentY()) + localY(mouseY);
+        return QuestDetailsCoordinates.screenY(state, surface.contentY()) + localY(mouseY);
     }
 
     private void setScroll(int scroll) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, surface.contentH(), scroll);
     }
 
     private void storeContextPosition(double mouseX, double mouseY, int lx, int ly) {
-        QuestDetailsMouse.openContextAtPointer(state, state.questDetails.questDetailsContextKind, state.questDetails.questDetailsContextId, mouseX, mouseY, surface.contentX(), surface.contentY(), lx, ly);
+        QuestDetailsCoordinates.openContextAtPointer(state, state.questDetails.questDetailsContextKind, state.questDetails.questDetailsContextId, mouseX, mouseY, surface.contentX(), surface.contentY(), lx, ly);
     }
 
     private boolean isQuestDetailsTextStyleMenuHit(double mouseX, double mouseY) {
@@ -490,8 +512,8 @@ final class QuestDetailsDescriptionEventRouter {
         if (QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
-        int localMenuX = state.questDetails.questDetailsTextStyleMenuX - (QuestDetailsMouse.screenX(state, surface.contentX()) - state.questDetails.questDetailsScreenX);
-        int localMenuY = state.questDetails.questDetailsTextStyleMenuY - (QuestDetailsMouse.screenY(state, surface.contentY()) - state.questDetails.questDetailsScreenY);
+        int localMenuX = state.questDetails.questDetailsTextStyleMenuX - (QuestDetailsCoordinates.screenX(state, surface.contentX()) - state.questDetails.questDetailsScreenX);
+        int localMenuY = state.questDetails.questDetailsTextStyleMenuY - (QuestDetailsCoordinates.screenY(state, surface.contentY()) - state.questDetails.questDetailsScreenY);
         return inside(mouseX, mouseY, localMenuX, localMenuY, state.questDetails.questDetailsTextStyleMenuW, state.questDetails.questDetailsTextStyleMenuH)
                 || inside(mouseX, mouseY, state.questDetails.questDetailsScreenX + localMenuX, state.questDetails.questDetailsScreenY + localMenuY,
                 state.questDetails.questDetailsTextStyleMenuW, state.questDetails.questDetailsTextStyleMenuH);

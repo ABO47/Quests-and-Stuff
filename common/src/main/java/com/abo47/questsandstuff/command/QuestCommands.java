@@ -1,12 +1,14 @@
 package com.abo47.questsandstuff.command;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.QuestServices;
+import java.util.Collection;
+import java.util.List;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -15,15 +17,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.Collection;
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public final class QuestCommands {
     private QuestCommands() {
     }
 
     private static final SuggestionProvider<CommandSourceStack> QUEST_IDS = (context, builder) -> {
-        SharedSuggestionProvider.suggest(QuestServices.engine(context.getSource().getServer()).questIds(), builder);
+        SharedSuggestionProvider.suggest(QuestServiceRegistry.engine(context.getSource().getServer()).questIds(), builder);
         return builder.buildFuture();
     };
 
@@ -43,11 +45,11 @@ public final class QuestCommands {
         return Commands.literal("reload")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> {
-                    QuestServices.definitions(context.getSource().getServer()).load();
-                    QuestServices.engine(context.getSource().getServer()).rebuildIndex();
+                    QuestServiceRegistry.definitions(context.getSource().getServer()).load();
+                    QuestServiceRegistry.engine(context.getSource().getServer()).rebuildIndex();
                     List<ServerPlayer> players = context.getSource().getServer().getPlayerList().getPlayers();
-                    QuestServices.engine(context.getSource().getServer()).preparePlayersForFullSync(players);
-                    QuestServices.sync(context.getSource().getServer()).syncFull(players);
+                    QuestServiceRegistry.engine(context.getSource().getServer()).preparePlayersForFullSync(players);
+                    QuestServiceRegistry.sync(context.getSource().getServer()).syncFull(players);
                     context.getSource().sendSuccess(() -> Component.translatable("command.questsandstuff.reload.success"), true);
                     return 1;
                 });
@@ -87,7 +89,7 @@ public final class QuestCommands {
                         .suggests(QUEST_IDS)
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            QuestServices.engine(context.getSource().getServer())
+                            QuestServiceRegistry.engine(context.getSource().getServer())
                                     .togglePin(player, StringArgumentType.getString(context, "quest"));
                             return 1;
                         }));
@@ -96,36 +98,36 @@ public final class QuestCommands {
     private static LiteralArgumentBuilder<CommandSourceStack> manual() {
         return Commands.literal("manual")
                 .requires(source -> source.hasPermission(2))
-                .then(Commands.argument("requirement_key", StringArgumentType.string())
+                .then(Commands.argument("task_key", StringArgumentType.string())
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            QuestServices.engine(context.getSource().getServer())
-                                    .runManualTask(player, StringArgumentType.getString(context, "requirement_key"));
+                            QuestServiceRegistry.engine(context.getSource().getServer())
+                                    .runManualTask(player, StringArgumentType.getString(context, "task_key"));
                             return 1;
                         }))
                 .then(Commands.literal("item_submit")
                         .then(Commands.argument("quest", StringArgumentType.string())
                                 .suggests(QUEST_IDS)
-                                .then(Commands.argument("requirement", StringArgumentType.string())
+                                .then(Commands.argument("task", StringArgumentType.string())
                                         .executes(context -> {
                                             ServerPlayer player = context.getSource().getPlayerOrException();
-                                            QuestServices.engine(context.getSource().getServer()).submitManualItemTask(
+                                            QuestServiceRegistry.engine(context.getSource().getServer()).submitManualItemTask(
                                                     player,
                                                     StringArgumentType.getString(context, "quest"),
-                                                    StringArgumentType.getString(context, "requirement")
+                                                    StringArgumentType.getString(context, "task")
                                             );
                                             return 1;
                                         }))))
                 .then(Commands.literal("xp_submit")
                         .then(Commands.argument("quest", StringArgumentType.string())
                                 .suggests(QUEST_IDS)
-                                .then(Commands.argument("requirement", StringArgumentType.string())
+                                .then(Commands.argument("task", StringArgumentType.string())
                                         .executes(context -> {
                                             ServerPlayer player = context.getSource().getPlayerOrException();
-                                            QuestServices.engine(context.getSource().getServer()).submitManualXpTask(
+                                            QuestServiceRegistry.engine(context.getSource().getServer()).submitManualXpTask(
                                                     player,
                                                     StringArgumentType.getString(context, "quest"),
-                                                    StringArgumentType.getString(context, "requirement")
+                                                    StringArgumentType.getString(context, "task")
                                             );
                                             return 1;
                                         }))));
@@ -135,7 +137,7 @@ public final class QuestCommands {
         return Commands.literal("perf")
                 .requires(source -> source.hasPermission(2))
                 .executes(context -> {
-                    var perf = QuestServices.perf(context.getSource().getServer());
+                    var perf = QuestServiceRegistry.perf(context.getSource().getServer());
                     CompoundTag perfTag = perf.snapshotTag();
                     long signals = perfTag.getLong("signals");
                     long signalNanos = perfTag.getLong("signal_nanos");
@@ -160,7 +162,7 @@ public final class QuestCommands {
                 })
                 .then(Commands.literal("reset")
                         .executes(context -> {
-                            QuestServices.perf(context.getSource().getServer()).reset();
+                            QuestServiceRegistry.perf(context.getSource().getServer()).reset();
                             context.getSource().sendSuccess(() -> Component.translatable("command.questsandstuff.perf.reset"), false);
                             return 1;
                         }));
@@ -169,7 +171,7 @@ public final class QuestCommands {
     private static int completeFor(Collection<ServerPlayer> targets, CommandContext<CommandSourceStack> context) {
         String questId = StringArgumentType.getString(context, "quest");
         for (ServerPlayer target : targets) {
-            QuestServices.engine(context.getSource().getServer()).completeQuest(target, questId);
+            QuestServiceRegistry.engine(context.getSource().getServer()).completeQuest(target, questId);
         }
         return 1;
     }
@@ -177,14 +179,14 @@ public final class QuestCommands {
     private static int resetFor(Collection<ServerPlayer> targets, CommandContext<CommandSourceStack> context) {
         String questId = StringArgumentType.getString(context, "quest");
         for (ServerPlayer target : targets) {
-            QuestServices.engine(context.getSource().getServer()).resetQuest(target, questId);
+            QuestServiceRegistry.engine(context.getSource().getServer()).resetQuest(target, questId);
         }
         return 1;
     }
 
     private static int resetAllFor(Collection<ServerPlayer> targets, CommandContext<CommandSourceStack> context) {
         for (ServerPlayer target : targets) {
-            QuestServices.engine(context.getSource().getServer()).resetAll(target);
+            QuestServiceRegistry.engine(context.getSource().getServer()).resetAll(target);
         }
         return 1;
     }

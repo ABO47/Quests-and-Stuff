@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

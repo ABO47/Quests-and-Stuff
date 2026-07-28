@@ -1,24 +1,27 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.google.gson.JsonParser;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+
+import com.google.gson.JsonParser;
 
 public final class ClientQuestDefinitionSnapshots {
     private ClientQuestDefinitionSnapshots() {
@@ -51,7 +54,7 @@ public final class ClientQuestDefinitionSnapshots {
                 tag.getString("title"),
                 tag.getString("subtitle"),
                 stringList(tag.getList("description", Tag.TAG_STRING)),
-                groups(tag.getCompound("groups")),
+                chapters(tag.getCompound("chapters")),
                 tag.getString("icon"),
                 tag.getString("icon_background"),
                 tag.getString("completion_sound"),
@@ -78,18 +81,18 @@ public final class ClientQuestDefinitionSnapshots {
         );
     }
 
-    private static Map<String, ChapterDefinition> groups(CompoundTag groupsTag) {
-        Map<String, ChapterDefinition> groups = new LinkedHashMap<>();
-        for (String group : groupsTag.getAllKeys()) {
-            CompoundTag view = groupsTag.getCompound(group);
-            groups.put(group, new ChapterDefinition(
+    private static Map<String, ChapterDef> chapters(CompoundTag chaptersTag) {
+        Map<String, ChapterDef> chapters = new LinkedHashMap<>();
+        for (String chapter : chaptersTag.getAllKeys()) {
+            CompoundTag view = chaptersTag.getCompound(chapter);
+            chapters.put(chapter, new ChapterDef(
                     !view.contains("visible") || view.getBoolean("visible"),
                     view.getInt("x"),
                     view.getInt("y"),
                     view.contains("scale", Tag.TAG_FLOAT) ? view.getFloat("scale") : 1.0f
             ));
         }
-        return groups;
+        return chapters;
     }
 
     private static Map<String, QuestTaskDefinition> tasks(CompoundTag tasksTag) {

@@ -1,20 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 
 final class TabletRootDismissals {
     private TabletRootDismissals() {
     }
 
-    static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY) {
+    static ClickDismissState capture(TabletRootWidget root, TabletUiState state, double mouseX, double mouseY, Runnable refresh) {
         int rootX = TabletWidgetCoordinates.rootX(root);
         int rootY = TabletWidgetCoordinates.rootY(root);
         boolean chapterMenuWasOpen = state.chapterPanel.chapterMenuOpen;
@@ -22,7 +21,7 @@ final class TabletRootDismissals {
         boolean questDetailsWasOpen = state.questDetails.questDetailsOpen;
         boolean chapterTextMenuWasOpen = state.chapterPanel.chapterTextMenuOpen;
         boolean canvasTextMenuWasOpen = state.canvas.canvasTextMenuOpen;
-        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY);
+        boolean chapterMenuHit = chapterMenuWasOpen && TabletRootHitTest.isChapterMenuHit(state, rootX, rootY, mouseX, mouseY, root.resolvePlayer(), refresh);
         boolean contextMenuHit = contextMenuWasOpen && TabletRootHitTest.isCanvasContextMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean chapterTextMenuHit = chapterTextMenuWasOpen && TabletRootHitTest.isChapterTextMenuHit(state, rootX, rootY, mouseX, mouseY);
         boolean canvasTextMenuHit = canvasTextMenuWasOpen && TabletRootHitTest.isCanvasTextMenuHit(state, rootX, rootY, mouseX, mouseY);
@@ -57,11 +56,11 @@ final class TabletRootDismissals {
         }
         if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
             state.chapterPanel.chapterMenuOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             changed = true;
         }
         if (clickState.contextMenuWasOpen() && state.contextMenu.contextMenuOpen && !clickState.contextMenuHit()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             changed = true;
         }
         if (clickState.chapterTextMenuWasOpen() && state.chapterPanel.chapterTextMenuOpen && !clickState.chapterTextMenuHit()) {
@@ -77,7 +76,7 @@ final class TabletRootDismissals {
         if (state.pickers.assetContextOpen && !clickState.assetContextHit()) {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             changed = true;
         }
         boolean insideCanvasViewport = TabletRootHitTest.isInsideCanvasViewport(state, rootX, rootY, mouseX, mouseY);

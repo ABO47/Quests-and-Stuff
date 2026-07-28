@@ -1,20 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector4f;
-
-import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class SourceOriginRevealWidget extends WidgetGroup {
-    private static final long WINDOW_OPEN_MS = 190L;
+    public static final long WINDOW_OPEN_MS = TabletAnimationTimings.WINDOW_OPEN_MS;
     private static final float FALLBACK_SCALE = 0.96f;
     private static final float MIN_SOURCE_SCALE = 0.18f;
     private static final float MAX_SOURCE_SCALE = 0.90f;
@@ -163,10 +167,10 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = getSizeHeight();
         if (softAlpha > 0) {
-            graphics.fill(x + 4, y + 5, x + w + 4, y + h + 5, withAlpha(ModColors.SURFACE_BASE, softAlpha));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
         }
         if (hardAlpha > 0) {
-            graphics.fill(x + 2, y + 3, x + w + 2, y + h + 3, withAlpha(ModColors.SURFACE_BASE, hardAlpha));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
         }
     }
 

@@ -1,30 +1,31 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
 
 public final class EntityMotionEditor {
     private EntityMotionEditor() {
     }
 
-    public static void openMainCanvas(TabletUiState state, String group, String imageId, int x, int y) {
-        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, group, imageId);
+    public static void openMainCanvas(TabletUiState state, String chapter, String imageId, int x, int y) {
+        CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;
         }
-        EntityMotionTargets.openImage(state, EntityMotionTargets.SCOPE_CANVAS, group, "", imageId, x, y, image);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas group={} image={} spin={}", group, imageId, image.entitySpinSpeed());
+        EntityMotionTargets.openImage(state, EntityMotionTargets.SCOPE_CANVAS, chapter, "", imageId, x, y, image);
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas chapter={} image={} spin={}", chapter, imageId, image.entitySpinSpeed());
     }
 
     public static void openQuestDetails(TabletUiState state, String questId, String imageId, int x, int y) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;
@@ -51,13 +52,13 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=chapter_icon chapter={} spin={}", chapter, icon.spin());
     }
 
-    public static void openObjectiveIcon(TabletUiState state, String questId, String objectiveId, boolean task, int x, int y) {
-        EntityIconMotion icon = EntityMotionTargets.currentObjectiveIconMotion(questId, objectiveId, task);
+    public static void openTaskIcon(TabletUiState state, String questId, String taskId, boolean task, int x, int y) {
+        EntityIconMotion icon = EntityMotionTargets.currentTaskIconMotion(questId, taskId, task);
         if (!icon.editable()) {
             return;
         }
-        EntityMotionTargets.openIcon(state, EntityMotionTargets.SCOPE_OBJECTIVE_ICON, EntityMotionTargets.objectiveGroup(task), questId, objectiveId, x, y, icon);
-        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=objective_icon quest={} objective={} task={} spin={}", questId, objectiveId, task, icon.spin());
+        EntityMotionTargets.openIcon(state, EntityMotionTargets.SCOPE_TASK_ICON, EntityMotionTargets.taskGroup(task), questId, taskId, x, y, icon);
+        QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=task_icon quest={} task={} task={} spin={}", questId, taskId, task, icon.spin());
     }
 
     public static void close(TabletUiState state) {
@@ -102,7 +103,7 @@ public final class EntityMotionEditor {
         return state != null
                 && state.questDetails.entityMotionEditorOpen
                 && (EntityMotionTargets.SCOPE_QUEST_DETAILS.equals(state.questDetails.entityMotionEditorScope)
-                || EntityMotionTargets.SCOPE_OBJECTIVE_ICON.equals(state.questDetails.entityMotionEditorScope));
+                || EntityMotionTargets.SCOPE_TASK_ICON.equals(state.questDetails.entityMotionEditorScope));
     }
 
     public static boolean isDragging(TabletUiState state) {

@@ -1,8 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.EdgeHit;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasOverlayController;
@@ -10,70 +22,87 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterS
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.nbt.CompoundTag;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_LIMIT_WIDTH;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_HEIGHT;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_LIMIT_WIDTH;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PAD;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasRenderer {
     public static final float MIN_CANVAS_ZOOM = 0.5f;
     public static final float MAX_CANVAS_ZOOM = 3.0f;
+
+    private static final int WINDOWED_CANVAS_PANEL_W = ROOT_W - PAD * 2 - CHAPTER_W - GAP;
+    private static final int WINDOWED_CANVAS_PANEL_H = ROOT_H - BODY_Y - PAD_Y;
 
     private CanvasRenderer() {
     }
     public static void rebuildQuestCanvas(CanvasViewport canvasViewport, TabletUiState state) {
         CanvasCameraController.beforeCanvasRebuild(state);
         canvasViewport.clearAllWidgets();
-        String selectedGroup = CanvasRenderStateController.prepareRebuild(state);
-        CanvasChapterSwitchAnimation.trackSelectedGroup(state, selectedGroup);
+        String selectedChapter = CanvasRenderStateController.prepareRebuild(state);
+        CanvasChapterSwitchAnimation.trackSelectedChapter(state, selectedChapter);
         CanvasSceneRenderer.applyCanvasBackground(canvasViewport);
-        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestCache.questEntries());
+        List<Map.Entry<String, CompoundTag>> quests = new ArrayList<>(ClientQuestStateFacade.questEntries());
         quests.sort(Comparator.comparing(Map.Entry::getKey));
 
         int viewportW = canvasViewport.getSize().width;
         int viewportH = canvasViewport.getSize().height;
         int usableW = Math.max(1, viewportW - 1);
         int usableH = Math.max(1, viewportH - 1);
-        if (state.canvas.canvasLimitEnabled) {
-            usableW = Math.min(usableW, CANVAS_LIMIT_WIDTH[state.canvas.canvasLimitIndex]);
-            usableH = Math.min(usableH, CANVAS_LIMIT_HEIGHT[state.canvas.canvasLimitIndex]);
+        if (state.canvas.canvasLimitEnabled && !state.root.fullScreenMode) {
+            double scaleX = (double) canvasPanelWidth(state) / WINDOWED_CANVAS_PANEL_W;
+            double scaleY = (double) canvasHeight(state) / WINDOWED_CANVAS_PANEL_H;
+            int limitW = (int) Math.round(CANVAS_LIMIT_WIDTH[state.canvas.canvasLimitIndex] * scaleX);
+            int limitH = (int) Math.round(CANVAS_LIMIT_HEIGHT[state.canvas.canvasLimitIndex] * scaleY);
+            usableW = Math.min(usableW, limitW);
+            usableH = Math.min(usableH, limitH);
         }
         int cell = CanvasGeometry.gridSize(state);
-        int contentW = CanvasSceneRenderer.snapCanvasContentSize(usableW, cell);
-        int contentH = CanvasSceneRenderer.snapCanvasContentSize(usableH, cell);
-        int contentX = Math.max(0, (usableW - contentW) / 2);
-        int contentY = Math.max(0, (usableH - contentH) / 2);
+        int contentW;
+        int contentH;
+        int contentX;
+        int contentY;
+        if (state.root.fullScreenMode) {
+            contentX = 0;
+            contentY = 0;
+            contentW = ((usableW + cell - 1) / cell) * cell;
+            contentH = ((usableH + cell - 1) / cell) * cell;
+        } else {
+            contentW = CanvasSceneRenderer.snapCanvasContentSize(usableW, cell);
+            contentH = CanvasSceneRenderer.snapCanvasContentSize(usableH, cell);
+            contentX = Math.max(0, (usableW - contentW) / 2);
+            contentY = Math.max(0, (usableH - contentH) / 2);
+        }
         CanvasRenderStateController.setContentBounds(state, contentX, contentY, contentW, contentH);
-        CanvasCameraController.afterCanvasLayout(state, selectedGroup);
-        CanvasSceneRenderer.renderCanvasSurfaces(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
+        CanvasCameraController.afterCanvasLayout(state, selectedChapter);
+        CanvasSceneRenderer.renderCanvasSurfaceFactory(canvasViewport, state, contentX, contentY, contentW, contentH, viewportW, viewportH);
 
-        if (state.canvas.canvasLimitEnabled && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
-            WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(ModColors.SURFACE_PANEL_ALT, 36), ModColors.BORDER_ACCENT);
+        if (state.canvas.canvasLimitEnabled && !state.root.fullScreenMode && (contentW < viewportW - 12 || contentH < viewportH - 12)) {
+            WidgetGroup bounds = panel(4, 4, contentW + 4, contentH + 4, withAlpha(TabletColors.SURFACE_PANEL_ALT, 36), TabletColors.BORDER_ACCENT);
             canvasViewport.addWidget(bounds);
         }
 
         List<QuestCardLayout> visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
         CanvasLayoutService.clampCanvasOffset(state, visibleCards, contentW, contentH);
         visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
-        if (CanvasCameraController.consumePendingQuestFocus(state, visibleCards, selectedGroup)) {
+        if (CanvasCameraController.consumePendingQuestFocus(state, visibleCards, selectedChapter)) {
             visibleCards = CanvasLayoutService.layoutVisibleCards(quests, state);
         }
         CanvasCameraController.rememberCurrentGroup(state);
@@ -118,35 +147,35 @@ public final class CanvasRenderer {
     }
 
     static boolean matchesFilters(CompoundTag questTag, TabletUiState state) {
-        String selectedGroup = selectedGroupName(state);
-        CompoundTag groups = questTag.getCompound("groups");
-        if (selectedGroup.isBlank()) {
+        String selectedChapter = selectedChapterName(state);
+        CompoundTag groups = questTag.getCompound("chapters");
+        if (selectedChapter.isBlank()) {
             return false;
         }
         if (!state.root.canEdit && isVisualHiddenOutsideEdit(questTag)) {
             return false;
         }
-        return groups.contains(selectedGroup);
+        return groups.contains(selectedChapter);
     }
 
     private static boolean isVisualHiddenOutsideEdit(CompoundTag questTag) {
-        return ClientQuestCache.questHiddenPreview(questTag);
+        return ClientQuestStateFacade.questHiddenPreview(questTag);
     }
 
-    public static String edgeKey(String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.edgeKey(sourceQuestId, targetQuestId);
+    public static String connectionKey(String sourceQuestId, String targetQuestId) {
+        return ConnectionRenderer.connectionKey(sourceQuestId, targetQuestId);
     }
 
-    public static int connectionColor(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.connectionColor(state, group, sourceQuestId, targetQuestId);
+    public static int connectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionRenderer.connectionColor(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static boolean isConnectionHidden(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.isConnectionHidden(state, group, sourceQuestId, targetQuestId);
+    public static boolean isConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionRenderer.isConnectionHidden(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static boolean isConnectionDirect(TabletUiState state, String group, String sourceQuestId, String targetQuestId) {
-        return ConnectionRenderer.isConnectionDirect(state, group, sourceQuestId, targetQuestId);
+    public static boolean isConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionRenderer.isConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
     }
 
     public static int snapToGrid(TabletUiState state, int value) {
@@ -226,8 +255,8 @@ public final class CanvasRenderer {
     }
 
 
-    public static EdgeHit hitTestEdge(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
-        return CanvasHitTester.hitTestEdge(state, cards, byQuestId, x, y);
+    public static ConnectionHit hitTestConnection(TabletUiState state, List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId, int x, int y) {
+        return CanvasHitTester.hitTestConnection(state, cards, byQuestId, x, y);
     }
 
     public static boolean jumpToBestMatch(TabletUiState state) {

@@ -1,7 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.state;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
@@ -17,11 +22,14 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_LIGHT;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_BG_MUTED;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_ERROR;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_INTERACTIVE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SUCCESS;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_SURFACE_DARK;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.PALETTE_WARNING;
 
 public class TabletUiState {
     public final RootState root = new RootState();
@@ -33,24 +41,31 @@ public class TabletUiState {
     public final TabletContextMenuState contextMenu = new TabletContextMenuState();
     public final ClipboardState clipboard = new ClipboardState();
     public final TeamsState teams = new TeamsState();
+    public final ChunkClaimerState chunkClaimer = new ChunkClaimerState();
+    public final SettingsState settings = new SettingsState();
 
     public static final class RootState {
         public boolean fullScreenMode;
         public int tabletRootWidth;
         public int tabletRootHeight;
-        public String selectedGroup = "";
+        public String selectedChapter = "";
         public String search = "";
         public boolean searchFocused;
         public boolean canEdit;
         public boolean editorAvailable;
         public boolean editMode = true;
+        public boolean skinEditMode;
         public String lastApp = "";
+        public String currentApp = "";
+        public String skinEditSelectedTarget = "";
+        public final Map<String, String> skinFillOverrides = new HashMap<>();
+        public final java.util.Set<String> activeSkinTargets = new java.util.LinkedHashSet<>();
     }
 
     public static final class ChapterPanelState {
         public String chapterSearch = "";
         public boolean chapterSearchFocused;
-        public String groupDraft = "";
+        public String chapterDraft = "";
         public String chapterDraftName = "";
         public boolean chapterSelectionJustChanged;
         public boolean chapterPanelCollapsed;
@@ -61,7 +76,7 @@ public class TabletUiState {
         public int chapterSplitterDragStartX;
         public int chapterSplitterStartWidth;
         public String lastJumpQuest = "";
-        public final Set<String> recentlyCreatedGroups = new java.util.LinkedHashSet<>();
+        public final Set<String> recentlyCreatedChapters = new java.util.LinkedHashSet<>();
         public String canvasChapterSwitchGroup = "";
         public long canvasChapterSwitchAnimationStartMs;
         public int canvasChapterSwitchDirection = 1;
@@ -113,9 +128,6 @@ public class TabletUiState {
         public long modalWindowLastPointerAtMs;
         public int themeScroll;
         public boolean themeScrollDragging;
-        public int settingsTab;
-        public int settingsScroll;
-        public boolean settingsScrollDragging;
         public String modalChapterTarget = "";
         public String modalQuestTarget = "";
         public String modalCanvasBackgroundTarget = "";
@@ -130,7 +142,7 @@ public class TabletUiState {
         public String modalQuestCompletionHudBackgroundTarget = "";
         public final Set<String> modalQuestCompletionHudBackgroundTargets = new java.util.LinkedHashSet<>();
         public String modalHudBackgroundTarget = "";
-        public int modalHudBackgroundOpacityDraft = 68;
+        public int modalHudBackgroundOpacityDraft = 100;
         public boolean modalHudBackgroundOpacityDragging;
         public boolean blueprintCodeOpen;
         public boolean blueprintCodeImportMode;
@@ -159,6 +171,8 @@ public class TabletUiState {
         public final Set<String> modalQuestCompletionSoundTargets = new java.util.LinkedHashSet<>();
         public String modalConnectionTextureTarget = "";
         public final java.util.Set<String> modalConnectionTextureChapterTargets = new java.util.LinkedHashSet<>();
+        public String skinEditFillTarget = "";
+        public boolean hudRemoveConfirmArmed;
     }
 
     public static final class PickerState {
@@ -255,8 +269,8 @@ public class TabletUiState {
         public int colorPaletteScroll;
         public boolean colorPaletteScrollDragging;
         public final List<Integer> textColorPalette = new ArrayList<>(List.of(
-                0xFFE8F4FF, 0xFFB7CFDF, 0xFF8EA5B7, 0xFF63D187,
-                0xFFE7B84B, 0xFFE06D6D, 0xFF53A6E8, 0xFF1D2730
+                PALETTE_BG_LIGHT, PALETTE_BG_MUTED, PALETTE_BG_DARK, PALETTE_SUCCESS,
+                PALETTE_WARNING, PALETTE_ERROR, PALETTE_INTERACTIVE, PALETTE_SURFACE_DARK
         ));
 
         public void saveBrowseDirForMode() {
@@ -318,10 +332,10 @@ public class TabletUiState {
         public boolean gridCanvasLocked;
         public int gridSizeIndex = 2;
         public int gridOpacityIndex = 2;
-        public int gridOpacityPercent = 50;
+        public int gridOpacityPercent = 100;
         public int gridColor;
         public int canvasBgOpacityIndex = 4;
-        public int canvasBgOpacityPercent = 60;
+        public int canvasBgOpacityPercent = 100;
         public float canvasZoom = 1.0f;
         public boolean canvasLimitEnabled;
         public int canvasLimitIndex = 2;
@@ -341,7 +355,7 @@ public class TabletUiState {
         public long toolsMenuAnimationStartMs;
         public boolean toolsGridSizeMenuOpen;
         public boolean toolsGridOpacityMenuOpen;
-        public String toolsGridOpacityDraft = "50";
+        public String toolsGridOpacityDraft = "100";
         public String pendingChapterRename = "";
         public int canvasImageLogicalX;
         public int canvasImageLogicalY;
@@ -354,13 +368,13 @@ public class TabletUiState {
         public final Map<String, Map<String, String>> connectionTexturesByGroup = new HashMap<>();
         public final Map<String, Map<String, Integer>> connectionTextureSpacingsByGroup = new HashMap<>();
         public String hoveredQuestId = "";
-        public final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByGroup = new HashMap<>();
-        public final Map<String, List<CanvasImageLayer>> canvasImagesByGroup = new HashMap<>();
-        public final Map<String, List<CanvasTextLayer>> canvasTextsByGroup = new HashMap<>();
+        public final Map<String, List<CanvasExclusiveChoice>> canvasExclusiveChoicesByChapter = new HashMap<>();
+        public final Map<String, List<CanvasImageLayer>> canvasImagesByChapter = new HashMap<>();
+        public final Map<String, List<CanvasTextLayer>> canvasTextsByChapter = new HashMap<>();
         public final Map<String, CanvasImageLayer> transientCanvasImages = new HashMap<>();
         public final Map<String, CanvasTextLayer> transientCanvasTexts = new HashMap<>();
         public final Map<String, CanvasExclusiveChoice> transientCanvasExclusiveChoices = new HashMap<>();
-        public final Map<String, List<String>> canvasLayerOrderByGroup = new HashMap<>();
+        public final Map<String, List<String>> canvasLayerOrderByChapter = new HashMap<>();
         public final BlueprintPlacementState blueprintPlacement = new BlueprintPlacementState();
         public int canvasPointerX;
         public int canvasPointerY;
@@ -368,6 +382,7 @@ public class TabletUiState {
         public final CanvasMiniNotificationState canvasMiniNotification = new CanvasMiniNotificationState();
         public boolean canvasTextMenuOpen;
         public String canvasTextMenuTarget = "";
+        public String canvasTextSpoilerRevealedTextId = "";
         public String canvasTextFontSizeDraftTarget = "";
         public String canvasTextFontSizeDraft = "";
         public String canvasTextFontSizeFieldTarget = "";
@@ -543,6 +558,8 @@ public class TabletUiState {
         public int questDetailsScreenY;
         public int questDetailsW;
         public int questDetailsH;
+        public int questDetailsViewportOriginX;
+        public int questDetailsViewportOriginY;
         public long questDetailsAnimationStartMs;
         public boolean questDetailsAnimationHasSource;
         public int questDetailsAnimationSourceX;
@@ -564,16 +581,16 @@ public class TabletUiState {
         public boolean questDetailsCenterSnapYEnabled;
         public boolean questDetailsObjectSnapEnabled;
         public boolean questDetailsCanvasLocked;
-        public int questDetailsGridOpacityPercent = 50;
-        public int questDetailsCanvasBgOpacityPercent = 60;
+        public int questDetailsGridOpacityPercent = 100;
+        public int questDetailsCanvasBgOpacityPercent = 100;
         public int questDetailsDescScroll;
         public boolean questDetailsDescScrollDragging;
         public boolean questDetailsPanning;
         public int questDetailsPanStartX;
         public int questDetailsPanStartY;
         public int questDetailsPanStartScroll;
-        public int questDetailsReqScroll;
-        public boolean questDetailsReqScrollDragging;
+        public int questDetailsTaskScroll;
+        public boolean questDetailsTaskScrollDragging;
         public int questDetailsRewardScroll;
         public boolean questDetailsRewardScrollDragging;
         public boolean questDetailsContextOpen;
@@ -596,22 +613,27 @@ public class TabletUiState {
         public String questDetailsCommandRewardCommand = "";
         public String questDetailsCommandRewardTitle = "";
         public String questDetailsCommandRewardIcon = "";
-        public boolean questDetailsObjectiveRenameOpen;
-        public boolean questDetailsObjectiveRenameTask;
-        public String questDetailsObjectiveRenameQuestId = "";
-        public String questDetailsObjectiveRenameId = "";
-        public String questDetailsObjectiveRenameDraft = "";
-        public boolean questDetailsObjectiveRenameFocusPending;
+        public boolean questDetailsTaskRenameOpen;
+        public boolean questDetailsTaskRenameTask;
+        public String questDetailsTaskRenameQuestId = "";
+        public String questDetailsTaskRenameId = "";
+        public String questDetailsTaskRenameDraft = "";
+        public boolean questDetailsTaskRenameFocusPending;
         public final Map<String, String> questDetailsSelectableRewardChoices = new HashMap<>();
-        public String questDetailsSelectedObjectiveKind = "";
-        public String questDetailsSelectedObjectiveId = "";
-        public boolean questDetailsObjectiveDragPending;
-        public boolean questDetailsObjectiveDragActive;
-        public String questDetailsObjectiveDragKind = "";
-        public String questDetailsObjectiveDragId = "";
-        public int questDetailsObjectiveDragTargetIndex = -1;
-        public int questDetailsObjectiveDragStartX;
-        public int questDetailsObjectiveDragStartY;
+        public String questDetailsSelectedTaskKind = "";
+        public String questDetailsSelectedTaskId = "";
+        public boolean questDetailsTaskDragPending;
+        public boolean questDetailsTaskDragActive;
+        public boolean questDetailsTaskDragRefreshQueued;
+        public String questDetailsTaskDragPendingQuestId = "";
+        public String questDetailsTaskDragPendingTaskId = "";
+        public int questDetailsTaskDragPendingOffset;
+        public boolean questDetailsTaskDragPendingIsTask;
+        public String questDetailsTaskDragKind = "";
+        public String questDetailsTaskDragId = "";
+        public int questDetailsTaskDragTargetIndex = -1;
+        public int questDetailsTaskDragStartX;
+        public int questDetailsTaskDragStartY;
         public final CanvasLayerSelectionState questDetailsDescriptionSelection = new CanvasLayerSelectionState();
         public String questDetailsDescRangeAnchorKind = "";
         public String questDetailsDescRangeAnchorId = "";
@@ -627,6 +649,8 @@ public class TabletUiState {
         public String questDetailsTextLastClickId = "";
         public long questDetailsTextLastClickAtMs;
         public String questDetailsTextFontSizeFieldTarget = "";
+        public String questDetailsSpoilerRevealedTextId = "";
+
         public String questDetailsTextColorQuestId = "";
         public String questDetailsTextColorTextId = "";
         public String questDetailsTransformKind = "";
@@ -680,8 +704,8 @@ public class TabletUiState {
         public long contextMenuAnimationStartMs;
         public String contextMenuAnimationKey = "";
         public String contextQuestId = "";
-        public String contextEdgeSource = "";
-        public String contextEdgeTarget = "";
+        public String contextConnectionSource = "";
+        public String contextConnectionTarget = "";
         public String contextCanvasImageId = "";
         public String contextCanvasTextId = "";
         public String contextCanvasExclusiveChoiceId = "";
@@ -709,6 +733,27 @@ public class TabletUiState {
         public String confirmAction = "";
         public String confirmTargetUuid = "";
         public long confirmAnimationStartMs;
+    }
+
+    public static final class ChunkClaimerState {
+        public String search = "";
+        public boolean searchFocused;
+        public boolean forceLoadArmed;
+        public boolean claimArmed;
+        public boolean showGrid = true;
+        public boolean surfaceScan;
+        public int gridOpacityPercent = 100;
+        public String statusMessage = "";
+        public boolean statusSuccess;
+        public long statusAnimationStartMs;
+    }
+
+    public static final class SettingsState {
+        public int currentTab = 0;
+        public String search = "";
+        public int scroll;
+        public boolean scrollDragging;
+        public long tabAnimationStartMs;
     }
 
 }

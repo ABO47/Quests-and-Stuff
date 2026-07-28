@@ -1,51 +1,46 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
+import java.util.function.Consumer;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadKeys;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
 
 final class EditorClipboardCommandHandlers {
     private EditorClipboardCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.COPY_MANY, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::copyMany);
-        registrar.register(EditorCommandType.PASTE_CLIPBOARD, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteClipboard);
-        registrar.register(EditorCommandType.PASTE_BLUEPRINT, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteBlueprint);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.COPY_MANY, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::copyMany));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PASTE_CLIPBOARD, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteClipboard));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.PASTE_BLUEPRINT, EditorCommandFamily.CLIPBOARD, EditorClipboardCommandHandlers::pasteBlueprint));
     }
 
     private static void copyMany(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        ListTag questTags = EditorCommandPayloadReader.list(payload, EditorCommandPayloadKeys.QUESTS, Tag.TAG_STRING);
-        if (EditorCommandPayloadLimits.exceedsLimit(questTags, EditorCommandPayloadLimits.MAX_BULK_EDIT_ENTRIES)) {
-            return;
-        }
-        editor.copyQuestsToClipboard(player, group, EditorCommandPayloadReader.questIds(payload));
+        String chapter = EditorCommandPayloads.chapter(payload);
+        editor.copyQuestsToClipboard(player, chapter, EditorCommandPayloads.questIds(payload));
     }
 
     private static void pasteClipboard(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        int x = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.X);
-        int y = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.Y);
-        editor.pasteClipboardInGroup(player, group, x, y);
+        String chapter = EditorCommandPayloads.chapter(payload);
+        int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
+        int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
+        editor.pasteClipboardInChapter(player, chapter, x, y);
     }
 
     private static void pasteBlueprint(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        String group = EditorCommandPayloadReader.group(payload);
-        int x = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.X);
-        int y = EditorCommandPayloadReader.integer(payload, EditorCommandPayloadKeys.Y);
-        CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloadReader.compound(payload, EditorCommandPayloadKeys.BLUEPRINT));
+        String chapter = EditorCommandPayloads.chapter(payload);
+        int x = EditorCommandPayloads.integer(payload, EditorCommandPayloads.X);
+        int y = EditorCommandPayloads.integer(payload, EditorCommandPayloads.Y);
+        CanvasBlueprint blueprint = CanvasBlueprint.fromPacketTag(EditorCommandPayloads.compound(payload, EditorCommandPayloads.BLUEPRINT));
         if (blueprint.isEmpty()) {
             return;
         }
-        editor.pasteBlueprintInGroup(player, group, x, y, blueprint);
+        editor.pasteBlueprintInChapter(player, chapter, x, y, blueprint);
     }
 }

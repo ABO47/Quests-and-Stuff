@@ -1,20 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-
-import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class EntityMotionSliderWidget extends WidgetGroup {
-    private static final int TRACK_PAD_X = 6;
-    private static final int KNOB_W = 5;
+    private static final int TRACK_PAD_X = GRID_6;
+    private static final int KNOB_W = GRID_5;
 
     private final int minValue;
     private final int maxValue;
@@ -42,6 +47,11 @@ final class EntityMotionSliderWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();
@@ -50,15 +60,15 @@ final class EntityMotionSliderWidget extends WidgetGroup {
         int trackRight = left + width - TRACK_PAD_X;
         int trackY = top + height / 2 - 1;
         int knobX = knobX(trackLeft, trackRight);
-        int trackColor = withAlpha(ModColors.BORDER_BASE, 180);
-        int activeColor = withAlpha(ModColors.INTERACTIVE, 220);
-        int mutedColor = withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
+        int trackColor = withAlpha(TabletColors.BORDER_BASE, 180);
+        int activeColor = withAlpha(TabletColors.INTERACTIVE, 220);
+        int mutedColor = withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
 
-        graphics.fill(trackLeft, trackY, trackRight, trackY + 2, trackColor);
-        graphics.fill(trackLeft, trackY, knobX + KNOB_W / 2, trackY + 2, activeColor);
-        graphics.fill(knobX, top + 3, knobX + KNOB_W, top + height - 3, activeColor);
+        SurfaceFactory.fill(trackColor).draw(graphics, 0, 0, trackLeft, trackY, trackRight - trackLeft, 2);
+        SurfaceFactory.fill(activeColor).draw(graphics, 0, 0, trackLeft, trackY, knobX + KNOB_W / 2 - trackLeft, 2);
+        SurfaceFactory.fill(activeColor).draw(graphics, 0, 0, knobX, top + 3, KNOB_W, height - 6);
         if (KNOB_W > 2) {
-            graphics.fill(knobX + 1, top + 4, knobX + KNOB_W - 1, top + height - 4, mutedColor);
+            SurfaceFactory.fill(mutedColor).draw(graphics, 0, 0, knobX + 1, top + 4, KNOB_W - 2, height - 8);
         }
     }
 

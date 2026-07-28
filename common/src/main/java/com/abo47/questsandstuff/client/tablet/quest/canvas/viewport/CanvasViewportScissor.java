@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
-import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Vector4f;
+
+import net.minecraft.client.gui.GuiGraphics;
 
 public final class CanvasViewportScissor {
     private CanvasViewportScissor() {

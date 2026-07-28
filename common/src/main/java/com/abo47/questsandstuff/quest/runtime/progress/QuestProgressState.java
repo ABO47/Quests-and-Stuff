@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.quest.runtime.progress;
 
-import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
 
 public final class QuestProgressState {
     private final Map<String, Tag> taskProgress = new HashMap<>();

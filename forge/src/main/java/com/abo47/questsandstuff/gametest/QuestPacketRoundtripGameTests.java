@@ -1,5 +1,20 @@
 package com.abo47.questsandstuff.gametest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.network.ModPacketContext;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
@@ -15,24 +30,12 @@ import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
 import com.abo47.questsandstuff.network.quest.sync.SyncPacketPayloadLimits;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommand;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import com.mojang.authlib.GameProfile;
+
 import io.netty.buffer.Unpooled;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPacketRoundtripGameTests {
@@ -224,7 +227,7 @@ public final class QuestPacketRoundtripGameTests {
         oversized.writeUtf(EditorCommandType.DESCRIPTION_PUT.wireName());
         CompoundTag payload = new CompoundTag();
         ListTag lines = new ListTag();
-        for (int i = 0; i <= EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES; i++) {
+        for (int i = 0; i <= EditorCommandPayloads.MAX_DESCRIPTION_LINES; i++) {
             lines.add(StringTag.valueOf("line_" + i));
         }
         payload.put("description", lines);
@@ -339,7 +342,7 @@ public final class QuestPacketRoundtripGameTests {
     private static CompoundTag commandPayload(EditorCommandType type) {
         CompoundTag payload = samplePayload();
         payload.putString("type_name", type.name());
-        payload.putString("group", "Main");
+        payload.putString("chapter", "Main");
         payload.putString("quest", "quest/a");
         payload.putString(C2SEditorCommandPacket.PREREQUISITE_FIELD, "quest/b");
         payload.putInt("x", 42);

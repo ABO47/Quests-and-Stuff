@@ -58,7 +58,7 @@ public final class ClipboardDebugFormatter {
         List<String> out = new ArrayList<>();
         for (ClipboardSnapshot.Entry entry : entries) {
             if (entry != null) {
-                out.add(entry.sourceId() + "@" + entry.sourceGroup() + "(" + entry.sourceX() + "," + entry.sourceY() + ")");
+                out.add(entry.sourceId() + "@" + entry.sourceChapter() + "(" + entry.sourceX() + "," + entry.sourceY() + ")");
             }
         }
         out.sort(String::compareTo);

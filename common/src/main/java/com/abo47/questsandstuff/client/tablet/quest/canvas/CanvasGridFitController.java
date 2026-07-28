@@ -1,32 +1,32 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
 public final class CanvasGridFitController {
     private CanvasGridFitController() {
     }
 
-    public static boolean canFitImageToGrid(TabletUiState state, String group, String imageId) {
-        CanvasImageLayer image = findImage(state, group, imageId);
+    public static boolean canFitImageToGrid(TabletUiState state, String chapter, String imageId) {
+        CanvasImageLayer image = findImage(state, chapter, imageId);
         return image != null && !image.equals(fittedImage(state, image));
     }
 
-    public static boolean fitImageToGrid(TabletUiState state, String group, String imageId) {
-        CanvasImageLayer image = findImage(state, group, imageId);
+    public static boolean fitImageToGrid(TabletUiState state, String chapter, String imageId) {
+        CanvasImageLayer image = findImage(state, chapter, imageId);
         if (image == null) {
             return false;
         }
@@ -34,7 +34,7 @@ public final class CanvasGridFitController {
         if (image.equals(fitted)) {
             return false;
         }
-        CanvasLayerMutations.putCanvasImage(state, group, fitted);
+        CanvasLayerMutations.putCanvasImage(state, chapter, fitted);
         state.canvas.canvasSelection.setPrimaryImageId(imageId);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().add(imageId);
@@ -44,13 +44,13 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitTextToGrid(TabletUiState state, String group, String textId) {
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
+    public static boolean canFitTextToGrid(TabletUiState state, String chapter, String textId) {
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
         return text != null && !text.equals(fittedText(state, text));
     }
 
-    public static boolean fitTextToGrid(TabletUiState state, String group, String textId) {
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, group, textId);
+    public static boolean fitTextToGrid(TabletUiState state, String chapter, String textId) {
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
         if (text == null) {
             return false;
         }
@@ -58,7 +58,7 @@ public final class CanvasGridFitController {
         if (text.equals(fitted)) {
             return false;
         }
-        CanvasLayerMutations.putCanvasText(state, group, fitted);
+        CanvasLayerMutations.putCanvasText(state, chapter, fitted);
         state.canvas.canvasSelection.setPrimaryTextId(textId);
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.textIds().add(textId);
@@ -97,8 +97,8 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitSelectionToGrid(TabletUiState state, String group, Map<String, QuestCardLayout> byQuestId) {
-        if (state == null || group == null || group.isBlank()) {
+    public static boolean canFitSelectionToGrid(TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
+        if (state == null || chapter == null || chapter.isBlank()) {
             return false;
         }
         for (String questId : state.canvas.canvasSelection.questIds()) {
@@ -108,25 +108,25 @@ public final class CanvasGridFitController {
             }
         }
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-            if (canFitImageToGrid(state, group, imageId)) {
+            if (canFitImageToGrid(state, chapter, imageId)) {
                 return true;
             }
         }
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-            if (canFitTextToGrid(state, group, textId)) {
+            if (canFitTextToGrid(state, chapter, textId)) {
                 return true;
             }
         }
         for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            if (canFitExclusiveChoiceToGrid(state, group, ecId)) {
+            if (canFitExclusiveChoiceToGrid(state, chapter, ecId)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean fitSelectionToGrid(Player player, TabletUiState state, String group, Map<String, QuestCardLayout> byQuestId) {
-        if (state == null || group == null || group.isBlank()) {
+    public static boolean fitSelectionToGrid(Player player, TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
+        if (state == null || chapter == null || chapter.isBlank()) {
             return false;
         }
         boolean changed = false;
@@ -149,37 +149,37 @@ public final class CanvasGridFitController {
         }
 
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (!imageIds.contains(image.id())) {
                 continue;
             }
             CanvasImageLayer fitted = fittedImage(state, image);
             if (!image.equals(fitted)) {
-                CanvasLayerMutations.putCanvasImage(state, group, fitted);
+                CanvasLayerMutations.putCanvasImage(state, chapter, fitted);
                 changed = true;
             }
         }
 
         Set<String> textIds = CanvasSelectionActions.selectedTextIds(state);
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (!textIds.contains(text.id())) {
                 continue;
             }
             CanvasTextLayer fitted = fittedText(state, text);
             if (!text.equals(fitted)) {
-                CanvasLayerMutations.putCanvasText(state, group, fitted);
+                CanvasLayerMutations.putCanvasText(state, chapter, fitted);
                 changed = true;
             }
         }
 
         Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (!ecIds.contains(ec.id())) {
                 continue;
             }
             CanvasExclusiveChoice fitted = fittedExclusiveChoice(state, ec);
             if (!ec.equals(fitted)) {
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, fitted);
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, fitted);
                 changed = true;
             }
         }
@@ -193,13 +193,13 @@ public final class CanvasGridFitController {
         return changed;
     }
 
-    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
-        CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
+    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, ecId);
         return ec != null && !ec.equals(fittedExclusiveChoice(state, ec));
     }
 
-    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String group, String ecId) {
-        CanvasExclusiveChoice ec = findExclusiveChoice(state, group, ecId);
+    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, ecId);
         if (ec == null) {
             return false;
         }
@@ -207,7 +207,7 @@ public final class CanvasGridFitController {
         if (ec.equals(fitted)) {
             return false;
         }
-        CanvasLayerMutations.putCanvasExclusiveChoice(state, group, fitted);
+        CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, fitted);
         state.canvas.canvasSelection.setPrimaryEcId(ecId);
         state.canvas.canvasSelection.ecIds().clear();
         state.canvas.canvasSelection.ecIds().add(ecId);
@@ -253,21 +253,21 @@ public final class CanvasGridFitController {
         return new FittedQuest(clamped.x, clamped.y, scale);
     }
 
-    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String group, String ecId) {
-        if (group == null || group.isBlank() || ecId == null || ecId.isBlank()) {
+    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String ecId) {
+        if (chapter == null || chapter.isBlank() || ecId == null || ecId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()).stream()
                 .filter(ec -> ec.id().equals(ecId))
                 .findFirst()
                 .orElse(null);
     }
 
-    private static CanvasImageLayer findImage(TabletUiState state, String group, String imageId) {
-        if (group == null || group.isBlank() || imageId == null || imageId.isBlank()) {
+    private static CanvasImageLayer findImage(TabletUiState state, String chapter, String imageId) {
+        if (chapter == null || chapter.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }
-        return state.canvas.canvasImagesByGroup.getOrDefault(group, List.of()).stream()
+        return state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of()).stream()
                 .filter(image -> image.id().equals(imageId))
                 .findFirst()
                 .orElse(null);

@@ -1,26 +1,29 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import com.abo47.questsandstuff.quest.team.TeamManager;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+import com.abo47.questsandstuff.team.TeamManager;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class TeamManagerGameTests {
@@ -378,9 +381,9 @@ public final class TeamManagerGameTests {
         Path root = Files.createTempDirectory("qas_teams_" + rootName + "_");
         QuestDefinitionStore store = new QuestDefinitionStore(root);
         QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-        QuestPerformanceTracker perf = new QuestPerformanceTracker();
-        QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-        QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+        PerformanceTracker perf = new PerformanceTracker();
+        SyncService sync = new SyncService(store, progressData, perf);
+        RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
         sync.setVisibilityFilter(engine::isVisibleFor);
         return new TestBundle(engine, store, helper);
     }
@@ -408,11 +411,11 @@ public final class TeamManagerGameTests {
     }
 
     private static final class TestBundle implements AutoCloseable {
-        final QuestRuntimeEngine engine;
+        final RuntimeEngine engine;
         private final GameTestHelper helper;
         private final QuestDefinitionStore store;
 
-        TestBundle(QuestRuntimeEngine engine, QuestDefinitionStore store, GameTestHelper helper) {
+        TestBundle(RuntimeEngine engine, QuestDefinitionStore store, GameTestHelper helper) {
             this.engine = engine;
             this.store = store;
             this.helper = helper;

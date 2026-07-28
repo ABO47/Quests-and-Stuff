@@ -1,28 +1,31 @@
 package com.abo47.questsandstuff.quest.editor.blueprint;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbt;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.serialization.JsonOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.persistence.GsonProvider;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public record CanvasBlueprint(
         int schema,
@@ -36,7 +39,7 @@ public record CanvasBlueprint(
         List<ExclusiveChoiceEntry> exclusiveChoices
 ) {
     public static final int CURRENT_SCHEMA = 1;
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = GsonProvider.GSON;
 
     public CanvasBlueprint {
         schema = schema <= 0 ? CURRENT_SCHEMA : schema;
@@ -74,7 +77,7 @@ public record CanvasBlueprint(
         for (QuestEntry quest : quests) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("source_id", quest.sourceId());
-            entryTag.putString("source_group", quest.sourceGroup());
+            entryTag.putString("source_chapter", quest.sourceChapter());
             entryTag.putInt("source_x", quest.sourceX());
             entryTag.putInt("source_y", quest.sourceY());
             entryTag.putFloat("scale", quest.scale());
@@ -91,10 +94,10 @@ public record CanvasBlueprint(
             questTags.add(entryTag);
         }
         tag.put("quests", questTags);
-        tag.put("images", CanvasLayerNbt.imagesToListTag(images));
-        tag.put("texts", CanvasLayerNbt.textsToListTag(texts));
+        tag.put("images", CanvasLayerNbtCodec.imagesToListTag(images));
+        tag.put("texts", CanvasLayerNbtCodec.textsToListTag(texts));
         tag.put("exclusive_choices", exclusiveChoicesToListTag(exclusiveChoices));
-        tag.put("layer_order", CanvasLayerNbt.stringsToListTag(layerOrder));
+        tag.put("layer_order", CanvasLayerNbtCodec.stringsToListTag(layerOrder));
         return tag;
     }
 
@@ -103,15 +106,15 @@ public record CanvasBlueprint(
         for (ExclusiveChoiceEntry entry : entries) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("source_id", entry.sourceId());
-            entryTag.putString("source_group", entry.sourceGroup());
+            entryTag.putString("source_chapter", entry.sourceChapter());
             entryTag.putInt("source_x", entry.sourceX());
             entryTag.putInt("source_y", entry.sourceY());
             entryTag.putInt("source_w", entry.sourceW());
             entryTag.putInt("source_h", entry.sourceH());
             entryTag.putInt("rotation", entry.rotation());
             entryTag.putString("background", entry.background());
-            entryTag.put("connections", CanvasLayerNbt.stringsToListTag(entry.connections()));
-            entryTag.put("prerequisites", CanvasLayerNbt.stringsToListTag(List.copyOf(entry.prerequisites())));
+            entryTag.put("connections", CanvasLayerNbtCodec.stringsToListTag(entry.connections()));
+            entryTag.put("prerequisites", CanvasLayerNbtCodec.stringsToListTag(List.copyOf(entry.prerequisites())));
             if (!entry.connectionColors().isEmpty()) {
                 CompoundTag colors = new CompoundTag();
                 for (Map.Entry<String, Integer> e : entry.connectionColors().entrySet()) {
@@ -141,7 +144,7 @@ public record CanvasBlueprint(
                 entryTag.put("connection_texture_spacings", spacings);
             }
             if (!entry.hiddenConnections().isEmpty()) {
-                entryTag.put("hidden_connections", CanvasLayerNbt.stringsToListTag(new ArrayList<>(entry.hiddenConnections())));
+                entryTag.put("hidden_connections", CanvasLayerNbtCodec.stringsToListTag(new ArrayList<>(entry.hiddenConnections())));
             }
             list.add(entryTag);
         }
@@ -188,18 +191,18 @@ public record CanvasBlueprint(
                     }
                 }
             }
-            Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
+            Set<String> hiddenConnections = Set.copyOf(CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("hidden_connections", Tag.TAG_STRING)));
             entries.add(new ExclusiveChoiceEntry(
                     entryTag.getString("source_id"),
-                    entryTag.getString("source_group"),
+                    entryTag.getString("source_chapter"),
                     entryTag.getInt("source_x"),
                     entryTag.getInt("source_y"),
                     entryTag.getInt("source_w"),
                     entryTag.getInt("source_h"),
                     entryTag.contains("rotation", Tag.TAG_INT) ? entryTag.getInt("rotation") : 0,
                     entryTag.getString("background"),
-                    CanvasLayerNbt.stringsFromListTag(entryTag.getList("connections", Tag.TAG_STRING)),
-                    Set.copyOf(CanvasLayerNbt.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING))),
+                    CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("connections", Tag.TAG_STRING)),
+                    Set.copyOf(CanvasLayerNbtCodec.stringsFromListTag(entryTag.getList("prerequisites", Tag.TAG_STRING))),
                     connectionColors,
                     connectionModes,
                     connectionTextures,
@@ -224,7 +227,7 @@ public record CanvasBlueprint(
             }
             quests.add(new QuestEntry(
                     entryTag.getString("source_id"),
-                    entryTag.getString("source_group"),
+                    entryTag.getString("source_chapter"),
                     entryTag.getInt("source_x"),
                     entryTag.getInt("source_y"),
                     entryTag.getFloat("scale"),
@@ -237,9 +240,9 @@ public record CanvasBlueprint(
                 tag.getInt("origin_x"),
                 tag.getInt("origin_y"),
                 quests,
-                CanvasLayerNbt.imagesFromListTag(tag.getList("images", Tag.TAG_COMPOUND)),
-                CanvasLayerNbt.textsFromListTag(tag.getList("texts", Tag.TAG_COMPOUND)),
-                CanvasLayerNbt.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING)),
+                CanvasLayerNbtCodec.imagesFromListTag(tag.getList("images", Tag.TAG_COMPOUND)),
+                CanvasLayerNbtCodec.textsFromListTag(tag.getList("texts", Tag.TAG_COMPOUND)),
+                CanvasLayerNbtCodec.stringsFromListTag(tag.getList("layer_order", Tag.TAG_STRING)),
                 exclusiveChoicesFromListTag(tag.getList("exclusive_choices", Tag.TAG_COMPOUND))
         );
     }
@@ -254,7 +257,7 @@ public record CanvasBlueprint(
         for (QuestEntry quest : quests) {
             JsonObject entry = new JsonObject();
             entry.addProperty("source_id", quest.sourceId());
-            entry.addProperty("source_group", quest.sourceGroup());
+            entry.addProperty("source_chapter", quest.sourceChapter());
             entry.addProperty("source_x", quest.sourceX());
             entry.addProperty("source_y", quest.sourceY());
             entry.addProperty("scale", quest.scale());
@@ -286,7 +289,7 @@ public record CanvasBlueprint(
         for (ExclusiveChoiceEntry entry : entries) {
             JsonObject obj = new JsonObject();
             obj.addProperty("source_id", entry.sourceId());
-            obj.addProperty("source_group", entry.sourceGroup());
+            obj.addProperty("source_chapter", entry.sourceChapter());
             obj.addProperty("source_x", entry.sourceX());
             obj.addProperty("source_y", entry.sourceY());
             obj.addProperty("source_w", entry.sourceW());
@@ -369,7 +372,7 @@ public record CanvasBlueprint(
                 }
                 quests.add(new QuestEntry(
                         sourceId,
-                        string(entry, "source_group"),
+                        string(entry, "source_chapter"),
                         integer(entry, "source_x", 0, "quest:" + sourceId),
                         integer(entry, "source_y", 0, "quest:" + sourceId),
                         floating(entry, "scale", 1.0f, "quest:" + sourceId),
@@ -489,7 +492,7 @@ public record CanvasBlueprint(
 
             entries.add(new ExclusiveChoiceEntry(
                     string(obj, "source_id"),
-                    string(obj, "source_group"),
+                    string(obj, "source_chapter"),
                     integer(obj, "source_x", 0, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_y", 0, "ec:" + string(obj, "source_id")),
                     integer(obj, "source_w", 79, "ec:" + string(obj, "source_id")),
@@ -575,7 +578,7 @@ public record CanvasBlueprint(
     private static JsonArray textsToJson(List<CanvasTextLayer> texts) {
         JsonArray array = new JsonArray();
         for (CanvasTextLayer text : texts) {
-            array.add(nbtToJson(CanvasLayerNbt.textToTag(text)));
+            array.add(nbtToJson(CanvasLayerNbtCodec.textToTag(text)));
         }
         return array;
     }
@@ -586,7 +589,7 @@ public record CanvasBlueprint(
             if (!element.isJsonObject()) {
                 continue;
             }
-            CanvasTextLayer text = CanvasLayerNbt.textFromTag(jsonToNbt(element.getAsJsonObject()));
+            CanvasTextLayer text = CanvasLayerNbtCodec.textFromTag(jsonToNbt(element.getAsJsonObject()));
             if (text != null) {
                 texts.add(text);
             }
@@ -707,7 +710,7 @@ public record CanvasBlueprint(
 
     public record QuestEntry(
             String sourceId,
-            String sourceGroup,
+            String sourceChapter,
             int sourceX,
             int sourceY,
             float scale,
@@ -715,7 +718,7 @@ public record CanvasBlueprint(
     ) {
         public QuestEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
-            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceChapter = sourceChapter == null ? "" : sourceChapter.trim();
             if (Float.isNaN(scale) || Float.isInfinite(scale)) {
                 scale = 1.0f;
             }
@@ -725,7 +728,7 @@ public record CanvasBlueprint(
 
     public record ExclusiveChoiceEntry(
             String sourceId,
-            String sourceGroup,
+            String sourceChapter,
             int sourceX,
             int sourceY,
             int sourceW,
@@ -742,7 +745,7 @@ public record CanvasBlueprint(
     ) {
         public ExclusiveChoiceEntry {
             sourceId = sourceId == null ? "" : sourceId.trim();
-            sourceGroup = sourceGroup == null ? "" : sourceGroup.trim();
+            sourceChapter = sourceChapter == null ? "" : sourceChapter.trim();
             sourceW = Math.max(1, sourceW);
             sourceH = Math.max(1, sourceH);
             connections = connections == null ? List.of() : List.copyOf(connections);

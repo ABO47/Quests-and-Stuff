@@ -1,9 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-
 import java.nio.file.Path;
 import java.util.List;
+
+import net.minecraft.resources.ResourceLocation;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 
 public final class AssetLibrary {
     private AssetLibrary() {
@@ -59,15 +63,39 @@ public final class AssetLibrary {
         return AssetTextureCache.assetThumbnailTexture(assetsRoot, relativePath);
     }
 
+    public static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {
+        return AssetTextureCache.staticTextureLocation(assetsRoot, relativePath);
+    }
+
+    public static ResourceLocation tileTextureLocation(Path assetsRoot, String relativePath) {
+        return AssetTextureCache.tileTextureLocation(assetsRoot, relativePath);
+    }
+
+    public static IGuiTexture preRenderedTileTexture(Path assetsRoot, String relativePath) {
+        return AssetTextureCache.preRenderedTileTexture(assetsRoot, relativePath);
+    }
+
+    public static void clearTileCache(Path assetsRoot, String relativePath) {
+        AssetTextureCache.clearTileCache(assetsRoot, relativePath);
+    }
+
     public static void ensureAssetsDirs(Path assetsRoot) {
         AssetPathResolver.ensureAssetsDirs(assetsRoot);
     }
 
     public static void deleteAssetFile(Path assetsRoot, String relativePath) {
-        AssetPathResolver.deleteAssetFile(assetsRoot, relativePath, AssetTextureCache::clearTextureCache);
+        AssetPathResolver.deleteAssetFile(assetsRoot, relativePath, key -> {
+            AssetTextureCache.clearTextureCache(key);
+            AssetTextureCache.clearTileCache(assetsRoot, key);
+            SkinFillOverride.clearCache();
+        });
     }
 
     public static void renameAssetFile(Path assetsRoot, String relativePath, String targetNameRaw) {
-        AssetPathResolver.renameAssetFile(assetsRoot, relativePath, targetNameRaw, AssetTextureCache::clearTextureCache);
+        AssetPathResolver.renameAssetFile(assetsRoot, relativePath, targetNameRaw, key -> {
+            AssetTextureCache.clearTextureCache(key);
+            AssetTextureCache.clearTileCache(assetsRoot, key);
+            SkinFillOverride.clearCache();
+        });
     }
 }

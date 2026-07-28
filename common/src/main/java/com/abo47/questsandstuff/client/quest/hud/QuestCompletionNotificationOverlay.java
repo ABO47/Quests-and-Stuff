@@ -1,13 +1,10 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.mojang.blaze3d.platform.Window;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,14 +12,16 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestCompletionNotificationOverlay {
-    private static final int WIDTH = 128;
-    private static final int HEIGHT = 32;
-    private static final int MAX_NOTIFICATIONS = 3;
-    private static final int MIN_FONT_ALPHA = 4;
+
     private static final Deque<PendingNotification> PENDING = new ArrayDeque<>();
     private static ActiveNotification activeNotification;
     private static SoundInstance activeSound;
@@ -31,18 +30,18 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     public static int width() {
-        return WIDTH;
+        return HudConstants.NOTIFICATION_WIDTH;
     }
 
     public static int height() {
-        return HEIGHT;
+        return HudConstants.NOTIFICATION_HEIGHT;
     }
 
     public static void push(String questId) {
         if (!QuestsAndStuffConfig.completionHudEnabled() || questId == null || questId.isBlank()) {
             return;
         }
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String title = quest.getString("title");
         String background = quest.getString("completion_hud_background");
         PENDING.addLast(new PendingNotification(
@@ -78,15 +77,15 @@ public final class QuestCompletionNotificationOverlay {
         Window window = minecraft.getWindow();
         long elapsedMs = Math.max(0L, now - notification.startedAtMs());
         float age = progress(elapsedMs, displayMs);
-        float heightScale = QuestHudLayout.heightScale(QuestHudLayout.Element.COMPLETION);
-        QuestHudLayout.HudBox box = QuestHudLayout.completionBox(
+        float heightScale = QuestHudLayoutManager.heightScale(QuestHudLayoutManager.Element.COMPLETION);
+        QuestHudLayoutManager.HudBox box = QuestHudLayoutManager.completionBox(
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT)
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_HEIGHT)
         );
         int x = box.x();
-        float slideDistance = 12.0f * heightScale;
+        float slideDistance = HudConstants.NOTIFICATION_SLIDE_DISTANCE * heightScale;
         int y = notificationY(box.y(), slideDistance, age);
         int alpha = notificationAlpha(age);
         drawNotification(graphics, x, y, box.width(), box.height(), notification.title(), notification.background(), alpha, age, false);
@@ -97,8 +96,8 @@ public final class QuestCompletionNotificationOverlay {
                 graphics,
                 x,
                 y,
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, WIDTH),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, HEIGHT),
+                QuestHudLayoutManager.scaledSize(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_WIDTH),
+                QuestHudLayoutManager.scaledHeight(QuestHudLayoutManager.Element.COMPLETION, HudConstants.NOTIFICATION_HEIGHT),
                 selected
         );
     }
@@ -124,17 +123,17 @@ public final class QuestCompletionNotificationOverlay {
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
         int contentW = Math.max(0, safeW - 14);
-        int text = withAlpha(ModColors.TEXT_PRIMARY, alpha);
+        int text = withAlpha(TabletColors.TEXT_PRIMARY, alpha);
 
-        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayout.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
+        QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
         if (safeH >= 10) {
             int barH = safeH < 24 ? 4 : 6;
-            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, ModColors.SUCCESS, alpha);
+            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, TabletColors.SUCCESS, alpha);
         }
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        if (alpha < MIN_FONT_ALPHA) {
+        if (alpha < HudConstants.MIN_FONT_ALPHA) {
             return;
         }
 
@@ -142,7 +141,7 @@ public final class QuestCompletionNotificationOverlay {
         if (safeH >= 27) {
             graphics.drawString(font, completed, x + 7, y + 4, text, false);
             String title = cropToWidth(font, titleValue, contentW);
-            graphics.drawString(font, title, x + 7, y + 14, withAlpha(ModColors.TEXT_SECONDARY, alpha), false);
+            graphics.drawString(font, title, x + 7, y + 14, withAlpha(TabletColors.TEXT_SECONDARY, alpha), false);
             return;
         }
         String title = cropToWidth(font, titleValue == null || titleValue.isBlank() ? completed : titleValue, contentW);
@@ -238,7 +237,7 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     private static void trimPendingNotifications() {
-        while (PENDING.size() + (activeNotification == null ? 0 : 1) > MAX_NOTIFICATIONS) {
+        while (PENDING.size() + (activeNotification == null ? 0 : 1) > HudConstants.MAX_NOTIFICATIONS) {
             PENDING.removeFirst();
         }
     }

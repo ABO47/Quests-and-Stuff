@@ -1,24 +1,24 @@
 package com.abo47.questsandstuff.network.team;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.quest.model.team.TeamData;
-import com.abo47.questsandstuff.quest.model.team.TeamMember;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.team.model.TeamData;
+import com.abo47.questsandstuff.team.model.TeamMember;
 
 final class ClientboundTeamPacketDispatch {
     private ClientboundTeamPacketDispatch() {
     }
 
     static void handle(CompoundTag payload) {
-        TeamData team = S2CTeamSyncPacket.fromPayload(payload);
+        TeamData team = TeamPacketHelper.fromPayload(payload);
         if (team == null) {
             ClientTeamCache.INSTANCE.clear();
             QuestsAndStuffMod.debugLog("[QnS:Team] received empty team sync");

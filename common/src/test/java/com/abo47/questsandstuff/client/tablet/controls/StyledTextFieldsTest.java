@@ -1,11 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import org.junit.jupiter.api.Test;
-import sun.misc.Unsafe;
-
 import java.lang.reflect.Field;
 import java.util.function.Function;
+
+import org.junit.jupiter.api.Test;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+
+import sun.misc.Unsafe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

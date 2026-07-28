@@ -1,32 +1,39 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import org.joml.Quaternionf;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import org.joml.Quaternionf;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRotationMath;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasTransformGizmo {
-    private static final int HANDLE = 7;
-    private static final int HIT_PAD = 7;
-    private static final int MOVE_HANDLE = 7;
-    private static final int RING_STEP = 7;
-    private static final int RING_THICKNESS = 3;
+    private static final int HANDLE = GRID_7;
+    private static final int HIT_PAD = GRID_7;
+    private static final int MOVE_HANDLE = GRID_7;
+    private static final int RING_STEP = GRID_7;
+    private static final int RING_THICKNESS = GRID_3;
     private static final int RING_ALPHA_IDLE = 155;
     private static final int RING_ALPHA_ACTIVE = 255;
     private static final int RING_SEGMENTS = 256;
-    private static final int AXIS_X_COLOR = ModColors.ERROR;
-    private static final int AXIS_Y_COLOR = ModColors.SUCCESS;
-    private static final int AXIS_Z_COLOR = ModColors.INTERACTIVE;
+    private static final int AXIS_X_COLOR = TabletColors.ERROR;
+    private static final int AXIS_Y_COLOR = TabletColors.SUCCESS;
+    private static final int AXIS_Z_COLOR = TabletColors.INTERACTIVE;
     public static final String AXIS_YAW = "yaw";
     public static final String AXIS_PITCH = "pitch";
     public static final String AXIS_ROLL = "roll";
@@ -174,7 +181,7 @@ public final class CanvasTransformGizmo {
             rotateAxes = rotateAxes(rotationRadius(geometry.width(), geometry.height()), rotationDegrees, yawDegrees, pitchDegrees);
             drawRotateGizmo(graphics, state, rotateAxes, rotationDegrees, yawDegrees, pitchDegrees);
         } else {
-            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0F, 0.0F, (float) Math.toRadians(normalize(rotationDegrees))));
+            graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0F, 0.0F, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
             if (mode == CanvasTransformMode.RESIZE) {
                 drawResizeGizmo(graphics, geometry.left(), geometry.top(), geometry.right(), geometry.bottom());
             } else {
@@ -209,12 +216,12 @@ public final class CanvasTransformGizmo {
         int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
-        graphics.fill(left, top, right, bottom, withAlpha(ModColors.INTERACTIVE, 18));
-        graphics.renderOutline(left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(ModColors.SUCCESS, 185));
-        drawInsideHandle(graphics, left, top, ModColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, top, ModColors.SUCCESS);
-        drawInsideHandle(graphics, left, bottom - HANDLE, ModColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, ModColors.SUCCESS);
+        SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(TabletColors.SUCCESS, 185));
+        drawInsideHandle(graphics, left, top, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, top, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, left, bottom - HANDLE, TabletColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, TabletColors.SUCCESS);
     }
 
     private static void drawRotateGizmo(GuiGraphics graphics, TabletUiState state, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
@@ -235,9 +242,9 @@ public final class CanvasTransformGizmo {
     private static void line(GuiGraphics graphics, int x1, int y1, int x2, int y2, int color, int alpha) {
         int c = withAlpha(color, alpha);
         if (y1 == y2) {
-            graphics.fill(Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1, y1 + 2, c);
+            SurfaceFactory.fill(c).draw(graphics, 0, 0, Math.min(x1, x2), y1 - 1, Math.max(x1, x2) + 1 - Math.min(x1, x2), 3);
         } else if (x1 == x2) {
-            graphics.fill(x1 - 1, Math.min(y1, y2), x1 + 2, Math.max(y1, y2) + 1, c);
+            SurfaceFactory.fill(c).draw(graphics, 0, 0, x1 - 1, Math.min(y1, y2), 3, Math.max(y1, y2) + 1 - Math.min(y1, y2));
         }
     }
 
@@ -301,7 +308,7 @@ public final class CanvasTransformGizmo {
             value = rotationDegrees;
         }
         ScreenPoint point = screenPoint(originX, originY, geometry, 0, x, y);
-        drawValueLabel(graphics, normalize(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
+        drawValueLabel(graphics, CanvasRotationMath.normalizeDegrees(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
     }
 
     private static void drawActiveMoveLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int axisLength, int x, int y) {
@@ -339,9 +346,9 @@ public final class CanvasTransformGizmo {
         var font = Minecraft.getInstance().font;
         int width = font.width(text) + 6;
         int height = font.lineHeight + 4;
-        graphics.fill(x - 3, y - 2, x - 3 + width, y - 2 + height, withAlpha(ModColors.SURFACE_BASE, 205));
-        graphics.renderOutline(x - 3, y - 2, width, height, withAlpha(color, 210));
-        graphics.drawString(font, text, x, y, ModColors.TEXT_PRIMARY, false);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - GRID_3, y - GRID_2, width, height);
+        drawRectOutline(graphics, x - GRID_3, y - GRID_2, width, height, withAlpha(color, 210));
+        graphics.drawString(font, text, x, y, TabletColors.TEXT_PRIMARY, false);
     }
 
     private static boolean isRotating(TabletUiState state) {
@@ -393,21 +400,21 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 72));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawInsideHandle(GuiGraphics graphics, int left, int top, int color) {
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawBoxHandle(GuiGraphics graphics, int centerX, int centerY, int color) {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        graphics.fill(left, top, left + HANDLE, top + HANDLE, withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(left, top, HANDLE, HANDLE, color);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static boolean near(LocalPoint point, int x, int y) {
@@ -509,7 +516,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static RotateAxes rotateAxes(int radius, int rotationDegrees, int yawDegrees, int pitchDegrees) {
-        int pitchRadius = Math.max(12, radius - RING_STEP * 2);
+        int pitchRadius = Math.max(GRID_12, radius - RING_STEP * 2);
         int yawRadius = Math.max(pitchRadius + RING_STEP, radius - RING_STEP);
         int rollRadius = Math.max(yawRadius + RING_STEP, radius);
         double pitchHandleR = Math.max(0, pitchRadius - RING_THICKNESS / 2.0);
@@ -532,16 +539,16 @@ public final class CanvasTransformGizmo {
     }
 
     private static LocalPoint pointOnCircle(double radius, int degrees) {
-        double radians = Math.toRadians(normalize(degrees));
+        double radians = Math.toRadians(CanvasRotationMath.normalizeDegrees(degrees));
         return new LocalPoint(Math.cos(radians) * radius, Math.sin(radians) * radius);
     }
 
     private static int moveAxis(int width, int height) {
-        return Math.max(18, Math.min(46, Math.min(width, height) / 2 + 10));
+        return Math.max(GRID_18, Math.min(46, Math.min(width, height) / 2 + 10));
     }
 
     private static int rotationRadius(int width, int height) {
-        return Math.max(24, Math.min(70, Math.max(width, height) / 2 + 12));
+        return Math.max(GRID_24, Math.min(70, Math.max(width, height) / 2 + GRID_12));
     }
 
     private static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
@@ -550,7 +557,7 @@ public final class CanvasTransformGizmo {
     }
 
     private static ScreenPoint screenPoint(int originX, int originY, Geometry geometry, int rotationDegrees, double localX, double localY) {
-        double radians = Math.toRadians(normalize(rotationDegrees));
+        double radians = Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         int x = (int) Math.round(originX + geometry.centerX() + localX * cos - localY * sin);
@@ -561,14 +568,10 @@ public final class CanvasTransformGizmo {
     private static LocalPoint toLocalPoint(Geometry geometry, int rotationDegrees, int hitX, int hitY) {
         double dx = hitX - geometry.centerX();
         double dy = hitY - geometry.centerY();
-        double radians = Math.toRadians(-normalize(rotationDegrees));
+        double radians = Math.toRadians(-CanvasRotationMath.normalizeDegrees(rotationDegrees));
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         return new LocalPoint(dx * cos - dy * sin, dx * sin + dy * cos);
-    }
-
-    private static int normalize(int rotationDegrees) {
-        return ((rotationDegrees % 360) + 360) % 360;
     }
 
     private record Geometry(double centerX, double centerY, int width, int height, int left, int top, int right, int bottom) {

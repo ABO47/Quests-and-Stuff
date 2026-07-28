@@ -1,5 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.util.List;
+
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
@@ -7,28 +14,24 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 public final class TabletThemePickerModal {
-    private static final int PAD = 8;
-    private static final int HEADER_H = 18;
-    private static final int ROW_H = 26;
-    private static final int ROW_GAP = 4;
-    private static final int ROW_PAD = 4;
-    private static final int SETTINGS_ROW_H = 34;
-    private static final int SETTINGS_ROW_INSET = 4;
+    private static final int PAD = GRID_8;
+    private static final int HEADER_H = GRID_18;
+    private static final int ROW_H = ROW_H_26;
+    private static final int ROW_GAP = GRID_4;
+    private static final int ROW_PAD = GRID_4;
+    private static final int SETTINGS_ROW_H = GRID_34;
+    private static final int SETTINGS_ROW_INSET = GRID_4;
 
     private TabletThemePickerModal() {
     }
@@ -96,18 +99,18 @@ public final class TabletThemePickerModal {
     }
 
     private static void addThemeRow(WidgetGroup list, TabletUiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int x, int y, int w) {
-        int fill = active ? withAlpha(theme.success(), 66) : ModColors.SURFACE_PANEL_ALT;
-        int border = active ? theme.success() : ModColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : TabletColors.SURFACE_PANEL_ALT;
+        int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, ROW_H, fill, border));
 
-        int swatchX = x + 6;
-        addSwatch(list, swatchX, y + 6, theme.panel());
-        addSwatch(list, swatchX + 12, y + 6, theme.panelAlt());
-        addSwatch(list, swatchX + 24, y + 6, theme.accent());
-        addSwatch(list, swatchX + 36, y + 6, theme.success());
+        int swatchX = x + GRID_6;
+        addSwatch(list, swatchX, y + GRID_6, theme.panel());
+        addSwatch(list, swatchX + GRID_12, y + GRID_6, theme.panelAlt());
+        addSwatch(list, swatchX + GRID_24, y + GRID_6, theme.accent());
+        addSwatch(list, swatchX + 36, y + GRID_6, theme.success());
 
-        LabelWidget name = new LabelWidget(x + 54, y + 8, theme.label());
-        name.setColor(active ? ModColors.TEXT_PRIMARY : theme.text());
+        LabelWidget name = new LabelWidget(x + 54, y + GRID_8, theme.label());
+        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, ROW_H, click -> {
@@ -117,7 +120,7 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(Surfaces.bordered(withAlpha(theme.accent(), 54), theme.accent()));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         list.addWidget(hit);
     }
 
@@ -125,21 +128,21 @@ public final class TabletThemePickerModal {
         int x = SETTINGS_ROW_INSET;
         int h = SETTINGS_ROW_H - SETTINGS_ROW_INSET;
         int w = Math.max(1, rowW - SETTINGS_ROW_INSET * 2);
-        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(ModColors.SURFACE_PANEL_ALT, 180);
-        int border = active ? theme.success() : ModColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int border = active ? theme.success() : TabletColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, h, fill, border));
 
-        int swatchX = x + 8;
-        int swatchY = y + 8;
+        int swatchX = x + GRID_8;
+        int swatchY = y + GRID_8;
         addSwatch(list, swatchX, swatchY, theme.panel());
-        addSwatch(list, swatchX + 12, swatchY, theme.panelAlt());
-        addSwatch(list, swatchX + 24, swatchY, theme.accent());
+        addSwatch(list, swatchX + GRID_12, swatchY, theme.panelAlt());
+        addSwatch(list, swatchX + GRID_24, swatchY, theme.accent());
         addSwatch(list, swatchX + 36, swatchY, theme.success());
 
         int labelX = x + 58;
         int labelW = Math.max(16, w - 70);
-        LabelWidget name = new LabelWidget(labelX, y + 10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
-        name.setColor(active ? ModColors.TEXT_PRIMARY : theme.text());
+        LabelWidget name = new LabelWidget(labelX, y + GRID_10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
+        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, h, click -> {
@@ -149,13 +152,13 @@ public final class TabletThemePickerModal {
             }
         });
         hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(Surfaces.transparentBorder(theme.accent()));
-        hit.setClickedTexture(Surfaces.fill(withAlpha(theme.accent(), 64)));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(theme.accent(), 64)));
         list.addWidget(hit);
     }
 
     private static void addSwatch(WidgetGroup parent, int x, int y, int color) {
-        parent.addWidget(panel(x, y, 10, 14, color, ModColors.BORDER_BASE));
+        parent.addWidget(panel(x, y, 10, 14, color, TabletColors.BORDER_BASE));
     }
 
 }

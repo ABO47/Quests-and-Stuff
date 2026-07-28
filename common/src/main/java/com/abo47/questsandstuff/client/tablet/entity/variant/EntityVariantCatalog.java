@@ -1,14 +1,14 @@
 package com.abo47.questsandstuff.client.tablet.entity.variant;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public final class EntityVariantCatalog {
     private static final List<VariantEntry> CATS = List.of(

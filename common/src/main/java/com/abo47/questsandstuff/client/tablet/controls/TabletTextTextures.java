@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import net.minecraft.network.chat.Component;
+
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
-import net.minecraft.network.chat.Component;
 
 public final class TabletTextTextures {
     private TabletTextTextures() {

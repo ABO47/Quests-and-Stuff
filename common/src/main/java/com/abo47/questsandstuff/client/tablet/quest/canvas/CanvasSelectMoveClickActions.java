@@ -1,26 +1,26 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.List;
+import java.util.Map;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.hit.CanvasHitTester;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.List;
-import java.util.Map;
 
 final class CanvasSelectMoveClickActions {
     private CanvasSelectMoveClickActions() {
@@ -150,11 +150,13 @@ final class CanvasSelectMoveClickActions {
             refresher.run();
             return true;
         }
-        boolean questResizeTransform = !state.canvas.canvasSelection.questIds().isEmpty();
-        if (questResizeTransform && CanvasRenderer.isSelectionResizeHandleHit(state, localX, localY)) {
-            selectionTransforms.beginResize(localX, localY, byQuestId);
-            refresher.run();
-            return true;
+        if (state.canvas.canvasSelection.questIds().size() == 1) {
+            QuestCardLayout questCard = byQuestId.get(state.canvas.canvasSelection.questIds().iterator().next());
+            if (questCard != null && CanvasHitTester.isCanvasQuestResizeHandleHit(state, questCard, localX, localY)) {
+                selectionTransforms.beginResize(localX, localY, byQuestId);
+                refresher.run();
+                return true;
+            }
         }
         if (textHit != null) {
             if (canvasViewport.ctrlDown()) {
@@ -273,10 +275,10 @@ final class CanvasSelectMoveClickActions {
         if (anchorEnumKind == null) {
             return;
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         int[] anchorBounds = elementBounds(byQuestId, images, texts, ecs, anchorEnumKind, anchorId);
         int[] clickBounds = elementBounds(byQuestId, images, texts, ecs, clickedKind, clickedId);
         if (anchorBounds == null || clickBounds == null) {

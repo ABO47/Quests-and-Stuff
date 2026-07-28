@@ -1,26 +1,26 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.input.TabletModifierKeys;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.IntSupplier;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasGroupResizeTransform;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerGroupTransform;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsMouse;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.IntSupplier;
 
 public final class QuestDetailsDescriptionTransform {
     private final TabletUiState state;
@@ -164,7 +164,7 @@ public final class QuestDetailsDescriptionTransform {
     private void applySelectionResize(QuestDetailsDescriptionModel model, int mouseX, int mouseY) {
         int logicalMouseX = mouseX - screenContentX();
         int logicalMouseY = mouseY - screenContentY() + state.questDetails.questDetailsDescScroll;
-        CanvasGroupResizeTransform.Result result = CanvasGroupResizeTransform.resizeBottomRight(
+        CanvasSelectionResize.Result result = CanvasSelectionResize.resizeBottomRight(
                 activeLayerSnapshot(
                         state.canvas.resizeStartLeft,
                         state.canvas.resizeStartTop,
@@ -190,7 +190,7 @@ public final class QuestDetailsDescriptionTransform {
             delta = Math.round(delta / snap) * snap;
         }
         state.canvas.rotatePreviewAngle = delta;
-        CanvasLayerGroupTransform.Result result = CanvasLayerGroupTransform.rotate(
+        CanvasSelectionRotate.Result result = CanvasSelectionRotate.rotate(
                 activeLayerSnapshot(
                         state.canvas.rotateStartBoundsLeft,
                         state.canvas.rotateStartBoundsTop,
@@ -222,8 +222,8 @@ public final class QuestDetailsDescriptionTransform {
         return clampRotated(x, y, width, height, pivotX, pivotY, rotationDegrees);
     }
 
-    private CanvasGroupResizeTransform.Constraints selectionResizeConstraints() {
-        return new CanvasGroupResizeTransform.Constraints(
+    private CanvasSelectionResize.Constraints selectionResizeConstraints() {
+        return new CanvasSelectionResize.Constraints(
                 4,
                 4,
                 CanvasGeometry.gridSize(state),
@@ -232,11 +232,11 @@ public final class QuestDetailsDescriptionTransform {
                 QuestDetailsDescriptionLayout.visibleLeftEdge(),
                 QuestDetailsDescriptionLayout.visibleTopEdge(state),
                 contentW.getAsInt(),
-                CanvasGroupResizeTransform.UNBOUNDED
+                CanvasSelectionResize.UNBOUNDED
         );
     }
 
-    private void applyResizeTransformResult(QuestDetailsDescriptionModel model, CanvasGroupResizeTransform.Result result) {
+    private void applyResizeTransformResult(QuestDetailsDescriptionModel model, CanvasSelectionResize.Result result) {
         for (CanvasImageLayer image : result.images().values()) {
             model.putImage(fitAndClampImage(image));
         }
@@ -245,7 +245,7 @@ public final class QuestDetailsDescriptionTransform {
         }
     }
 
-    private void applyRotationTransformResult(QuestDetailsDescriptionModel model, CanvasLayerGroupTransform.Result result) {
+    private void applyRotationTransformResult(QuestDetailsDescriptionModel model, CanvasSelectionRotate.Result result) {
         for (CanvasImageLayer image : result.images().values()) {
             model.putImage(clampRotationPreviewImage(image));
         }
@@ -364,11 +364,11 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private int screenContentX() {
-        return QuestDetailsMouse.screenX(state, contentX.getAsInt());
+        return QuestDetailsCoordinates.screenX(state, contentX.getAsInt());
     }
 
     private int screenContentY() {
-        return QuestDetailsMouse.screenY(state, contentY.getAsInt());
+        return QuestDetailsCoordinates.screenY(state, contentY.getAsInt());
     }
 
     private CanvasTextLayer fittedTextIfGridLocked(CanvasTextLayer text) {

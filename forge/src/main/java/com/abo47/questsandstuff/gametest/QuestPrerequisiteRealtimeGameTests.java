@@ -1,29 +1,5 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.network.ModNetwork;
-import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.sync.QuestPerformanceTracker;
-import com.abo47.questsandstuff.quest.sync.QuestSyncService;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +9,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
+import com.abo47.questsandstuff.quest.sync.SyncService;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestPrerequisiteRealtimeGameTests {
@@ -44,7 +47,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
     public static void prerequisiteEditRelocksQuestOnServerAndClient(GameTestHelper helper) {
         QuestDefinitionStore store = null;
         try {
-            ClientQuestCache.resetStateForTests();
+            ClientQuestStateFacade.resetStateForTests();
             Path root = Files.createTempDirectory("qas_prerequisite_relock_");
             store = new QuestDefinitionStore(root);
             String rootQuest = "editor/root";
@@ -53,9 +56,9 @@ public final class QuestPrerequisiteRealtimeGameTests {
             store.upsert(incompleteQuest(childQuest, "Main", 64, 32, Set.of()));
 
             QuestProgressSavedData progressData = QuestProgressSavedData.get(helper.getLevel().getServer());
-            QuestPerformanceTracker perf = new QuestPerformanceTracker();
-            QuestSyncService sync = new QuestSyncService(store, progressData, perf);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, progressData, sync, perf);
+            PerformanceTracker perf = new PerformanceTracker();
+            SyncService sync = new SyncService(store, progressData, perf);
+            RuntimeEngine engine = new RuntimeEngine(store, progressData, sync, perf);
             sync.setVisibilityFilter(engine::isVisibleFor);
             sync.setEditorVisibilityPredicate(ignored -> true);
 
@@ -72,7 +75,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
             applyFullSyncPackets(packets);
             assertClientQuestUnlocked(childQuest, true, "Child quest should start unlocked before prerequisites are added");
 
-            ClientQuestCache.setQuestPrerequisiteLocal(childQuest, rootQuest, true);
+            ClientQuestStateFacade.setQuestPrerequisiteLocal(childQuest, rootQuest, true);
             assertClientQuestUnlocked(childQuest, false, "Local prerequisite edit should immediately relock the child quest");
 
             store.upsert(incompleteQuest(childQuest, "Main", 64, 32, Set.of(rootQuest)));
@@ -110,7 +113,7 @@ public final class QuestPrerequisiteRealtimeGameTests {
                         id,
                         "prerequisite relock",
                         List.of("sync"),
-                        Map.of(chapter, new ChapterDefinition(true, x, y, 1.0f)),
+                        Map.of(chapter, new ChapterDef(true, x, y, 1.0f)),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),
@@ -134,12 +137,12 @@ public final class QuestPrerequisiteRealtimeGameTests {
 
     private static void applyFullSyncPackets(List<Object> packets) {
         for (S2CFullSyncPacket packet : packetsOf(packets, S2CFullSyncPacket.class)) {
-            ClientQuestCache.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
+            ClientQuestStateFacade.acceptFullChunk(packet.sequence(), packet.chunkIndex(), packet.chunkCount(), packet.payload());
         }
     }
 
     private static void assertClientQuestUnlocked(String questId, boolean expected, String message) {
-        CompoundTag quest = ClientQuestCache.quests().get(questId);
+        CompoundTag quest = ClientQuestStateFacade.quests().get(questId);
         if (quest == null) {
             throw new GameTestAssertException(message + ": quest missing from client cache");
         }

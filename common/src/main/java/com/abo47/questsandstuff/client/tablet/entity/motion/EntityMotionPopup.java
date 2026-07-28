@@ -1,26 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.entity.motion;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 final class EntityMotionPopup {
     private static final int W = 188;
     private static final int H = 56;
-    private static final int PAD = 8;
-    private static final int FIELD_W = 34;
-    private static final int FIELD_H = 14;
+    private static final int PAD = GRID_8;
+    private static final int FIELD_W = GRID_34;
+    private static final int FIELD_H = GRID_14;
 
     private EntityMotionPopup() {
     }
@@ -33,9 +36,9 @@ final class EntityMotionPopup {
         state.questDetails.entityMotionEditorW = W;
         state.questDetails.entityMotionEditorH = H;
 
-        WidgetGroup popup = panel(x, y, W, H, withAlpha(ModColors.SURFACE_BASE, 248), ModColors.BORDER_ACCENT);
-        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(ModColors.SURFACE_PANEL_ALT, 170), ModColors.BORDER_BASE));
-        popup.addWidget(label(PAD, 6, "Entity spin", ModColors.TEXT_PRIMARY));
+        WidgetGroup popup = panel(x, y, W, H, withAlpha(TabletColors.SURFACE_BASE, 248), TabletColors.BORDER_ACCENT);
+        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(TabletColors.SURFACE_PANEL_ALT, 170), TabletColors.BORDER_BASE));
+        popup.addWidget(label(PAD, 6, "Entity spin", TabletColors.TEXT_PRIMARY));
         popup.addWidget(closeIconButton(W - 19, 3, 14, 14, click -> {
             EntityMotionEditor.close(state);
             refresh.run();
@@ -53,12 +56,12 @@ final class EntityMotionPopup {
             draft = Integer.toString(value);
             state.questDetails.entityMotionSpinDraft = draft;
         }
-        parent.addWidget(label(PAD, y + 4, "Spin", ModColors.TEXT_SECONDARY));
+        parent.addWidget(label(PAD, y + GRID_4, "Spin", TabletColors.TEXT_SECONDARY));
         parent.addWidget(new EntityMotionSliderWidget(
                 56,
-                y + 1,
+                y + GRID_1,
                 80,
-                16,
+                GRID_16,
                 0,
                 max,
                 value,
@@ -76,7 +79,7 @@ final class EntityMotionPopup {
                 () -> state.questDetails.entityMotionSpinSliderDragging,
                 dragging -> state.questDetails.entityMotionSpinSliderDragging = dragging
         ));
-        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + 2, FIELD_W, FIELD_H, max);
+        TextFieldWidget field = numberField(player, state, refresh, W - PAD - FIELD_W, y + GRID_2, FIELD_W, FIELD_H, max);
         parent.addWidget(field);
         return field;
     }
@@ -119,7 +122,7 @@ final class EntityMotionPopup {
                 }
         );
         field.setCurrentString(draft);
-        StyledTextFields.applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         field.setHoverTooltips(new Component[]{Component.literal("Spin speed")});
         return field;
     }

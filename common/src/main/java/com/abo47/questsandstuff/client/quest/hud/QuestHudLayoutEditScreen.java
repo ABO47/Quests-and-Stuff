@@ -1,94 +1,90 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.context.ContextAction;
-import com.abo47.questsandstuff.client.tablet.context.ContextActions;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.contextmenu.ActionTone;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestHudLayoutEditScreen extends Screen {
-    private static final int GRID_STEP = 16;
-    private static final int GRID_VISUAL_MARGIN = 1;
-    private static final int BUTTON_W = 64;
-    private static final int BUTTON_H = 20;
-    private static final int BUTTON_GAP = 8;
-    private static final int HANDLE_SIZE = 6;
 
-    private final QuestHudLayout.Snapshot original;
-    private QuestHudLayout.Element selected = QuestHudLayout.Element.PINNED;
-    private QuestHudLayout.Element dragging;
-    private QuestHudLayout.Element contextElement;
-    private DragMode dragMode = DragMode.NONE;
-    private Button snapButton;
-    private int dragOffsetX;
-    private int dragOffsetY;
-    private int resizeStartMouseX;
-    private int resizeStartMouseY;
-    private int resizeStartX;
-    private int resizeStartY;
-    private int resizeStartSlotX;
-    private int resizeStartSlotY;
-    private int resizeStartWidth;
-    private int resizeStartHeight;
-    private int contextX;
-    private int contextY;
-    private boolean closed;
-    private boolean openingChild;
+
+    private final QuestHudLayoutDragHandler dragHandler;
+    private WidgetGroup contextMenuWidget;
+    private List<ContextAction> contextMenuActions;
+    private QuestHudLayoutManager.Element contextElement;
+    private ThemedButton snapButton;
+    private String hudDeleteConfirmKey = "";
 
     public QuestHudLayoutEditScreen() {
         super(Component.translatable("ui.questsandstuff.hud.layout.title"));
-        this.original = QuestHudLayout.snapshot();
+        this.dragHandler = new QuestHudLayoutDragHandler();
     }
 
     void returnFromChild() {
-        openingChild = false;
+        dragHandler.setOpeningChild(false);
     }
 
     @Override
     protected void init() {
-        if (QuestHudLayout.snapToGrid()) {
-            snapAllElementsToGrid();
+        if (QuestHudLayoutManager.snapToGrid()) {
+            dragHandler.snapAllElementsToGrid(width, height);
         }
-        int totalW = BUTTON_W * 4 + BUTTON_GAP * 3;
+        int totalW = HudConstants.EDIT_BUTTON_W * 4 + HudConstants.EDIT_BUTTON_GAP * 3;
         int startX = width / 2 - totalW / 2;
         int y = Math.max(8, height - 44);
-        addRenderableWidget(Button.builder(Component.translatable("ui.questsandstuff.common.save"), button -> saveAndClose())
-                .bounds(startX, y, BUTTON_W, BUTTON_H)
-                .build());
-        addRenderableWidget(Button.builder(Component.translatable("ui.questsandstuff.hud.layout.reset"), button -> {
-                    QuestHudLayout.resetToDefaults();
-                    snapAllElementsToGrid();
-                    selected = null;
-                    contextElement = null;
-                    updateSnapButton();
-                })
-                .bounds(startX + BUTTON_W + BUTTON_GAP, y, BUTTON_W, BUTTON_H)
-                .build());
-        addRenderableWidget(Button.builder(Component.translatable("ui.questsandstuff.common.cancel"), button -> cancelAndClose())
-                .bounds(startX + (BUTTON_W + BUTTON_GAP) * 2, y, BUTTON_W, BUTTON_H)
-                .build());
-        snapButton = addRenderableWidget(Button.builder(snapLabel(), button -> {
-                    boolean enabled = !QuestHudLayout.snapToGrid();
-                    QuestHudLayout.setSnapToGrid(enabled);
-                    if (enabled) {
-                        snapAllElementsToGrid();
-                    }
-                    updateSnapButton();
-                })
-                .bounds(startX + (BUTTON_W + BUTTON_GAP) * 3, y, BUTTON_W, BUTTON_H)
-                .build());
+        addRenderableWidget(new ThemedButton(startX, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
+                Component.translatable("ui.questsandstuff.common.save"),
+                "save", TabletColors.SUCCESS, button -> dragHandler.saveAndClose()));
+        addRenderableWidget(new ThemedButton(startX + HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
+                Component.translatable("ui.questsandstuff.hud.layout.reset"),
+                "refresh", TabletColors.WARNING, button -> {
+            QuestHudLayoutManager.resetToDefaults();
+            dragHandler.snapAllElementsToGrid(width, height);
+            dragHandler.setSelected(null);
+            closeContextMenu();
+            updateSnapButtonLabel();
+        }));
+        addRenderableWidget(new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 2, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
+                Component.translatable("ui.questsandstuff.common.cancel"),
+                "close", TabletColors.ERROR, button -> dragHandler.cancelAndClose()));
+        snapButton = new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 3, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
+                snapLabel(), "grid", TabletColors.INTERACTIVE, button -> {
+            boolean enabled = !QuestHudLayoutManager.snapToGrid();
+            QuestHudLayoutManager.setSnapToGrid(enabled);
+            if (enabled) {
+                dragHandler.snapAllElementsToGrid(width, height);
+            }
+            updateSnapButtonLabel();
+        });
+        addRenderableWidget(snapButton);
     }
 
     @Override
@@ -98,135 +94,90 @@ public final class QuestHudLayoutEditScreen extends Screen {
         renderEditSurface(graphics);
         renderHudPreviews(graphics, mouseX, mouseY);
         QuestHudOverlayRenderer.resetGuiState(graphics);
-        if (contextElement != null) {
-            renderContextMenu(graphics, mouseX, mouseY);
+        if (contextMenuWidget != null) {
+            contextMenuWidget.drawInBackground(graphics, mouseX, mouseY, partialTick);
         }
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && contextElement != null && handleContextClick(mouseX, mouseY)) {
-            return true;
+        if (button == 0 && contextMenuWidget != null && contextMenuActions != null) {
+            if (ContextMenuPanel.click(contextMenuActions, 0, contextMenuActions.size(),
+                    contextMenuWidget.getPositionX(), contextMenuWidget.getPositionY(),
+                    contextMenuWidget.getSizeWidth(), (int) Math.round(mouseX), (int) Math.round(mouseY),
+                    null, action -> closeContextMenu(), ContextMenuAnimationBridge.DEFAULT_KEY)) {
+                return true;
+            }
+            closeContextMenu();
         }
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
         if (button == 1) {
-            QuestHudLayout.Element target = elementAt(mouseX, mouseY);
+            QuestHudLayoutManager.Element target = dragHandler.elementAt(mouseX, mouseY, width, height);
             if (target != null) {
-                selected = target;
-                contextElement = target;
-                contextX = (int) Math.round(mouseX);
-                contextY = (int) Math.round(mouseY);
+                dragHandler.setSelected(target);
+                openContextMenu(target, (int) Math.round(mouseX), (int) Math.round(mouseY));
                 return true;
             }
-            contextElement = null;
+            closeContextMenu();
             return false;
         }
-        if (button != 0) {
-            return false;
+        dragHandler.handleMouseClicked(mouseX, mouseY, button, width, height);
+        return dragHandler.dragging() != null;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (dragHandler.selected() != null) {
+            int dx = 0;
+            int dy = 0;
+            if (keyCode == 262) {
+                dx = 1;
+            } else if (keyCode == 263) {
+                dx = -1;
+            } else if (keyCode == 264) {
+                dy = 1;
+            } else if (keyCode == 265) {
+                dy = -1;
+            }
+            if (dx != 0 || dy != 0) {
+                int step = hasShiftDown() ? 16 : 1;
+                dx *= step;
+                dy *= step;
+                QuestHudLayoutManager.Element el = dragHandler.selected();
+                QuestHudLayoutManager.HudBox raw = dragHandler.rawBoxFor(el, width, height);
+                QuestHudLayoutManager.setPosition(el, raw.x() + dx, raw.y() + dy, width, height, raw.width(), raw.height());
+                return true;
+            }
         }
-        if (contextElement != null && !insideContext(mouseX, mouseY)) {
-            contextElement = null;
-        }
-        QuestHudLayout.Element target = elementAt(mouseX, mouseY);
-        selected = target;
-        if (target == null) {
-            return false;
-        }
-        QuestHudLayout.HudBox box = slotBoxFor(target);
-        dragging = target;
-        if (resizeHandle(selectionBox(box)).contains(mouseX, mouseY)) {
-            dragMode = DragMode.RESIZE;
-            QuestHudLayout.HudBox raw = rawBoxFor(target);
-            resizeStartMouseX = (int) Math.round(mouseX);
-            resizeStartMouseY = (int) Math.round(mouseY);
-            resizeStartX = raw.x();
-            resizeStartY = raw.y();
-            resizeStartSlotX = box.x();
-            resizeStartSlotY = box.y();
-            resizeStartWidth = raw.width();
-            resizeStartHeight = raw.height();
-        } else {
-            dragMode = DragMode.MOVE;
-            dragOffsetX = (int) Math.round(mouseX) - box.x();
-            dragOffsetY = (int) Math.round(mouseY) - box.y();
-        }
-        return true;
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (dragging == null || button != 0) {
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        if (dragHandler.dragging() != null && button == 0) {
+            return dragHandler.handleMouseDragged(mouseX, mouseY, button, width, height);
         }
-        if (dragMode == DragMode.RESIZE) {
-            int baseWidth = baseWidth(dragging);
-            int baseHeight = baseHeight(dragging);
-            int targetWidth = Math.max(1, resizeStartWidth + (int) Math.round(mouseX) - resizeStartMouseX);
-            int targetHeight = Math.max(1, resizeStartHeight + (int) Math.round(mouseY) - resizeStartMouseY);
-            if (QuestHudLayout.snapToGrid()) {
-                if (Screen.hasShiftDown()) {
-                    float scale = Math.max(targetWidth / (float) Math.max(1, baseWidth), targetHeight / (float) Math.max(1, baseHeight));
-                    targetWidth = Math.max(1, Math.round(baseWidth * scale));
-                    targetHeight = Math.max(1, Math.round(baseHeight * scale));
-                }
-                QuestHudLayout.HudBox nextSlot = clampedSlot(resizeStartSlotX, resizeStartSlotY, targetWidth, targetHeight);
-                QuestHudLayout.HudBox nextVisual = visualBoxInSlot(nextSlot);
-                applySizeFromVisual(dragging, nextVisual.width(), nextVisual.height());
-                QuestHudLayout.HudBox resized = rawBoxFor(dragging);
-                nextSlot = clampedSlot(resizeStartSlotX, resizeStartSlotY, resized.width(), resized.height());
-                nextVisual = visualBoxInSlot(nextSlot);
-                applySizeFromVisual(dragging, nextVisual.width(), nextVisual.height());
-                QuestHudLayout.setPosition(dragging, nextVisual.x(), nextVisual.y(), width, height, nextVisual.width(), nextVisual.height());
-                return true;
-            }
-            if (Screen.hasShiftDown()) {
-                float scale = Math.max(targetWidth / (float) Math.max(1, baseWidth), targetHeight / (float) Math.max(1, baseHeight));
-                int percent = Math.round(scale * 100.0f);
-                QuestHudLayout.setScalePercent(dragging, percent);
-            } else {
-                int widthPercent = Math.round(targetWidth * 100.0f / Math.max(1, baseWidth));
-                int heightPercent = Math.round(targetHeight * 100.0f / Math.max(1, baseHeight));
-                QuestHudLayout.setSizePercent(dragging, widthPercent, heightPercent);
-            }
-            QuestHudLayout.HudBox resized = rawBoxFor(dragging);
-            QuestHudLayout.HudBox nextVisual = new QuestHudLayout.HudBox(resizeStartX, resizeStartY, resized.width(), resized.height());
-            QuestHudLayout.setPosition(dragging, nextVisual.x(), nextVisual.y(), width, height, nextVisual.width(), nextVisual.height());
-            return true;
-        }
-        int nextX = (int) Math.round(mouseX) - dragOffsetX;
-        int nextY = (int) Math.round(mouseY) - dragOffsetY;
-        if (QuestHudLayout.snapToGrid()) {
-            nextX = snapSlot(nextX);
-            nextY = snapSlot(nextY);
-        }
-        QuestHudLayout.HudBox raw = rawBoxFor(dragging);
-        QuestHudLayout.HudBox nextSlot = QuestHudLayout.snapToGrid()
-                ? clampedSlot(nextX, nextY, raw.width(), raw.height())
-                : new QuestHudLayout.HudBox(nextX, nextY, raw.width(), raw.height());
-        QuestHudLayout.HudBox nextVisual = QuestHudLayout.snapToGrid() ? visualBoxInSlot(nextSlot) : nextSlot;
-        QuestHudLayout.setPosition(dragging, nextVisual.x(), nextVisual.y(), width, height, nextVisual.width(), nextVisual.height());
-        return true;
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        dragging = null;
-        dragMode = DragMode.NONE;
+        dragHandler.handleMouseReleased();
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public void onClose() {
-        cancelAndClose();
+        dragHandler.cancelAndClose();
     }
 
     @Override
     public void removed() {
-        if (!closed && !openingChild) {
-            QuestHudLayout.restore(original);
+        if (!dragHandler.isClosed() && !dragHandler.isOpeningChild()) {
+            QuestHudLayoutManager.restore(dragHandler.original());
         }
     }
 
@@ -235,288 +186,171 @@ public final class QuestHudLayoutEditScreen extends Screen {
         return false;
     }
 
-    private void renderEditSurface(GuiGraphics graphics) {
-        graphics.fill(0, 0, width, height, withAlpha(ModColors.SURFACE_BASE, 86));
-        int lightLine = withAlpha(ModColors.BORDER_BASE, 62);
-        int strongLine = withAlpha(ModColors.BORDER_ACCENT, 78);
-        for (int x = 0; x <= width; x += GRID_STEP) {
-            graphics.fill(x, 0, x + 1, height, x % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
+    private void openContextMenu(QuestHudLayoutManager.Element element, int mouseX, int mouseY) {
+        contextElement = element;
+        contextMenuActions = contextActions();
+        if (contextMenuActions.isEmpty()) {
+            contextMenuWidget = null;
+            return;
         }
-        for (int y = 0; y <= height; y += GRID_STEP) {
-            graphics.fill(0, y, width, y + 1, y % (GRID_STEP * 4) == 0 ? strongLine : lightLine);
-        }
-        Minecraft minecraft = Minecraft.getInstance();
-        String title = getTitle().getString();
-        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, withAlpha(ModColors.TEXT_PRIMARY, 230), false);
+        int menuW = ContextMenuRenderer.CONTEXT_MENU_WIDTH;
+        int menuH = ContextMenuPanel.heightFor(contextMenuActions, contextMenuActions.size());
+        int menuX = Math.max(4, Math.min(mouseX, width - menuW - 4));
+        int menuY = Math.max(4, Math.min(mouseY, height - menuH - 4));
+        contextMenuWidget = ContextMenuPanel.build(menuX, menuY, menuW, contextMenuActions, 0, contextMenuActions.size(), TabletColors.BORDER_ACCENT, null, null, width, height);
     }
 
-    private void renderHudPreviews(GuiGraphics graphics, int mouseX, int mouseY) {
-        QuestHudLayout.HudBox completion = visualBoxFor(QuestHudLayout.Element.COMPLETION);
-        QuestHudLayout.HudBox pinned = visualBoxFor(QuestHudLayout.Element.PINNED);
-        QuestHudLayout.HudBox completionSlot = slotBoxFor(QuestHudLayout.Element.COMPLETION);
-        QuestHudLayout.HudBox pinnedSlot = slotBoxFor(QuestHudLayout.Element.PINNED);
-        QuestHudLayout.Element hovered = elementAt(mouseX, mouseY);
-        boolean completionSelected = selected == QuestHudLayout.Element.COMPLETION || hovered == QuestHudLayout.Element.COMPLETION;
-        boolean pinnedSelected = selected == QuestHudLayout.Element.PINNED || hovered == QuestHudLayout.Element.PINNED;
-        QuestCompletionNotificationOverlay.renderPreview(graphics, completion.x(), completion.y(), completion.width(), completion.height(), false);
-        PinnedQuestHudOverlay.renderPreview(graphics, pinned.x(), pinned.y(), pinned.width(), pinned.height(), false);
-        if (completionSelected) {
-            QuestHudLayout.HudBox selection = selectionBox(completionSlot);
-            drawSelectionSlot(graphics, selection, QuestHudLayout.Element.COMPLETION);
-            drawResizeHandle(graphics, selection);
-        }
-        if (pinnedSelected) {
-            QuestHudLayout.HudBox selection = selectionBox(pinnedSlot);
-            drawSelectionSlot(graphics, selection, QuestHudLayout.Element.PINNED);
-            drawResizeHandle(graphics, selection);
-        }
-    }
-
-    private void renderContextMenu(GuiGraphics graphics, int mouseX, int mouseY) {
-        int x = contextMenuX();
-        int y = contextMenuY();
-        int menuW = contextMenuW();
-        List<ContextAction> actions = contextActions();
-        ContextMenuSystem.drawVanillaPanel(graphics, x, y, menuW, contextMenuH(actions), ModColors.BORDER_ACCENT);
-        int rowY = y + ContextMenuSystem.outerPad();
-        int rowW = menuW - ContextMenuSystem.outerPad() * 2;
-        for (int i = 0; i < actions.size(); i++) {
-            ContextAction action = actions.get(i);
-            boolean hovered = inside(mouseX, mouseY, x + ContextMenuSystem.outerPad(), rowY + i * ContextMenuSystem.rowHeight(), rowW, ContextMenuSystem.rowHeight());
-            ContextMenuSystem.drawVanillaContextRow(graphics, x, rowY + i * ContextMenuSystem.rowHeight(), rowW, action.label(), action.icon(), action.accentColor(), hovered);
-        }
-    }
-
-    private void drawResizeHandle(GuiGraphics graphics, QuestHudLayout.HudBox box) {
-        QuestHudLayout.HudBox handle = resizeHandle(box);
-        graphics.fill(handle.x(), handle.y(), handle.x() + handle.width(), handle.y() + handle.height(), withAlpha(ModColors.SURFACE_BASE, 220));
-        graphics.renderOutline(handle.x(), handle.y(), handle.width(), handle.height(), ModColors.SUCCESS);
-    }
-
-    private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayout.HudBox box, QuestHudLayout.Element element) {
-        float opacity = QuestHudLayout.opacityPercent(element) / 100.0f;
-        int fillAlpha = Math.round(18.0f * opacity);
-        int outlineAlpha = Math.round(185.0f * opacity);
-        if (fillAlpha > 0) {
-            graphics.fill(box.x(), box.y(), box.x() + box.width(), box.y() + box.height(), withAlpha(ModColors.INTERACTIVE, fillAlpha));
-        }
-        if (outlineAlpha > 0) {
-            graphics.renderOutline(box.x(), box.y(), box.width(), box.height(), withAlpha(ModColors.SUCCESS, outlineAlpha));
-        }
-    }
-
-    private boolean handleContextClick(double mouseX, double mouseY) {
-        if (!insideContext(mouseX, mouseY)) {
-            contextElement = null;
-            return false;
-        }
-        int x = contextMenuX();
-        int y = contextMenuY();
-        List<ContextAction> actions = contextActions();
-        int row = contextRowAt(mouseX, mouseY, x, y, contextMenuW(), actions.size());
-        if (row >= 0 && row < actions.size()) {
-            actions.get(row).action().run();
-            if (actions.get(row).closeAfterClick()) {
-                contextElement = null;
-            }
-            return true;
-        }
-        return true;
-    }
-
-    private QuestHudLayout.Element elementAt(double mouseX, double mouseY) {
-        if (slotBoxFor(QuestHudLayout.Element.PINNED).contains(mouseX, mouseY)) {
-            return QuestHudLayout.Element.PINNED;
-        }
-        if (slotBoxFor(QuestHudLayout.Element.COMPLETION).contains(mouseX, mouseY)) {
-            return QuestHudLayout.Element.COMPLETION;
-        }
-        return null;
-    }
-
-    private QuestHudLayout.HudBox visualBoxFor(QuestHudLayout.Element element) {
-        QuestHudLayout.HudBox raw = rawBoxFor(element);
-        if (!QuestHudLayout.snapToGrid()) {
-            return raw;
-        }
-        QuestHudLayout.HudBox slot = slotBox(raw);
-        return visualBoxInSlot(slot);
-    }
-
-    private QuestHudLayout.HudBox slotBoxFor(QuestHudLayout.Element element) {
-        QuestHudLayout.HudBox raw = rawBoxFor(element);
-        return QuestHudLayout.snapToGrid() ? slotBox(raw) : raw;
-    }
-
-    private QuestHudLayout.HudBox rawBoxFor(QuestHudLayout.Element element) {
-        return element == QuestHudLayout.Element.COMPLETION ? completionBox() : pinnedBox();
-    }
-
-    private QuestHudLayout.HudBox completionBox() {
-        return QuestHudLayout.completionBox(
-                width,
-                height,
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.COMPLETION, QuestCompletionNotificationOverlay.width()),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.COMPLETION, QuestCompletionNotificationOverlay.height())
-        );
-    }
-
-    private QuestHudLayout.HudBox pinnedBox() {
-        return QuestHudLayout.pinnedBox(
-                width,
-                height,
-                QuestHudLayout.scaledSize(QuestHudLayout.Element.PINNED, PinnedQuestHudOverlay.width()),
-                QuestHudLayout.scaledHeight(QuestHudLayout.Element.PINNED, PinnedQuestHudOverlay.currentStackHeight())
-        );
-    }
-
-    private QuestHudLayout.HudBox resizeHandle(QuestHudLayout.HudBox box) {
-        return new QuestHudLayout.HudBox(box.x() + box.width() - HANDLE_SIZE, box.y() + box.height() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-    }
-
-    private int baseWidth(QuestHudLayout.Element element) {
-        return element == QuestHudLayout.Element.COMPLETION ? QuestCompletionNotificationOverlay.width() : PinnedQuestHudOverlay.width();
-    }
-
-    private int baseHeight(QuestHudLayout.Element element) {
-        return element == QuestHudLayout.Element.COMPLETION ? QuestCompletionNotificationOverlay.height() : PinnedQuestHudOverlay.currentStackHeight();
-    }
-
-    private int contextMenuX() {
-        int menuW = contextMenuW();
-        return Math.max(4, Math.min(contextX, width - menuW - 4));
-    }
-
-    private int contextMenuY() {
-        int menuH = contextMenuH(contextActions());
-        return Math.max(4, Math.min(contextY, height - menuH - 4));
-    }
-
-    private boolean insideContext(double mouseX, double mouseY) {
-        return inside(mouseX, mouseY, contextMenuX(), contextMenuY(), contextMenuW(), contextMenuH(contextActions()));
-    }
-
-    private static boolean inside(double mouseX, double mouseY, int x, int y, int w, int h) {
-        return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-    }
-
-    private QuestHudLayout.HudBox slotBox(QuestHudLayout.HudBox visual) {
-        QuestHudLayout.HudBox slot = clampedSlot(
-                snapSlot(visual.x() - GRID_VISUAL_MARGIN),
-                snapSlot(visual.y() - GRID_VISUAL_MARGIN),
-                visual.width(),
-                visual.height()
-        );
-        return slot;
-    }
-
-    private QuestHudLayout.HudBox clampedSlot(int slotX, int slotY, int visualWidth, int visualHeight) {
-        int slotW = CanvasGeometry.slotSpanForVisualSize(visualWidth);
-        int slotH = CanvasGeometry.slotSpanForVisualSize(visualHeight);
-        int x = Math.max(0, Math.min(snapSlot(slotX), snapFloor(Math.max(0, width - slotW))));
-        int y = Math.max(0, Math.min(snapSlot(slotY), snapFloor(Math.max(0, height - slotH))));
-        return new QuestHudLayout.HudBox(x, y, slotW, slotH);
-    }
-
-    private static QuestHudLayout.HudBox visualBoxInSlot(QuestHudLayout.HudBox slot) {
-        return new QuestHudLayout.HudBox(
-                slot.x() + GRID_VISUAL_MARGIN,
-                slot.y() + GRID_VISUAL_MARGIN,
-                Math.max(1, slot.width() - GRID_VISUAL_MARGIN),
-                Math.max(1, slot.height() - GRID_VISUAL_MARGIN)
-        );
-    }
-
-    private static int snapSlot(int value) {
-        return CanvasGeometry.snapValueToGrid(value, GRID_STEP);
-    }
-
-    private static int snapFloor(int value) {
-        return Math.max(0, (value / GRID_STEP) * GRID_STEP);
-    }
-
-    private static QuestHudLayout.HudBox selectionBox(QuestHudLayout.HudBox box) {
-        return QuestHudLayout.snapToGrid() ? visualBoxInSlot(box) : box;
+    private void closeContextMenu() {
+        contextMenuWidget = null;
+        contextMenuActions = null;
+        contextElement = null;
+        hudDeleteConfirmKey = "";
     }
 
     private List<ContextAction> contextActions() {
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(Component.translatable("ui.questsandstuff.hud.change_background").getString(), "background", ModColors.INTERACTIVE, () -> {
-            openingChild = true;
-            if (!QuestHudAssetLibraryBridge.open(this, contextElement)) {
-                openingChild = false;
+        ContextMenuSections sections = new ContextMenuSections();
+        QuestHudLayoutManager.Element target = contextElement;
+        if (target == null) {
+            return new ArrayList<>();
+        }
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(
+                Component.translatable("ui.questsandstuff.hud.change_background").getString(),
+                "background", ActionTone.PRIMARY, () -> {
+            dragHandler.setOpeningChild(true);
+            if (!QuestHudAssetLibraryBridge.open(this, target)) {
+                dragHandler.setOpeningChild(false);
             }
         }));
-        actions.add(ContextActions.action(Component.translatable("ui.questsandstuff.hud.remove_background").getString(), "delete", ModColors.WARNING, () -> QuestHudLayout.setBackground(contextElement, "")));
-        return actions;
-    }
-
-    private int contextMenuW() {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
-    }
-
-    private static int contextMenuH(List<ContextAction> actions) {
-        return ContextMenuSystem.menuHeightForRows(actions.size());
-    }
-
-    private static int contextRowAt(double mouseX, double mouseY, int x, int y, int menuW, int rows) {
-        int rowX = x + ContextMenuSystem.outerPad();
-        int rowY = y + ContextMenuSystem.outerPad();
-        int rowW = menuW - ContextMenuSystem.outerPad() * 2;
-        if (!inside(mouseX, mouseY, rowX, rowY, rowW, rows * ContextMenuSystem.rowHeight())) {
-            return -1;
+        if (!QuestHudLayoutManager.background(target).isBlank()) {
+            String deleteKey = "hud_remove_bg:" + target.name();
+            boolean confirming = deleteKey.equals(hudDeleteConfirmKey);
+            String label = confirming ? "Sure?" : Component.translatable("ui.questsandstuff.hud.remove_background").getString();
+            sections.add(ContextMenuSection.DANGER, new ContextAction(label, "delete", ActionTone.WARNING, confirming, () -> {
+                if (confirming) {
+                    hudDeleteConfirmKey = "";
+                    QuestHudLayoutManager.setBackground(target, "");
+                } else {
+                    hudDeleteConfirmKey = deleteKey;
+                }
+            }));
         }
-        return ((int) Math.floor(mouseY) - rowY) / ContextMenuSystem.rowHeight();
+        boolean bordersShown = QuestHudLayoutManager.showBorders(target);
+        if (bordersShown) {
+            sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.action(
+                    Component.translatable("ui.questsandstuff.hud.hide_borders").getString(),
+                    "eye_off", ActionTone.NEUTRAL, () -> QuestHudLayoutManager.setShowBorders(target, false)));
+        } else {
+            sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.action(
+                    Component.translatable("ui.questsandstuff.hud.show_borders").getString(),
+                    "eye", ActionTone.NEUTRAL, () -> QuestHudLayoutManager.setShowBorders(target, true)));
+        }
+        return sections.build();
     }
 
-    private void snapAllElementsToGrid() {
-        snapElementToGrid(QuestHudLayout.Element.COMPLETION);
-        snapElementToGrid(QuestHudLayout.Element.PINNED);
-    }
-
-    private void snapElementToGrid(QuestHudLayout.Element element) {
-        QuestHudLayout.HudBox raw = rawBoxFor(element);
-        QuestHudLayout.HudBox slot = slotBox(raw);
-        QuestHudLayout.HudBox visual = visualBoxInSlot(slot);
-        applySizeFromVisual(element, visual.width(), visual.height());
-        QuestHudLayout.setPosition(element, visual.x(), visual.y(), width, height, visual.width(), visual.height());
-    }
-
-    private void applySizeFromVisual(QuestHudLayout.Element element, int visualWidth, int visualHeight) {
-        int baseWidth = baseWidth(element);
-        int baseHeight = baseHeight(element);
-        int widthPercent = Math.round(visualWidth * 100.0f / Math.max(1, baseWidth));
-        int heightPercent = Math.round(visualHeight * 100.0f / Math.max(1, baseHeight));
-        QuestHudLayout.setSizePercent(element, widthPercent, heightPercent);
-    }
-
-    private Component snapLabel() {
-        return Component.translatable(QuestHudLayout.snapToGrid()
-                ? "ui.questsandstuff.hud.layout.snap_on"
-                : "ui.questsandstuff.hud.layout.snap_off");
-    }
-
-    private void updateSnapButton() {
+    private void updateSnapButtonLabel() {
         if (snapButton != null) {
             snapButton.setMessage(snapLabel());
         }
     }
 
-    private void saveAndClose() {
-        QuestHudLayout.save();
-        closed = true;
-        Minecraft.getInstance().setScreen(null);
+    private Component snapLabel() {
+        return Component.translatable(QuestHudLayoutManager.snapToGrid()
+                ? "ui.questsandstuff.hud.layout.snap_on"
+                : "ui.questsandstuff.hud.layout.snap_off");
     }
 
-    private void cancelAndClose() {
-        QuestHudLayout.restore(original);
-        closed = true;
-        Minecraft.getInstance().setScreen(null);
+    private void renderEditSurface(GuiGraphics graphics) {
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 86)).draw(graphics, 0, 0, 0, 0, width, height);
+        int lightLine = withAlpha(TabletColors.BORDER_BASE, 62);
+        int strongLine = withAlpha(TabletColors.BORDER_ACCENT, 78);
+        for (int x = 0; x <= width; x += 16) {
+            SurfaceFactory.fill(x % (16 * 4) == 0 ? strongLine : lightLine).draw(graphics, 0, 0, x, 0, 1, height);
+        }
+        for (int y = 0; y <= height; y += 16) {
+            SurfaceFactory.fill(y % (16 * 4) == 0 ? strongLine : lightLine).draw(graphics, 0, 0, 0, y, width, 1);
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        String title = getTitle().getString();
+        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
     }
 
-    private enum DragMode {
-        NONE,
-        MOVE,
-        RESIZE
+    private void renderHudPreviews(GuiGraphics graphics, int mouseX, int mouseY) {
+        QuestHudLayoutManager.HudBox completion = dragHandler.visualBoxFor(QuestHudLayoutManager.Element.COMPLETION, width, height);
+        QuestHudLayoutManager.HudBox pinned = dragHandler.visualBoxFor(QuestHudLayoutManager.Element.PINNED, width, height);
+        QuestHudLayoutManager.Element hovered = dragHandler.elementAt(mouseX, mouseY, width, height);
+        boolean completionSelected = dragHandler.selected() == QuestHudLayoutManager.Element.COMPLETION || hovered == QuestHudLayoutManager.Element.COMPLETION;
+        boolean pinnedSelected = dragHandler.selected() == QuestHudLayoutManager.Element.PINNED || hovered == QuestHudLayoutManager.Element.PINNED;
+        QuestCompletionNotificationOverlay.renderPreview(graphics, completion.x(), completion.y(), completion.width(), completion.height(), false);
+        PinnedQuestHudOverlay.renderPreview(graphics, pinned.x(), pinned.y(), pinned.width(), pinned.height(), false);
+        if (completionSelected) {
+            QuestHudLayoutManager.HudBox selection = QuestHudLayoutDragHandler.selectionBox(completion);
+            drawSelectionSlot(graphics, selection, QuestHudLayoutManager.Element.COMPLETION);
+            drawResizeHandle(graphics, selection);
+        }
+        if (pinnedSelected) {
+            QuestHudLayoutManager.HudBox selection = QuestHudLayoutDragHandler.selectionBox(pinned);
+            drawSelectionSlot(graphics, selection, QuestHudLayoutManager.Element.PINNED);
+            drawResizeHandle(graphics, selection);
+        }
+    }
+
+    private void drawResizeHandle(GuiGraphics graphics, QuestHudLayoutManager.HudBox box) {
+        QuestHudLayoutManager.HudBox handle = dragHandler.resizeHandle(box);
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, handle.x(), handle.y(), handle.width(), handle.height());
+        drawRectOutline(graphics, handle.x(), handle.y(), handle.width(), handle.height(), TabletColors.SUCCESS);
+    }
+
+    private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayoutManager.HudBox box, QuestHudLayoutManager.Element element) {
+        float opacity = QuestHudLayoutManager.opacityPercent(element) / 100.0f;
+        int fillAlpha = Math.round(18.0f * opacity);
+        int outlineAlpha = Math.round(185.0f * opacity);
+        if (fillAlpha > 0) {
+            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, fillAlpha)).draw(graphics, 0, 0, box.x(), box.y(), box.width(), box.height());
+        }
+        if (outlineAlpha > 0) {
+            drawRectOutline(graphics, box.x(), box.y(), box.width(), box.height(), withAlpha(TabletColors.SUCCESS, outlineAlpha));
+        }
+    }
+
+    private static class ThemedButton extends Button {
+        private final String icon;
+        private final int accentColor;
+
+        ThemedButton(int x, int y, int width, int height, Component message, String icon, int accentColor, OnPress onPress) {
+            super(x, y, width, height, message, onPress, DEFAULT_NARRATION);
+            this.icon = icon;
+            this.accentColor = accentColor;
+        }
+
+        @Override
+        public void onPress() {
+            super.onPress();
+            setFocused(false);
+        }
+
+        @Override
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            boolean hovered = isHovered();
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 210)).draw(graphics, 0, 0, getX(), getY(), getWidth(), getHeight());
+            drawRectOutline(graphics, getX(), getY(), getWidth(), getHeight(), hovered ? TabletColors.BORDER_ACCENT : TabletColors.subtleBorder());
+            if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getX(), getY(), getWidth(), getHeight(), accentColor);
+            }
+            String text = getMessage().getString();
+            Font font = Minecraft.getInstance().font;
+            IGuiTexture iconTexture = IconAtlas.iconTexture(icon);
+            int iconSize = 12;
+            int iconGap = iconTexture != null ? 4 : 0;
+            int textW = font.width(text);
+            int contentW = (iconTexture != null ? iconSize + iconGap : 0) + textW;
+            int contentX = getX() + (getWidth() - contentW) / 2;
+            int centerY = getY() + getHeight() / 2;
+            int textColor = hovered ? accentColor : TabletColors.TEXT_PRIMARY;
+            if (iconTexture != null) {
+                iconTexture.draw(graphics, 0, 0, contentX, centerY - iconSize / 2, iconSize, iconSize);
+                contentX += iconSize + iconGap;
+            }
+            graphics.drawString(font, text, contentX, centerY - 9 / 2, textColor, false);
+        }
     }
 }

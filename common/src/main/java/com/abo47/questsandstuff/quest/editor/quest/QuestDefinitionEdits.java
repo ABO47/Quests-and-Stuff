@@ -1,7 +1,17 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.JsonOps;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
@@ -9,15 +19,8 @@ import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.gson.JsonElement;
 
 public final class QuestDefinitionEdits {
     private QuestDefinitionEdits() {
@@ -40,7 +43,7 @@ public final class QuestDefinitionEdits {
                             source.display().title(),
                             source.display().subtitle(),
                             List.copyOf(source.display().description()),
-                            new HashMap<>(source.display().groups()),
+                            new HashMap<>(source.display().chapters()),
                             source.display().icon(),
                             source.display().iconBackground(),
                             source.display().completionSound(),
@@ -241,9 +244,9 @@ public final class QuestDefinitionEdits {
         );
     }
 
-    public static QuestDefinition withGroups(QuestDefinition definition, Map<String, ChapterDefinition> groups) {
+    public static QuestDefinition withChapters(QuestDefinition definition, Map<String, ChapterDef> groups) {
         Set<String> prerequisites = definition.prerequisites();
-        QuestDisplay display = definition.display().withGroups(Map.copyOf(groups));
+        QuestDisplay display = definition.display().withChapters(Map.copyOf(groups));
         return new QuestDefinition(
                 definition.schema(),
                 definition.id(),
@@ -275,7 +278,7 @@ public final class QuestDefinitionEdits {
                 definition.hiddenConnections(),
                 definition.connectionTextures(),
                 definition.connectionTextureSpacings(),
-                definition.tasksOrder(),
+                new ArrayList<>(tasks.keySet()),
                 definition.rewardsOrder(),
                 orderedCopy(tasks),
                 definition.rewards()
@@ -296,7 +299,7 @@ public final class QuestDefinitionEdits {
                 definition.connectionTextures(),
                 definition.connectionTextureSpacings(),
                 definition.tasksOrder(),
-                definition.rewardsOrder(),
+                new ArrayList<>(rewards.keySet()),
                 definition.tasks(),
                 orderedCopy(rewards)
         );

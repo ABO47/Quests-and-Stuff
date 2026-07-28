@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class QuestDetailsDescriptionPanel {
     private QuestDetailsDescriptionPanel() {
@@ -22,7 +24,9 @@ public final class QuestDetailsDescriptionPanel {
         int viewportH = fit[1] - 1;
         state.questDetails.questDetailsDescScroll = QuestDetailsDescriptionLayout.clampDescriptionScroll(state, model, viewportH, state.questDetails.questDetailsDescScroll);
         QuestDetailsDescriptionCanvas canvas = new QuestDetailsDescriptionCanvas(x, y, fit[0], fit[1], state, player, refresh, questId);
-        canvas.setBackground(Surfaces.transparentBorder(ModColors.BORDER_BASE));
+        String bg = model.canvasBackground();
+        boolean hasBuiltinBg = bg != null && !bg.equals("default") && !bg.isBlank();
+        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.transparentFill() : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
@@ -66,9 +70,6 @@ public final class QuestDetailsDescriptionPanel {
                     state.questDetails.questDetailsDescScrollDragging = dragging;
                 },
                 refresh,
-                ModColors.scrollTrack(state.questDetails.questDetailsDescScrollDragging),
-                ModColors.scrollThumb(false),
-                ModColors.scrollThumb(true),
                 DragScrollBarWidget.WIDTH
         ));
     }

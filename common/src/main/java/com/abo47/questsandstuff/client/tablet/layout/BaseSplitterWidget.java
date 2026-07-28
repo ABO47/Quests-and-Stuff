@@ -1,22 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-
 import javax.annotation.Nonnull;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public abstract class BaseSplitterWidget extends WidgetGroup {
-    private static final long HOVER_PULSE_MS = 900L;
-
     protected final TabletUiState state;
     protected final Runnable refresh;
-    private boolean hoverActive;
-    private long hoverPulseStartMs;
 
     public BaseSplitterWidget(int x, int y, int w, int h, TabletUiState state, Runnable refresh) {
         super(x, y, w, h);
@@ -84,16 +84,23 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         boolean hovered = isSplitterDragging() || isMouseOverElement(mouseX, mouseY);
         boolean resizeHovered = hovered && !isSplitterLocked();
         TabletResizeCursor.update(resizeHovered);
-        updateHoverPulse(hovered);
-
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();
         int height = getSizeHeight();
-        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, hoverPulseAlpha()) : ModColors.SURFACE_BASE;
-        graphics.fill(left, top, left + width, top + height, fill);
-        graphics.fill(left, top, left + width, top + 1, ModColors.BORDER_BASE);
-        graphics.fill(left, top + height - 1, left + width, top + height, ModColors.BORDER_BASE);
+
+        IGuiTexture skinBg = getBackgroundTexture();
+        boolean hasSkinOverride = skinBg != null && !skinBg.equals(IGuiTexture.EMPTY);
+        if (hasSkinOverride) {
+            skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
+        } else {
+            SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT).draw(graphics, mouseX, mouseY, left, top, width, height);
+            if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, left, top, width, height);
+            }
+            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
+            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
+        }
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
     }
@@ -165,17 +172,4 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         return true;
     }
 
-    private void updateHoverPulse(boolean hovered) {
-        if (hovered && !hoverActive) {
-            hoverPulseStartMs = System.currentTimeMillis();
-        }
-        hoverActive = hovered;
-    }
-
-    private int hoverPulseAlpha() {
-        long elapsed = Math.max(0L, System.currentTimeMillis() - hoverPulseStartMs);
-        double phase = (elapsed % HOVER_PULSE_MS) / (double) HOVER_PULSE_MS;
-        double wave = 0.5D + Math.sin(phase * Math.PI * 2.0D) * 0.5D;
-        return 56 + (int) Math.round(wave * 62.0D);
-    }
 }

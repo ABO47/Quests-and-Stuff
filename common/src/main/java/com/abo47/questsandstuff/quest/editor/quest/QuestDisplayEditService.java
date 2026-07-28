@@ -1,15 +1,15 @@
 package com.abo47.questsandstuff.quest.editor.quest;
 
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 public final class QuestDisplayEditService {
     private static final int MAX_DESCRIPTION_LINES = 256;
@@ -34,7 +34,7 @@ public final class QuestDisplayEditService {
                 title == null || title.isBlank() ? source.display().title() : title,
                 subtitle == null ? source.display().subtitle() : subtitle,
                 source.display().description(),
-                source.display().groups(),
+                source.display().chapters(),
                 source.display().icon(),
                 source.display().iconBackground(),
                 source.display().completionSound(),
@@ -64,7 +64,7 @@ public final class QuestDisplayEditService {
                         .map(QuestDisplayEditService::limitDescriptionLine)
                         .limit(MAX_DESCRIPTION_LINES)
                         .toList(),
-                source.display().groups(),
+                source.display().chapters(),
                 source.display().icon(),
                 source.display().iconBackground(),
                 source.display().completionSound(),
@@ -91,7 +91,7 @@ public final class QuestDisplayEditService {
                 source.display().title(),
                 source.display().subtitle(),
                 source.display().description(),
-                source.display().groups(),
+                source.display().chapters(),
                 normalizedIcon,
                 source.display().iconBackground(),
                 source.display().completionSound(),
@@ -119,7 +119,7 @@ public final class QuestDisplayEditService {
                 old.title(),
                 old.subtitle(),
                 old.description(),
-                old.groups(),
+                old.chapters(),
                 old.icon(),
                 old.iconBackground(),
                 old.completionSound(),
@@ -150,7 +150,7 @@ public final class QuestDisplayEditService {
                 old.title(),
                 old.subtitle(),
                 old.description(),
-                old.groups(),
+                old.chapters(),
                 old.icon(),
                 old.iconBackground(),
                 normalizedSound,
@@ -175,7 +175,7 @@ public final class QuestDisplayEditService {
                     old.title(),
                     old.subtitle(),
                     old.description(),
-                    old.groups(),
+                    old.chapters(),
                     old.icon(),
                     old.iconBackground(),
                     normalizedSound,
@@ -208,7 +208,7 @@ public final class QuestDisplayEditService {
                 old.title(),
                 old.subtitle(),
                 old.description(),
-                old.groups(),
+                old.chapters(),
                 old.icon(),
                 old.iconBackground(),
                 old.completionSound(),
@@ -233,7 +233,7 @@ public final class QuestDisplayEditService {
                     old.title(),
                     old.subtitle(),
                     old.description(),
-                    old.groups(),
+                    old.chapters(),
                     old.icon(),
                     old.iconBackground(),
                     old.completionSound(),
@@ -266,7 +266,7 @@ public final class QuestDisplayEditService {
                 old.title(),
                 old.subtitle(),
                 old.description(),
-                old.groups(),
+                old.chapters(),
                 old.icon(),
                 old.iconBackground(),
                 old.completionSound(),
@@ -291,7 +291,7 @@ public final class QuestDisplayEditService {
                     old.title(),
                     old.subtitle(),
                     old.description(),
-                    old.groups(),
+                    old.chapters(),
                     old.icon(),
                     old.iconBackground(),
                     old.completionSound(),
@@ -324,7 +324,7 @@ public final class QuestDisplayEditService {
                 old.title(),
                 old.subtitle(),
                 old.description(),
-                old.groups(),
+                old.chapters(),
                 old.icon(),
                 old.iconBackground(),
                 old.completionSound(),
@@ -349,7 +349,7 @@ public final class QuestDisplayEditService {
                     old.title(),
                     old.subtitle(),
                     old.description(),
-                    old.groups(),
+                    old.chapters(),
                     old.icon(),
                     old.iconBackground(),
                     old.completionSound(),

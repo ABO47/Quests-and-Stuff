@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.quest.editor.canvas;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
+
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withConnectionColors;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withConnectionModes;
-import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withConnectionTextures;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withConnectionTextureSpacings;
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withConnectionTextures;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withHiddenConnections;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withPrerequisites;
 
@@ -207,7 +208,7 @@ public final class PrerequisiteEditService {
 
     public void connectToNext(ServerPlayer player) {
         EditorSessionService.EditorSession session = owner.session(player);
-        List<String> questIds = owner.questIdsInGroup(session.currentGroup);
+        List<String> questIds = owner.questIdsInChapter(session.currentChapter);
         if (questIds.size() < 2) {
             return;
         }
@@ -236,7 +237,7 @@ public final class PrerequisiteEditService {
 
     public void disconnectFromNext(ServerPlayer player) {
         EditorSessionService.EditorSession session = owner.session(player);
-        List<String> questIds = owner.questIdsInGroup(session.currentGroup);
+        List<String> questIds = owner.questIdsInChapter(session.currentChapter);
         if (questIds.size() < 2) {
             return;
         }

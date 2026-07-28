@@ -1,17 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import java.util.function.Consumer;
+import java.util.function.IntSupplier;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-import java.util.function.Consumer;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class TabletIconTextButton extends ButtonWidget {
     private static final int MIN_ICON_SIZE = 8;
@@ -27,7 +33,7 @@ public final class TabletIconTextButton extends ButtonWidget {
         this.iconName = iconName == null ? "" : iconName;
         this.label = label;
         this.iconSize = iconSize;
-        this.visuals = visuals == null ? Visuals.defaultControl(ModColors.INTERACTIVE, ModColors.TEXT_PRIMARY) : visuals;
+        this.visuals = visuals == null ? Visuals.defaultControl() : visuals;
         setClientSideWidget();
         refreshTextures();
     }
@@ -75,6 +81,50 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     @Override
+    public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        boolean hovered = isMouseOverElement(mouseX, mouseY);
+        boolean pressed = isClicked && hovered;
+        State state = pressed ? visuals.pressed() : visuals.idle();
+        int selectedGlow = visuals.selectedGlow();
+
+        IGuiTexture bgOverride = getBackgroundTexture();
+        if (bgOverride != null && !bgOverride.equals(IGuiTexture.EMPTY)) {
+            bgOverride.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            if (!pressed) {
+                if (hovered) {
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                } else if (selectedGlow >= 0) {
+                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), selectedGlow);
+                }
+            }
+        } else {
+            SurfaceFactory.bordered(visuals.idle().fillColor(), visuals.idle().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            if (pressed) {
+                SurfaceFactory.bordered(visuals.pressed().fillColor(), visuals.pressed().borderColor()).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            } else if (hovered) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+            } else if (selectedGlow >= 0) {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), selectedGlow);
+            }
+        }
+
+        IGuiTexture content = buildContent(state);
+        if (content != null) {
+            content.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+    }
+
+    private IGuiTexture buildContent(State state) {
+        IGuiTexture icon = iconTexture(state.iconColor());
+        if (label == null) {
+            return icon;
+        }
+        TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
+        text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
+        return SurfaceFactory.group(icon, text);
+    }
+
+    @Override
     protected void onSizeUpdate() {
         super.onSizeUpdate();
         if (visuals != null) {
@@ -83,20 +133,7 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     private void refreshTextures() {
-        setButtonTexture(texture(visuals.idle()));
-        setHoverTexture(texture(visuals.hover()));
-        setClickedTexture(texture(visuals.pressed()));
-    }
-
-    private IGuiTexture texture(State state) {
-        IGuiTexture background = Surfaces.bordered(state.fillColor(), state.borderColor());
-        IGuiTexture icon = iconTexture(state.iconColor());
-        if (label == null) {
-            return Surfaces.group(background, icon);
-        }
-        TextTexture text = TabletTextTextures.literalTexture(label.getString(), Math.max(1, getSizeWidth() - 4), state.textColor(), TextTexture.TextType.HIDE);
-        text.transform(0, hasIcon() ? Math.max(4, getSizeHeight() / 4.0f) : 0);
-        return Surfaces.group(background, icon, text);
+        super.setBackground(IGuiTexture.EMPTY);
     }
 
     private IGuiTexture iconTexture(int color) {
@@ -120,28 +157,66 @@ public final class TabletIconTextButton extends ButtonWidget {
     }
 
     private static ResourceLocation resolveIcon(String iconName) {
-        ResourceLocation id = UiIconAtlas.icon(iconName);
+        ResourceLocation id = IconAtlas.icon(iconName);
         if (id == null && iconName != null && !iconName.isBlank()) {
-            id = UiIconAtlas.icon("context_" + iconName);
+            id = IconAtlas.icon("context_" + iconName);
         }
         if (id == null) {
-            id = UiIconAtlas.icon("text");
+            id = IconAtlas.icon("text");
         }
         return id;
     }
 
-    public record State(int fillColor, int borderColor, int iconColor, int textColor) {
+    public static final class State {
+        private final IntSupplier fillColor;
+        private final IntSupplier borderColor;
+        private final IntSupplier iconColor;
+        private final IntSupplier textColor;
+
+        public State(IntSupplier fillColor, IntSupplier borderColor, IntSupplier iconColor, IntSupplier textColor) {
+            this.fillColor = fillColor;
+            this.borderColor = borderColor;
+            this.iconColor = iconColor;
+            this.textColor = textColor;
+        }
+
+        public int fillColor() { return fillColor.getAsInt(); }
+        public int borderColor() { return borderColor.getAsInt(); }
+        public int iconColor() { return iconColor.getAsInt(); }
+        public int textColor() { return textColor.getAsInt(); }
+
         public static State of(int fillColor, int borderColor, int iconColor) {
-            return new State(fillColor, borderColor, iconColor, iconColor);
+            return new State(() -> fillColor, () -> borderColor, () -> iconColor, () -> iconColor);
         }
     }
 
-    public record Visuals(State idle, State hover, State pressed) {
-        public static Visuals defaultControl(int accentColor, int iconColor) {
+    public static final class Visuals {
+        private final State idle;
+        private final State hover;
+        private final State pressed;
+        private final int selectedGlow;
+
+        public Visuals(State idle, State hover, State pressed, int selectedGlow) {
+            this.idle = idle;
+            this.hover = hover;
+            this.pressed = pressed;
+            this.selectedGlow = selectedGlow;
+        }
+
+        public Visuals(State idle, State hover, State pressed) {
+            this(idle, hover, pressed, -1);
+        }
+
+        public State idle() { return idle; }
+        public State hover() { return hover; }
+        public State pressed() { return pressed; }
+        public int selectedGlow() { return selectedGlow; }
+
+        public static Visuals defaultControl() {
             return new Visuals(
-                    State.of(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, iconColor),
-                    State.of(ModColors.hoverFill(accentColor), ModColors.BORDER_ACCENT, iconColor),
-                    State.of(ModColors.pressedFill(accentColor), accentColor, iconColor)
+                    new State(() -> TabletColors.SURFACE_PANEL_ALT, () -> TabletColors.BORDER_BASE, () -> TabletColors.TEXT_PRIMARY, () -> TabletColors.TEXT_PRIMARY),
+                    new State(() -> TabletColors.hoverFill(TabletColors.INTERACTIVE), () -> TabletColors.BORDER_ACCENT, () -> TabletColors.TEXT_PRIMARY, () -> TabletColors.TEXT_PRIMARY),
+                    new State(() -> TabletColors.pressedFill(TabletColors.INTERACTIVE), () -> TabletColors.INTERACTIVE, () -> TabletColors.TEXT_PRIMARY, () -> TabletColors.TEXT_PRIMARY)
             );
         }
     }

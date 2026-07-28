@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.quest.runtime.signal;
 
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +10,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+import com.lowdragmc.lowdraglib.side.fluid.FluidTransferHelper;
 
 public final class QuestInventoryTasks {
     private static final String FLUID_ICON_PREFIX = "fluid|";

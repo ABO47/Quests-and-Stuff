@@ -1,26 +1,51 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
     private final TabletUiState state;
     private final String questId;
     private final QuestDetailsDescriptionSelection selection;
+    private final QuestDetailsDescriptionTextEdit textEdit;
     private final QuestDetailsDescriptionEventRouter events;
+    private IGuiTexture extendedBackgroundTexture;
+
+    void setExtendedBackgroundTexture(IGuiTexture texture) {
+        this.extendedBackgroundTexture = texture;
+    }
+
+    @Override
+    protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
+        if (extendedBackgroundTexture != null) {
+            CanvasBackgroundOpacity.drawTexture(graphics, extendedBackgroundTexture, mouseX, mouseY,
+                    getPositionX() - 1, getPositionY() - 1,
+                    getSizeWidth() + 2, getSizeHeight() + 2,
+                    state.questDetails.questDetailsCanvasBgOpacityPercent);
+        }
+        super.drawBackgroundTexture(graphics, mouseX, mouseY);
+    }
 
     QuestDetailsDescriptionCanvas(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId) {
         super(x, y, w, h);
         this.state = state;
         this.questId = questId;
         QuestDetailsDescriptionTransform transforms = new QuestDetailsDescriptionTransform(state, this::contentX, this::contentY, this::contentW, this::contentH);
-        QuestDetailsDescriptionTextEdit textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
+        this.textEdit = new QuestDetailsDescriptionTextEdit(state, refresh, questId, this::contentW, this::contentH);
         this.selection = new QuestDetailsDescriptionSelection(state, this::contentX, this::contentY, this::contentW, this::contentH);
         QuestDetailsDescriptionHitTest hitTest = new QuestDetailsDescriptionHitTest(state, selection, this::contentW, this::contentH);
         this.events = new QuestDetailsDescriptionEventRouter(
@@ -98,10 +123,13 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        String bg = model != null ? model.canvasBackground : null;
+        setExtendedBackgroundTexture(bg != null && !bg.isBlank() && !"default".equals(bg)
+                ? BackgroundModes.createTexture(bg) : null);
         drawBackgroundTexture(graphics, mouseX, mouseY);
         withScissor(graphics, () -> {
-            QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
-            QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, state, model, contentX(), contentY(), contentW(), contentH());
+            QuestDetailsDescriptionCanvasRenderer.drawContent(graphics, mouseX, mouseY, state, model, contentX(), contentY(), contentW(), contentH());
             selection.drawMultiSelectionBounds(graphics, model);
             selection.drawBoxSelection(graphics);
             drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
@@ -135,12 +163,29 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return events.keyPressed(keyCode, scanCode, modifiers);
+        boolean superConsumed = super.keyPressed(keyCode, scanCode, modifiers);
+        QuestsAndStuffMod.debugLog("[QnS:DEBUG] canvas.keyPressed key={} superConsumed={} canEdit={} isEditing={}",
+                keyCode, superConsumed, QuestDetailsEditController.canEdit(state), textEdit.isEditing());
+        if (superConsumed) {
+            return true;
+        }
+        if (QuestDetailsEditController.canEdit(state) && textEdit.handleKey(keyCode)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        return events.charTyped(codePoint, modifiers);
+        if (QuestDetailsEditController.canEdit(state) && textEdit.isEditing()) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details charEditing codePoint={}", Integer.valueOf(codePoint));
+            textEdit.handleChar(codePoint);
+            return true;
+        }
+        if (super.charTyped(codePoint, modifiers)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -5,22 +5,22 @@ import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.snapExpandedChapterWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_ICON;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_ICON_SNAP;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.SPLITTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterPanelWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.isChapterPanelCollapsed;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_ICON;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_ICON_SNAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public final class ChapterSplitterWidget extends BaseSplitterWidget {
     private static final int DRAG_THRESHOLD_PX = 3;
 
-    public ChapterSplitterWidget(TabletUiState state, Runnable refresh) {
-        super(0, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
+    public ChapterSplitterWidget(TabletUiState state, Runnable refresh, int x) {
+        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
     }
 
     @Override

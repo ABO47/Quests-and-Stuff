@@ -1,19 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.animation;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import java.util.function.BooleanSupplier;
+import java.util.function.LongSupplier;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
-import javax.annotation.Nonnull;
-import java.util.function.BooleanSupplier;
-import java.util.function.LongSupplier;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class AnchoredMenuRevealWidget extends WidgetGroup {
-    private static final long MENU_MS = 165L;
+    private static final long MENU_MS = TabletAnimationTimings.MENU_MS;
     private static final int SLIDE_PX = 4;
     private static final int SHADOW_ALPHA = 72;
     private static final int SOFT_SHADOW_ALPHA = 34;
@@ -44,7 +48,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawAnchored(graphics, true, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
+        drawAnchored(graphics, false, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
@@ -110,10 +114,10 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = frame.visibleHeight();
         if (softAlpha > 0) {
-            graphics.fill(x + 3, y + 4, x + w + 3, y + h + 4, withAlpha(ModColors.SURFACE_BASE, softAlpha));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 3, y + 4, w, h);
         }
         if (hardAlpha > 0) {
-            graphics.fill(x + 1, y + 2, x + w + 1, y + h + 2, withAlpha(ModColors.SURFACE_BASE, hardAlpha));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 1, y + 2, w, h);
         }
     }
 
@@ -124,7 +128,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        graphics.fill(x, y, x + getSizeWidth(), y + getSizeHeight(), withAlpha(ModColors.SURFACE_BASE, alpha));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
     }
 
     private boolean enableClip(GuiGraphics graphics, int left, int top, int right, int bottom) {

@@ -13,9 +13,32 @@
     "chapterSwitchAnimations": true
   },
   "canvas": {
-    "minimap": true
+    "fullScreenMode": false,
+    "minimap": true,
+    "visualMinimap": false,
+    "readOnlyCanvasFocus": true,
+    "questEffectIcons": false,
+    "miniNotifications": false
+  },
+  "rewards": {
+    "autoClaimRewards": false
+  },
+  "hud": {
+    "completionHud": true,
+    "completionHudSound": true,
+    "completionHudDurationMs": 2600
   },
   "security": {
     "commandRewards": true
+  },
+  "chunkClaims": {
+    "protectBreakPlace": true,
+    "protectInteraction": true,
+    "protectExplosions": true,
+    "protectMobGriefing": true,
+    "protectPvp": true,
+    "protectFire": true,
+    "maxClaimedChunks": 100,
+    "maxForceLoadedChunks": 100
   }
 }

@@ -1,20 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 
-import javax.annotation.Nonnull;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class CanvasMiniNotificationController {
-    private static final long DURATION_MS = 900L;
+    private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;
     private static final long FADE_MS = 260L;
     private static final int CURSOR_GAP = 2;
 
@@ -74,10 +78,7 @@ public final class CanvasMiniNotificationController {
         }
         localY = clamp(localY, 2, Math.max(2, viewportH - font.lineHeight - 2));
         int alpha = remaining < FADE_MS ? clamp((int) (remaining * 255L / FADE_MS), 0, 255) : 255;
-        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(ModColors.SUCCESS, alpha), true);
+        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(TabletColors.SUCCESS, alpha), true);
     }
 
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
 }

@@ -1,19 +1,16 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.client.gui.GuiGraphics;
-
 import java.util.function.IntSupplier;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class QuestDetailsDescriptionSelection {
     private static final int SELECTION_PAD = 4;
@@ -38,8 +35,8 @@ public final class QuestDetailsDescriptionSelection {
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
         state.questDetails.questDetailsDescriptionSelection.textIds().clear();
         state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
-        state.questDetails.questDetailsSelectedObjectiveKind = "";
-        state.questDetails.questDetailsSelectedObjectiveId = "";
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
         state.canvas.selectionBoundsVisible = false;
     }
 
@@ -53,6 +50,35 @@ public final class QuestDetailsDescriptionSelection {
 
     boolean isSelectedImage(String id) {
         return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
+    }
+
+    void updateDuringBoxDrag(QuestDetailsDescriptionModel model) {
+        if (!state.questDetails.questDetailsBoxSelecting) {
+            return;
+        }
+        int minX = Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int minY = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        int maxX = Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int maxY = Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        String lastTextId = "";
+        state.questDetails.questDetailsDescriptionSelection.textIds().clear();
+        for (CanvasTextLayer text : model.texts.values()) {
+            if (intersects(bounds(text.x(), text.y(), text.w(), text.h(), text.rotation()), minX, minY, maxX, maxY)) {
+                state.questDetails.questDetailsDescriptionSelection.textIds().add(text.id());
+                lastTextId = text.id();
+            }
+        }
+        String lastImageId = "";
+        state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
+        for (CanvasImageLayer image : model.images.values()) {
+            CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
+            if (intersects(bounds(drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation()), minX, minY, maxX, maxY)) {
+                state.questDetails.questDetailsDescriptionSelection.imageIds().add(drawImage.id());
+                lastImageId = drawImage.id();
+            }
+        }
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(lastImageId);
+        state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(lastTextId);
     }
 
     void finishBoxSelection(QuestDetailsDescriptionModel model) {
@@ -78,14 +104,11 @@ public final class QuestDetailsDescriptionSelection {
         if (!state.questDetails.questDetailsBoxSelecting) {
             return;
         }
-        int left = Math.max(0, Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX));
-        int top = Math.max(0, Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY));
-        int right = Math.min(contentW.getAsInt(), Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX));
-        int bottom = Math.min(contentH.getAsInt(), Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY));
-        if (right <= left || bottom <= top) {
-            return;
-        }
-        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(ModColors.INTERACTIVE, 28), withAlpha(ModColors.INTERACTIVE, 210));
+        int left = Math.min(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int top = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        int right = Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
+        int bottom = Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
+        CanvasElementSelectionSlot.drawBoxSelection(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom);
     }
 
     void drawMultiSelectionBounds(GuiGraphics graphics, QuestDetailsDescriptionModel model) {
@@ -97,9 +120,7 @@ public final class QuestDetailsDescriptionSelection {
         int top = bounds.top() - SELECTION_PAD;
         int right = bounds.right() + SELECTION_PAD;
         int bottom = bounds.bottom() + SELECTION_PAD;
-        drawRect(graphics, left, top, right - left, bottom - top, withAlpha(ModColors.INTERACTIVE, 24), withAlpha(ModColors.INTERACTIVE, 214));
-        drawRect(graphics, right - HANDLE_SIZE, bottom - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.SURFACE_BASE, 230), ModColors.BORDER_BASE);
-        drawRect(graphics, right - HANDLE_SIZE, top, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ModColors.WARNING, 210), ModColors.WARNING);
+        CanvasElementSelectionSlot.drawCombinedBounds(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom, true);
     }
 
     boolean selectionBoundsHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {
@@ -134,7 +155,7 @@ public final class QuestDetailsDescriptionSelection {
     }
 
     private SelectionRect selectionBounds(QuestDetailsDescriptionModel model) {
-        if (!QuestDetailsEditState.canEdit(state) || count() <= 1) {
+        if (!QuestDetailsEditController.canEdit(state) || count() <= 1) {
             return SelectionRect.empty();
         }
         int minX = Integer.MAX_VALUE;
@@ -165,23 +186,6 @@ public final class QuestDetailsDescriptionSelection {
             return SelectionRect.empty();
         }
         return new SelectionRect(minX, minY, maxX, maxY);
-    }
-
-    private void drawRect(GuiGraphics graphics, int x, int y, int w, int h, int fill, int border) {
-        int left = Math.max(0, x);
-        int top = Math.max(0, y);
-        int right = Math.min(contentW.getAsInt(), x + Math.max(1, w));
-        int bottom = Math.min(contentH.getAsInt(), y + Math.max(1, h));
-        if (right <= left || bottom <= top) {
-            return;
-        }
-        if ((fill >>> 24) != 0) {
-            graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + bottom, fill);
-        }
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + top + 1, border);
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + bottom - 1, contentX.getAsInt() + right, contentY.getAsInt() + bottom, border);
-        graphics.fill(contentX.getAsInt() + left, contentY.getAsInt() + top, contentX.getAsInt() + left + 1, contentY.getAsInt() + bottom, border);
-        graphics.fill(contentX.getAsInt() + right - 1, contentY.getAsInt() + top, contentX.getAsInt() + right, contentY.getAsInt() + bottom, border);
     }
 
     private static int[] bounds(int x, int y, int w, int h, int rotation) {

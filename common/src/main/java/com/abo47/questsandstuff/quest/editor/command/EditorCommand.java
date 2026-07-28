@@ -7,12 +7,12 @@ public record EditorCommand(EditorCommandType type, CompoundTag payload) {
     public EditorCommand {
         type = type == null ? EditorCommandType.UNKNOWN : type;
         payload = payload == null ? new CompoundTag() : payload;
-        EditorCommandPayloadLimits.requireAllowed(type, payload);
+        EditorCommandPayloads.requireAllowed(type, payload);
     }
 
     public static EditorCommand decode(FriendlyByteBuf buf) {
         EditorCommandType type = EditorCommandType.fromWireName(buf.readUtf());
-        CompoundTag payload = buf.readNbt(EditorCommandPayloadLimits.nbtAccounter());
+        CompoundTag payload = buf.readNbt(EditorCommandPayloads.nbtAccounter());
         return new EditorCommand(type, payload == null ? new CompoundTag() : payload);
     }
 

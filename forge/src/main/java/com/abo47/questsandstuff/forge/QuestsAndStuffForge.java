@@ -4,8 +4,9 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.forge.runtime.signal.ForgeQuestEventBridge;
 import com.abo47.questsandstuff.platform.Services;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestServerReloadListener;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -46,11 +47,11 @@ public final class QuestsAndStuffForge {
     private void onServerStarted(ServerStartedEvent event) {
         QuestsAndStuffMod.SERVER_REF = event.getServer();
         QuestsAndStuffMod.prepareAssetsDirectory();
-        QuestServices.start(event.getServer());
+        QuestServiceRegistry.start(event.getServer());
     }
 
     private void onServerStopping(ServerStoppingEvent event) {
-        QuestServices.stop(event.getServer());
+        QuestServiceRegistry.stop(event.getServer());
         if (QuestsAndStuffMod.SERVER_REF == event.getServer()) {
             QuestsAndStuffMod.SERVER_REF = null;
         }

@@ -1,29 +1,33 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.util.ClickData;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.function.Consumer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
+import com.lowdragmc.lowdraglib.gui.util.ClickData;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ACTION_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ACTION_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 public final class ActionButtons {
     private ActionButtons() {
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, String icon, String text, int color, Consumer<ClickData> callback) {
-        iconAction(parent, x, y, width, 16, icon, text, color, null, callback);
+        iconAction(parent, x, y, width, GRID_16, icon, text, color, null, callback);
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, int height, String icon, String text, int color, Component[] tooltips, Consumer<ClickData> callback) {
-        parent.addWidget(Surfaces.panel(x, y, width, height, withAlpha(ModColors.elevatedSurface(), 210), ModColors.subtleBorder()));
+        parent.addWidget(SurfaceFactory.panel(x, y, width, height, withAlpha(TabletColors.elevatedSurface(), 210), TabletColors.subtleBorder()));
         int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, height - 4));
         String safeText = text == null ? "" : text;
         int textWidth = Minecraft.getInstance().font.width(safeText);
@@ -37,8 +41,8 @@ public final class ActionButtons {
         parent.addWidget(IconOnlyButton.icon(contentX, iconY, iconSize, icon, color));
         parent.addWidget(label(contentX + iconSize + textGap, textY, safeText, color));
         var hit = flatHitButton(x, y, width, height, callback);
-        hit.setHoverTexture(Surfaces.controlHover(color));
-        hit.setClickedTexture(Surfaces.controlPressed(color));
+        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        hit.setClickedTexture(SurfaceFactory.controlPressed(color));
         if (tooltips != null) {
             hit.setHoverTooltips(tooltips);
         }

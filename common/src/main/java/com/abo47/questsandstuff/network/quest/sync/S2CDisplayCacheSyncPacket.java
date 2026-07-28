@@ -1,10 +1,9 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CDisplayCacheSyncPacket(long sequence, CompoundTag payload) {
     public static S2CDisplayCacheSyncPacket decode(FriendlyByteBuf buf) {

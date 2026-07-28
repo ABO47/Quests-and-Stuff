@@ -1,14 +1,16 @@
 package com.abo47.questsandstuff.fabric;
 
+import net.minecraft.server.packs.PackType;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.platform.Services;
-import com.abo47.questsandstuff.quest.QuestServices;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.server.packs.PackType;
 
 public final class QuestsAndStuffFabric implements ModInitializer {
     @Override
@@ -24,10 +26,10 @@ public final class QuestsAndStuffFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             QuestsAndStuffMod.SERVER_REF = server;
             QuestsAndStuffMod.prepareAssetsDirectory();
-            QuestServices.start(server);
+            QuestServiceRegistry.start(server);
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            QuestServices.stop(server);
+            QuestServiceRegistry.stop(server);
             if (QuestsAndStuffMod.SERVER_REF == server) {
                 QuestsAndStuffMod.SERVER_REF = null;
             }

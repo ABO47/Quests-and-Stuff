@@ -1,12 +1,15 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
-import net.minecraft.client.gui.GuiGraphics;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudProgressBar {
     private QuestHudProgressBar() {
@@ -20,11 +23,11 @@ final class QuestHudProgressBar {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
         float safeProgress = Math.max(0.0f, Math.min(1.0f, progress));
-        graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, Math.min(178, safeAlpha)));
-        graphics.renderOutline(x, y, w, h, withAlpha(ModColors.BORDER_BASE, Math.min(130, safeAlpha)));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, Math.min(178, safeAlpha))).draw(graphics, 0, 0, x, y, w, h);
+        drawRectOutline(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, Math.min(130, safeAlpha)));
         ProgressTexture texture = new ProgressTexture(
                 IGuiTexture.EMPTY,
-                Surfaces.fill(withAlpha(fillColor, Math.min(180, safeAlpha)))
+                SurfaceFactory.fill(withAlpha(fillColor, Math.min(180, safeAlpha)))
         ).setFillDirection(ProgressTexture.FillDirection.LEFT_TO_RIGHT);
         texture.setProgress(safeProgress);
         texture.draw(graphics, 0, 0, x + 1, y + 1, Math.max(1, w - 2), Math.max(1, h - 2));

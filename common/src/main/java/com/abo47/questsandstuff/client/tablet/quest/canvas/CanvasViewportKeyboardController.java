@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import org.lwjgl.glfw.GLFW;
 
 final class CanvasViewportKeyboardController {
     private CanvasViewportKeyboardController() {
@@ -22,9 +22,6 @@ final class CanvasViewportKeyboardController {
     ) {
         if (EntityMotionEditor.isMainCanvasOpen(state) && viewport.callSuperKeyPressed(keyCode, scanCode, modifiers)) {
             return true;
-        }
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return viewport.callSuperKeyPressed(keyCode, scanCode, modifiers);
         }
         if (textEditor.handleKeyPressed(keyCode)) {
             return true;
@@ -53,9 +50,6 @@ final class CanvasViewportKeyboardController {
     ) {
         if (EntityMotionEditor.isMainCanvasOpen(state) && viewport.callSuperCharTyped(codePoint, modifiers)) {
             return true;
-        }
-        if (TabletRootWindowController.isFontSizeFieldOpen(state)) {
-            return viewport.callSuperCharTyped(codePoint, modifiers);
         }
         if (textEditor.handleCharTyped(codePoint)) {
             return true;

@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
-import javax.annotation.Nonnull;
+import net.minecraft.client.gui.GuiGraphics;
 
-public final class TabletScissoredWidgetGroup extends WidgetGroup {
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+public class TabletScissoredWidgetGroup extends WidgetGroup {
     public TabletScissoredWidgetGroup(int x, int y, int width, int height) {
         super(x, y, width, height);
     }

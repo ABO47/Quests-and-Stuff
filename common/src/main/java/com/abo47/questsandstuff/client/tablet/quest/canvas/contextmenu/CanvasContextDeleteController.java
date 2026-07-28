@@ -1,29 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuTarget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runPrerequisiteAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.runRemoveQuestAction;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runPrerequisiteAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runRemoveQuestAction;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 public final class CanvasContextDeleteController {
     private CanvasContextDeleteController() {
     }
 
     public static boolean canDeleteContext(TabletUiState state) {
-        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EDGE) {
-            return !state.contextMenu.contextEdgeSource.isBlank() && !state.contextMenu.contextEdgeTarget.isBlank();
+        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.CONNECTION) {
+            return !state.contextMenu.contextConnectionSource.isBlank() && !state.contextMenu.contextConnectionTarget.isBlank();
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.QUEST) {
             return !state.contextMenu.contextQuestId.isBlank();
@@ -46,8 +47,8 @@ public final class CanvasContextDeleteController {
     public static String deleteConfirmKey(TabletUiState state) {
         return state.contextMenu.contextMenuTarget.name()
                 + "|" + state.contextMenu.contextQuestId
-                + "|" + state.contextMenu.contextEdgeSource
-                + "|" + state.contextMenu.contextEdgeTarget
+                + "|" + state.contextMenu.contextConnectionSource
+                + "|" + state.contextMenu.contextConnectionTarget
                 + "|" + state.contextMenu.contextCanvasImageId
                 + "|" + state.contextMenu.contextCanvasTextId
                 + "|" + state.contextMenu.contextCanvasExclusiveChoiceId
@@ -58,64 +59,64 @@ public final class CanvasContextDeleteController {
     }
 
     public static void runDeleteAction(Player player, TabletUiState state) {
-        String group = selectedGroupName(state);
+        String chapter = selectedChapterName(state);
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.SELECTION) {
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-                boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, imageId);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, imageId, removed);
+                boolean removed = CanvasLayerMutations.removeCanvasImage(state, chapter, imageId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete chapter={} id={} removed={}", chapter, imageId, removed);
             }
             for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-                boolean removed = CanvasLayerMutations.removeCanvasText(state, group, textId);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, textId, removed);
+                boolean removed = CanvasLayerMutations.removeCanvasText(state, chapter, textId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete chapter={} id={} removed={}", chapter, textId, removed);
             }
             for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-                boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, group, ecId);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete group={} id={} removed={}", group, ecId, removed);
+                boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, ecId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete chapter={} id={} removed={}", chapter, ecId, removed);
             }
         }
 
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.IMAGE && !state.contextMenu.contextCanvasImageId.isBlank()) {
-            boolean removed = CanvasLayerMutations.removeCanvasImage(state, group, state.contextMenu.contextCanvasImageId);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete group={} id={} removed={}", group, state.contextMenu.contextCanvasImageId, removed);
-            ContextMenuState.clearTarget(state);
+            boolean removed = CanvasLayerMutations.removeCanvasImage(state, chapter, state.contextMenu.contextCanvasImageId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas image delete chapter={} id={} removed={}", chapter, state.contextMenu.contextCanvasImageId, removed);
+            ContextMenuController.clearTarget(state);
             return;
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.TEXT && !state.contextMenu.contextCanvasTextId.isBlank()) {
-            boolean removed = CanvasLayerMutations.removeCanvasText(state, group, state.contextMenu.contextCanvasTextId);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete group={} id={} removed={}", group, state.contextMenu.contextCanvasTextId, removed);
-            ContextMenuState.clearTarget(state);
+            boolean removed = CanvasLayerMutations.removeCanvasText(state, chapter, state.contextMenu.contextCanvasTextId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete chapter={} id={} removed={}", chapter, state.contextMenu.contextCanvasTextId, removed);
+            ContextMenuController.clearTarget(state);
             return;
         }
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EXCLUSIVE_CHOICE && !state.contextMenu.contextCanvasExclusiveChoiceId.isBlank()) {
-            boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, group, state.contextMenu.contextCanvasExclusiveChoiceId);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete group={} id={} removed={}", group, state.contextMenu.contextCanvasExclusiveChoiceId, removed);
-            ContextMenuState.clearTarget(state);
+            boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, state.contextMenu.contextCanvasExclusiveChoiceId);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete chapter={} id={} removed={}", chapter, state.contextMenu.contextCanvasExclusiveChoiceId, removed);
+            ContextMenuController.clearTarget(state);
             return;
         }
 
-        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.EDGE
-                && !state.contextMenu.contextEdgeSource.isBlank()
-                && !state.contextMenu.contextEdgeTarget.isBlank()) {
-            String source = state.contextMenu.contextEdgeSource;
-            String target = state.contextMenu.contextEdgeTarget;
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, source);
+        if (state.contextMenu.contextMenuTarget == ContextMenuTarget.CONNECTION
+                && !state.contextMenu.contextConnectionSource.isBlank()
+                && !state.contextMenu.contextConnectionTarget.isBlank()) {
+            String source = state.contextMenu.contextConnectionSource;
+            String target = state.contextMenu.contextConnectionTarget;
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, source);
             if (ec != null) {
                 CanvasExclusiveChoice updated = ec.removeAllEdgeState(target);
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
+                ConnectionRenderer.removeConnectionTransientState(state, chapter, source, target);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connection delete ec={} quest={}", source, target);
             } else {
-                CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, target);
+                CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, target);
                 if (ecTarget != null) {
                     CanvasExclusiveChoice updated = ecTarget.removeAllEdgeState(source);
-                    CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
-                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                    CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
+                    ConnectionRenderer.removeConnectionTransientState(state, chapter, source, target);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec prerequisite delete quest={} ec={}", source, target);
                 } else {
                     runPrerequisiteAction(player, target, source, false);
-                    ConnectionRenderer.removeEdgeTransientState(state, group, source, target);
+                    ConnectionRenderer.removeConnectionTransientState(state, chapter, source, target);
                 }
             }
             return;

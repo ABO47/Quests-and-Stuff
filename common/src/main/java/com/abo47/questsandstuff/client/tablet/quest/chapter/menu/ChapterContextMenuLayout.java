@@ -1,12 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public record ChapterContextMenuLayout(
         String target,
@@ -16,8 +23,7 @@ public record ChapterContextMenuLayout(
         int menuW,
         int menuH,
         int menuX,
-        int menuY,
-        int rowCount
+        int menuY
 ) {
     public static final int ROW_TOP_PAD = 4;
     public static final int ROW_STEP = TabletUiFactory.CONTEXT_ROW_H;
@@ -27,16 +33,22 @@ public record ChapterContextMenuLayout(
         boolean hasTarget = target != null && !target.isBlank();
         boolean entityIcon = hasTarget && isEntityChapterIcon(target);
         boolean entityVariants = entityIcon && hasEntityVariants(target);
-        int rowCount = rowCount(hasTarget, entityIcon, entityVariants);
         int menuW = width(state, availableW);
-        int menuH = height(hasTarget, rowCount);
         int menuX = Math.max(4, Math.min(state.chapterPanel.chapterMenuX, availableW - menuW - 4));
+        int menuY = Math.max(4, Math.min(state.chapterPanel.chapterMenuY, availableH - 4));
+        return new ChapterContextMenuLayout(target, hasTarget, entityIcon, entityVariants, menuW, 0, menuX, menuY);
+    }
+
+    public static ChapterContextMenuLayout resolve(TabletUiState state, int availableW, int availableH, Player player, Runnable refresh) {
+        ChapterContextMenuLayout bounds = resolve(state, availableW, availableH);
+        List<ContextAction> actions = ChapterContextMenuRows.actions(bounds, state, player, refresh);
+        int menuH = ContextMenuPanel.heightFor(actions, ContextMenuPanel.rowActionCount(actions));
         int menuY = Math.max(4, Math.min(state.chapterPanel.chapterMenuY, availableH - menuH - 4));
-        return new ChapterContextMenuLayout(target, hasTarget, entityIcon, entityVariants, menuW, menuH, menuX, menuY, rowCount);
+        return new ChapterContextMenuLayout(bounds.target(), bounds.hasTarget(), bounds.entityIcon(), bounds.entityVariants(), bounds.menuW(), menuH, bounds.menuX(), menuY);
     }
 
     public static int width(TabletUiState state, int maxAvailableWidth) {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public boolean contains(int x, int y) {
@@ -49,20 +61,6 @@ public record ChapterContextMenuLayout(
 
     public static boolean isContextRowHit(int relY, int rowY) {
         return relY >= rowY && relY < rowY + TabletUiFactory.CONTEXT_ROW_H;
-    }
-
-    public static int rowCount(boolean hasTarget, boolean entityIcon, boolean entityVariants) {
-        if (!hasTarget) {
-            return 1;
-        }
-        int count = 14;
-        if (entityVariants) {
-            count++;
-        }
-        if (entityIcon) {
-            count++;
-        }
-        return count;
     }
 
     public static String deleteKey(String target) {
@@ -86,18 +84,26 @@ public record ChapterContextMenuLayout(
     }
 
     public static String chapterIcon(String target) {
-        String icon = ClientQuestCache.groupIcon(target);
+        String icon = ClientQuestStateFacade.chapterIcon(target);
         return icon == null ? "" : icon;
     }
 
-    private static String resolveTarget(TabletUiState state) {
-        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorChapterCommandClient.selectedGroupName(state) : state.chapterPanel.chapterMenuTarget;
+    private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
+        for (String questId : ClientQuestStateFacade.questIdsInChapter(target)) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest != null && quest.contains("connection_textures", Tag.TAG_COMPOUND)) {
+                CompoundTag textures = quest.getCompound("connection_textures");
+                if (!textures.isEmpty()) return true;
+            }
+        }
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, List.of())) {
+            if (!ec.connectionTextures().isEmpty()) return true;
+        }
+        return false;
     }
 
-    private static int height(boolean hasTarget, int rowCount) {
-        int promotedCount = hasTarget ? 3 : 0;
-        int rowActionCount = Math.max(0, rowCount - promotedCount);
-        return ContextMenuPanel.heightForCounts(promotedCount, rowActionCount, rowActionCount);
+    private static String resolveTarget(TabletUiState state) {
+        return state.chapterPanel.chapterMenuTarget.isBlank() ? EditorChapterCommandClient.selectedChapterName(state) : state.chapterPanel.chapterMenuTarget;
     }
 
 }

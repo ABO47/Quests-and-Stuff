@@ -1,7 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal.actions;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
@@ -13,9 +15,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import net.minecraft.world.entity.player.Player;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class ColorPickerApplyActions {
     private ColorPickerApplyActions() {
@@ -35,32 +36,32 @@ public final class ColorPickerApplyActions {
         }
         String connectionSelection = connectionSelectionColorTarget(target);
         if (connectionSelection != null) {
-            var edges = CanvasOverlayController.selectedConnectedEdges(state, connectionSelection);
+            var edges = CanvasOverlayController.selectedConnections(state, connectionSelection);
             if (!edges.isEmpty()) {
                 var first = edges.get(0);
                 return CanvasRenderer.connectionColor(state, connectionSelection, first.prerequisiteId(), first.questId());
             }
-            return ModColors.TEXT_SECONDARY;
+            return TabletColors.TEXT_SECONDARY;
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             var text = CanvasLayerMutations.findCanvasText(state, canvasText[0], canvasText[1]);
-            return text == null ? ModColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
+            return text == null ? TabletColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         if (target.isGridColor()) {
             return TabletGridControls.defaultGridColor(state);
         }
         if (target.isQuestDescText()) {
             if (target.hasAtLeast(3)) {
-                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(target.questId()));
+                QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(target.questId()));
                 var text = model.text(target.entryId());
                 if (text != null) {
                     return CanvasRenderer.activeTextColor(state, text);
                 }
             }
-            return state.pickers.colorDraft == 0 ? ModColors.TEXT_PRIMARY : state.pickers.colorDraft;
+            return state.pickers.colorDraft == 0 ? TabletColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
-        return ClientQuestCache.groupTextColor(target.raw());
+        return ClientQuestStateFacade.chapterTextColor(target.raw());
     }
 
     public static void apply(Player player, TabletUiState state, String target, int color) {
@@ -70,50 +71,50 @@ public final class ColorPickerApplyActions {
     public static void apply(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
-            String group = connection[0];
+            String chapter = connection[0];
             String sourceId = connection[1];
             String targetId = connection[2];
-            boolean isEc = ConnectionRenderer.isEcId(state, group, sourceId)
-                    || ConnectionRenderer.isEcId(state, group, targetId);
+            boolean isEc = ConnectionRenderer.isEcId(state, chapter, sourceId)
+                    || ConnectionRenderer.isEcId(state, chapter, targetId);
             if (isEc) {
                 EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
             } else {
-                ConnectionRenderer.setConnectionColor(state, group, sourceId, targetId, color);
+                ConnectionRenderer.setConnectionColor(state, chapter, sourceId, targetId, color);
                 EditorCanvasCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
             }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked group={} source={} target={} color={}", group, sourceId, targetId, color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection color picked chapter={} source={} target={} color={}", chapter, sourceId, targetId, color);
             return;
         }
         String connectionSelection = connectionSelectionColorTarget(target);
         if (connectionSelection != null) {
-            String group = connectionSelection;
+            String chapter = connectionSelection;
             int applied = 0;
-            for (var edge : CanvasOverlayController.selectedConnectedEdges(state, group)) {
-                String prereq = edge.prerequisiteId();
-                String quest = edge.questId();
-                boolean isEc = ConnectionRenderer.isEcId(state, group, prereq)
-                        || ConnectionRenderer.isEcId(state, group, quest);
+            for (var connectionRef : CanvasOverlayController.selectedConnections(state, chapter)) {
+                String prereq = connectionRef.prerequisiteId();
+                String quest = connectionRef.questId();
+                boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq)
+                        || ConnectionRenderer.isEcId(state, chapter, quest);
                 if (isEc) {
-                    String ecId = ConnectionRenderer.isEcId(state, group, prereq) ? prereq : quest;
-                    String questId = ConnectionRenderer.isEcId(state, group, prereq) ? quest : prereq;
-                    ConnectionRenderer.setEcConnectionColor(state, group, ecId, questId, color);
+                    String ecId = ConnectionRenderer.isEcId(state, chapter, prereq) ? prereq : quest;
+                    String questId = ConnectionRenderer.isEcId(state, chapter, prereq) ? quest : prereq;
+                    ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color);
                     EditorCanvasCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
                 } else {
-                    ConnectionRenderer.setConnectionColor(state, group, prereq, quest, color);
+                    ConnectionRenderer.setConnectionColor(state, chapter, prereq, quest, color);
                     EditorCanvasCommandClient.runConnectionColorAction(player, quest, prereq, color);
                 }
                 applied++;
             }
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked group={} edges={} color={}", group, applied, color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] connection selection color picked chapter={} connections={} color={}", chapter, applied, color);
             return;
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             CanvasLayerMutations.updateCanvasText(state, canvasText[0], canvasText[1], text -> CanvasRenderer.applyTextColorSelection(state, text, color));
             state.pickers.colorPickerTarget = "";
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color picked group={} id={} color={}", canvasText[0], canvasText[1], color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color picked chapter={} id={} color={}", canvasText[0], canvasText[1], color);
             return;
         }
         if (target.isGridColor()) {
@@ -128,7 +129,7 @@ public final class ColorPickerApplyActions {
             state.pickers.colorPickerTarget = "";
             return;
         }
-        TabletUiFactory.runGroupAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
+        TabletUiFactory.runChapterAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
     }
 
     private static String[] connectionColorTarget(ModalTargetParser.Target target) {

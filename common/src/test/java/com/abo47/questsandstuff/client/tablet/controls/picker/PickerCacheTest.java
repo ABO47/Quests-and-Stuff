@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.controls.picker;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

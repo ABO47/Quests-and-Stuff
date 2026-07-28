@@ -1,19 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +27,7 @@ class TabletActiveStateTest {
 
     @BeforeEach
     void resetClientState() throws IOException {
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
         TabletActiveState.setActiveTabletState(null);
         TabletActiveState.setActiveTabletRefresh(null);
         previousUiState = Files.exists(UI_STATE_FILE) ? Files.readString(UI_STATE_FILE, StandardCharsets.UTF_8) : null;
@@ -34,7 +37,7 @@ class TabletActiveStateTest {
     void restoreUiState() throws IOException {
         TabletActiveState.setActiveTabletState(null);
         TabletActiveState.setActiveTabletRefresh(null);
-        ClientQuestCache.resetStateForTests();
+        ClientQuestStateFacade.resetStateForTests();
         if (previousUiState == null) {
             Files.deleteIfExists(UI_STATE_FILE);
             return;
@@ -46,8 +49,8 @@ class TabletActiveStateTest {
     @Test
     void selectPastedQuestsMergesServerIdsWithPendingClipboardLayerIds() {
         TabletUiState state = new TabletUiState();
-        state.root.selectedGroup = "old_group";
-        state.chapterPanel.groupDraft = "old_group";
+        state.root.selectedChapter = "old_group";
+        state.chapterPanel.chapterDraft = "old_group";
         state.chapterPanel.chapterDraftName = "old_group";
         state.canvas.canvasSelection.questIds().add("old_quest");
         state.canvas.canvasSelection.imageIds().add("old_image");
@@ -61,8 +64,8 @@ class TabletActiveStateTest {
 
         TabletActiveState.selectPastedQuests(pastePayload());
 
-        assertEquals("pasted_group", state.root.selectedGroup);
-        assertEquals("pasted_group", state.chapterPanel.groupDraft);
+        assertEquals("pasted_group", state.root.selectedChapter);
+        assertEquals("pasted_group", state.chapterPanel.chapterDraft);
         assertEquals("pasted_group", state.chapterPanel.chapterDraftName);
         assertEquals("quest:new", state.chapterPanel.lastJumpQuest);
         assertTrue(state.canvas.canvasSelection.questIds().contains("quest:new"));
@@ -74,13 +77,13 @@ class TabletActiveStateTest {
         assertEquals("local_text", state.canvas.canvasSelection.primaryTextId());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedImageIds().isEmpty());
         assertTrue(state.clipboard.canvasClipboard.pendingPastedTextIds().isEmpty());
-        assertTrue(ClientQuestCache.groupOrder().contains("pasted_group"));
+        assertTrue(ClientQuestStateFacade.chapterOrder().contains("pasted_group"));
         assertEquals(1, refreshes.get());
     }
 
     private static CompoundTag pastePayload() {
         CompoundTag payload = new CompoundTag();
-        payload.putString("group", " pasted_group ");
+        payload.putString("chapter", " pasted_group ");
         payload.put("quests", stringList("quest:new"));
         payload.put("images", stringList("remote_image"));
         payload.put("texts", stringList("remote_text"));

@@ -1,33 +1,34 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class CanvasBlueprintController {
     private CanvasBlueprintController() {
@@ -68,7 +69,7 @@ public final class CanvasBlueprintController {
             return;
         }
         state.canvas.blueprintPlacement.begin(path);
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         state.pickers.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
     }
@@ -127,52 +128,52 @@ public final class CanvasBlueprintController {
         if (canvasViewport == null || state == null) {
             return CanvasBlueprint.empty();
         }
-        String group = TabletStateQueries.selectedGroupName(state);
-        if (group.isBlank()) {
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        if (chapter.isBlank()) {
             return CanvasBlueprint.empty();
         }
         CanvasSelectionSet selection = CanvasSelectionSet.current(state);
         if (selection.size() == 0) {
             return CanvasBlueprint.empty();
         }
-        List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), group);
-        List<CanvasImageLayer> images = selectedImages(state, group, selection.imageIds());
-        List<CanvasTextLayer> texts = selectedTexts(state, group, selection.textIds());
-        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, group, selection.ecIds());
+        List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), chapter);
+        List<CanvasImageLayer> images = selectedImages(state, chapter, selection.imageIds());
+        List<CanvasTextLayer> texts = selectedTexts(state, chapter, selection.textIds());
+        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, chapter, selection.ecIds());
         if (quests.isEmpty() && images.isEmpty() && texts.isEmpty() && ecs.isEmpty()) {
             return CanvasBlueprint.empty();
         }
         CanvasPoint origin = origin(state, quests, images, texts, ecs);
-        String name = preferredName(group, quests, images, texts);
-        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, group, selection), ecs);
+        String name = preferredName(chapter, quests, images, texts);
+        return new CanvasBlueprint(name, origin.x, origin.y, quests, images, texts, selectedLayerOrder(state, chapter, selection), ecs);
     }
 
-    private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String group) {
+    private static List<CanvasBlueprint.QuestEntry> selectedQuests(Set<String> questIds, String chapter) {
         if (questIds.isEmpty()) {
             return List.of();
         }
         List<CanvasBlueprint.QuestEntry> quests = new ArrayList<>();
         for (String questId : questIds) {
-            CompoundTag tag = ClientQuestCache.quest(questId);
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
             QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, tag);
             if (definition == null) {
                 continue;
             }
-            ChapterDefinition view = definition.display().groups().get(group);
+            ChapterDef view = definition.display().chapters().get(chapter);
             if (view == null) {
                 continue;
             }
-            quests.add(new CanvasBlueprint.QuestEntry(questId, group, view.x(), view.y(), view.scale(), definition));
+            quests.add(new CanvasBlueprint.QuestEntry(questId, chapter, view.x(), view.y(), view.scale(), definition));
         }
         return quests;
     }
 
-    private static List<CanvasImageLayer> selectedImages(TabletUiState state, String group, Set<String> imageIds) {
+    private static List<CanvasImageLayer> selectedImages(TabletUiState state, String chapter, Set<String> imageIds) {
         if (imageIds.isEmpty()) {
             return List.of();
         }
         List<CanvasImageLayer> images = new ArrayList<>();
-        for (CanvasImageLayer image : state.canvas.canvasImagesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (imageIds.contains(image.id())) {
                 images.add(image);
             }
@@ -180,12 +181,12 @@ public final class CanvasBlueprintController {
         return images;
     }
 
-    private static List<CanvasTextLayer> selectedTexts(TabletUiState state, String group, Set<String> textIds) {
+    private static List<CanvasTextLayer> selectedTexts(TabletUiState state, String chapter, Set<String> textIds) {
         if (textIds.isEmpty()) {
             return List.of();
         }
         List<CanvasTextLayer> texts = new ArrayList<>();
-        for (CanvasTextLayer text : state.canvas.canvasTextsByGroup.getOrDefault(group, List.of())) {
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             if (textIds.contains(text.id())) {
                 texts.add(text);
             }
@@ -193,15 +194,15 @@ public final class CanvasBlueprintController {
         return texts;
     }
 
-    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String group, Set<String> ecIds) {
+    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String chapter, Set<String> ecIds) {
         if (ecIds.isEmpty()) {
             return List.of();
         }
         List<CanvasBlueprint.ExclusiveChoiceEntry> entries = new ArrayList<>();
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (ecIds.contains(ec.id())) {
                 entries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
-                        ec.id(), group, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
+                        ec.id(), chapter, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
                         ec.background(), ec.connectionQuestIds(), Set.copyOf(ec.prerequisiteQuestIds()),
                         ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(),
                         ec.connectionTextureSpacings(), ec.hiddenConnections()));
@@ -235,10 +236,10 @@ public final class CanvasBlueprintController {
         return new CanvasPoint(minX, minY);
     }
 
-    private static List<String> selectedLayerOrder(TabletUiState state, String group, CanvasSelectionSet selection) {
+    private static List<String> selectedLayerOrder(TabletUiState state, String chapter, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
-        for (String key : state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of())) {
+        for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of())) {
             if (selected.remove(key)) {
                 order.add(key);
             }
@@ -247,7 +248,7 @@ public final class CanvasBlueprintController {
         return order;
     }
 
-    private static String preferredName(String group, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts) {
+    private static String preferredName(String chapter, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts) {
         for (CanvasBlueprint.QuestEntry quest : quests) {
             String title = quest.definition().display().title();
             if (title != null && !title.isBlank()) {
@@ -255,7 +256,7 @@ public final class CanvasBlueprintController {
             }
         }
         int count = quests.size() + images.size() + texts.size();
-        return (group == null || group.isBlank() ? "blueprint" : group) + "_" + count;
+        return (chapter == null || chapter.isBlank() ? "blueprint" : chapter) + "_" + count;
     }
 
     public record PlacementAnchor(int x, int y) {

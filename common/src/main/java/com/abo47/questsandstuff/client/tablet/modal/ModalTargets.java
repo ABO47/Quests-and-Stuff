@@ -18,8 +18,8 @@ public final class ModalTargets {
     public static final String REWARD_LOOT_TABLE = "reward_loot_table";
     public static final String REWARD_ICON = "reward_icon";
     public static final String REWARD_COMMAND_EDITOR_ICON = "reward_command_editor_icon";
-    public static final String OBJECTIVE_TASK = "objective_task";
-    public static final String OBJECTIVE_REWARD = "objective_reward";
+    public static final String TASK_TASK = "task_task";
+    public static final String TASK_REWARD = "task_reward";
     public static final String QUEST_ICON = "quest_icon";
     public static final String CHAPTER_ICON = "chapter_icon";
     public static final String QUEST_DETAILS = "quest_details";
@@ -131,12 +131,12 @@ public final class ModalTargets {
         return of(REWARD_COMMAND_EDITOR_ICON, questId, rewardId, "icon");
     }
 
-    public static String objectiveTask(String questId, String taskId) {
-        return of(OBJECTIVE_TASK, questId, taskId);
+    public static String taskTask(String questId, String taskId) {
+        return of(TASK_TASK, questId, taskId);
     }
 
-    public static String objectiveReward(String questId, String rewardId) {
-        return of(OBJECTIVE_REWARD, questId, rewardId);
+    public static String taskReward(String questId, String rewardId) {
+        return of(TASK_REWARD, questId, rewardId);
     }
 
     public static String questIcon(String questId) {
@@ -199,59 +199,59 @@ public final class ModalTargets {
         return of(QUEST_DESC_TEXT, questId, textId);
     }
 
-    public static String canvasEntityNew(String group) {
-        return of(CANVAS_ENTITY_NEW, group);
+    public static String canvasEntityNew(String chapter) {
+        return of(CANVAS_ENTITY_NEW, chapter);
     }
 
-    public static String canvasEntityChange(String group, String imageId) {
-        return of(CANVAS_ENTITY_CHANGE, group, imageId);
+    public static String canvasEntityChange(String chapter, String imageId) {
+        return of(CANVAS_ENTITY_CHANGE, chapter, imageId);
     }
 
-    public static String canvasEntityChangeBatch(String group, String... imageIds) {
+    public static String canvasEntityChangeBatch(String chapter, String... imageIds) {
         String[] all = new String[imageIds.length + 1];
-        all[0] = clean(group);
+        all[0] = clean(chapter);
         System.arraycopy(imageIds, 0, all, 1, imageIds.length);
         return of(CANVAS_ENTITY_CHANGE_BATCH, (Object[]) all);
     }
 
-    public static String canvasItemNew(String group) {
-        return of(CANVAS_ITEM_NEW, group);
+    public static String canvasItemNew(String chapter) {
+        return of(CANVAS_ITEM_NEW, chapter);
     }
 
-    public static String canvasItemChange(String group, String imageId) {
-        return of(CANVAS_ITEM_CHANGE, group, imageId);
+    public static String canvasItemChange(String chapter, String imageId) {
+        return of(CANVAS_ITEM_CHANGE, chapter, imageId);
     }
 
-    public static String canvasBlockNew(String group) {
-        return of(CANVAS_BLOCK_NEW, group);
+    public static String canvasBlockNew(String chapter) {
+        return of(CANVAS_BLOCK_NEW, chapter);
     }
 
-    public static String canvasBlockChange(String group, String imageId) {
-        return of(CANVAS_BLOCK_CHANGE, group, imageId);
+    public static String canvasBlockChange(String chapter, String imageId) {
+        return of(CANVAS_BLOCK_CHANGE, chapter, imageId);
     }
 
-    public static String canvasRecipeNew(String group) {
-        return of(CANVAS_RECIPE_NEW, group);
+    public static String canvasRecipeNew(String chapter) {
+        return of(CANVAS_RECIPE_NEW, chapter);
     }
 
-    public static String canvasRecipeChange(String group, String imageId) {
-        return of(CANVAS_RECIPE_CHANGE, group, imageId);
+    public static String canvasRecipeChange(String chapter, String imageId) {
+        return of(CANVAS_RECIPE_CHANGE, chapter, imageId);
     }
 
-    public static String canvasImage(String group, String imageId) {
-        return of(CANVAS_IMAGE, group, imageId);
+    public static String canvasImage(String chapter, String imageId) {
+        return of(CANVAS_IMAGE, chapter, imageId);
     }
 
-    public static String canvasText(String group, String textId) {
-        return of(CANVAS_TEXT, group, textId);
+    public static String canvasText(String chapter, String textId) {
+        return of(CANVAS_TEXT, chapter, textId);
     }
 
-    public static String connection(String group, String sourceQuestId, String targetQuestId) {
-        return of(CONNECTION, group, sourceQuestId, targetQuestId);
+    public static String connection(String chapter, String sourceQuestId, String targetQuestId) {
+        return of(CONNECTION, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static String connectionSelection(String group) {
-        return of(CONNECTION_SELECTION, group);
+    public static String connectionSelection(String chapter) {
+        return of(CONNECTION_SELECTION, chapter);
     }
 
     public static String gridColor() {

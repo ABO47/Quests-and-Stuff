@@ -1,21 +1,24 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.nbt.CompoundTag;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class CanvasQuestEffectBadges {
     private static final int MAX_BADGES = 6;
@@ -61,10 +64,10 @@ public final class CanvasQuestEffectBadges {
     private static List<Badge> badges(TabletUiState state, CompoundTag tag) {
         List<Badge> badges = new ArrayList<>();
         boolean editor = state != null && state.root.canEdit;
-        if (editor ? tag.getBoolean("visual_hidden") : ClientQuestCache.questHiddenPreview(tag)) {
+        if (editor ? tag.getBoolean("visual_hidden") : ClientQuestStateFacade.questHiddenPreview(tag)) {
             badges.add(new Badge("eye-off"));
         }
-        if (editor ? lockedSetting(tag) : ClientQuestCache.questLockedPreview(tag)) {
+        if (editor ? lockedSetting(tag) : ClientQuestStateFacade.questLockedPreview(tag)) {
             badges.add(new Badge("lock_quest"));
         }
         if (tag.getBoolean("repeatable")) {
@@ -99,9 +102,9 @@ public final class CanvasQuestEffectBadges {
 
     private static void addBadge(WidgetGroup parent, int x, int y, int boxSize, int iconSize, String icon) {
         WidgetGroup badge = new WidgetGroup(x, y, boxSize, boxSize);
-        badge.setBackground(Surfaces.fill(withAlpha(ModColors.SURFACE_BASE, 190)));
+        badge.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 190)));
         parent.addWidget(badge);
-        parent.addWidget(new DisplayIconWidget(x + 1, y + 1, iconSize, iconSize, icon));
+        parent.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, iconSize, iconSize, icon));
     }
 
     private record Badge(String icon) {

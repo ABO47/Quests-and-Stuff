@@ -21,8 +21,8 @@ public record CanvasLayerKey(CanvasLayerKind kind, String id) {
         return new CanvasLayerKey(CanvasLayerKind.TEXT, textId);
     }
 
-    public static CanvasLayerKey connection(String edgeId) {
-        return new CanvasLayerKey(CanvasLayerKind.CONNECTION, edgeId);
+    public static CanvasLayerKey connection(String connectionId) {
+        return new CanvasLayerKey(CanvasLayerKind.CONNECTION, connectionId);
     }
 
     public static CanvasLayerKey parse(String key) {

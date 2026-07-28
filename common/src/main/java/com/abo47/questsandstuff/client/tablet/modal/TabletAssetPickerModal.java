@@ -1,66 +1,77 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
-import com.abo47.questsandstuff.client.quest.hud.QuestHudLayout;
-import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.context.ContextAction;
-import com.abo47.questsandstuff.client.tablet.context.ContextActions;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.icons.UiIconAtlas;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.WindowChrome;
-import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManager;
+import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
+import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
+import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 
+import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
+import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_BACKGROUND;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.BLUEPRINT;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.HUD_BACKGROUND;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.assetDimensions;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.assetThumbnailTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.button;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.deleteAssetFile;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.renameAssetFile;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.searchAssetEntries;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetDimensions;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetThumbnailTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.button;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.deleteAssetFile;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.renameAssetFile;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.searchAssetEntries;
 
 public final class TabletAssetPickerModal {
-    private static final int HEADER_BUTTON_SIZE = 18;
-    private static final int HEADER_GAP = 3;
-    private static final int HEADER_BUTTON_Y = 1;
+    private static final int HEADER_BUTTON_SIZE = BUTTON_18;
+    private static final int HEADER_GAP = GRID_3;
+    private static final int HEADER_BUTTON_Y = GRID_1;
     private static final int HEADER_CLOSE_ANCHOR_RIGHT_PAD = 26;
     private static final int HEADER_CLOSE_RENDER_X_OFFSET = 1;
+    private static final int ASSET_TILE_GAP = GRID_8;
+    private static final int ASSET_TILE_PAD = GRID_8;
+    private static final int ASSET_TILE_MIN = 44;
+    private static final int ASSET_TILE_MAX = GRID_96;
 
     private TabletAssetPickerModal() {
     }
@@ -112,17 +123,17 @@ public final class TabletAssetPickerModal {
             assets = filterByKind(assets, AssetLibrary.AssetKind.IMAGE, AssetLibrary.AssetKind.GIF);
         }
 
-        ModalLibraryLayout.Metrics libraryLayout = ModalLibraryLayout.calculate(w, h);
+        ModalPreviewLayout.Metrics libraryLayout = ModalPreviewLayout.calculate(w, h);
         int leftW = libraryLayout.leftW();
         int rightX = libraryLayout.rightX();
         int rightW = libraryLayout.rightW();
         int previewH = libraryLayout.bodyH();
-        WidgetGroup preview = ModalLibraryLayout.previewPanel(libraryLayout);
+        WidgetGroup preview = ModalPreviewLayout.previewPanel(libraryLayout);
         String selected = state.pickers.assetSelected == null ? "" : state.pickers.assetSelected;
-        preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ModColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), TabletColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()
                 ? TabletModalPanel.tr(blueprintPicker ? "ui.questsandstuff.blueprints.none_selected" : soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
-                : crop(selected, 22), ModColors.TEXT_SECONDARY));
+                : crop(selected, 22), TabletColors.TEXT_SECONDARY));
         AssetLibrary.AssetKind selectedKind = selected.isBlank() ? AssetLibrary.AssetKind.UNKNOWN : AssetLibrary.assetKind(selected);
         AssetLibrary.AssetDimensions dims = selectedKind.hasImageThumbnail() ? assetDimensions(selected) : null;
         if (soundPicker || selectedKind == AssetLibrary.AssetKind.SOUND) {
@@ -138,12 +149,14 @@ public final class TabletAssetPickerModal {
             CanvasBlueprint blueprint = CanvasBlueprintStore.read(selected);
             preview.addWidget(label(8, 32, blueprint.isEmpty()
                     ? TabletModalPanel.tr("ui.questsandstuff.common.none_short")
-                    : TabletModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), ModColors.TEXT_MUTED));
+                    : TabletModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), TabletColors.TEXT_MUTED));
             if (!blueprint.isEmpty()) {
-                preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, leftW - 16, Math.max(24, previewH - 58), blueprint));
+                int previewW = leftW - 16;
+                int previewAreaH = Math.max(24, h - 100);
+                preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, previewW, previewAreaH, blueprint));
             }
         } else {
-            preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ModColors.TEXT_MUTED));
+            preview.addWidget(label(8, 32, dims == null ? TabletModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), TabletColors.TEXT_MUTED));
             addQuestBackgroundOptions(preview, state, refresh, leftW, previewH);
             addHudBackgroundOptions(preview, state, refresh, leftW, previewH);
             addConnectionTextureControls(preview, state, player, refresh, leftW, previewH);
@@ -179,7 +192,7 @@ public final class TabletAssetPickerModal {
         }, focused -> state.pickers.assetSearchFocused = focused);
 
         if (canGoBack) {
-            modal.addWidget(WindowChrome.iconButton(backX, backY, backSize, backSize, "back", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
+            modal.addWidget(ChromeFactory.iconButton(backX, backY, backSize, backSize, "back", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
                 state.pickers.assetBrowseDir = dir.contains("/") ? dir.substring(0, dir.lastIndexOf('/')) : "";
                 state.pickers.saveBrowseDirForMode();
                 state.pickers.assetGridScroll = 0;
@@ -190,18 +203,21 @@ public final class TabletAssetPickerModal {
 
         int listY = libraryLayout.bodyY();
         int listH = libraryLayout.bodyH();
-        PickerTileMetrics.Metrics tileMetrics = PickerTileMetrics.calculate(rightW, listH, assets.size());
+        int assetGridW = Math.max(1, rightW - ASSET_TILE_PAD * 2 - DragScrollBarWidget.RESERVED_WIDTH - ASSET_TILE_GAP);
+        int assetCols = Math.max(3, (assetGridW + ASSET_TILE_GAP) / (ASSET_TILE_MIN + ASSET_TILE_GAP));
+        int assetTile = Math.max(ASSET_TILE_MIN, (assetGridW - (assetCols - 1) * ASSET_TILE_GAP) / assetCols);
+        assetTile = Math.min(ASSET_TILE_MAX, assetTile);
         TiledPickerPanel.add(
                 modal,
                 rightX,
                 listY,
                 rightW,
                 listH,
-                tileMetrics.tileW(),
-                tileMetrics.tileH(),
-                tileMetrics.gap(),
-                tileMetrics.pad(),
-                tileMetrics.pad(),
+                assetTile,
+                assetTile,
+                ASSET_TILE_GAP,
+                ASSET_TILE_PAD,
+                ASSET_TILE_PAD,
                 assets,
                 "No assets",
                 ScrollState.bind(
@@ -220,7 +236,7 @@ public final class TabletAssetPickerModal {
             boolean renaming = state.pickers.assetRenameOpen && relative.equals(state.pickers.assetContextFile) && !entry.directory();
             WidgetGroup tile = new WidgetGroup(x, y, cellW, cellH);
             if (relative.equals(selected)) {
-                tile.setBackground(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 54)));
+                tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 54)));
             }
             int labelH = 14;
             int iconAreaH = Math.max(24, cellH - labelH - 8);
@@ -228,18 +244,20 @@ public final class TabletAssetPickerModal {
             int iconX = Math.max(0, (cellW - iconSize) / 2);
             int iconY = Math.max(4, (iconAreaH - iconSize) / 2);
             if (entry.kind() == AssetLibrary.AssetKind.DIRECTORY) {
-                var folderIcon = UiIconAtlas.iconTexture("folder");
+                var folderIcon = IconAtlas.iconTexture("folder");
                 if (folderIcon != null) {
                     tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
                 } else {
-                    tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", ModColors.TEXT_MUTED));
+                    tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", TabletColors.TEXT_MUTED));
                 }
             } else if (entry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
                 CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
                 if (!blueprint.isEmpty()) {
-                    tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget(4, 4, Math.max(12, cellW - 8), Math.max(16, iconAreaH - 4), blueprint));
+                    int thumbW = Math.max(12, cellW - 14);
+                    int thumbH = Math.max(16, iconAreaH - 4);
+                    tile.addWidget(CanvasBlueprintMiniRenderer.previewWidget((cellW - thumbW) / 2, 4, thumbW, thumbH, blueprint));
                 } else {
-                    var blueprintIcon = UiIconAtlas.iconTexture("scroll");
+                    var blueprintIcon = IconAtlas.iconTexture("scroll");
                     if (blueprintIcon != null) {
                         tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, blueprintIcon));
                     }
@@ -252,12 +270,12 @@ public final class TabletAssetPickerModal {
                     tile.addWidget(new ImageWidget((cellW - thumbW) / 2, 4, thumbW, thumbH, thumb));
                 }
             } else if (entry.kind() == AssetLibrary.AssetKind.SOUND) {
-                var soundIcon = UiIconAtlas.iconTexture("audio-lines");
+                var soundIcon = IconAtlas.iconTexture("audio-lines");
                 if (soundIcon != null) {
                     tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, soundIcon));
                 }
             } else {
-                var fileIcon = UiIconAtlas.iconTexture("file");
+                var fileIcon = IconAtlas.iconTexture("file");
                 if (fileIcon != null) {
                     tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, fileIcon));
                 }
@@ -265,7 +283,7 @@ public final class TabletAssetPickerModal {
             if (renaming) {
                 tile.addWidget(assetInlineRenameField(state, refresh, relative, 2, cellH - labelH - 1, cellW - 4));
             } else {
-                tile.addWidget(PickerTileText.centeredLabel(2, cellH - labelH, cellW - 4, entry.name(), ModColors.TEXT_SECONDARY));
+                tile.addWidget(PickerTileText.centeredLabel(2, cellH - labelH, cellW - 4, entry.name(), TabletColors.TEXT_SECONDARY));
             }
             surface.addWidget(tile);
             if (renaming) {
@@ -277,8 +295,8 @@ public final class TabletAssetPickerModal {
                     state.pickers.assetContextFile = relative;
                     anchorAssetContextAtPointer(state, w, h);
                     state.pickers.assetRenameOpen = false;
-                    ContextMenuState.clearDeleteConfirm(state);
-                    ContextMenuAnimation.start(state, ContextMenuAnimation.DEFAULT_KEY);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
                     refresh.run();
                     return;
                 }
@@ -298,7 +316,7 @@ public final class TabletAssetPickerModal {
                 }
                 refresh.run();
             });
-            hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 38)));
+            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
             surface.addWidget(hit);
                 });
 
@@ -329,7 +347,7 @@ public final class TabletAssetPickerModal {
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
             state.pickers.assetContextOpen = false;
             state.pickers.assetRenameOpen = false;
-            ContextMenuState.clearDeleteConfirm(state);
+            ContextMenuController.clearDeleteConfirm(state);
             refresh.run();
         });
         modal.addWidget(dismiss);
@@ -361,7 +379,7 @@ public final class TabletAssetPickerModal {
         rename.setClientSideWidget();
         rename.setMaxStringLength(80);
         rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? TabletModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
-        StyledTextFields.applyStandardStyle(rename, ModColors.SURFACE_BASE, ModColors.BORDER_ACCENT);
+        StyledTextFields.applyStandardStyle(rename, TabletColors.SURFACE_BASE, TabletColors.BORDER_ACCENT);
         rename.setFocus(true);
         return rename;
     }
@@ -374,11 +392,11 @@ public final class TabletAssetPickerModal {
     private static void addBlueprintHeaderActions(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
         int importX = headerChainButtonX(w, 1);
         int exportX = headerChainButtonX(w, 2);
-        modal.addWidget(WindowChrome.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
+        modal.addWidget(ChromeFactory.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
             TabletBlueprintCodeModal.openExport(state, state.pickers.assetSelected);
             refresh.run();
         }));
-        modal.addWidget(WindowChrome.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
+        modal.addWidget(ChromeFactory.iconButton(importX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-down", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_SUCCESS), click -> {
             TabletBlueprintCodeModal.openImport(state);
             refresh.run();
         }));
@@ -400,7 +418,7 @@ public final class TabletAssetPickerModal {
                 ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget)
                 : "batch";
         int rowY = Math.max(48, previewH - 24);
-        preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE), ModColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE), TabletColors.TEXT_SECONDARY));
         preview.addWidget(new ToggleSwitchWidget(
                 "quest_background_grayscale:" + target,
                 Math.max(8, leftW - 8 - ToggleSwitchWidget.DEFAULT_WIDTH),
@@ -411,7 +429,7 @@ public final class TabletAssetPickerModal {
                 enabled -> state.modal.modalQuestBackgroundGrayscale = enabled,
                 refresh,
                 new Component[]{
-                        Component.translatable(QuestVocabulary.QUEST_BACKGROUND_GRAYSCALE_TOOLTIP)
+                        Component.translatable(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE_TOOLTIP)
                 }
         ));
     }
@@ -426,21 +444,21 @@ public final class TabletAssetPickerModal {
     }
 
     private static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
-        QuestHudLayout.Element element = hudElement(state);
+        QuestHudLayoutManager.Element element = hudElement(state);
         if (element == null) {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.hud.opacity"), ModColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.hud.opacity"), TabletColors.TEXT_SECONDARY));
         PercentSliderControls.add(
                 preview,
                 8,
                 rowY + 12,
                 leftW - 16,
-                QuestHudLayout.opacityPercent(element),
+                QuestHudLayoutManager.opacityPercent(element),
                 next -> {
-                    QuestHudLayout.setOpacityPercent(element, next);
-                    state.modal.modalHudBackgroundOpacityDraft = QuestHudLayout.opacityPercent(element);
+                    QuestHudLayoutManager.setOpacityPercent(element, next);
+                    state.modal.modalHudBackgroundOpacityDraft = QuestHudLayoutManager.opacityPercent(element);
                     refresh.run();
                 },
                 refresh,
@@ -448,10 +466,18 @@ public final class TabletAssetPickerModal {
                 dragging -> state.modal.modalHudBackgroundOpacityDragging = dragging,
                 new Component[]{Component.translatable("ui.questsandstuff.hud.opacity")}
         );
-        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, TabletModalPanel.tr("ui.questsandstuff.hud.remove_background"), ModColors.SURFACE_PANEL_ALT, ModColors.WARNING, click -> {
-            QuestHudLayout.setBackground(element, "");
-            state.pickers.assetSelected = "";
-            refresh.run();
+        boolean hudRemoveConfirming = state.modal.hudRemoveConfirmArmed;
+        String hudRemoveLabel = hudRemoveConfirming ? "Sure?" : TabletModalPanel.tr("ui.questsandstuff.hud.remove_background");
+        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, hudRemoveLabel, TabletColors.SURFACE_PANEL_ALT, TabletColors.WARNING, click -> {
+            if (hudRemoveConfirming) {
+                state.modal.hudRemoveConfirmArmed = false;
+                QuestHudLayoutManager.setBackground(element, "");
+                state.pickers.assetSelected = "";
+                refresh.run();
+            } else {
+                state.modal.hudRemoveConfirmArmed = true;
+                refresh.run();
+            }
         }));
     }
 
@@ -469,7 +495,7 @@ public final class TabletAssetPickerModal {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), ModColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), TabletColors.TEXT_SECONDARY));
         PercentSliderControls.add(
                 preview,
                 8,
@@ -493,9 +519,9 @@ public final class TabletAssetPickerModal {
         java.util.Set<String> chapterTargets = state.modal.modalConnectionTextureChapterTargets;
         if (!chapterTargets.isEmpty()) {
             String[] parts = target.split("\\|");
-            String group = parts.length >= 2 ? parts[1] : "";
+            String chapter = parts.length >= 2 ? parts[1] : "";
             for (String questId : chapterTargets) {
-                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.cache.ClientQuestCache.quest(questId);
+                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(questId);
                 if (questTag == null) continue;
                 net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {
@@ -503,8 +529,8 @@ public final class TabletAssetPickerModal {
                     EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
                 }
             }
-            if (!group.isBlank()) {
-                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, java.util.List.of())) {
+            if (!chapter.isBlank()) {
+                for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, java.util.List.of())) {
                     for (String connectedId : ec.connectionQuestIds()) {
                         if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
                             EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
@@ -522,16 +548,16 @@ public final class TabletAssetPickerModal {
         if (!target.isBlank()) {
             String[] parts = target.split("\\|");
             if (parts.length >= 4) {
-                String group = parts[1];
+                String chapter = parts[1];
                 String prerequisiteId = parts[2];
                 String questId = parts[3];
-                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, prerequisiteId)
-                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, group, questId);
+                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, questId);
                 if (isEc) {
                     EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
                 } else {
                     EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
-                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, group, prerequisiteId, questId, spacing);
+                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, chapter, prerequisiteId, questId, spacing);
                 }
             }
         }
@@ -550,13 +576,13 @@ public final class TabletAssetPickerModal {
                 .toList();
     }
 
-    private static QuestHudLayout.Element hudElement(TabletUiState state) {
+    private static QuestHudLayoutManager.Element hudElement(TabletUiState state) {
         String target = ModalTargetState.target(state, HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
         if ("completion".equalsIgnoreCase(target)) {
-            return QuestHudLayout.Element.COMPLETION;
+            return QuestHudLayoutManager.Element.COMPLETION;
         }
         if ("pinned".equalsIgnoreCase(target)) {
-            return QuestHudLayout.Element.PINNED;
+            return QuestHudLayoutManager.Element.PINNED;
         }
         return null;
     }
@@ -579,21 +605,21 @@ public final class TabletAssetPickerModal {
         state.pickers.assetContextMenuY = ctxY;
         state.pickers.assetContextMenuW = ctxW;
         state.pickers.assetContextMenuH = menuH;
-        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, ModColors.BORDER_ACCENT, state, action -> {
+        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, TabletColors.BORDER_ACCENT, state, action -> {
             if (action.closeAfterClick()) {
                 state.pickers.assetContextOpen = false;
                 if (!state.pickers.assetRenameOpen) {
                     state.pickers.assetRenameDraft = "";
                 }
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
             }
             refresh.run();
         }, modalW, modalH));
     }
 
     private static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
-        List<ContextAction> actions = new ArrayList<>();
-        actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", ModColors.INTERACTIVE, () -> {
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
             if (isDir) {
                 state.pickers.assetBrowseDir = state.pickers.assetContextFile;
                 state.pickers.saveBrowseDirForMode();
@@ -605,21 +631,21 @@ public final class TabletAssetPickerModal {
             }
         }));
         if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
-            actions.add(ContextActions.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", ModColors.INTERACTIVE, () ->
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
                     TabletBlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
-            actions.add(ContextActions.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
+            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
             String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
-            actions.add(ContextActions.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.delete"), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
                 deleteAssetFile(state.pickers.assetContextFile);
                 state.pickers.assetContextOpen = false;
                 state.pickers.assetRenameOpen = false;
             }));
         }
-        return actions;
+        return sections.build();
     }
 
     private static void beginInlineRename(TabletUiState state, String relative) {
@@ -628,7 +654,7 @@ public final class TabletAssetPickerModal {
         state.pickers.assetRenameOpen = !state.pickers.assetContextFile.isBlank();
         state.pickers.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.pickers.assetContextFile);
         state.pickers.assetSearchFocused = false;
-        ContextMenuState.clearDeleteConfirm(state);
+        ContextMenuController.clearDeleteConfirm(state);
     }
 
     private static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {

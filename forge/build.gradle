@@ -141,6 +141,10 @@ components.java {
     }
 }
 
+tasks.named('runClient', JavaExec).configure {
+    jvmArgs '-Xmx4G'
+}
+
 tasks.register('syncGameTestStructures', Copy) {
     from('src/main/resources/gameteststructures')
     into(rootProject.file('run/gameteststructures'))

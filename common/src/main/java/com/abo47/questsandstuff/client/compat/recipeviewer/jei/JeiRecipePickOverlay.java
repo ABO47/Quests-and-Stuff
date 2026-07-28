@@ -1,15 +1,5 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer.jei;
 
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
-import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,6 +8,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipePickButtonOverlay;
+import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerSelectionBridge;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 
 public final class JeiRecipePickOverlay {
     private static final String JEI_RECIPES_GUI = "mezz.jei.gui.recipes.RecipesGui";

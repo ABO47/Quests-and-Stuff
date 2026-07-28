@@ -1,7 +1,8 @@
 package com.abo47.questsandstuff.quest.editor.session.actions;
 
-import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.editor.chapter.ChapterEditService;
 
 public final class EditorChapterSessionActions {
     private final ChapterEditService chapterEdits;
@@ -10,59 +11,59 @@ public final class EditorChapterSessionActions {
         this.chapterEdits = chapterEdits;
     }
 
-    public void createGroup(ServerPlayer player, String groupName) {
-        chapterEdits.createGroup(player, groupName);
+    public void createChapter(ServerPlayer player, String chapterName) {
+        chapterEdits.createChapter(player, chapterName);
     }
 
-    public void deleteGroup(ServerPlayer player, String groupName) {
-        chapterEdits.deleteGroup(player, groupName);
+    public void deleteChapter(ServerPlayer player, String chapterName) {
+        chapterEdits.deleteChapter(player, chapterName);
     }
 
-    public void moveGroup(ServerPlayer player, String groupName, int offset) {
-        chapterEdits.moveGroup(player, groupName, offset);
+    public void moveChapter(ServerPlayer player, String chapterName, int offset) {
+        chapterEdits.moveChapter(player, chapterName, offset);
     }
 
-    public void moveGroupToIndex(ServerPlayer player, String groupName, int targetIndex) {
-        chapterEdits.moveGroupToIndex(player, groupName, targetIndex);
+    public void moveChapterToIndex(ServerPlayer player, String chapterName, int targetIndex) {
+        chapterEdits.moveChapterToIndex(player, chapterName, targetIndex);
     }
 
-    public void renameGroup(ServerPlayer player, String fromName, String toName) {
-        chapterEdits.renameGroup(player, fromName, toName);
+    public void renameChapter(ServerPlayer player, String fromName, String toName) {
+        chapterEdits.renameChapter(player, fromName, toName);
     }
 
-    public void setGroupIcon(ServerPlayer player, String groupName, String iconId) {
-        chapterEdits.setGroupIcon(player, groupName, iconId);
+    public void setChapterIcon(ServerPlayer player, String chapterName, String iconId) {
+        chapterEdits.setChapterIcon(player, chapterName, iconId);
     }
 
-    public void setGroupBackground(ServerPlayer player, String groupName, String backgroundId) {
-        chapterEdits.setGroupBackground(player, groupName, backgroundId);
+    public void setChapterBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        chapterEdits.setChapterBackground(player, chapterName, backgroundId);
     }
 
-    public void setGroupCanvasBackground(ServerPlayer player, String groupName, String backgroundId) {
-        chapterEdits.setGroupCanvasBackground(player, groupName, backgroundId);
+    public void setChapterCanvasBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        chapterEdits.setChapterCanvasBackground(player, chapterName, backgroundId);
     }
 
-    public void setGroupTextAlign(ServerPlayer player, String groupName, String align) {
-        chapterEdits.setGroupTextAlign(player, groupName, align);
+    public void setChapterTextAlign(ServerPlayer player, String chapterName, String align) {
+        chapterEdits.setChapterTextAlign(player, chapterName, align);
     }
 
-    public void setGroupTextColor(ServerPlayer player, String groupName, int color) {
-        chapterEdits.setGroupTextColor(player, groupName, color);
+    public void setChapterTextColor(ServerPlayer player, String chapterName, int color) {
+        chapterEdits.setChapterTextColor(player, chapterName, color);
     }
 
-    public void setGroupTextStyle(ServerPlayer player, String groupName, String style) {
-        chapterEdits.setGroupTextStyle(player, groupName, style);
+    public void setChapterTextStyle(ServerPlayer player, String chapterName, String style) {
+        chapterEdits.setChapterTextStyle(player, chapterName, style);
     }
 
-    public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
-        chapterEdits.setGroupTextSize(player, groupName, size);
+    public void setChapterTextSize(ServerPlayer player, String chapterName, int size) {
+        chapterEdits.setChapterTextSize(player, chapterName, size);
     }
 
-    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
-        chapterEdits.setGroupLockUntilUnlocked(player, groupName, lockUntilUnlocked);
+    public void setChapterLockUntilUnlocked(ServerPlayer player, String chapterName, boolean lockUntilUnlocked) {
+        chapterEdits.setChapterLockUntilUnlocked(player, chapterName, lockUntilUnlocked);
     }
 
-    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
-        chapterEdits.setGroupHideUntilUnlocked(player, groupName, hideUntilUnlocked);
+    public void setChapterHideUntilUnlocked(ServerPlayer player, String chapterName, boolean hideUntilUnlocked) {
+        chapterEdits.setChapterHideUntilUnlocked(player, chapterName, hideUntilUnlocked);
     }
 }

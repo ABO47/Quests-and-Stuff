@@ -1,42 +1,46 @@
 package com.abo47.questsandstuff.network;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
+import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorGroupPacket;
-import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenGroupPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorRemoveQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorUpdateQuestPacket;
+import com.abo47.questsandstuff.network.quest.editor.C2SResetQuestPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimAllRewardsPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimRewardPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualItemSubmitPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualTaskPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2SManualXpSubmitPacket;
-import com.abo47.questsandstuff.network.quest.runtime.C2SResetQuestPacket;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
-import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDeltaSyncPacket;
+import com.abo47.questsandstuff.network.quest.sync.S2CDescriptionSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CDisplayCacheSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CEditorMutationPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CFullSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CPinnedSyncPacket;
 import com.abo47.questsandstuff.network.quest.sync.S2CQuestEventPacket;
-import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
-import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
 import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
+import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
 import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
-import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
+import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
 import com.abo47.questsandstuff.network.team.S2CTeamJoinResultPacket;
+import com.abo47.questsandstuff.network.team.S2CTeamSyncPacket;
 import com.abo47.questsandstuff.platform.Services;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 public final class ModNetwork {
     public static final String PROTOCOL = "1";
@@ -46,6 +50,15 @@ public final class ModNetwork {
     private static final Map<Class<?>, ModPacketType<?>> CLIENTBOUND_BY_CLASS = byClass(PACKETS, ModPacketType.Direction.PLAY_TO_CLIENT);
     private static final Map<Class<?>, ModPacketType<?>> SERVERBOUND_BY_CLASS = byClass(PACKETS, ModPacketType.Direction.PLAY_TO_SERVER);
     private static volatile BiConsumer<ServerPlayer, Object> testPacketSink;
+    private static volatile ClientNetworkBridge clientNetwork;
+
+    public static void setClientNetwork(ClientNetworkBridge bridge) {
+        clientNetwork = bridge;
+    }
+
+    public static ClientNetworkBridge clientNetwork() {
+        return clientNetwork;
+    }
 
     private ModNetwork() {
     }
@@ -76,6 +89,7 @@ public final class ModNetwork {
         BiConsumer<ServerPlayer, Object> sink = testPacketSink;
         if (sink != null) {
             sink.accept(player, packet);
+            return;
         }
         if (player == null || player.connection == null) {
             return;
@@ -109,8 +123,8 @@ public final class ModNetwork {
         packets.add(type(id++, C2SEditorAddQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorAddQuestPacket::encode, C2SEditorAddQuestPacket::decode, C2SEditorAddQuestPacket::handle));
         packets.add(type(id++, C2SEditorUpdateQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorUpdateQuestPacket::encode, C2SEditorUpdateQuestPacket::decode, C2SEditorUpdateQuestPacket::handle));
         packets.add(type(id++, C2SEditorRemoveQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorRemoveQuestPacket::encode, C2SEditorRemoveQuestPacket::decode, C2SEditorRemoveQuestPacket::handle));
-        packets.add(type(id++, C2SEditorGroupPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorGroupPacket::encode, C2SEditorGroupPacket::decode, C2SEditorGroupPacket::handle));
-        packets.add(type(id++, C2SEditorOpenGroupPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorOpenGroupPacket::encode, C2SEditorOpenGroupPacket::decode, C2SEditorOpenGroupPacket::handle));
+        packets.add(type(id++, C2SEditorChapterPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorChapterPacket::encode, C2SEditorChapterPacket::decode, C2SEditorChapterPacket::handle));
+        packets.add(type(id++, C2SEditorOpenChapterPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorOpenChapterPacket::encode, C2SEditorOpenChapterPacket::decode, C2SEditorOpenChapterPacket::handle));
         packets.add(type(id++, C2SEditorOpenQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorOpenQuestPacket::encode, C2SEditorOpenQuestPacket::decode, C2SEditorOpenQuestPacket::handle));
         packets.add(type(id++, C2SEditorControlPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorControlPacket::encode, C2SEditorControlPacket::decode, C2SEditorControlPacket::handle));
         packets.add(type(id++, C2SEditorCommandPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SEditorCommandPacket::encode, C2SEditorCommandPacket::decode, C2SEditorCommandPacket::handle));
@@ -120,14 +134,16 @@ public final class ModNetwork {
         packets.add(type(id++, C2SManualItemSubmitPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SManualItemSubmitPacket::encode, C2SManualItemSubmitPacket::decode, C2SManualItemSubmitPacket::handle));
         packets.add(type(id++, C2SManualXpSubmitPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SManualXpSubmitPacket::encode, C2SManualXpSubmitPacket::decode, C2SManualXpSubmitPacket::handle));
         packets.add(type(id++, C2SResetQuestPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SResetQuestPacket::encode, C2SResetQuestPacket::decode, C2SResetQuestPacket::handle));
-        packets.add(type(id, C2STogglePinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
-        id++;
+        packets.add(type(id++, C2STogglePinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STogglePinPacket::encode, C2STogglePinPacket::decode, C2STogglePinPacket::handle));
         packets.add(type(id++, S2CTeamSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamSyncPacket::encode, S2CTeamSyncPacket::decode, S2CTeamSyncPacket::handle));
         packets.add(type(id++, C2STeamCreatePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamCreatePacket::encode, C2STeamCreatePacket::decode, C2STeamCreatePacket::handle));
         packets.add(type(id++, C2STeamJoinPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamJoinPacket::encode, C2STeamJoinPacket::decode, C2STeamJoinPacket::handle));
         packets.add(type(id++, C2STeamActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamActionPacket::encode, C2STeamActionPacket::decode, C2STeamActionPacket::handle));
         packets.add(type(id++, C2STeamInviteCodePacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2STeamInviteCodePacket::encode, C2STeamInviteCodePacket::decode, C2STeamInviteCodePacket::handle));
-        packets.add(type(id, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
+        packets.add(type(id++, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
+        packets.add(type(id++, S2CChunkClaimSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CChunkClaimSyncPacket::encode, S2CChunkClaimSyncPacket::decode, S2CChunkClaimSyncPacket::handle));
+        packets.add(type(id++, C2SChunkClaimActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimActionPacket::encode, C2SChunkClaimActionPacket::decode, C2SChunkClaimActionPacket::handle));
+        packets.add(type(id++, C2SChunkClaimConfigPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimConfigPacket::encode, C2SChunkClaimConfigPacket::decode, C2SChunkClaimConfigPacket::handle));
         return List.copyOf(packets);
     }
 

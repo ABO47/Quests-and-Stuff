@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 
 final class AssetSearchIndex {
     private AssetSearchIndex() {

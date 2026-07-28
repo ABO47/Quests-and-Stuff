@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.quest.sound;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestCompletionSoundPlayer {
     public static final String DEFAULT_SOUND = "minecraft:ui.toast.challenge_complete";
@@ -82,7 +83,7 @@ public final class QuestCompletionSoundPlayer {
                     QuestsAndStuffMod.MODID,
                     "completion_asset/" + Integer.toHexString(path.toAbsolutePath().normalize().toString().hashCode())
             );
-            return id == null ? null : new AssetSoundInstance(id, path, volume);
+            return id == null ? null : new FileSoundInstance(id, path, volume);
         }
         if (assetSoundValue) {
             return new FadeableSimpleSoundInstance(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, volume);
@@ -107,7 +108,7 @@ public final class QuestCompletionSoundPlayer {
         }
         Path root = TabletUiFactory.ASSETS_ROOT_DIR.toAbsolutePath().normalize();
         Path path = root.resolve(relative).normalize();
-        if (!path.startsWith(root) || !Files.isRegularFile(path) || !AssetSoundInstance.canPlay(path)) {
+        if (!path.startsWith(root) || !Files.isRegularFile(path) || !FileSoundInstance.canPlay(path)) {
             return Optional.empty();
         }
         return Optional.of(path);

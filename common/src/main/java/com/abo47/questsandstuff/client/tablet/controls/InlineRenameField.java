@@ -1,11 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 public class InlineRenameField extends TextFieldWidget {
     private final Runnable onCommit;
@@ -68,18 +69,45 @@ public class InlineRenameField extends TextFieldWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            if (!isFocus()) {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
             onCommit.run();
             suppressNextBlur = true;
             setFocus(false);
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (!isFocus()) {
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            }
             onCancel.run();
             suppressNextBlur = true;
             setFocus(false);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public TextFieldWidget setCurrentString(Object currentString) {
+        String newVal = currentString.toString();
+        if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+            boolean wasEmpty = textField.getValue().isEmpty();
+            int cursorPos = textField.getCursorPosition();
+            super.setCurrentString(newVal);
+            if (wasEmpty && !newVal.isEmpty()) {
+                textField.setCursorPosition(newVal.length());
+                textField.setHighlightPos(newVal.length());
+            } else {
+                int clamped = Math.min(cursorPos, newVal.length());
+                textField.setCursorPosition(clamped);
+                textField.setHighlightPos(clamped);
+            }
+        } else {
+            super.setCurrentString(currentString);
+        }
+        return this;
     }
 
     private void applyPendingFocus() {

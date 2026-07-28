@@ -1,5 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.phys.Vec2;
+
+import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -9,20 +24,15 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardR
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.phys.Vec2;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 final class CanvasMinimapPainter {
     static final float BODY_REVEAL_START = 0.48f;
@@ -35,6 +45,7 @@ final class CanvasMinimapPainter {
 
     static void drawPanel(
             GuiGraphics graphics,
+            TabletUiState state,
             int originX,
             int originY,
             CanvasMinimapGeometry.Layout layout,
@@ -53,12 +64,42 @@ final class CanvasMinimapPainter {
             int bodyX = handleX - visibleBodyW;
             int bodyY = originY + layout.panelY();
             int bodyH = layout.panelH();
-            graphics.fill(bodyX, bodyY, handleX, bodyY + bodyH, withAlpha(ModColors.SURFACE_BASE, 248));
-            graphics.fill(bodyX, bodyY, handleX, bodyY + 1, withAlpha(ModColors.BORDER_BASE, 150));
-            graphics.fill(bodyX, bodyY + bodyH - 1, handleX, bodyY + bodyH, withAlpha(ModColors.BORDER_BASE, 150));
-            graphics.fill(bodyX, bodyY, bodyX + 1, bodyY + bodyH, withAlpha(ModColors.BORDER_BASE, 150));
+            boolean hasOverride = drawBodyFill(graphics, state, bodyX, bodyY, handleX - bodyX, bodyH);
+            if (!hasOverride) {
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
+            }
         }
-        drawHandle(graphics, handleX, handleY, handleW, handleH, mouseX, mouseY);
+        drawHandle(graphics, state, handleX, handleY, handleW, handleH, mouseX, mouseY);
+    }
+
+    private static boolean drawBodyFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_body");
+        if (override != null) {
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
+        }
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
+    }
+
+    private static boolean drawHandleFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_toggle");
+        if (override != null) {
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
+        }
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
+    }
+
+    private static IGuiTexture skinOverrideTexture(TabletUiState state, String key) {
+        String raw = SkinOverrideKey.resolveOverride(state, key);
+        if (raw == null || raw.isBlank()) return null;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return null;
+        return override.createTexture();
     }
 
     static float stagedProgress(float progress, float start, float end) {
@@ -110,7 +151,7 @@ final class CanvasMinimapPainter {
         int y2 = clamp(CanvasMinimapGeometry.mapY(projection, bottom), projection.drawY(), projection.drawY() + projection.drawH());
         int x = Math.min(x1, x2);
         int y = Math.min(y1, y2);
-        return new CanvasMinimapRect(x, y, Math.max(1, Math.abs(x2 - x1)), Math.max(1, Math.abs(y2 - y1)), ModColors.TEXT_PRIMARY, 230, null, null);
+        return new CanvasMinimapRect(x, y, Math.max(1, Math.abs(x2 - x1)), Math.max(1, Math.abs(y2 - y1)), TabletColors.TEXT_PRIMARY, 230, null, null);
     }
 
     private static void drawQuestPreview(GuiGraphics graphics, TabletUiState state, CanvasMinimapRect quest, int originX, int originY, int mouseX, int mouseY, float partialTicks) {
@@ -124,7 +165,7 @@ final class CanvasMinimapPainter {
             String bg = quest.tag().getString("ec_background");
             if (!bg.isBlank()) {
                 com.lowdragmc.lowdraglib.gui.texture.IGuiTexture tex = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(
-                        com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.ASSETS_ROOT_DIR, bg);
+                        com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR, bg);
                 if (tex != null) {
                     tex.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
                 } else {
@@ -141,11 +182,11 @@ final class CanvasMinimapPainter {
 
     private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
         if (w < 5 || h < 5) {
-            graphics.fill(x, y, x + w, y + h, withAlpha(color, 255));
+            SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x, y, w, h);
             return;
         }
-        graphics.fill(x, y, x + w, y + h, withAlpha(ModColors.SURFACE_BASE, 255));
-        graphics.fill(x + 1, y + 1, x + w - 1, y + h - 1, withAlpha(color, 255));
+        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 255)).draw(graphics, 0, 0, x, y, w, h);
+        SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x + GRID_1, y + GRID_1, w - GRID_2, h - GRID_2);
     }
 
     private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
@@ -193,12 +234,15 @@ final class CanvasMinimapPainter {
         return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
     }
 
-    private static void drawHandle(GuiGraphics graphics, int x, int y, int w, int h, int mouseX, int mouseY) {
+    private static void drawHandle(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h, int mouseX, int mouseY) {
         boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
-        int fill = hovered ? withAlpha(ModColors.INTERACTIVE, 115) : withAlpha(ModColors.SURFACE_PANEL_ALT, 236);
-        int border = hovered ? withAlpha(ModColors.BORDER_ACCENT, 235) : withAlpha(ModColors.BORDER_BASE, 180);
-        graphics.fill(x, y, x + w, y + h, fill);
-        drawBorder(graphics, x, y, w, h, border);
+        boolean hasOverride = drawHandleFill(graphics, state, x, y, w, h);
+        if (!hasOverride) {
+            drawBorder(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, 180));
+        }
+        if (hovered) {
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
+        }
     }
 
     private static void drawMiniLineRouted(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
@@ -210,7 +254,7 @@ final class CanvasMinimapPainter {
         if (x1 == x2 && y1 == y2) {
             int x = Math.round(x1);
             int y = Math.round(y1);
-            graphics.fill(x, y, x + 1, y + 1, color);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, 1, 1);
             return;
         }
         if (connection.projectedPath() != null) {
@@ -231,17 +275,17 @@ final class CanvasMinimapPainter {
         int x2 = Math.round(x2f);
         int y2 = Math.round(y2f);
         if (x1 == x2 && y1 == y2) {
-            graphics.fill(x1, y1, x1 + 1, y1 + 1, color);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x1, y1, 1, 1);
             return;
         }
         if (x1 == x2) {
             int minY = Math.min(y1, y2);
             int maxY = Math.max(y1, y2);
-            graphics.fill(x1, minY, x1 + 1, maxY + 1, color);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x1, minY, 1, maxY + 1 - minY);
         } else if (y1 == y2) {
             int minX = Math.min(x1, x2);
             int maxX = Math.max(x1, x2);
-            graphics.fill(minX, y1, maxX + 1, y1 + 1, color);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, minX, y1, maxX + 1 - minX, 1);
         } else {
             List<Vec2> pts = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
             Tesselator tessellator = Tesselator.getInstance();
@@ -258,13 +302,10 @@ final class CanvasMinimapPainter {
     }
 
     private static void drawBorder(GuiGraphics graphics, int x, int y, int w, int h, int color) {
-        graphics.fill(x, y, x + w, y + 1, color);
-        graphics.fill(x, y + h - 1, x + w, y + h, color);
-        graphics.fill(x, y, x + 1, y + h, color);
-        graphics.fill(x + w - 1, y, x + w, y + h, color);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, w, 1);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y + h - 1, w, 1);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, 1, h);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x + w - 1, y, 1, h);
     }
 
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
-    }
 }

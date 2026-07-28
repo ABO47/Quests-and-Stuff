@@ -1,20 +1,23 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetState;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.world.entity.player.Player;
 
 final class QuestDetailsDescriptionPickActions {
     private static final int MODEL_SIZE = 48;
@@ -36,9 +39,11 @@ final class QuestDetailsDescriptionPickActions {
             return;
         }
         String questId = parsed.questId();
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescBackground()) {
-            model.canvasBackground = asset;
+            SkinFillOverride o = SkinFillOverride.parse(model.canvasBackground);
+            String mode = o != null ? o.mode() : "stretch";
+            model.canvasBackground = BackgroundModes.encode(mode, asset);
             QuestDetailsDescriptionModel.save(player, questId, model);
         } else if (parsed.isDescImageNew()) {
             if (!ModalTargetState.requireParts("description_asset_new", parsed, 5)) {
@@ -83,7 +88,7 @@ final class QuestDetailsDescriptionPickActions {
             return true;
         }
         String questId = parsed.questId();
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescEntityNew()) {
             if (!ModalTargetState.requireParts("description_entity_new", parsed, 5)) {
                 return true;
@@ -125,7 +130,7 @@ final class QuestDetailsDescriptionPickActions {
             return true;
         }
         String questId = parsed.questId();
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescBlockNew()) {
             if (!ModalTargetState.requireParts("description_block_new", parsed, 5)) {
                 return true;
@@ -167,7 +172,7 @@ final class QuestDetailsDescriptionPickActions {
             return true;
         }
         String questId = parsed.questId();
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescRecipeNew()) {
             if (!ModalTargetState.requireParts("description_recipe_new", parsed, 5)) {
                 return true;
@@ -195,13 +200,13 @@ final class QuestDetailsDescriptionPickActions {
     }
 
     static String imageAsset(String questId, String imageId) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         return image == null ? "" : image.asset();
     }
 
     static void applyEntityVariantPick(Player player, TabletUiState state, String questId, String imageId, String variantKey) {
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         if (image == null || !EntityPreviewRenderer.isEntityAsset(image.asset())) {
             return;
@@ -219,7 +224,7 @@ final class QuestDetailsDescriptionPickActions {
             return true;
         }
         String questId = parsed.questId();
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         if (parsed.isDescItemNew()) {
             if (!ModalTargetState.requireParts("description_item_new", parsed, 5)) {
                 return true;
@@ -265,7 +270,7 @@ final class QuestDetailsDescriptionPickActions {
         if (questId == null || questId.isBlank() || textId == null || textId.isBlank()) {
             return;
         }
-        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestCache.quest(questId));
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasTextLayer text = model.text(textId);
         if (text == null) {
             return;

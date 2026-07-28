@@ -1,17 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class CanvasChapterSwitchAnimation {
     private CanvasChapterSwitchAnimation() {
     }
 
-    public static void trackSelectedGroup(TabletUiState state, String selectedGroup) {
+    public static void trackSelectedChapter(TabletUiState state, String selectedChapter) {
         if (state == null) {
             return;
         }
-        state.chapterPanel.canvasChapterSwitchGroup = normalize(selectedGroup);
+        state.chapterPanel.canvasChapterSwitchGroup = normalize(selectedChapter);
         clear(state);
     }
 

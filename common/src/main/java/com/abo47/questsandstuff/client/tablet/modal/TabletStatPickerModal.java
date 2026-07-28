@@ -1,14 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.StatTargetFormatter;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -18,12 +16,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.picker.PickerCache;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
 
 public final class TabletStatPickerModal {
     private static final PickerCache<StatOwner, StatChoices, String, List<String>> CACHE = new PickerCache<>();
@@ -39,8 +41,8 @@ public final class TabletStatPickerModal {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
                         ModalWindowManager.ModalType.STAT_PICKER,
-                        TabletVocabulary.text(QuestVocabulary.CHOOSE_STAT),
-                        TabletVocabulary.text(QuestVocabulary.NO_STATS),
+                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_STAT),
+                        TabletTranslationKeys.text(QuestTranslationKeys.NO_STATS),
                         "stat",
                         TabletStatPickerModal::stats,
                         TabletStatPickerModal::displayName,

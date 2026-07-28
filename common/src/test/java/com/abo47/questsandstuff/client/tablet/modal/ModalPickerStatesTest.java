@@ -1,8 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import org.junit.jupiter.api.Test;
+
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -69,7 +70,7 @@ class ModalPickerStatesTest {
         TabletUiState state = new TabletUiState();
 
         assertThrows(IllegalArgumentException.class,
-                () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.SETTINGS_PANEL));
+                () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.THEME_PICKER));
     }
 
     @Test

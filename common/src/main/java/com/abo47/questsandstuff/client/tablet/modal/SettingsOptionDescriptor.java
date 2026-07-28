@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-record SettingsOptionDescriptor(
+public record SettingsOptionDescriptor(
         String id,
         String labelKey,
         String descriptionKey,
@@ -19,7 +19,8 @@ record SettingsOptionDescriptor(
         int max,
         int maxLength,
         boolean restartRequired,
-        boolean requiresGlobalAnimation
+        boolean requiresGlobalAnimation,
+        String unitKey
 ) {
     SettingsOptionDescriptor(
             String id,
@@ -44,7 +45,8 @@ record SettingsOptionDescriptor(
                 0,
                 0,
                 restartRequired,
-                requiresGlobalAnimation
+                requiresGlobalAnimation,
+                ""
         );
     }
 
@@ -57,7 +59,8 @@ record SettingsOptionDescriptor(
             int min,
             int max,
             int maxLength,
-            boolean restartRequired
+            boolean restartRequired,
+            String unitKey
     ) {
         this(
                 id,
@@ -73,7 +76,8 @@ record SettingsOptionDescriptor(
                 max,
                 maxLength,
                 restartRequired,
-                false
+                false,
+                unitKey
         );
     }
 
@@ -97,7 +101,8 @@ record SettingsOptionDescriptor(
                 0,
                 0,
                 false,
-                false
+                false,
+                ""
         );
     }
 
@@ -107,6 +112,10 @@ record SettingsOptionDescriptor(
 
     boolean number() {
         return kind == SettingsOptionKind.NUMBER;
+    }
+
+    public String unitKey() {
+        return unitKey == null ? "" : unitKey;
     }
 
     boolean enabled() {

@@ -1,10 +1,9 @@
 package com.abo47.questsandstuff.network.quest.sync;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
 
 public record S2CEditorMutationPacket(long sequence, String action, String questId, CompoundTag questTag) {
     public static S2CEditorMutationPacket decode(FriendlyByteBuf buf) {

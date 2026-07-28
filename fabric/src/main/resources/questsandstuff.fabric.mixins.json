@@ -3,8 +3,16 @@
   "package": "com.abo47.questsandstuff.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BlockItemMixin",
+    "EnderDragonMixin",
+    "EntityMayInteractMixin",
+    "ExplosionMixin",
+    "FarmBlockMixin",
+    "LightningBoltMixin",
     "PlayerAdvancementsMixin",
-    "ServerPlayerMixin"
+    "RemoveBlockGoalMixin",
+    "ServerPlayerMixin",
+    "WitherBossMixin"
   ],
   "injectors": {
     "defaultRequire": 1

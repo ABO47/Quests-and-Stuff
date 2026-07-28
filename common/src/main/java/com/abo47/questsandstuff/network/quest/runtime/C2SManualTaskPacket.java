@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.network.quest.runtime;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-
-import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
+import com.abo47.questsandstuff.network.PacketHandlerHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2SManualTaskPacket(String questId, String taskId) {
     public static C2SManualTaskPacket decode(FriendlyByteBuf buf) {
@@ -13,15 +13,12 @@ public record C2SManualTaskPacket(String questId, String taskId) {
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(questId == null ? "" : questId);
-        buf.writeUtf(taskId == null ? "" : taskId);
+        PacketBufHelper.writeUtfSafe(buf, questId);
+        PacketBufHelper.writeUtfSafe(buf, taskId);
     }
 
     public void handle(ModPacketContext context) {
-        ServerPlayer player = context.sender();
-        if (player != null) {
-            context.enqueueWork(() -> QuestServices.engine(player.server)
-                    .submitManualCheckTask(player, questId, taskId));
-        }
+        PacketHandlerHelper.onServer(context, player ->
+                QuestServiceRegistry.engine(player.server).submitManualCheckTask(player, questId, taskId));
     }
 }

@@ -1,10 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,7 +16,7 @@ class SettingsTabDescriptorsTest {
     @Test
     void tabRegistryOwnsSettingsSectionsInOrder() {
         assertIterableEquals(
-                List.of("themes", "canvas", "hud", "animations", "debug"),
+                List.of("themes", "canvas", "hud", "animations", "debug", "skin", "chunkClaims"),
                 SettingsTabDescriptors.all().stream()
                         .map(SettingsTabDescriptor::logName)
                         .toList()
@@ -64,6 +65,33 @@ class SettingsTabDescriptorsTest {
                 List.of("debugLogging"),
                 optionIds(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.DEBUG).options(state))
         );
+    }
+
+    @Test
+    void chunkClaimsTabExposesProtectionAndCapOptions() {
+        TabletUiState state = new TabletUiState();
+
+        assertIterableEquals(
+                List.of(
+                        "protectBreakPlace",
+                        "protectInteraction",
+                        "protectExplosions",
+                        "protectMobGriefing",
+                        "protectPvp",
+                        "protectFire",
+                        "maxClaimedChunks",
+                        "maxForceLoadedChunks"
+                ),
+                optionIds(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.CHUNK_CLAIMS).options(state))
+        );
+
+        SettingsOptionDescriptor maxClaimed = option(SettingsTabDescriptors.CHUNK_CLAIMS, state, "maxClaimedChunks");
+        assertTrue(maxClaimed.number());
+        assertEquals(QuestsAndStuffConfig.minChunkClaimCap(), maxClaimed.min());
+        assertEquals(QuestsAndStuffConfig.maxChunkClaimCap(), maxClaimed.max());
+
+        SettingsOptionDescriptor protect = option(SettingsTabDescriptors.CHUNK_CLAIMS, state, "protectBreakPlace");
+        assertEquals(SettingsOptionKind.TOGGLE, protect.kind());
     }
 
     @Test

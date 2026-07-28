@@ -1,18 +1,20 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,7 +25,7 @@ class ConnectionLayoutTest {
     void prerequisiteLinesUseResolvedStyleBeforeDrawing() {
         TabletUiState state = new TabletUiState();
         state.root.canEdit = true;
-        state.root.selectedGroup = "main";
+        state.root.selectedChapter = "main";
 
         QuestCardLayout source = card("quest/source", new CompoundTag(), 10, 20, 80, 40);
         CompoundTag targetTag = targetTag("quest/source");
@@ -39,7 +41,7 @@ class ConnectionLayoutTest {
 
         assertEquals(1, lines.size());
         ConnectionLine line = lines.get(0);
-        assertEquals("quest/source->quest/target", line.edgeId());
+        assertEquals("quest/source->quest/target", line.connectionId());
         assertEquals("quest/source", line.sourceQuestId());
         assertEquals("quest/target", line.targetQuestId());
         assertEquals(0x446688, line.color());
@@ -80,15 +82,15 @@ class ConnectionLayoutTest {
 
         CompoundTag colors = new CompoundTag();
         colors.putInt(prerequisiteId, 0x446688);
-        tag.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
+        tag.put(SyncKeys.Quest.CONNECTION_COLORS, colors);
 
         CompoundTag modes = new CompoundTag();
         modes.putString(prerequisiteId, QuestConnectionMode.GRID.serializedName());
-        tag.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        tag.put(SyncKeys.Quest.CONNECTION_MODES, modes);
 
         ListTag hidden = new ListTag();
         hidden.add(StringTag.valueOf(prerequisiteId));
-        tag.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
+        tag.put(SyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
         return tag;
     }
 }

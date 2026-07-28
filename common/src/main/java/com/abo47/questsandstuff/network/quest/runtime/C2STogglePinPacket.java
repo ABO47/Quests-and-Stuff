@@ -1,9 +1,11 @@
 package com.abo47.questsandstuff.network.quest.runtime;
 
-import com.abo47.questsandstuff.network.ModPacketContext;
-import com.abo47.questsandstuff.quest.QuestServices;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.network.ModPacketContext;
+import com.abo47.questsandstuff.network.PacketBufHelper;
+import com.abo47.questsandstuff.network.PacketHandlerHelper;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public record C2STogglePinPacket(String questId) {
     public static C2STogglePinPacket decode(FriendlyByteBuf buf) {
@@ -11,15 +13,15 @@ public record C2STogglePinPacket(String questId) {
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeUtf(questId == null ? "" : questId);
+        PacketBufHelper.writeUtfSafe(buf, questId);
     }
 
     public void handle(ModPacketContext context) {
-        ServerPlayer player = context.sender();
         String normalizedQuestId = questId == null ? "" : questId.trim();
-        if (player == null || normalizedQuestId.isBlank()) {
+        if (normalizedQuestId.isBlank()) {
             return;
         }
-        context.enqueueWork(() -> QuestServices.engine(player.server).togglePin(player, normalizedQuestId));
+        PacketHandlerHelper.onServer(context, player ->
+                QuestServiceRegistry.engine(player.server).togglePin(player, normalizedQuestId));
     }
 }

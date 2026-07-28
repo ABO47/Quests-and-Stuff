@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestConnectionMetadataTest {
     @Test
     void edgeKeysAndMetadataKeysUseTheSameNormalization() {
-        String edgeKey = QuestConnectionMetadata.edgeKey(" \\quest//source ", " /quest/target ");
+        String connectionKey = QuestConnectionMetadata.connectionKey(" \\quest//source ", " /quest/target ");
 
-        assertEquals("quest/source->quest/target", edgeKey);
-        assertEquals("quest/source", QuestConnectionMetadata.sourceQuestId(edgeKey));
-        assertEquals("quest/target", QuestConnectionMetadata.targetQuestId(edgeKey));
+        assertEquals("quest/source->quest/target", connectionKey);
+        assertEquals("quest/source", QuestConnectionMetadata.sourceQuestId(connectionKey));
+        assertEquals("quest/target", QuestConnectionMetadata.targetQuestId(connectionKey));
         assertEquals("quest/source", QuestConnectionMetadata.metadataKey(" \\quest//source "));
-        assertTrue(QuestConnectionMetadata.isValidEdgeKey(edgeKey));
-        assertFalse(QuestConnectionMetadata.isValidEdgeKey("quest/source-> "));
+        assertTrue(QuestConnectionMetadata.isValidConnectionKey(connectionKey));
+        assertFalse(QuestConnectionMetadata.isValidConnectionKey("quest/source-> "));
     }
 
     @Test
@@ -34,7 +34,7 @@ class QuestConnectionMetadataTest {
 
         assertEquals("quest/source", metadata.sourceQuestId());
         assertEquals("quest/target", metadata.targetQuestId());
-        assertEquals("quest/source->quest/target", metadata.edgeKey());
+        assertEquals("quest/source->quest/target", metadata.connectionKey());
         assertEquals("quest/source", metadata.metadataKey());
         assertEquals(0x112233, metadata.color());
         assertTrue(metadata.grid());

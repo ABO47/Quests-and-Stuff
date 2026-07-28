@@ -1,16 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
-import com.abo47.questsandstuff.quest.sync.QuestSyncKeys;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.junit.jupiter.api.Test;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,13 +25,13 @@ class ConnectionRendererMetadataTest {
         CompoundTag target = new CompoundTag();
         CompoundTag colors = new CompoundTag();
         colors.putInt("quest/source", 0x336699);
-        target.put(QuestSyncKeys.Quest.CONNECTION_COLORS, colors);
+        target.put(SyncKeys.Quest.CONNECTION_COLORS, colors);
         CompoundTag modes = new CompoundTag();
         modes.putString("quest/source", QuestConnectionMode.GRID.serializedName());
-        target.put(QuestSyncKeys.Quest.CONNECTION_MODES, modes);
+        target.put(SyncKeys.Quest.CONNECTION_MODES, modes);
         ListTag hidden = new ListTag();
         hidden.add(StringTag.valueOf("quest/source"));
-        target.put(QuestSyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
+        target.put(SyncKeys.Quest.HIDDEN_CONNECTIONS, hidden);
 
         QuestConnectionMetadata metadata = ConnectionStyleResolver.metadata(
                 state,
@@ -39,7 +41,7 @@ class ConnectionRendererMetadataTest {
                 target
         );
 
-        assertEquals("quest/source->quest/target", metadata.edgeKey());
+        assertEquals("quest/source->quest/target", metadata.connectionKey());
         assertEquals(0x336699, metadata.color());
         assertEquals(QuestConnectionMode.GRID, metadata.mode());
         assertTrue(metadata.hidden());
@@ -49,10 +51,10 @@ class ConnectionRendererMetadataTest {
     @Test
     void metadataFallsBackToLocalUiEdgeStateWhenTargetHasNoSavedOverride() {
         TabletUiState state = new TabletUiState();
-        String edgeKey = QuestConnectionMetadata.edgeKey("quest/source", "quest/target");
-        state.canvas.connectionColorsByGroup.computeIfAbsent("main", ignored -> new HashMap<>()).put(edgeKey, 0xAA8844);
-        state.canvas.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
-        state.canvas.hiddenConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(edgeKey);
+        String connectionKey = QuestConnectionMetadata.connectionKey("quest/source", "quest/target");
+        state.canvas.connectionColorsByGroup.computeIfAbsent("main", ignored -> new HashMap<>()).put(connectionKey, 0xAA8844);
+        state.canvas.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(connectionKey);
+        state.canvas.hiddenConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(connectionKey);
 
         QuestConnectionMetadata metadata = ConnectionStyleResolver.metadata(
                 state,
@@ -62,7 +64,7 @@ class ConnectionRendererMetadataTest {
                 new CompoundTag()
         );
 
-        assertEquals(edgeKey, metadata.edgeKey());
+        assertEquals(connectionKey, metadata.connectionKey());
         assertEquals(0xAA8844, metadata.color());
         assertEquals(QuestConnectionMode.GRID, metadata.mode());
         assertTrue(metadata.hidden());

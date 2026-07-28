@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import net.minecraft.nbt.CompoundTag;
 
 public final class CanvasGeometry {
     private CanvasGeometry() {
     }
 
-    public static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedGroup) {
-        return CanvasQuestCardGeometry.layoutQuest(questId, questTag, state, selectedGroup);
+    public static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedChapter) {
+        return CanvasQuestCardGeometry.layoutQuest(questId, questTag, state, selectedChapter);
     }
 
     public static int screenX(TabletUiState state, double logicalX) {
@@ -333,6 +334,10 @@ public final class CanvasGeometry {
 
     public static int normalizeDegrees(int degrees) {
         return CanvasRotationMath.normalizeDegrees(degrees);
+    }
+
+    public static int dragDelta(TabletUiState state, double logicalStart, double logicalDelta) {
+        return CanvasCoordinateMapper.screenX(state, logicalStart + logicalDelta) - CanvasCoordinateMapper.screenX(state, logicalStart);
     }
 
     public record ResizedBox(int x, int y, int width, int height) {

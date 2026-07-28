@@ -1,28 +1,28 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasBoxSelectionController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportZoom;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.TabletWidgetCoordinates;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 
 final class CanvasViewportInputController {
     private CanvasViewportInputController() {
@@ -82,11 +82,11 @@ final class CanvasViewportInputController {
             if (viewport.previewCanvasPan(dx, dy)) {
                 if (viewport.panPreviewNeedsRefresh()) {
                     viewport.commitCanvasPan();
-                    viewport.refreshCanvas();
+                    viewport.queueCanvasRefresh();
                 }
             } else {
                 CanvasCameraController.panByScreen(state, dx, dy, true);
-                viewport.refreshCanvas();
+                viewport.queueCanvasRefresh();
             }
             return true;
         }
@@ -164,7 +164,7 @@ final class CanvasViewportInputController {
         if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseReleased(mouseX, mouseY, button);
             if (state.contextMenu.contextMenuScrollDragging) {
-                ContextMenuState.setScrollDragging(state, false);
+                ContextMenuController.setScrollDragging(state, false);
             }
             refresher.run();
             return true;
@@ -195,26 +195,26 @@ final class CanvasViewportInputController {
         }
 
         if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
-            String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
-            CanvasLayerMutations.persistCanvasImage(state, group, state.canvas.canvasSelection.primaryImageId());
+            String chapter = TabletStateQueries.selectedChapterName(state);
+            CanvasLayerMutations.commitTransientCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
+            CanvasLayerMutations.persistCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
         if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
-            String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
-            CanvasLayerMutations.persistCanvasText(state, group, state.canvas.canvasSelection.primaryTextId());
+            String chapter = TabletStateQueries.selectedChapterName(state);
+            CanvasLayerMutations.commitTransientCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
+            CanvasLayerMutations.persistCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
         }
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
-            String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, state.canvas.canvasSelection.primaryEcId());
+            String chapter = TabletStateQueries.selectedChapterName(state);
+            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
             CanvasTransformSessions.clearMainCanvasSession(state);
             refresher.run();
             return true;
@@ -231,17 +231,17 @@ final class CanvasViewportInputController {
             if (!state.canvas.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            String group = TabletStateQueries.selectedGroupName(state);
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, group);
+            String chapter = TabletStateQueries.selectedChapterName(state);
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, chapter);
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-                CanvasLayerMutations.persistCanvasImage(state, group, imageId);
+                CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
             }
             for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-                CanvasLayerMutations.persistCanvasText(state, group, textId);
+                CanvasLayerMutations.persistCanvasText(state, chapter, textId);
             }
             int movedEcs = state.canvas.transientCanvasExclusiveChoices.size();
             for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
             }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} ecs={} delta={},{}",
@@ -265,7 +265,7 @@ final class CanvasViewportInputController {
             if (!state.canvas.transientQuestScales.isEmpty()) {
                 EditorCanvasCommandClient.runCanvasScaleAction(player, state, state.canvas.transientQuestScales);
             }
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedChapterName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -277,7 +277,7 @@ final class CanvasViewportInputController {
             if (!state.canvas.transientQuestPositions.isEmpty()) {
                 TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedGroupName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedChapterName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -295,15 +295,15 @@ final class CanvasViewportInputController {
     }
 
     private static void persistSelectedCanvasLayers(TabletUiState state) {
-        String group = TabletStateQueries.selectedGroupName(state);
+        String chapter = TabletStateQueries.selectedChapterName(state);
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
-            CanvasLayerMutations.persistCanvasImage(state, group, imageId);
+            CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
         }
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
-            CanvasLayerMutations.persistCanvasText(state, group, textId);
+            CanvasLayerMutations.persistCanvasText(state, chapter, textId);
         }
         for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, ecId);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
         }
     }
 

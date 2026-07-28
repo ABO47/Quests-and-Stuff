@@ -1,11 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.selection;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
-
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 
 public final class CanvasLayerSelectionState {
     private final LinkedHashSet<String> questIds = new LinkedHashSet<>();

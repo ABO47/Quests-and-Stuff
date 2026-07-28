@@ -1,11 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +7,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class CanvasLayerOrdering {
     public static final String EXCLUSIVE_CHOICE_PREFIX = "exclusive_choice:";
@@ -24,24 +24,24 @@ public final class CanvasLayerOrdering {
     private CanvasLayerOrdering() {
     }
 
-    public static void moveQuestLayer(TabletUiState state, String group, String questId, boolean front) {
-        moveLayer(state, group, questKey(questId), front);
+    public static void moveQuestLayer(TabletUiState state, String chapter, String questId, boolean front) {
+        moveLayer(state, chapter, questKey(questId), front);
     }
 
-    public static void moveImageLayer(TabletUiState state, String group, String imageId, boolean front) {
-        moveLayer(state, group, imageKey(imageId), front);
+    public static void moveImageLayer(TabletUiState state, String chapter, String imageId, boolean front) {
+        moveLayer(state, chapter, imageKey(imageId), front);
     }
 
-    public static void moveTextLayer(TabletUiState state, String group, String textId, boolean front) {
-        moveLayer(state, group, textKey(textId), front);
+    public static void moveTextLayer(TabletUiState state, String chapter, String textId, boolean front) {
+        moveLayer(state, chapter, textKey(textId), front);
     }
 
-    public static void moveConnectionLayer(TabletUiState state, String group, String edgeId, boolean front) {
-        moveLayer(state, group, connectionKey(edgeId), front);
+    public static void moveConnectionLayer(TabletUiState state, String chapter, String connectionId, boolean front) {
+        moveLayer(state, chapter, connectionKey(connectionId), front);
     }
 
-    public static void moveLayers(TabletUiState state, String group, List<String> keys, boolean front) {
-        if (group == null || group.isBlank() || keys == null || keys.isEmpty()) {
+    public static void moveLayers(TabletUiState state, String chapter, List<String> keys, boolean front) {
+        if (chapter == null || chapter.isBlank() || keys == null || keys.isEmpty()) {
             return;
         }
         Set<String> selected = new LinkedHashSet<>();
@@ -53,7 +53,7 @@ public final class CanvasLayerOrdering {
         if (selected.isEmpty()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         for (String key : selected) {
             if (!order.contains(key)) {
                 order.add(key);
@@ -72,19 +72,19 @@ public final class CanvasLayerOrdering {
         } else {
             order.addAll(0, moved);
         }
-        state.canvas.canvasLayerOrderByGroup.put(group, keepConnectionsBehindQuests(order));
+        state.canvas.canvasLayerOrderByChapter.put(chapter, keepConnectionsBehindQuests(order));
     }
 
     public static List<String> normalize(
             TabletUiState state,
-            String group,
+            String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts,
             List<String> connectionKeys,
             List<CanvasExclusiveChoice> exclusiveChoices
     ) {
-        if (group == null || group.isBlank()) {
+        if (chapter == null || chapter.isBlank()) {
             return List.of();
         }
         Set<String> valid = new HashSet<>();
@@ -118,10 +118,10 @@ public final class CanvasLayerOrdering {
                 defaults.add(key);
             }
         }
-        List<String> existing = state.canvas.canvasLayerOrderByGroup.get(group);
+        List<String> existing = state.canvas.canvasLayerOrderByChapter.get(chapter);
         if (existing == null || existing.isEmpty()) {
             List<String> orderedDefaults = keepConnectionsBehindQuests(defaults);
-            state.canvas.canvasLayerOrderByGroup.put(group, orderedDefaults);
+            state.canvas.canvasLayerOrderByChapter.put(chapter, orderedDefaults);
             return orderedDefaults;
         }
         List<String> normalized = new ArrayList<>();
@@ -137,31 +137,31 @@ public final class CanvasLayerOrdering {
             }
         }
         List<String> ordered = keepConnectionsBehindQuests(normalized);
-        state.canvas.canvasLayerOrderByGroup.put(group, ordered);
+        state.canvas.canvasLayerOrderByChapter.put(chapter, ordered);
         return ordered;
     }
 
     public static CanvasLayerOrder normalizedOrder(
             TabletUiState state,
-            String group,
+            String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts,
             List<String> connectionKeys
     ) {
-        return normalizedOrder(state, group, cards, images, texts, connectionKeys, List.of());
+        return normalizedOrder(state, chapter, cards, images, texts, connectionKeys, List.of());
     }
 
     public static CanvasLayerOrder normalizedOrder(
             TabletUiState state,
-            String group,
+            String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
             List<CanvasTextLayer> texts,
             List<String> connectionKeys,
             List<CanvasExclusiveChoice> exclusiveChoices
     ) {
-        return order(normalize(state, group, cards, images, texts, connectionKeys, exclusiveChoices));
+        return order(normalize(state, chapter, cards, images, texts, connectionKeys, exclusiveChoices));
     }
 
     public static CanvasLayerOrder order(List<String> orderKeys) {
@@ -176,31 +176,31 @@ public final class CanvasLayerOrdering {
         return order(orderKeys).resolveElementHit(quest, image, text, exclusiveChoice);
     }
 
-    public static void moveExclusiveChoiceLayer(TabletUiState state, String group, String ecId, boolean front) {
-        moveLayer(state, group, exclusiveChoiceKey(ecId), front);
+    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String ecId, boolean front) {
+        moveLayer(state, chapter, exclusiveChoiceKey(ecId), front);
     }
 
-    public static void ensurePresent(TabletUiState state, String group, String key) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    public static void ensurePresent(TabletUiState state, String chapter, String key) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         if (!order.contains(key)) {
             order.add(key);
-            state.canvas.canvasLayerOrderByGroup.put(group, order);
+            state.canvas.canvasLayerOrderByChapter.put(chapter, order);
         }
     }
 
-    public static void remove(TabletUiState state, String group, String key) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    public static void remove(TabletUiState state, String chapter, String key) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         if (order.remove(key)) {
             if (order.isEmpty()) {
-                state.canvas.canvasLayerOrderByGroup.remove(group);
+                state.canvas.canvasLayerOrderByChapter.remove(chapter);
             } else {
-                state.canvas.canvasLayerOrderByGroup.put(group, order);
+                state.canvas.canvasLayerOrderByChapter.put(chapter, order);
             }
         }
     }
@@ -242,15 +242,15 @@ public final class CanvasLayerOrdering {
         return CanvasLayerKey.exclusiveChoice(ecId).orderKey();
     }
 
-    public static String connectionKey(String edgeId) {
-        return CanvasLayerKey.connection(edgeId).orderKey();
+    public static String connectionKey(String connectionId) {
+        return CanvasLayerKey.connection(connectionId).orderKey();
     }
 
-    private static void moveLayer(TabletUiState state, String group, String key, boolean front) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    private static void moveLayer(TabletUiState state, String chapter, String key, boolean front) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
-        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByGroup.getOrDefault(group, List.of()));
+        List<String> order = new ArrayList<>(state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of()));
         order.remove(key);
         if (front && key.startsWith(CONNECTION_PREFIX)) {
             int firstQuestIndex = firstQuestIndex(order);
@@ -264,7 +264,7 @@ public final class CanvasLayerOrdering {
         } else {
             order.add(0, key);
         }
-        state.canvas.canvasLayerOrderByGroup.put(group, order);
+        state.canvas.canvasLayerOrderByChapter.put(chapter, order);
     }
 
     private static List<String> keepConnectionsBehindQuests(List<String> order) {

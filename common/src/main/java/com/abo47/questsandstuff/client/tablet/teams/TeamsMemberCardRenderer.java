@@ -1,29 +1,37 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
-import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class TeamsMemberCardRenderer {
-    private static final int CARD_H = 32;
+    private static final int CARD_H = ROW_H_32;
     private static final int CARD_GAP = 8;
-    private static final int CONTENT_INSET = 6;
+    private static final int CONTENT_INSET = GRID_6;
 
     private TeamsMemberCardRenderer() {
     }
@@ -64,24 +72,25 @@ final class TeamsMemberCardRenderer {
         boolean isOwnerMember = member.role() == ClientTeamCache.ClientMember.Role.OWNER;
 
         WidgetGroup card = new WidgetGroup(0, 0, cardW, CARD_H);
-        card.setBackground(Surfaces.bordered(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE));
+        card.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
+        applyCardSkin(card, state, cardW);
 
         PlayerFaceTexture faceTexture = new PlayerFaceTexture(member.uuid(), member.name());
 
         ButtonWidget headBtn = new ButtonWidget(1, 1, CARD_H - 2, CARD_H - 2,
-                Surfaces.group(faceTexture), cd -> {});
+                SurfaceFactory.group(faceTexture), cd -> {});
         headBtn.setClientSideWidget();
 
         int textX = CARD_H + 4;
 
         int nameY = (CARD_H - 9 - 2 - 9) / 2;
         int roleY = nameY + 9 + 2;
-        LabelWidget nameLabel = label(textX, nameY, member.name(), ModColors.TEXT_PRIMARY);
+        LabelWidget nameLabel = label(textX, nameY, member.name(), TabletColors.TEXT_PRIMARY);
         LabelWidget roleLabel = label(textX, roleY,
                 isOwnerMember
                         ? I18n.get("ui.questsandstuff.teams.owner")
                         : I18n.get("ui.questsandstuff.teams.member"),
-                isOwnerMember ? ModColors.WARNING : ModColors.TEXT_MUTED);
+                isOwnerMember ? TabletColors.WARNING : TabletColors.TEXT_MUTED);
 
         card.addWidget(headBtn);
         card.addWidget(nameLabel);
@@ -90,7 +99,7 @@ final class TeamsMemberCardRenderer {
         if (isOwner && !isOwnerMember) {
             UUID localUuid = Minecraft.getInstance().player.getUUID();
             if (!member.uuid().equals(localUuid)) {
-                int btnSize = 12;
+                int btnSize = ICON_12;
                 int btnY = (CARD_H - btnSize) / 2;
                 int kickX = cardW - btnSize - 4;
                 int transferX = kickX - btnSize - 2;
@@ -126,5 +135,16 @@ final class TeamsMemberCardRenderer {
         }
 
         return card;
+    }
+
+    private static void applyCardSkin(WidgetGroup card, TabletUiState state, int cardW) {
+        String rawOverride = SkinOverrideKey.resolveOverride(state, "teams_member_cards");
+        if (rawOverride == null) return;
+        SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+        if (parsed == null) return;
+        IGuiTexture tex = parsed.createTexture();
+        if (tex != null) {
+            card.addWidget(new ImageWidget(-1, -1, cardW + 2, CARD_H + 2, tex));
+        }
     }
 }

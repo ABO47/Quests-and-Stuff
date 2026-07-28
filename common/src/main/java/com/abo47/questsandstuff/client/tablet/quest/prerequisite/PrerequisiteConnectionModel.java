@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 
 import static com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice.DEFAULT_HEIGHT;
 import static com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice.DEFAULT_WIDTH;
@@ -33,12 +34,12 @@ record PrerequisiteConnectionModel(
         int ecW,
         int ecH
 ) {
-    static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String group, String query, boolean externalMode) {
+    static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String chapter, String query, boolean externalMode) {
         String safeQuestId = safe(questId);
         CompoundTag safeQuestTag = questTag == null ? new CompoundTag() : questTag.copy();
         String title = questTitle(safeQuestId, safeQuestTag);
         List<PrerequisiteConnectionRow> all = connectionRows(safeQuestId, safeQuestTag, title);
-        List<PrerequisiteConnectionRow> mode = rowsForMode(all, group, externalMode);
+        List<PrerequisiteConnectionRow> mode = rowsForMode(all, chapter, externalMode);
         List<PrerequisiteConnectionRow> visible = filteredRows(mode, query);
         return new PrerequisiteConnectionModel(
                 safeQuestId,
@@ -52,7 +53,7 @@ record PrerequisiteConnectionModel(
         );
     }
 
-    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String group, String query) {
+    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String chapter, String query) {
         if (ec == null) {
             return new PrerequisiteConnectionModel("", new CompoundTag(), "", List.of(), List.of(), List.of(), false, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         }
@@ -61,12 +62,12 @@ record PrerequisiteConnectionModel(
         tag.putString("quest_background", ec.background());
         List<PrerequisiteConnectionRow> all = new ArrayList<>();
         for (String questId : ec.prerequisiteQuestIds()) {
-            CompoundTag questTag = ClientQuestCache.quest(questId);
+            CompoundTag questTag = ClientQuestStateFacade.quest(questId);
             String title = questTitle(questId, questTag);
             all.add(new PrerequisiteConnectionRow(questId, safeId, title, safeId, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.INCOMING, true));
         }
         for (String questId : ec.connectionQuestIds()) {
-            CompoundTag questTag = ClientQuestCache.quest(questId);
+            CompoundTag questTag = ClientQuestStateFacade.quest(questId);
             String title = questTitle(questId, questTag);
             all.add(new PrerequisiteConnectionRow(safeId, questId, safeId, title, title, questTag == null ? "" : questTag.getString("icon"), PrerequisiteConnectionKind.OUTGOING, true));
         }
@@ -117,16 +118,16 @@ record PrerequisiteConnectionModel(
     }
 
     private static void addEcConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
-        for (List<CanvasExclusiveChoice> ecs : ClientQuestCache.canvasExclusiveChoicesByGroup().values()) {
+        for (List<CanvasExclusiveChoice> ecs : ClientQuestStateFacade.canvasExclusiveChoicesByChapter().values()) {
             for (CanvasExclusiveChoice ec : ecs) {
                 String ecId = safe(ec.id());
                 if (ecId.isBlank()) continue;
                 if (ec.connectionQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.edgeKey(ecId, questId);
+                    String key = QuestConnectionMetadata.connectionKey(ecId, questId);
                     rows.putIfAbsent(key, new PrerequisiteConnectionRow(ecId, questId, ecId, targetTitle, ecId, "", PrerequisiteConnectionKind.INCOMING, true));
                 }
                 if (ec.prerequisiteQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.edgeKey(questId, ecId);
+                    String key = QuestConnectionMetadata.connectionKey(questId, ecId);
                     rows.putIfAbsent(key, new PrerequisiteConnectionRow(questId, ecId, targetTitle, ecId, ecId, "", PrerequisiteConnectionKind.OUTGOING, true));
                 }
             }
@@ -140,7 +141,7 @@ record PrerequisiteConnectionModel(
             if (sourceId.isBlank()) {
                 continue;
             }
-            CompoundTag sourceTag = ClientQuestCache.quest(sourceId);
+            CompoundTag sourceTag = ClientQuestStateFacade.quest(sourceId);
             PrerequisiteConnectionRow row = new PrerequisiteConnectionRow(
                     sourceId,
                     questId,
@@ -156,7 +157,7 @@ record PrerequisiteConnectionModel(
     }
 
     private static void addOutgoingRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String sourceTitle) {
-        for (Map.Entry<String, CompoundTag> entry : ClientQuestCache.questEntries()) {
+        for (Map.Entry<String, CompoundTag> entry : ClientQuestStateFacade.questEntries()) {
             String targetId = entry.getKey();
             if (questId.equals(targetId)) {
                 continue;
@@ -206,14 +207,16 @@ record PrerequisiteConnectionModel(
         return filtered;
     }
 
-    private static List<PrerequisiteConnectionRow> rowsForMode(List<PrerequisiteConnectionRow> rows, String group, boolean externalMode) {
+    private static List<PrerequisiteConnectionRow> rowsForMode(List<PrerequisiteConnectionRow> rows, String chapter, boolean externalMode) {
         List<PrerequisiteConnectionRow> filtered = new ArrayList<>();
         for (PrerequisiteConnectionRow row : rows) {
             if (row.exclusiveChoice()) {
-                filtered.add(row);
+                if (!externalMode) {
+                    filtered.add(row);
+                }
                 continue;
             }
-            boolean local = isLocalConnection(row, group);
+            boolean local = isLocalConnection(row, chapter);
             if ((externalMode && !local) || (!externalMode && local)) {
                 filtered.add(row);
             }
@@ -221,19 +224,19 @@ record PrerequisiteConnectionModel(
         return filtered;
     }
 
-    static boolean isLocalConnection(PrerequisiteConnectionRow row, String group) {
-        if (group == null || group.isBlank()) {
+    static boolean isLocalConnection(PrerequisiteConnectionRow row, String chapter) {
+        if (chapter == null || chapter.isBlank()) {
             return true;
         }
-        return questInGroup(row.sourceId(), group) && questInGroup(row.targetId(), group);
+        return questInGroup(row.sourceId(), chapter) && questInGroup(row.targetId(), chapter);
     }
 
-    private static boolean questInGroup(String questId, String group) {
-        CompoundTag questTag = ClientQuestCache.quest(questId);
-        if (questTag == null || questTag.isEmpty() || group == null || group.isBlank()) {
+    private static boolean questInGroup(String questId, String chapter) {
+        CompoundTag questTag = ClientQuestStateFacade.quest(questId);
+        if (questTag == null || questTag.isEmpty() || chapter == null || chapter.isBlank()) {
             return false;
         }
-        return questTag.getCompound("groups").contains(group, Tag.TAG_COMPOUND);
+        return questTag.getCompound("chapters").contains(chapter, Tag.TAG_COMPOUND);
     }
 
     static String questTitle(String questId, CompoundTag questTag) {
@@ -241,7 +244,7 @@ record PrerequisiteConnectionModel(
         if (title != null && !title.isBlank()) {
             return title;
         }
-        return questId == null || questId.isBlank() ? TabletVocabulary.text(TabletVocabulary.COMMON_UNKNOWN) : questId;
+        return questId == null || questId.isBlank() ? TabletTranslationKeys.text(TabletTranslationKeys.COMMON_UNKNOWN) : questId;
     }
 
     private static String safe(String value) {

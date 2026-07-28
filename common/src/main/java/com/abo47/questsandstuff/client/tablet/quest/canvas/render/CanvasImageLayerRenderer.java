@@ -1,17 +1,21 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRenderer;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRenderer;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
 
 public final class CanvasImageLayerRenderer {
     private CanvasImageLayerRenderer() {
@@ -65,6 +69,6 @@ public final class CanvasImageLayerRenderer {
     }
 
     private static void drawFallback(GuiGraphics graphics, int width, int height, int pivotX, int pivotY) {
-        graphics.fill(-pivotX, -pivotY, -pivotX + width, -pivotY + height, withAlpha(ModColors.TEXT_MUTED, 45));
+        SurfaceFactory.fill(withAlpha(TabletColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
     }
 }

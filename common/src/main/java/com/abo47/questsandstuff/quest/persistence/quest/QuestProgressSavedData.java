@@ -1,15 +1,17 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 
 public final class QuestProgressSavedData extends SavedData {
     private final Map<UUID, PlayerQuestState> states = new HashMap<>();

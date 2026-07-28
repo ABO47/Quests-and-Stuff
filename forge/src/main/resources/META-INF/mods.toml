@@ -30,3 +30,6 @@ mandatory=true
 versionRange="[${ldlib_version},)"
 ordering="AFTER"
 side="BOTH"
+
+[[mixins]]
+config="questsandstuff.forge.mixins.json"

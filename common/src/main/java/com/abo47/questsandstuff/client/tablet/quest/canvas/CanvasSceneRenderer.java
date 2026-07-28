@@ -1,54 +1,57 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasGlowEffect;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasQuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionLine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
+import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-import org.joml.Quaternionf;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletStateQueries.selectedGroupName;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
 
 final class CanvasSceneRenderer {
     private static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE;
@@ -65,7 +68,7 @@ final class CanvasSceneRenderer {
     }
 
     static void applyCanvasBackground(WidgetGroup canvasViewport) {
-        canvasViewport.setBackground(Surfaces.transparentFill());
+        canvasViewport.setBackground(SurfaceFactory.transparentFill());
     }
 
     static void renderGridOverlay(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
@@ -96,44 +99,57 @@ final class CanvasSceneRenderer {
                     if (x < visibleLeft || x > visibleRight) {
                         continue;
                     }
-                    graphics.fill(originX + x, originY + visibleTop, originX + x + 1, originY + visibleBottom + 1, lineColor);
+                    SurfaceFactory.fill(lineColor).draw(graphics, 0, 0, originX + x, originY + visibleTop, 1, visibleBottom + 1 - visibleTop);
                 }
                 for (int row = firstRow; row <= lastRow; row++) {
                     int y = CanvasGeometry.screenY(state, row * cell);
                     if (y < visibleTop || y > visibleBottom) {
                         continue;
                     }
-                    graphics.fill(originX + visibleLeft, originY + y, originX + visibleRight + 1, originY + y + 1, lineColor);
+                    SurfaceFactory.fill(lineColor).draw(graphics, 0, 0, originX + visibleLeft, originY + y, visibleRight + 1 - visibleLeft, 1);
                 }
             }
         });
     }
 
-    static void renderCanvasSurfaces(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
+    static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
-        IGuiTexture canvasBackground = chapterBackgroundTexture(ClientQuestCache.groupCanvasBackground(selectedGroupName(state)));
+        IGuiTexture canvasBackground = BackgroundModes.createTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
+        if (canvasViewport instanceof CanvasViewport cv) {
+            cv.setExtendedBackgroundTexture(canvasBackground);
+        }
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                boolean portal = WorldPortalCapture.shouldCapture(state) && WorldPortalCapture.hasTexture();
+                if (portal) {
+                    WorldPortalCapture.drawInto(graphics, canvasViewport, state);
+                }
                 int percent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
                 if (percent == 0) {
                     return;
                 }
-                int fill = CanvasBackgroundOpacity.color(ModColors.SURFACE_BASE, percent);
+                int fill = CanvasBackgroundOpacity.color(TabletColors.SURFACE_BASE, percent);
                 if ((fill >>> 24) == 0) {
                     return;
                 }
                 int originX = getPositionX();
                 int originY = getPositionY();
-                graphics.fill(originX, originY, originX + viewportW, originY + contentY, fill);
-                graphics.fill(originX, originY + contentY + paintH, originX + viewportW, originY + viewportH, fill);
-                graphics.fill(originX, originY + contentY, originX + contentX, originY + contentY + paintH, fill);
-                graphics.fill(originX + contentX + paintW, originY + contentY, originX + viewportW, originY + contentY + paintH, fill);
+                if (portal) {
+                    SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY, viewportW, viewportH);
+                    if (canvasBackground != null) {
+                        CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
+                    }
+                    return;
+                }
+                SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY, viewportW, contentY);
+                SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY + contentY + paintH, viewportW, viewportH - contentY - paintH);
+                SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX, originY + contentY, contentX, paintH);
+                SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX + contentX + paintW, originY + contentY, viewportW - contentX - paintW, paintH);
                 if (canvasBackground == null) {
-                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
+                    SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
                 } else {
-                    graphics.fill(originX + contentX, originY + contentY, originX + contentX + paintW, originY + contentY + paintH, fill);
                     CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
                 }
             }
@@ -150,10 +166,10 @@ final class CanvasSceneRenderer {
             int viewportH,
             BiConsumer<String, WidgetGroup> questCardLayerSink
     ) {
-        String group = selectedGroupName(state);
-        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
+        String chapter = selectedChapterName(state);
+        List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
         if (exclusiveChoices.isEmpty() && images.isEmpty() && texts.isEmpty() && visibleCards.isEmpty()) {
             return;
         }
@@ -177,11 +193,11 @@ final class CanvasSceneRenderer {
         Map<String, ConnectionLine> connectionsByKey = new HashMap<>();
         List<String> connectionKeys = new ArrayList<>();
         for (ConnectionLine connection : connections) {
-            String key = CanvasLayerOrdering.connectionKey(connection.edgeId());
+            String key = CanvasLayerOrdering.connectionKey(connection.connectionId());
             connectionsByKey.put(key, connection);
             connectionKeys.add(key);
         }
-        List<String> layerOrder = CanvasLayerOrdering.normalize(state, group, visibleCards, images, texts, connectionKeys, exclusiveChoices);
+        List<String> layerOrder = CanvasLayerOrdering.normalize(state, chapter, visibleCards, images, texts, connectionKeys, exclusiveChoices);
         for (String key : layerOrder) {
             if (key.startsWith(CanvasLayerOrdering.CONNECTION_PREFIX)) {
                 ConnectionLine connection = connectionsByKey.get(key);
@@ -243,13 +259,37 @@ final class CanvasSceneRenderer {
         }
         renderQuestIcon(cardLayer, localCard);
         renderLockedPreviewState(cardLayer, localCard);
-        if (!ClientQuestCache.questLockedPreview(card.tag())) {
+        if (!ClientQuestStateFacade.questLockedPreview(card.tag())) {
             renderECConnectionLockedPreview(cardLayer, state, card);
         }
         renderSearchState(cardLayer, state, localCard);
         renderHiddenEditState(cardLayer, state, localCard);
         CanvasQuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
+        if (state.root.canEdit
+                && !card.questId().equals(state.questDetails.pendingQuestTitleChangeId)) {
+            canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+                @Override
+                public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                    if (!state.canvas.canvasSelection.questIds().contains(card.questId())) {
+                        return;
+                    }
+                    int originX = getPositionX();
+                    int originY = getPositionY();
+                    if (state.canvas.draggingSelection && state.canvas.canvasSelection.questIds().contains(card.questId())) {
+                        originX += CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
+                                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+                        originY += CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
+                                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+                    }
+                    if (CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
+                        CanvasElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                    } else {
+                        CanvasElementSelectionSlot.drawFillAndOutlineScreenRect(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                    }
+                }
+            });
+        }
         if (questCardLayerSink != null) {
             questCardLayerSink.accept(card.questId(), cardLayer);
         }
@@ -257,7 +297,7 @@ final class CanvasSceneRenderer {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
-        canvasViewport.addWidget(CanvasGlowEffect.overlay(card.x(), card.y(), card.width(), card.height()));
+        cardLayer.addWidget(CanvasGlowEffect.overlay(0, 0, card.width(), card.height()));
         addQuestTooltipHit(cardLayer, localCard);
     }
 
@@ -302,8 +342,8 @@ final class CanvasSceneRenderer {
         field.setCurrentString(state.questDetails.questTitleDraft == null ? "" : state.questDetails.questTitleDraft);
         field.setMaxStringLength(80);
         field.setBordered(false);
-        field.setTextColor(ModColors.TEXT_PRIMARY);
-        field.setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_BASE, 246), ModColors.BORDER_ACCENT));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT));
         field.setFocus(true);
         canvasViewport.addWidget(field);
     }
@@ -314,13 +354,13 @@ final class CanvasSceneRenderer {
         }
         boolean hidden = card.tag().getBoolean("visual_hidden") && !card.tag().getBoolean("unlocked");
         if (hidden) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 190));
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 190));
         }
     }
 
     private static void renderLockedPreviewState(WidgetGroup canvasViewport, QuestCardLayout card) {
-        if (ClientQuestCache.questLockedPreview(card.tag())) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
+        if (ClientQuestStateFacade.questLockedPreview(card.tag())) {
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
         }
     }
 
@@ -328,11 +368,11 @@ final class CanvasSceneRenderer {
         if (state.root.canEdit) {
             return;
         }
-        String group = selectedGroupName(state);
-        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of())) {
+        String chapter = selectedChapterName(state);
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (drawEc.connectionQuestIds().contains(card.questId()) && !drawEc.prerequisiteQuestIds().isEmpty()) {
-                addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
+                addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
                 return;
             }
         }
@@ -345,11 +385,11 @@ final class CanvasSceneRenderer {
         }
         boolean matches = CanvasRenderer.matchesSearchOnly(card.tag(), query);
         if (!matches) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ModColors.SURFACE_BASE, 150));
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
             return;
         }
         WidgetGroup highlight = new WidgetGroup(card.x() - 2, card.y() - 2, card.width() + 4, card.height() + 4);
-        highlight.setBackground(Surfaces.transparentBorder(ModColors.WARNING));
+        highlight.setBackground(SurfaceFactory.transparentBorder(TabletColors.WARNING));
         canvasViewport.addWidget(highlight);
     }
 
@@ -368,13 +408,12 @@ final class CanvasSceneRenderer {
                 CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
                 if (state.root.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        return;
-                    }
-                    if (CanvasTransformGizmo.supports(drawImage.asset())) {
+                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                    } else if (CanvasTransformGizmo.supports(drawImage.asset())) {
                         CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation(), drawImage.entityYaw(), drawImage.modelPitch());
-                        return;
+                    } else {
+                        CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                     }
-                    CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 }
             }
         });
@@ -410,9 +449,10 @@ final class CanvasSceneRenderer {
                 graphics.pose().popPose();
                 if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        return;
+                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                    } else {
+                        CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                     }
-                    CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
                 }
             }
         };
@@ -424,7 +464,7 @@ final class CanvasSceneRenderer {
             return;
         }
         WidgetGroup rect = new WidgetGroup(x, y, width, height);
-        rect.setBackground(Surfaces.fill(color));
+        rect.setBackground(SurfaceFactory.fill(color));
         parent.addWidget(rect);
     }
 
@@ -445,13 +485,13 @@ final class CanvasSceneRenderer {
             title = card.questId();
         }
         int progress = QuestCardBackgroundRenderer.progressPercent(tag);
-        Component status = ClientQuestCache.questLockedPreview(tag)
+        Component status = ClientQuestStateFacade.questLockedPreview(tag)
                 ? Component.translatable("ui.questsandstuff.quest.locked")
                 : Component.literal(progress + "%");
-        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), Surfaces.transparentFill(), click -> {});
+        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), SurfaceFactory.transparentFill(), click -> {});
         hit.setClientSideWidget();
-        hit.setHoverTexture(Surfaces.transparentFill());
-        hit.setClickedTexture(Surfaces.transparentFill());
+        hit.setHoverTexture(SurfaceFactory.transparentFill());
+        hit.setClickedTexture(SurfaceFactory.transparentFill());
         hit.setHoverTooltips(new Component[]{
                 Component.literal(title),
                 status

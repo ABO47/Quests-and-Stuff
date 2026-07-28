@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import net.minecraft.nbt.CompoundTag;
+
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -17,13 +19,13 @@ class CanvasLayerOrderingTest {
     @Test
     void normalizedOrderProvidesRenderOrderAndHitPriority() {
         TabletUiState state = new TabletUiState();
-        String group = "main";
+        String chapter = "main";
         QuestCardLayout quest = card("quest_a");
         CanvasImageLayer image = image("image_a");
         CanvasTextLayer text = text("text_a");
         String connection = CanvasLayerOrdering.connectionKey("quest_a->quest_b");
 
-        state.canvas.canvasLayerOrderByGroup.put(group, List.of(
+        state.canvas.canvasLayerOrderByChapter.put(chapter, List.of(
                 CanvasLayerOrdering.questKey("quest_a"),
                 CanvasLayerOrdering.imageKey("image_a"),
                 CanvasLayerOrdering.textKey("text_a"),
@@ -32,7 +34,7 @@ class CanvasLayerOrderingTest {
 
         CanvasLayerOrder order = CanvasLayerOrdering.normalizedOrder(
                 state,
-                group,
+                chapter,
                 List.of(quest),
                 List.of(image),
                 List.of(text),

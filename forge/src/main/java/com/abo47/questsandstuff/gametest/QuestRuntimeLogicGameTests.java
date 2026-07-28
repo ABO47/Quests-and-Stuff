@@ -1,26 +1,28 @@
 package com.abo47.questsandstuff.gametest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDisplay;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
-import com.abo47.questsandstuff.quest.runtime.QuestRuntimeEngine;
-import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
-import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
+import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
+import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
+
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(QuestsAndStuffMod.MODID)
 public final class QuestRuntimeLogicGameTests {
@@ -40,7 +42,7 @@ public final class QuestRuntimeLogicGameTests {
             store.upsert(locked);
             store.upsert(inProgress);
             store.upsert(completed);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, null, null, null);
+            RuntimeEngine engine = new RuntimeEngine(store, null, null, null);
             PlayerQuestState state = new PlayerQuestState();
 
             if (engine.isVisibleFor(state, locked)) {
@@ -89,7 +91,7 @@ public final class QuestRuntimeLogicGameTests {
             store.upsert(prerequisite);
             store.upsert(gated);
             store.upsert(chained);
-            QuestRuntimeEngine engine = new QuestRuntimeEngine(store, null, null, null);
+            RuntimeEngine engine = new RuntimeEngine(store, null, null, null);
             PlayerQuestState state = new PlayerQuestState();
 
             if (engine.isVisibleFor(state, gated)) {
@@ -133,7 +135,7 @@ public final class QuestRuntimeLogicGameTests {
                         id,
                         "",
                         List.of(),
-                        Map.of("Main", ChapterDefinition.DEFAULT),
+                        Map.of("Main", ChapterDef.DEFAULT),
                         "minecraft:book",
                         "minecraft:barrier"
                 ),

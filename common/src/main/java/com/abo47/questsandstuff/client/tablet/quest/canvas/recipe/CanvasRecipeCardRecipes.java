@@ -1,6 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.recipe;
 
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.NonNullList;
@@ -15,11 +20,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 public final class CanvasRecipeCardRecipes {
     private static final Map<String, List<RecipeView>> CACHED_BY_TARGET = new HashMap<>();

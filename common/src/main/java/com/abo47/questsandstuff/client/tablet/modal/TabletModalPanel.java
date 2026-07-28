@@ -1,27 +1,30 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerActions;
-import com.abo47.questsandstuff.client.tablet.model.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
-import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
+import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
+import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerLauncher;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
 
 public final class TabletModalPanel {
     private TabletModalPanel() {
@@ -32,8 +35,8 @@ public final class TabletModalPanel {
     }
 
     public static void addModalClose(WidgetGroup modal, int x, int y, int size, TabletUiState state, Runnable refresh) {
-        int closeX = x + 1;
-        int closeY = Math.max(0, y - 3);
+        int closeX = x + GRID_1;
+        int closeY = Math.max(0, y - GRID_3);
         Runnable close = () -> {
             QuestsAndStuffMod.debugLog("[QnS:UI] modal close click");
             state.pickers.iconSearchFocused = false;
@@ -59,11 +62,11 @@ public final class TabletModalPanel {
     }
 
     static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
-        return CanvasEntityPickerActions.run(player, state, target, pickedItem);
+        return CanvasEntityPickerLauncher.run(player, state, target, pickedItem);
     }
 
     static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
-        return CanvasModelPickerActions.run(state, target, pickedValue);
+        return CanvasModelPickerLauncher.run(state, target, pickedValue);
     }
 
     public static Component[] iconTooltip(String entry) {

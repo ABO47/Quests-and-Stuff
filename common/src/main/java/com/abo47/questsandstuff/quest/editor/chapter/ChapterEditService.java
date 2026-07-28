@@ -1,21 +1,22 @@
 package com.abo47.questsandstuff.quest.editor.chapter;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
-import com.abo47.questsandstuff.quest.model.ChapterDefinition;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.model.QuestSettings;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withGroups;
+import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import com.abo47.questsandstuff.quest.model.ChapterDef;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.model.QuestSettings;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+
+import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withChapters;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
 
 public final class ChapterEditService {
@@ -25,218 +26,218 @@ public final class ChapterEditService {
         this.owner = owner;
     }
 
-    public void createGroup(ServerPlayer player, String groupName) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank()) {
+    public void createChapter(ServerPlayer player, String chapterName) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank()) {
             return;
         }
-        if (owner.definitionStore().groupOrder().contains(group)) {
-            owner.session(player).currentGroup = group;
+        if (owner.definitionStore().chapterOrder().contains(chapter)) {
+            owner.session(player).currentChapter = chapter;
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.ensureGroupExists(group);
-        owner.session(player).currentGroup = group;
+        owner.ensureChapterExists(chapter);
+        owner.session(player).currentChapter = chapter;
         owner.postMutation(player);
     }
 
-    public void deleteGroup(ServerPlayer player, String groupName) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || !owner.definitionStore().groupOrder().contains(group)) {
+    public void deleteChapter(ServerPlayer player, String chapterName) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || !owner.definitionStore().chapterOrder().contains(chapter)) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
         owner.captureUndo(session);
 
-        List<String> groups = new ArrayList<>(owner.definitionStore().groupOrder());
-        groups.remove(group);
+        List<String> chapters = new ArrayList<>(owner.definitionStore().chapterOrder());
+        chapters.remove(chapter);
 
         for (QuestDefinition quest : new ArrayList<>(owner.definitionStore().quests().values())) {
-            if (!quest.display().groups().containsKey(group)) {
+            if (!quest.display().chapters().containsKey(chapter)) {
                 continue;
             }
-            Map<String, ChapterDefinition> map = new HashMap<>(quest.display().groups());
-            map.remove(group);
+            Map<String, ChapterDef> map = new HashMap<>(quest.display().chapters());
+            map.remove(chapter);
             if (map.isEmpty()) {
-                QuestsAndStuffMod.debugLog("[QnS:Editor] deleting quest without remaining chapters quest={} removedChapter={}", quest.id(), group);
+                QuestsAndStuffMod.debugLog("[QnS:Editor] deleting quest without remaining chapters quest={} removedChapter={}", quest.id(), chapter);
                 owner.definitionStore().remove(quest.id());
             } else {
-                owner.definitionStore().upsert(withGroups(quest, map));
+                owner.definitionStore().upsert(withChapters(quest, map));
             }
         }
-        owner.definitionStore().setGroupOrder(groups);
-        session.currentGroup = groups.isEmpty() ? "" : groups.get(0);
+        owner.definitionStore().setChapterOrder(chapters);
+        session.currentChapter = chapters.isEmpty() ? "" : chapters.get(0);
         owner.normalizeQuestSelection(session);
         owner.postMutation(player);
     }
 
-    public void moveGroup(ServerPlayer player, String groupName, int offset) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank() || offset == 0) {
+    public void moveChapter(ServerPlayer player, String chapterName, int offset) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank() || offset == 0) {
             return;
         }
-        List<String> groups = new ArrayList<>(owner.definitionStore().groupOrder());
-        int index = groups.indexOf(group);
+        List<String> chapters = new ArrayList<>(owner.definitionStore().chapterOrder());
+        int index = chapters.indexOf(chapter);
         if (index < 0) {
             return;
         }
-        int next = Math.max(0, Math.min(groups.size() - 1, index + offset));
+        int next = Math.max(0, Math.min(chapters.size() - 1, index + offset));
         if (next == index) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        groups.remove(index);
-        groups.add(next, group);
-        owner.definitionStore().setGroupOrder(groups);
-        owner.session(player).currentGroup = group;
+        chapters.remove(index);
+        chapters.add(next, chapter);
+        owner.definitionStore().setChapterOrder(chapters);
+        owner.session(player).currentChapter = chapter;
         owner.postMutation(player);
     }
 
-    public void moveGroupToIndex(ServerPlayer player, String groupName, int targetIndex) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        if (group.isBlank()) {
+    public void moveChapterToIndex(ServerPlayer player, String chapterName, int targetIndex) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        if (chapter.isBlank()) {
             return;
         }
-        List<String> groups = new ArrayList<>(owner.definitionStore().groupOrder());
-        int index = groups.indexOf(group);
+        List<String> chapters = new ArrayList<>(owner.definitionStore().chapterOrder());
+        int index = chapters.indexOf(chapter);
         if (index < 0) {
             return;
         }
-        int next = Math.max(0, Math.min(groups.size() - 1, targetIndex));
+        int next = Math.max(0, Math.min(chapters.size() - 1, targetIndex));
         if (next == index) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        groups.remove(index);
-        groups.add(next, group);
-        owner.definitionStore().setGroupOrder(groups);
-        owner.session(player).currentGroup = group;
+        chapters.remove(index);
+        chapters.add(next, chapter);
+        owner.definitionStore().setChapterOrder(chapters);
+        owner.session(player).currentChapter = chapter;
         owner.postMutation(player);
     }
 
-    public void renameGroup(ServerPlayer player, String fromName, String toName) {
-        String from = EditorSessionService.normalizeGroup(fromName);
-        String to = EditorSessionService.normalizeGroup(toName);
+    public void renameChapter(ServerPlayer player, String fromName, String toName) {
+        String from = EditorSessionService.normalizeChapter(fromName);
+        String to = EditorSessionService.normalizeChapter(toName);
         if (from.isBlank() || to.isBlank() || from.equals(to)) {
             return;
         }
-        List<String> groups = new ArrayList<>(owner.definitionStore().groupOrder());
-        int index = groups.indexOf(from);
-        if (index < 0 || groups.contains(to)) {
+        List<String> chapters = new ArrayList<>(owner.definitionStore().chapterOrder());
+        int index = chapters.indexOf(from);
+        if (index < 0 || chapters.contains(to)) {
             return;
         }
 
         EditorSessionService.EditorSession session = owner.session(player);
         owner.captureUndo(session);
 
-        owner.definitionStore().renameGroupMetadata(from, to);
+        owner.definitionStore().renameChapterMetadata(from, to);
         for (QuestDefinition quest : new ArrayList<>(owner.definitionStore().quests().values())) {
-            if (!quest.display().groups().containsKey(from)) {
+            if (!quest.display().chapters().containsKey(from)) {
                 continue;
             }
-            Map<String, ChapterDefinition> map = new HashMap<>(quest.display().groups());
-            ChapterDefinition view = map.remove(from);
-            map.put(to, view == null ? ChapterDefinition.DEFAULT : view);
-            owner.definitionStore().upsert(withGroups(quest, map));
+            Map<String, ChapterDef> map = new HashMap<>(quest.display().chapters());
+            ChapterDef view = map.remove(from);
+            map.put(to, view == null ? ChapterDef.DEFAULT : view);
+            owner.definitionStore().upsert(withChapters(quest, map));
         }
-        groups.set(index, to);
-        owner.definitionStore().setGroupOrder(groups);
+        chapters.set(index, to);
+        owner.definitionStore().setChapterOrder(chapters);
 
-        if (from.equals(session.currentGroup)) {
-            session.currentGroup = to;
+        if (from.equals(session.currentChapter)) {
+            session.currentChapter = to;
         }
         owner.postMutation(player);
     }
 
-    public void setGroupIcon(ServerPlayer player, String groupName, String iconId) {
-        String group = validGroup(groupName);
+    public void setChapterIcon(ServerPlayer player, String chapterName, String iconId) {
+        String chapter = validChapter(chapterName);
         String value = iconId == null ? "" : iconId.trim();
-        if (group.isBlank() || owner.definitionStore().groupIcon(group).equals(value)) {
+        if (chapter.isBlank() || owner.definitionStore().chapterIcon(chapter).equals(value)) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupIcon(group, value);
+        owner.definitionStore().setChapterIcon(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupBackground(ServerPlayer player, String groupName, String backgroundId) {
-        String group = validGroup(groupName);
+    public void setChapterBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        String chapter = validChapter(chapterName);
         String value = backgroundId == null || backgroundId.isBlank() ? "default" : backgroundId.trim();
-        if (group.isBlank() || owner.definitionStore().groupBackground(group).equals(value)) {
+        if (chapter.isBlank() || owner.definitionStore().chapterBackground(chapter).equals(value)) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupBackground(group, value);
+        owner.definitionStore().setChapterBackground(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupCanvasBackground(ServerPlayer player, String groupName, String backgroundId) {
-        String group = validGroup(groupName);
+    public void setChapterCanvasBackground(ServerPlayer player, String chapterName, String backgroundId) {
+        String chapter = validChapter(chapterName);
         String value = backgroundId == null || backgroundId.isBlank() ? "default" : backgroundId.trim();
-        if (group.isBlank() || owner.definitionStore().groupCanvasBackground(group).equals(value)) {
+        if (chapter.isBlank() || owner.definitionStore().chapterCanvasBackground(chapter).equals(value)) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        QuestsAndStuffMod.debugLog("[QnS:Editor] chapter canvas background group={} background={}", group, value);
-        owner.definitionStore().setGroupCanvasBackground(group, value);
+        QuestsAndStuffMod.debugLog("[QnS:Editor] chapter canvas background chapter={} background={}", chapter, value);
+        owner.definitionStore().setChapterCanvasBackground(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupTextAlign(ServerPlayer player, String groupName, String align) {
-        String group = validGroup(groupName);
+    public void setChapterTextAlign(ServerPlayer player, String chapterName, String align) {
+        String chapter = validChapter(chapterName);
         String value = normalizeTextAlign(align);
-        if (group.isBlank() || owner.definitionStore().groupTextAlign(group).equals(value)) {
+        if (chapter.isBlank() || owner.definitionStore().chapterTextAlign(chapter).equals(value)) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupTextAlign(group, value);
+        owner.definitionStore().setChapterTextAlign(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupTextColor(ServerPlayer player, String groupName, int color) {
-        String group = validGroup(groupName);
-        if (group.isBlank() || owner.definitionStore().groupTextColor(group) == color) {
+    public void setChapterTextColor(ServerPlayer player, String chapterName, int color) {
+        String chapter = validChapter(chapterName);
+        if (chapter.isBlank() || owner.definitionStore().chapterTextColor(chapter) == color) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupTextColor(group, color);
+        owner.definitionStore().setChapterTextColor(chapter, color);
         owner.postMutation(player);
     }
 
-    public void setGroupTextStyle(ServerPlayer player, String groupName, String style) {
-        String group = validGroup(groupName);
+    public void setChapterTextStyle(ServerPlayer player, String chapterName, String style) {
+        String chapter = validChapter(chapterName);
         String value = normalizeTextStyle(style);
-        if (group.isBlank() || owner.definitionStore().groupTextStyle(group).equals(value)) {
+        if (chapter.isBlank() || owner.definitionStore().chapterTextStyle(chapter).equals(value)) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupTextStyle(group, value);
+        owner.definitionStore().setChapterTextStyle(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupTextSize(ServerPlayer player, String groupName, int size) {
-        String group = validGroup(groupName);
+    public void setChapterTextSize(ServerPlayer player, String chapterName, int size) {
+        String chapter = validChapter(chapterName);
         int value = CanvasTextLayer.clampFontSize(size);
-        if (group.isBlank() || owner.definitionStore().groupTextSize(group) == value) {
+        if (chapter.isBlank() || owner.definitionStore().chapterTextSize(chapter) == value) {
             return;
         }
         owner.captureUndo(owner.session(player));
-        owner.definitionStore().setGroupTextSize(group, value);
+        owner.definitionStore().setChapterTextSize(chapter, value);
         owner.postMutation(player);
     }
 
-    public void setGroupLockUntilUnlocked(ServerPlayer player, String groupName, boolean lockUntilUnlocked) {
-        String group = validGroup(groupName);
-        if (group.isBlank() || owner.definitionStore().groupLockUntilUnlocked(group) == lockUntilUnlocked) {
+    public void setChapterLockUntilUnlocked(ServerPlayer player, String chapterName, boolean lockUntilUnlocked) {
+        String chapter = validChapter(chapterName);
+        if (chapter.isBlank() || owner.definitionStore().chapterLockUntilUnlocked(chapter) == lockUntilUnlocked) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
         owner.captureUndo(session);
-        owner.definitionStore().setGroupLockUntilUnlocked(group, lockUntilUnlocked);
+        owner.definitionStore().setChapterLockUntilUnlocked(chapter, lockUntilUnlocked);
 
         QuestVisibilityMode mode = lockUntilUnlocked ? QuestVisibilityMode.LOCKED : QuestVisibilityMode.PREREQUISITES_VISIBLE;
         for (QuestDefinition quest : new ArrayList<>(owner.definitionStore().quests().values())) {
-            if (!quest.display().groups().containsKey(group) || quest.settings().hiddenMode() == mode) {
+            if (!quest.display().chapters().containsKey(chapter) || quest.settings().hiddenMode() == mode) {
                 continue;
             }
             QuestSettings old = quest.settings();
@@ -253,20 +254,20 @@ public final class ChapterEditService {
         owner.postMutation(player);
     }
 
-    public void setGroupHideUntilUnlocked(ServerPlayer player, String groupName, boolean hideUntilUnlocked) {
-        String group = validGroup(groupName);
-        if (group.isBlank() || owner.definitionStore().groupHideUntilUnlocked(group) == hideUntilUnlocked) {
+    public void setChapterHideUntilUnlocked(ServerPlayer player, String chapterName, boolean hideUntilUnlocked) {
+        String chapter = validChapter(chapterName);
+        if (chapter.isBlank() || owner.definitionStore().chapterHideUntilUnlocked(chapter) == hideUntilUnlocked) {
             return;
         }
         EditorSessionService.EditorSession session = owner.session(player);
         owner.captureUndo(session);
-        owner.definitionStore().setGroupHideUntilUnlocked(group, hideUntilUnlocked);
+        owner.definitionStore().setChapterHideUntilUnlocked(chapter, hideUntilUnlocked);
         owner.postMutation(player);
     }
 
-    private String validGroup(String groupName) {
-        String group = EditorSessionService.normalizeGroup(groupName);
-        return group.isBlank() || !owner.definitionStore().groupOrder().contains(group) ? "" : group;
+    private String validChapter(String chapterName) {
+        String chapter = EditorSessionService.normalizeChapter(chapterName);
+        return chapter.isBlank() || !owner.definitionStore().chapterOrder().contains(chapter) ? "" : chapter;
     }
 
     private static String normalizeTextAlign(String align) {
@@ -278,10 +279,6 @@ public final class ChapterEditService {
     }
 
     private static String normalizeTextStyle(String style) {
-        String value = style == null ? "" : style.trim().toLowerCase(Locale.ROOT);
-        return switch (value) {
-            case "bold", "italic", "bold_italic" -> value;
-            default -> "normal";
-        };
+        return CanvasTextLayer.normalizeStyle(style);
     }
 }

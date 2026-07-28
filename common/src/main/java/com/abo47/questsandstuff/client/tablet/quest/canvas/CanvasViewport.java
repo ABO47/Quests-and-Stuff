@@ -1,26 +1,31 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class CanvasViewport extends WidgetGroup {
     private final TabletUiState state;
@@ -37,9 +42,11 @@ public final class CanvasViewport extends WidgetGroup {
     private int livePanX;
     private int livePanY;
     private boolean canvasRefreshQueued;
+    private IGuiTexture extendedBackgroundTexture;
     private final CanvasInlineTextEditor textEditor;
     private final CanvasElementTransformController elementTransforms;
     private final CanvasSelectionTransformController selectionTransforms;
+    private boolean viewportBorderHidden;
 
     public CanvasViewport(int x, int y, int width, int height, TabletUiState state, Player player) {
         super(x, y, width, height);
@@ -56,6 +63,14 @@ public final class CanvasViewport extends WidgetGroup {
 
     public void setCanvasRefresher(Runnable canvasRefresher) {
         this.canvasRefresher = canvasRefresher == null ? () -> {} : canvasRefresher;
+    }
+
+    public void setExtendedBackgroundTexture(IGuiTexture texture) {
+        this.extendedBackgroundTexture = texture;
+    }
+
+    public void setViewportBorderHidden(boolean hidden) {
+        this.viewportBorderHidden = hidden;
     }
 
     public void updateCardCache(List<QuestCardLayout> cards, Map<String, QuestCardLayout> byQuestId) {
@@ -211,13 +226,11 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     private int selectionDragScreenX() {
-        return CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft + state.canvas.dragSelectionDeltaX)
-                - CanvasGeometry.screenX(state, state.canvas.dragStartBoundsLeft);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
     }
 
     private int selectionDragScreenY() {
-        return CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop + state.canvas.dragSelectionDeltaY)
-                - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
+        return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
     void commitCanvasPan() {
@@ -291,10 +304,21 @@ public final class CanvasViewport extends WidgetGroup {
     }
 
     @Override
+    protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
+        if (extendedBackgroundTexture != null) {
+            extendedBackgroundTexture.draw(graphics, mouseX, mouseY, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2);
+        }
+        super.drawBackgroundTexture(graphics, mouseX, mouseY);
+    }
+
+    @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         CanvasMiniNotificationController.rememberPointer(this, state, mouseX, mouseY);
         drawBackgroundTexture(graphics, mouseX, mouseY);
         CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
+        if (!viewportBorderHidden) {
+            TabletPanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, TabletColors.BORDER_BASE);
+        }
     }
 
     @Override

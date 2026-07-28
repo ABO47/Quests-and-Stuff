@@ -1,18 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
 public final class DragScrollBarWidget extends WidgetGroup {
-    public static final int WIDTH = 6;
-    public static final int RESERVED_WIDTH = 10;
+    public static final int WIDTH = GRID_6;
+    public static final int RESERVED_WIDTH = GRID_6;
     private static final int RAIL_WIDTH = 2;
-    private static final int MIN_KNOB_HEIGHT = 14;
+    private static final int MIN_KNOB_HEIGHT = GRID_14;
 
     private final IntSupplier valueSupplier;
     private final IntSupplier maxSupplier;
@@ -21,9 +28,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
     private final BooleanSupplier draggingSupplier;
     private final Consumer<Boolean> draggingConsumer;
     private final Runnable refresh;
-    private final int trackColor;
-    private final int knobColor;
-    private final int activeKnobColor;
     private final int knobVisualWidth;
 
     public DragScrollBarWidget(
@@ -37,28 +41,9 @@ public final class DragScrollBarWidget extends WidgetGroup {
             IntConsumer valueConsumer,
             BooleanSupplier draggingSupplier,
             Consumer<Boolean> draggingConsumer,
-            Runnable refresh,
-            int trackColor,
-            int knobColor,
-            int activeKnobColor
+            Runnable refresh
     ) {
-        this(
-                x,
-                y,
-                width,
-                height,
-                valueSupplier,
-                maxSupplier,
-                knobHeightSupplier,
-                valueConsumer,
-                draggingSupplier,
-                draggingConsumer,
-                refresh,
-                trackColor,
-                knobColor,
-                activeKnobColor,
-                width
-        );
+        this(x, y, width, height, valueSupplier, maxSupplier, knobHeightSupplier, valueConsumer, draggingSupplier, draggingConsumer, refresh, width);
     }
 
     public DragScrollBarWidget(
@@ -73,9 +58,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
             BooleanSupplier draggingSupplier,
             Consumer<Boolean> draggingConsumer,
             Runnable refresh,
-            int trackColor,
-            int knobColor,
-            int activeKnobColor,
             int knobVisualWidth
     ) {
         super(x, y, width, height);
@@ -86,14 +68,16 @@ public final class DragScrollBarWidget extends WidgetGroup {
         this.draggingSupplier = draggingSupplier;
         this.draggingConsumer = draggingConsumer;
         this.refresh = refresh;
-        this.trackColor = trackColor;
-        this.knobColor = knobColor;
-        this.activeKnobColor = activeKnobColor;
         this.knobVisualWidth = Math.max(1, Math.min(width, knobVisualWidth));
     }
 
     @Override
     public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        IGuiTexture skinBg = getBackgroundTexture();
+        if (skinBg != null && !skinBg.equals(IGuiTexture.EMPTY)) {
+            skinBg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+        }
+
         int x = getPositionX();
         int y = getPositionY();
         int w = getSizeWidth();
@@ -102,16 +86,16 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int railX = x + Math.max(0, (w - railW) / 2);
         boolean active = draggingSupplier.getAsBoolean();
         boolean hovered = isMouseOverElement(mouseX, mouseY);
-        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, trackColor);
+        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, TabletColors.scrollTrack(active));
 
         int knobH = knobHeight();
         int max = Math.max(0, maxSupplier.getAsInt());
-        int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
+        int current = ScrollMath.clamp(valueSupplier.getAsInt(), max);
         int span = Math.max(0, h - knobH);
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
         int knobW = Math.min(w, active || hovered ? Math.max(knobVisualWidth, WIDTH) : knobVisualWidth);
         int knobX = x + Math.max(0, (w - knobW) / 2);
-        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, active || hovered ? activeKnobColor : knobColor);
+        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, TabletColors.scrollThumb(active || hovered));
     }
 
     @Override
@@ -134,9 +118,9 @@ public final class DragScrollBarWidget extends WidgetGroup {
         if (max <= 0) {
             return true;
         }
-        int current = ScrollController.clamp(valueSupplier.getAsInt(), max);
-        int step = Math.max(1, Math.min(24, Math.max(1, max / 8)));
-        int next = ScrollController.wheel(current, max, step, wheelDelta);
+        int current = ScrollMath.clamp(valueSupplier.getAsInt(), max);
+        int step = Math.max(1, Math.min(GRID_24, Math.max(1, max / GRID_8)));
+        int next = ScrollMath.wheel(current, max, step, wheelDelta);
         if (next != current) {
             valueConsumer.accept(next);
             refresh.run();
@@ -167,7 +151,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
 
     private boolean updateFromMouse(double mouseY) {
         int current = valueSupplier.getAsInt();
-        int next = ScrollController.byMouse(
+        int next = ScrollMath.byMouse(
                 (int) Math.round(mouseY),
                 getPositionY(),
                 getSizeHeight(),
@@ -198,6 +182,6 @@ public final class DragScrollBarWidget extends WidgetGroup {
         if (width <= 0 || height <= 0) {
             return;
         }
-        graphics.fill(x, y, x + width, y + height, color);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, width, height);
     }
 }

@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.layout;
 
-
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CANVAS_BG_OPACITY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MAX;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CHAPTER_W_MIN;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_OPACITY;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.GRID_SIZES;
+import net.minecraft.client.Minecraft;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_BG_OPACITY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GRID_OPACITY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GRID_SIZES;
 
 public final class TabletGridControls {
     private TabletGridControls() {
@@ -25,7 +27,7 @@ public final class TabletGridControls {
     }
 
     public static int snapExpandedChapterWidth(int width) {
-        int grid = GRID_SIZES.length == 0 ? 16 : Math.max(1, GRID_SIZES[clampGridSizeIndex(0)]);
+        int grid = GRID_SIZES.length == 0 ? GRID_16 : Math.max(1, GRID_SIZES[clampGridSizeIndex(0)]);
         int snapped = CHAPTER_W + Math.round((float) (width - CHAPTER_W) / (float) grid) * grid;
         return Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, snapped));
     }
@@ -40,7 +42,7 @@ public final class TabletGridControls {
 
     public static int defaultGridColor(TabletUiState state) {
         if (state == null || state.canvas.gridColor == 0) {
-            return ModColors.TEXT_PRIMARY;
+            return TabletColors.TEXT_PRIMARY;
         }
         return state.canvas.gridColor;
     }

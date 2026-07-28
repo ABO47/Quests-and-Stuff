@@ -1,9 +1,5 @@
 package com.abo47.questsandstuff.quest.persistence.quest;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.quest.model.QuestDefinition;
-import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.model.QuestDefinition;
+import com.abo47.questsandstuff.quest.persistence.chapter.ChapterMetadataStore;
 
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.hasAnyGroup;
@@ -56,7 +56,7 @@ final class QuestDefinitionMutations {
                 remove(removedId);
             }
         }
-        chapters.reconcile(discoverGroups());
+        chapters.reconcile(discoverChapters());
         QuestDefinitionFileCleanup.cleanupStaleQuestFiles(questsDir, quests);
     }
 
@@ -71,7 +71,7 @@ final class QuestDefinitionMutations {
             return;
         }
         quests.put(canonicalId, normalized);
-        chapters.reconcile(discoverGroups());
+        chapters.reconcile(discoverChapters());
         markDirty(canonicalId);
     }
 
@@ -108,12 +108,12 @@ final class QuestDefinitionMutations {
             quests.put(entry.getKey(), normalized);
             markDirty(entry.getKey());
         }
-        chapters.reconcile(discoverGroups());
+        chapters.reconcile(discoverChapters());
     }
 
     void remove(String questId) {
         QuestDefinition removed = quests.remove(questId);
-        chapters.reconcile(discoverGroups());
+        chapters.reconcile(discoverChapters());
         saveQueue.cancel(questId);
         QuestDefinitionFileCleanup.deleteQuestFile(questsDir, questId, removed);
     }
@@ -137,11 +137,11 @@ final class QuestDefinitionMutations {
         }
     }
 
-    Set<String> discoverGroups() {
-        Set<String> groups = new TreeSet<>();
+    Set<String> discoverChapters() {
+        Set<String> chapters = new TreeSet<>();
         for (QuestDefinition definition : quests.values()) {
-            groups.addAll(definition.display().groups().keySet());
+            chapters.addAll(definition.display().chapters().keySet());
         }
-        return groups;
+        return chapters;
     }
 }

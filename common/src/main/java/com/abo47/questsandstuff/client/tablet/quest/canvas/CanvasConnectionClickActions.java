@@ -1,16 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.shell.TabletClientHooks;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
 
 final class CanvasConnectionClickActions {
     private CanvasConnectionClickActions() {
@@ -80,7 +81,7 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean isQuickConnectActive(TabletUiState state) {
-        return state.canvas.quickConnectHeld || TabletClientHooks.quickConnectDown();
+        return state.canvas.quickConnectHeld || TabletKeybindings.quickConnectDown();
     }
 
     private static boolean hasPendingConnectSource(TabletUiState state) {
@@ -90,12 +91,12 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean connectEcToQuest(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.quickConnectEcId);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.quickConnectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, hit.questId(), state.canvas.quickConnectEcId);
         }
         state.canvas.canvasSelection.selectOnlyQuest(hit.questId());
@@ -107,12 +108,12 @@ final class CanvasConnectionClickActions {
 
     private static boolean connectQuestToEc(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
         if (!state.canvas.quickConnectSourceQuestId.isBlank()) {
-            String group = EditorChapterCommandClient.selectedGroupName(state);
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
+            String chapter = EditorChapterCommandClient.selectedChapterName(state);
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecHit.id());
             if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.quickConnectSourceQuestId)) {
                 CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.quickConnectSourceQuestId);
-                CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
                 CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.quickConnectSourceQuestId);
             }
             state.canvas.quickConnectEcId = ecHit.id();
@@ -161,12 +162,12 @@ final class CanvasConnectionClickActions {
             refresher.run();
             return true;
         }
-        String group = EditorChapterCommandClient.selectedGroupName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, state.canvas.connectEcId);
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.connectEcId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
             CanvasExclusiveChoice updated = ec.addConnection(hit.questId());
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, hit.questId(), state.canvas.connectEcId);
         }
         state.canvas.connectEcId = "";
@@ -178,12 +179,12 @@ final class CanvasConnectionClickActions {
     }
 
     private static boolean handlePendingEcPrerequisite(TabletUiState state, Runnable refresher, CanvasExclusiveChoice ecHit) {
-        String group = EditorChapterCommandClient.selectedGroupName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, group, ecHit.id());
+        String chapter = EditorChapterCommandClient.selectedChapterName(state);
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecHit.id());
         if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.connectSourceQuestId)) {
             CanvasExclusiveChoice updated = ec.addPrerequisite(state.canvas.connectSourceQuestId);
-            CanvasLayerMutations.putCanvasExclusiveChoice(state, group, updated);
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, group, updated.id());
+            CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
             CanvasConnectionAnimation.startIfNew(state, ecHit.id(), state.canvas.connectSourceQuestId);
         }
         state.canvas.connectSourceQuestId = "";
@@ -227,7 +228,7 @@ final class CanvasConnectionClickActions {
             state.chapterPanel.lastJumpQuest = hit.questId();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect completed sources={} target={}", attemptedSources, hit.questId());
         } else {
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect ended without new edge sources={} target={}", attemptedSources, hit.questId());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect ended without new connection sources={} target={}", attemptedSources, hit.questId());
         }
         refresher.run();
         return true;

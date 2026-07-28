@@ -1,15 +1,18 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
-import net.minecraft.network.chat.Component;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class PercentSliderWidget extends SliderWidget {
     private final IntConsumer onChange;
@@ -44,10 +47,10 @@ final class PercentSliderWidget extends SliderWidget {
         initTemplate();
         valueStep = 100;
         handleSize = 6;
-        setBackground(Surfaces.bordered(withAlpha(ModColors.SURFACE_PANEL_ALT, 130), withAlpha(ModColors.BORDER_BASE, 180)));
-        setHoverTexture(Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 42), withAlpha(ModColors.BORDER_ACCENT, 200)));
-        handleTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 180), withAlpha(ModColors.INTERACTIVE, 235));
-        handleHoverTexture = Surfaces.bordered(withAlpha(ModColors.INTERACTIVE, 230), ModColors.focusBorder());
+        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 130), withAlpha(TabletColors.BORDER_BASE, 180)));
+        setHoverTexture(GlowShaderHelper.hoverGlow());
+        handleTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 180), withAlpha(TabletColors.INTERACTIVE, 235));
+        handleHoverTexture = GlowShaderHelper.hoverGlow();
         setOverlay(null);
         setValue(this.currentValue / 100.0f);
         setSliderCallback(this::setValueFromSlider);

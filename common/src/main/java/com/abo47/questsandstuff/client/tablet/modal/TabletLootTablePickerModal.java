@@ -1,20 +1,22 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 
 public final class TabletLootTablePickerModal {
     private TabletLootTablePickerModal() {
@@ -24,8 +26,8 @@ public final class TabletLootTablePickerModal {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
                         ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
-                        TabletVocabulary.text(QuestVocabulary.CHOOSE_LOOT_TABLE),
-                        TabletVocabulary.text(QuestVocabulary.NO_LOOT_TABLES),
+                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE),
+                        TabletTranslationKeys.text(QuestTranslationKeys.NO_LOOT_TABLES),
                         "loot table",
                         TabletLootTablePickerModal::lootTables,
                         TabletLootTablePickerModal::displayName,
@@ -40,7 +42,7 @@ public final class TabletLootTablePickerModal {
     }
 
     private static List<String> lootTables(String query) {
-        Map<String, String> displays = ClientQuestCache.lootTableDisplays();
+        Map<String, String> displays = ClientQuestStateFacade.lootTableDisplays();
         List<String> values = new ArrayList<>(displays.isEmpty()
                 ? List.of("minecraft:chests/simple_dungeon", "minecraft:chests/village/village_armorer", "minecraft:empty")
                 : displays.keySet());
@@ -54,7 +56,7 @@ public final class TabletLootTablePickerModal {
     }
 
     private static String displayName(String lootTable) {
-        return DisplayNameFormatter.lootTable(lootTable, ClientQuestCache.lootTableDisplays());
+        return DisplayNameFormatter.lootTable(lootTable, ClientQuestStateFacade.lootTableDisplays());
     }
 
 }

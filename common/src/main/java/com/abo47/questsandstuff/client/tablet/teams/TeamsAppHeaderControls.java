@@ -1,26 +1,29 @@
 package com.abo47.questsandstuff.client.tablet.teams;
 
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.UiThemeManager;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.refreshActiveTablet;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.refreshActiveTablet;
 
 final class TeamsAppHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
     private static final int HEADER_GAP = 4;
-    private static final int CONTENT_INSET = 6;
+    private static final int HEADER_INSET = GRID_9;
 
     private final TextFieldWidget searchField;
     private final ButtonWidget leaveBtn;
@@ -40,10 +43,10 @@ final class TeamsAppHeaderControls {
     }
 
     static TeamsAppHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
-        int searchStartW = Math.max(40, bodyW - CONTENT_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
+        int searchStartW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
 
         TextFieldWidget searchField = StyledTextFields.search(
-                CONTENT_INSET, headerY, searchStartW, TOOL_SIZE,
+                HEADER_INSET, headerY, searchStartW, TOOL_SIZE,
                 () -> state.teams.search, Integer.MAX_VALUE,
                 value -> {
                     state.teams.search = SearchFilter.normalizeUserInput(value);
@@ -52,7 +55,7 @@ final class TeamsAppHeaderControls {
                 focused -> {}
         );
 
-        int btnAreaStartX = CONTENT_INSET + searchStartW;
+        int btnAreaStartX = HEADER_INSET + searchStartW;
         int leaveBtnX = btnAreaStartX + HEADER_GAP;
         int joinBtnX = leaveBtnX + TOOL_SIZE + HEADER_GAP;
         int inviteBtnX = joinBtnX + TOOL_SIZE + HEADER_GAP;
@@ -105,11 +108,28 @@ final class TeamsAppHeaderControls {
         return new TeamsAppHeaderControls(searchField, leaveBtn, joinBtn, inviteBtn);
     }
 
-    void layout(int headerY, int bodyW) {
-        int searchW = Math.max(40, bodyW - CONTENT_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
-        searchField.setSize(searchW, TOOL_SIZE);
+    TextFieldWidget searchField() {
+        return searchField;
+    }
 
-        int baX = CONTENT_INSET + searchW;
+    ButtonWidget leaveBtn() {
+        return leaveBtn;
+    }
+
+    ButtonWidget joinBtn() {
+        return joinBtn;
+    }
+
+    ButtonWidget inviteBtn() {
+        return inviteBtn;
+    }
+
+    void layout(int headerY, int bodyW) {
+        int searchW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
+        searchField.setSize(searchW, TOOL_SIZE);
+        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
+
+        int baX = HEADER_INSET + searchW;
         leaveBtn.setSelfPosition(baX + HEADER_GAP, headerY);
         joinBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE + HEADER_GAP, headerY);
         inviteBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE * 2 + HEADER_GAP * 2, headerY);
@@ -125,9 +145,9 @@ final class TeamsAppHeaderControls {
     private static ButtonWidget headerIconButton(int x, int y, String icon, int color,
                                                   java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(ModColors.SURFACE_PANEL_ALT, ModColors.BORDER_BASE, color),
-                TabletIconTextButton.State.of(withAlpha(color, 66), ModColors.BORDER_ACCENT, color),
-                TabletIconTextButton.State.of(withAlpha(color, 90), color, ModColors.TEXT_PRIMARY)
+                TabletIconTextButton.State.of(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, color),
+                TabletIconTextButton.State.of(withAlpha(color, 66), TabletColors.BORDER_ACCENT, color),
+                TabletIconTextButton.State.of(withAlpha(color, 90), color, TabletColors.TEXT_PRIMARY)
         );
         return TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals, callback);
     }

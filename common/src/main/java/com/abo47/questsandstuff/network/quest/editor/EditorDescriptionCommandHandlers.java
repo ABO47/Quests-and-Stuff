@@ -1,27 +1,26 @@
 package com.abo47.questsandstuff.network.quest.editor;
 
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadLimits;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloadReader;
-import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
-import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
+import java.util.function.Consumer;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
+
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandFamily;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
+import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
+import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 
 final class EditorDescriptionCommandHandlers {
     private EditorDescriptionCommandHandlers() {
     }
 
-    static void register(EditorCommandRegistrar registrar) {
-        registrar.register(EditorCommandType.DESCRIPTION_PUT, EditorCommandFamily.DESCRIPTION, EditorDescriptionCommandHandlers::descriptionPut);
+    static void register(Consumer<EditorCommandDescriptor> registrar) {
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.DESCRIPTION_PUT, EditorCommandFamily.DESCRIPTION, EditorDescriptionCommandHandlers::descriptionPut));
     }
 
     private static void descriptionPut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
-        ListTag description = EditorCommandPayloadReader.description(payload);
-        if (EditorCommandPayloadLimits.exceedsLimit(description, EditorCommandPayloadLimits.MAX_DESCRIPTION_LINES)) {
-            return;
-        }
-        editor.updateQuestDescription(player, EditorCommandPayloadReader.quest(payload), EditorCommandPayloadReader.stringsFrom(description));
+        ListTag description = EditorCommandPayloads.description(payload);
+        editor.updateQuestDescription(player, EditorCommandPayloads.quest(payload), EditorCommandPayloads.stringsFrom(description));
     }
 }

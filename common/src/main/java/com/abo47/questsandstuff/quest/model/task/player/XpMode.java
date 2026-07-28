@@ -1,8 +1,8 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
-import com.mojang.serialization.Codec;
-
 import java.util.Locale;
+
+import com.mojang.serialization.Codec;
 
 public enum XpMode {
     POINTS,

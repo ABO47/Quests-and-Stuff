@@ -11,11 +11,11 @@ public final class SearchFilter {
     }
 
     public static String normalizeUserInput(String value) {
-        return SearchFieldController.normalizeUserSearch(value);
+        return SearchNormalizer.normalizeUserSearch(value);
     }
 
     public static String normalizeKey(String value) {
-        return SearchFieldController.normalizeQuery(value);
+        return SearchNormalizer.normalizeQuery(value);
     }
 
     public static boolean matches(String query, String id, String displayName) {

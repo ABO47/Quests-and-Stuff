@@ -1,42 +1,42 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
-import com.abo47.questsandstuff.client.sync.cache.ClientQuestCache;
-import com.abo47.questsandstuff.client.tablet.context.ContextAction;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuSystem;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuPanel;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
-import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.CONTEXT_ROW_H;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
 
 public final class CanvasContextMenuSupport {
     private CanvasContextMenuSupport() {
     }
 
     public static int contextMenuWidth(List<ContextAction> actions, int maxAvailableWidth) {
-        return ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuWidth(TabletUiState state) {
-        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuSystem.CONTEXT_MENU_WIDTH;
+        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
     public static int contextMenuHeight(int visibleRows) {
@@ -57,12 +57,12 @@ public final class CanvasContextMenuSupport {
     }
 
     public static boolean clickContextMenu(CanvasViewport canvasViewport, TabletUiState state, int x, int y) {
-        if (!ContextMenuState.isOpen(state) || !isContextMenuHit(state, x, y)) {
+        if (!ContextMenuController.isOpen(state) || !isContextMenuHit(state, x, y)) {
             return false;
         }
         List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
         if (actions.isEmpty()) {
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return true;
         }
 
@@ -71,7 +71,7 @@ public final class CanvasContextMenuSupport {
         List<ContextAction> rows = ContextMenuPanel.rowActions(actions);
         int visibleRows = ContextMenuPanel.safeVisibleRows(rows.size(), maxVisibleRows);
         int scrollMax = Math.max(0, rows.size() - visibleRows);
-        int scroll = ScrollController.clamp(state.contextMenu.contextMenuScroll, scrollMax);
+        int scroll = ScrollMath.clamp(state.contextMenu.contextMenuScroll, scrollMax);
         boolean needsScroll = scrollMax > 0;
         int menuW = contextMenuWidth(actions, canvasViewport.getSize().width);
         int rowWidth = needsScroll ? menuW - 14 : menuW - 8;
@@ -94,14 +94,14 @@ public final class CanvasContextMenuSupport {
         int actionIndex = scroll + row;
         if (actionIndex >= 0 && actionIndex < rows.size()) {
             ContextAction action = rows.get(actionIndex);
-            ContextMenuState.setLastClick(state, x, y);
-            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
+            ContextMenuController.setLastClick(state, x, y);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
         }
-        ContextMenuState.close(state);
+        ContextMenuController.close(state);
         return true;
     }
 
@@ -118,20 +118,20 @@ public final class CanvasContextMenuSupport {
                 continue;
             }
             ContextAction action = visiblePromoted.get(i);
-            ContextMenuState.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
-            ContextMenuAnimation.finish(state, ContextMenuAnimation.DEFAULT_KEY);
+            ContextMenuController.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
             action.action().run();
             if (!action.closeAfterClick()) {
                 return true;
             }
-            ContextMenuState.close(state);
+            ContextMenuController.close(state);
             return true;
         }
         return true;
     }
 
     public static void scrollContextMenu(TabletUiState state, double wheelDelta) {
-        ContextMenuState.scrollByWheel(state, wheelDelta);
+        ContextMenuController.scrollByWheel(state, wheelDelta);
     }
 
     public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {
@@ -150,7 +150,7 @@ public final class CanvasContextMenuSupport {
         if (questId == null || questId.isBlank()) {
             return false;
         }
-        for (String candidate : ClientQuestCache.questIds()) {
+        for (String candidate : ClientQuestStateFacade.questIds()) {
             if (!questId.equals(candidate)) {
                 return true;
             }
@@ -158,20 +158,20 @@ public final class CanvasContextMenuSupport {
         return false;
     }
 
-    public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String group, String key, boolean front) {
-        if (group == null || group.isBlank() || key == null || key.isBlank()) {
+    public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String chapter, String key, boolean front) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return false;
         }
-        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByGroup.getOrDefault(group, List.of());
-        List<CanvasImageLayer> images = state.canvas.canvasImagesByGroup.getOrDefault(group, List.of());
-        List<CanvasTextLayer> texts = state.canvas.canvasTextsByGroup.getOrDefault(group, List.of());
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
         List<QuestCardLayout> cards = canvasViewport.cardCache();
         Map<String, QuestCardLayout> byQuestId = new HashMap<>();
         for (QuestCardLayout card : cards) {
             byQuestId.put(card.questId(), card);
         }
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, cards, byQuestId, canvasViewport.getSize().width, canvasViewport.getSize().height);
-        List<String> order = CanvasLayerOrdering.normalize(state, group, cards, images, texts, connectionKeys, ecs);
+        List<String> order = CanvasLayerOrdering.normalize(state, chapter, cards, images, texts, connectionKeys, ecs);
         int index = order.indexOf(key);
         if (index < 0 || order.size() <= 1) {
             return false;
@@ -180,7 +180,7 @@ public final class CanvasContextMenuSupport {
     }
 
     public static String readableQuestTitle(String questId) {
-        CompoundTag quest = ClientQuestCache.quest(questId);
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
         String title = quest.getString("title");
         String value = title == null || title.isBlank() ? questId : title;
         if (value == null) {

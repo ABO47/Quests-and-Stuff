@@ -1,14 +1,19 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.abo47.questsandstuff.util.SafeNames;
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
-import com.lowdragmc.lowdraglib.gui.widget.Widget;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.util.MathUtils;
+import com.abo47.questsandstuff.util.naming.SafeNames;
 
 public final class StyledTextFields {
     private StyledTextFields() {
@@ -45,12 +50,39 @@ public final class StyledTextFields {
                     focusResponder.accept(isFocus());
                 }
             }
+
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
+
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                setTextColor(TabletColors.TEXT_PRIMARY);
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+            }
         };
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
-        field.setValidator(SearchFieldController::normalizeUserSearch);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        field.setValidator(SearchNormalizer::normalizeUserSearch);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 
@@ -119,13 +151,34 @@ public final class StyledTextFields {
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
+
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
         };
     }
 
     public static void applyStandardStyle(TextFieldWidget field, int fillColor, int borderColor) {
         field.setBordered(false);
-        field.setBackground(Surfaces.bordered(fillColor, borderColor));
-        field.setTextColor(ModColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(fillColor, borderColor));
+        field.setTextColor(TabletColors.TEXT_PRIMARY);
     }
 
     public static TextFieldWidget textField(
@@ -137,11 +190,38 @@ public final class StyledTextFields {
             int maxLength,
             Consumer<String> responder
     ) {
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder);
+        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder) {
+            @Override
+            public TextFieldWidget setCurrentString(Object currentString) {
+                String newVal = currentString.toString();
+                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                    boolean wasEmpty = textField.getValue().isEmpty();
+                    int cursorPos = textField.getCursorPosition();
+                    super.setCurrentString(newVal);
+                    if (wasEmpty && !newVal.isEmpty()) {
+                        textField.setCursorPosition(newVal.length());
+                        textField.setHighlightPos(newVal.length());
+                    } else {
+                        int clamped = Math.min(cursorPos, newVal.length());
+                        textField.setCursorPosition(clamped);
+                        textField.setHighlightPos(clamped);
+                    }
+                } else {
+                    super.setCurrentString(currentString);
+                }
+                return this;
+            }
+
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                setTextColor(TabletColors.TEXT_PRIMARY);
+                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+            }
+        };
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 
@@ -169,8 +249,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyResourceLocationValidator(field);
     }
@@ -199,8 +279,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyCompoundTagValidator(field);
     }
@@ -272,7 +352,7 @@ public final class StyledTextFields {
             Runnable blur,
             Consumer<Boolean> focusResponder
     ) {
-        int value = clamp(current, min, max);
+        int value = MathUtils.clamp((int) current, min, max);
         TextFieldWidget field = configuredCommitField(
                 x,
                 y,
@@ -285,8 +365,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 focusResponder,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyIntegerValidator(field, min, max);
     }
@@ -318,8 +398,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyFloatValidator(field, min, max);
     }
@@ -340,15 +420,15 @@ public final class StyledTextFields {
                 y,
                 width,
                 height,
-                () -> Integer.toString(clamp(current, 0, 100)),
+                () -> Integer.toString(MathUtils.clamp(current, 0, 100)),
                 3,
                 responder,
                 commit,
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_PANEL_ALT,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_PANEL_ALT,
+                TabletColors.BORDER_BASE
         );
         return applyPercentageValidator(field);
     }
@@ -377,8 +457,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                ModColors.SURFACE_BASE,
-                ModColors.BORDER_BASE
+                TabletColors.SURFACE_BASE,
+                TabletColors.BORDER_BASE
         );
         return applyIdentifierValidator(field);
     }
@@ -407,8 +487,8 @@ public final class StyledTextFields {
         );
         field.setClientSideWidget();
         field.setMaxStringLength(9);
-        field.setValidator(SearchFieldController::normalizeHexInput);
-        applyStandardStyle(field, ModColors.SURFACE_BASE, ModColors.BORDER_BASE);
+        field.setValidator(SearchNormalizer::normalizeHexInput);
+        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
         return field;
     }
 
@@ -480,10 +560,6 @@ public final class StyledTextFields {
         }
         String value = textSupplier.get();
         return value == null ? "" : value;
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
     }
 
     private static float clamp(float value, float min, float max) {

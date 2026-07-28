@@ -1,7 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 final class AssetDiagnostics {
     private static final Set<String> SEEN_ONCE_KEYS = ConcurrentHashMap.newKeySet();

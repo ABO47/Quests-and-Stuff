@@ -1,17 +1,19 @@
 package com.abo47.questsandstuff.quest.model.task;
 
+import java.util.Map;
+import java.util.Set;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+
 import com.abo47.questsandstuff.quest.model.storage.BooleanTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
-import com.mojang.serialization.Codec;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Map;
-import java.util.Set;
 
 public interface QuestTaskDefinition {
     Codec<QuestTaskDefinition> CODEC = QuestTasks.CODEC;

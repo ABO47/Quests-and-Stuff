@@ -1,43 +1,48 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuState;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.context.ContextMenuAnimation;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.modal.ModalLibraryLayout;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.QuestVocabulary;
-import com.abo47.questsandstuff.client.tablet.text.TabletVocabulary;
-import com.abo47.questsandstuff.client.tablet.theme.ModColors;
-import com.abo47.questsandstuff.client.tablet.theme.Surfaces;
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
-import net.minecraft.client.gui.GuiGraphics;
-
-import javax.annotation.Nonnull;
-import java.util.List;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
-import static com.abo47.questsandstuff.client.tablet.theme.Surfaces.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_30;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_4;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_6;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class PrerequisiteRowsPanel {
     private static final String CONTEXT_ANIMATION_KEY = "prerequisites_manager";
-    private static final int ROW_H = 30;
-    private static final int ROW_GAP = 4;
-    private static final int PAD = 6;
+    private static final int ROW_H = GRID_30;
+    private static final int ROW_GAP = GRID_4;
+    private static final int PAD = GRID_6;
 
     private PrerequisiteRowsPanel() {
     }
 
-    static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows) {
+    static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows) {
         int rowW = rowWidth(layout, rows.size());
         TileGridLayout rowLayout = TileGridLayout.calculate(layout.rightW(), layout.bodyH(), rowW, ROW_H, ROW_GAP, PAD, PAD, rows.size(), state.modal.prerequisitesManagerScroll);
         state.modal.prerequisitesManagerScroll = rowLayout.scrollStart();
@@ -45,15 +50,15 @@ final class PrerequisiteRowsPanel {
         addConnectionList(modal, state, refresh, layout, modalW, modalH, questId, rows, rowW);
     }
 
-    private static int rowWidth(ModalLibraryLayout.Metrics layout, int rowCount) {
+    private static int rowWidth(ModalPreviewLayout.Metrics layout, int rowCount) {
         int contentH = Math.max(ROW_H, layout.bodyH() - PAD * 2);
         int visibleRows = Math.max(1, (contentH + ROW_GAP) / (ROW_H + ROW_GAP));
         boolean showScroll = rowCount > visibleRows;
-        int scrollReserve = showScroll ? DragScrollBarWidget.RESERVED_WIDTH + ROW_GAP : 0;
+        int scrollReserve = showScroll ? DragScrollBarWidget.RESERVED_WIDTH : 0;
         return Math.max(96, layout.rightW() - PAD * 2 - scrollReserve);
     }
 
-    private static void addConnectionList(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalLibraryLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows, int rowW) {
+    private static void addConnectionList(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW, int modalH, String questId, List<PrerequisiteConnectionRow> rows, int rowW) {
         TiledPickerPanel.add(
                 modal,
                 layout.rightX(),
@@ -66,7 +71,7 @@ final class PrerequisiteRowsPanel {
                 PAD,
                 PAD,
                 rows,
-                TabletVocabulary.text(QuestVocabulary.PREREQUISITES_NO_CONNECTIONS),
+                TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_NO_CONNECTIONS),
                 ScrollState.bind(
                         () -> state.modal.prerequisitesManagerScroll,
                         value -> state.modal.prerequisitesManagerScroll = value,
@@ -75,7 +80,7 @@ final class PrerequisiteRowsPanel {
                 ),
                 () -> {
                     state.modal.prerequisitesManagerContextOpen = false;
-                    ContextMenuState.clearDeleteConfirm(state);
+                    ContextMenuController.clearDeleteConfirm(state);
                 },
                 refresh,
                 (surface, row, index, x, y, cellW, cellH, tileLayout) -> renderConnectionRow(surface, state, refresh, modalW, modalH, questId, row, x, y, cellW, cellH)
@@ -86,28 +91,31 @@ final class PrerequisiteRowsPanel {
         boolean selected = row.key().equals(state.modal.prerequisitesManagerSelectedConnectionKey);
         boolean hovered = row.key().equals(state.modal.prerequisitesManagerHoveredConnectionKey);
         WidgetGroup card = new WidgetGroup(x, y, cellW, cellH);
-        card.setBackground(Surfaces.bordered(
-                selected || hovered ? withAlpha(ModColors.INTERACTIVE, selected ? 64 : 44) : withAlpha(ModColors.SURFACE_PANEL_ALT, 106),
-                selected || hovered ? ModColors.BORDER_ACCENT : withAlpha(ModColors.BORDER_BASE, 120)
-        ));
+        if (hovered) {
+            card.setBackground(GlowShaderHelper.hoverGlow());
+        } else if (selected) {
+            card.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 64), TabletColors.BORDER_ACCENT));
+        } else {
+            card.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 106), withAlpha(TabletColors.BORDER_BASE, 120)));
+        }
         if (row.exclusiveChoice()) {
             card.addWidget(new DisplayIconWidget(5, 7, 16, 16, "minecraft:ender_pearl"));
         } else {
             card.addWidget(new DisplayIconWidget(5, 7, 16, 16, row.icon()));
         }
         int textW = Math.max(10, cellW - 34);
-        String role = TabletVocabulary.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestVocabulary.PREREQUISITES_INCOMING : QuestVocabulary.PREREQUISITES_OUTGOING);
-        String ecLabel = TabletVocabulary.text(QuestVocabulary.PREREQUISITES_EXCLUSIVE_CHOICE);
+        String role = TabletTranslationKeys.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestTranslationKeys.PREREQUISITES_INCOMING : QuestTranslationKeys.PREREQUISITES_OUTGOING);
+        String ecLabel = TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_EXCLUSIVE_CHOICE);
         if (row.exclusiveChoice()) {
-            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
             if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
-                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             } else {
-                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             }
         } else {
-            card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), ModColors.TEXT_SECONDARY));
-            card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), ModColors.TEXT_MUTED));
+            card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
         }
         surface.addWidget(card);
 
@@ -117,16 +125,16 @@ final class PrerequisiteRowsPanel {
                 openConnectionContextAtPointer(state, modalW, modalH, row);
             } else if (click.button == 0) {
                 state.modal.prerequisitesManagerContextOpen = false;
-                ContextMenuState.clearDeleteConfirm(state);
+                ContextMenuController.clearDeleteConfirm(state);
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager row_click quest={} connection={} button={}", questId, row.key(), click.button);
             refresh.run();
         });
-        hit.setHoverTexture(Surfaces.fill(withAlpha(ModColors.INTERACTIVE, 38)));
+        hit.setHoverTexture(SurfaceFactory.transparentFill());
         surface.addWidget(hit);
     }
 
-    private static void addConnectionHoverTracker(WidgetGroup modal, TabletUiState state, List<PrerequisiteConnectionRow> rows, ModalLibraryLayout.Metrics layout, TileGridLayout rowLayout) {
+    private static void addConnectionHoverTracker(WidgetGroup modal, TabletUiState state, List<PrerequisiteConnectionRow> rows, ModalPreviewLayout.Metrics layout, TileGridLayout rowLayout) {
         WidgetGroup tracker = new WidgetGroup(layout.rightX(), layout.bodyY(), layout.rightW(), layout.bodyH()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -159,7 +167,7 @@ final class PrerequisiteRowsPanel {
         state.modal.prerequisitesManagerSelectedConnectionKey = row.key();
         state.modal.prerequisitesManagerContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
         state.modal.prerequisitesManagerContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
-        ContextMenuState.clearDeleteConfirm(state);
-        ContextMenuAnimation.start(state, CONTEXT_ANIMATION_KEY);
+        ContextMenuController.clearDeleteConfirm(state);
+        ContextMenuAnimationBridge.start(state, CONTEXT_ANIMATION_KEY);
     }
 }
