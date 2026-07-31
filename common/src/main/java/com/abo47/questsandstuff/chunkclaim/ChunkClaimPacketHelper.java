@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimBatchPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.team.NbtKeys;
@@ -29,29 +30,55 @@ public final class ChunkClaimPacketHelper {
 
     public static void applyAction(ServerPlayer player, TeamManager manager,
                             C2SChunkClaimActionPacket.Action action, ResourceLocation dim, int x, int z) {
+        TeamData team = resolveTeam(player, manager);
+        if (team == null) {
+            return;
+        }
+        ChunkClaimService service = QuestServiceRegistry.chunkClaims(player.server);
+        applyOne(service, team.teamId(), ownerName(team), action, dim, x, z);
+        broadcastAll(player.serverLevel());
+    }
+
+    public static void applyBatch(ServerPlayer player, TeamManager manager, ResourceLocation dim,
+                            List<C2SChunkClaimBatchPacket.Entry> entries) {
+        TeamData team = resolveTeam(player, manager);
+        if (team == null) {
+            return;
+        }
+        ChunkClaimService service = QuestServiceRegistry.chunkClaims(player.server);
+        UUID teamId = team.teamId();
+        String claimedBy = ownerName(team);
+        for (C2SChunkClaimBatchPacket.Entry entry : entries) {
+            applyOne(service, teamId, claimedBy, entry.action(), dim, entry.x(), entry.z());
+        }
+        broadcastAll(player.serverLevel());
+    }
+
+    private static TeamData resolveTeam(ServerPlayer player, TeamManager manager) {
         TeamData team = manager.getTeam(player);
         if (team == null) {
             team = manager.createTeam(player);
         }
-        if (team == null) {
-            return;
-        }
-        String claimedBy = "";
+        return team;
+    }
+
+    private static String ownerName(TeamData team) {
         for (TeamMember m : team.members()) {
             if (m.uuid().equals(team.owner())) {
-                claimedBy = m.name();
-                break;
+                return m.name();
             }
         }
-        ChunkClaimService service = QuestServiceRegistry.chunkClaims(player.server);
-        UUID teamId = team.teamId();
+        return "";
+    }
+
+    private static void applyOne(ChunkClaimService service, UUID teamId, String claimedBy,
+                            C2SChunkClaimActionPacket.Action action, ResourceLocation dim, int x, int z) {
         switch (action) {
             case CLAIM -> service.claim(teamId, claimedBy, dim, x, z);
             case UNCLAIM -> service.unclaim(teamId, dim, x, z);
             case TOGGLE_FORCE -> service.setForceLoaded(teamId, dim, x, z, !service.isForceLoaded(teamId, dim, x, z));
             case REQUEST -> {}
         }
-        broadcastAll(player.serverLevel());
     }
 
     public static void broadcastAll(ServerLevel level) {

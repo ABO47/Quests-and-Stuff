@@ -11,7 +11,6 @@ public final class TabletAnimationTimings {
     public static final long MINI_NOTIFICATION_MS = 900L;
     public static final long CONNECTION_ANIM_MS = 160L;
     public static final long THEME_RELOAD_CHECK_MS = 1500L;
-    public static final long CHUNK_MAP_RESAMPLE_MS = 800L;
     public static final long POINTER_SOURCE_MAX_AGE_MS = 800L;
 
     private TabletAnimationTimings() {}

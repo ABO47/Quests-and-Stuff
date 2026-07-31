@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimBatchPacket;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
@@ -143,6 +144,7 @@ public final class ModNetwork {
         packets.add(type(id++, S2CTeamJoinResultPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CTeamJoinResultPacket::encode, S2CTeamJoinResultPacket::decode, S2CTeamJoinResultPacket::handle));
         packets.add(type(id++, S2CChunkClaimSyncPacket.class, ModPacketType.Direction.PLAY_TO_CLIENT, S2CChunkClaimSyncPacket::encode, S2CChunkClaimSyncPacket::decode, S2CChunkClaimSyncPacket::handle));
         packets.add(type(id++, C2SChunkClaimActionPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimActionPacket::encode, C2SChunkClaimActionPacket::decode, C2SChunkClaimActionPacket::handle));
+        packets.add(type(id++, C2SChunkClaimBatchPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimBatchPacket::encode, C2SChunkClaimBatchPacket::decode, C2SChunkClaimBatchPacket::handle));
         packets.add(type(id++, C2SChunkClaimConfigPacket.class, ModPacketType.Direction.PLAY_TO_SERVER, C2SChunkClaimConfigPacket::encode, C2SChunkClaimConfigPacket::decode, C2SChunkClaimConfigPacket::handle));
         return List.copyOf(packets);
     }

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.gametest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
@@ -21,6 +22,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimService;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimBatchPacket;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
 import com.abo47.questsandstuff.network.chunkclaim.S2CChunkClaimSyncPacket;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -155,6 +157,32 @@ public final class ChunkClaimGameTests {
         helper.succeed();
     }
 
+    @PrefixGameTestTemplate(false)
+    @GameTest(template = "questschemagametests.empty")
+    public static void batchPacketRoundtripsAndRejectsOversize(GameTestHelper helper) {
+        ResourceLocation dim = helper.getLevel().dimension().location();
+        C2SChunkClaimBatchPacket batch = new C2SChunkClaimBatchPacket(dim, List.of(
+                new C2SChunkClaimBatchPacket.Entry(C2SChunkClaimActionPacket.Action.CLAIM, 3, 4),
+                new C2SChunkClaimBatchPacket.Entry(C2SChunkClaimActionPacket.Action.UNCLAIM, -2, 7),
+                new C2SChunkClaimBatchPacket.Entry(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, 0, 0)));
+        C2SChunkClaimBatchPacket decodedBatch = roundtrip(batch);
+        assertEqual(dim, decodedBatch.dimension(), "batch dimension mismatch");
+        assertEqual(batch.entries(), decodedBatch.entries(), "batch entries mismatch");
+
+        FriendlyByteBuf oversized = new FriendlyByteBuf(Unpooled.buffer());
+        oversized.writeResourceLocation(dim);
+        oversized.writeVarInt(C2SChunkClaimBatchPacket.MAX_ENTRIES + 1);
+        boolean rejected = false;
+        try {
+            C2SChunkClaimBatchPacket.decode(oversized);
+        } catch (IllegalArgumentException e) {
+            rejected = true;
+        }
+        assertTrue(rejected, "Oversized batch should fail during decode");
+
+        helper.succeed();
+    }
+
     private static boolean isForced(GameTestHelper helper, ChunkPos pos) {
         return helper.getLevel().getForcedChunks().contains(ChunkPos.asLong(pos.x, pos.z));
     }
@@ -165,6 +193,10 @@ public final class ChunkClaimGameTests {
         if (packet instanceof C2SChunkClaimActionPacket action) {
             action.encode(buf);
             return (T) C2SChunkClaimActionPacket.decode(buf);
+        }
+        if (packet instanceof C2SChunkClaimBatchPacket batch) {
+            batch.encode(buf);
+            return (T) C2SChunkClaimBatchPacket.decode(buf);
         }
         if (packet instanceof C2SChunkClaimConfigPacket config) {
             config.encode(buf);

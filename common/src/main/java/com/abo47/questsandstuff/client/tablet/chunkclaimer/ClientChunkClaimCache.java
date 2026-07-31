@@ -16,6 +16,7 @@ public enum ClientChunkClaimCache {
     INSTANCE;
 
     private volatile Map<String, ChunkClaimPacketHelper.ClaimEntry> claims = Map.of();
+    private volatile int revision;
 
     public void setAll(List<ChunkClaimPacketHelper.ClaimEntry> entries) {
         Map<String, ChunkClaimPacketHelper.ClaimEntry> map = new HashMap<>();
@@ -23,10 +24,16 @@ public enum ClientChunkClaimCache {
             map.put(key(e.dim(), e.x(), e.z()), e);
         }
         this.claims = map;
+        this.revision++;
     }
 
     public void clear() {
         this.claims = Map.of();
+        this.revision++;
+    }
+
+    public int revision() {
+        return revision;
     }
 
     private static String key(ResourceLocation dim, int x, int z) {
@@ -54,6 +61,10 @@ public enum ClientChunkClaimCache {
     public UUID teamIdOf(ResourceLocation dim, int x, int z) {
         ChunkClaimPacketHelper.ClaimEntry e = find(dim, x, z);
         return e == null ? null : e.teamId();
+    }
+
+    public List<ChunkClaimPacketHelper.ClaimEntry> entries() {
+        return List.copyOf(claims.values());
     }
 
     public List<ClaimedChunk> snapshot() {

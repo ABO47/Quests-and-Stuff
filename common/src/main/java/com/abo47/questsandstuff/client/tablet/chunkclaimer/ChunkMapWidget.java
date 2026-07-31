@@ -1,5 +1,11 @@
 package com.abo47.questsandstuff.client.tablet.chunkclaimer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 
@@ -15,6 +21,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,24 +33,24 @@ import net.minecraft.world.level.material.MapColor;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimBatchPacket;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public class ChunkMapWidget extends Widget {
-    private static final long RESAMPLE_MS = TabletAnimationTimings.CHUNK_MAP_RESAMPLE_MS;
-
     private static final int GRID_COLOR = TabletColors.DEFAULT_GRID_COLOR;
 
     private final TabletUiState state;
 
     private DynamicTexture terrainTex;
     private ResourceLocation terrainTexLoc;
+    private ResourceTexture terrainTexture;
     private int texW = -1;
     private int texH = -1;
     private int gridW = -1;
@@ -51,9 +58,29 @@ public class ChunkMapWidget extends Widget {
     private int sub = GRID_16;
     private int cachedCx = Integer.MAX_VALUE;
     private int cachedCz = Integer.MAX_VALUE;
-    private long lastSample = 0;
+    private boolean cachedSurfaceScan;
     private int lastHoverDx = Integer.MAX_VALUE;
     private int lastHoverDz = Integer.MAX_VALUE;
+
+    private boolean dragActive;
+    private ResourceLocation dragDimension;
+    private int dragButton;
+    private int lastPaintX;
+    private int lastPaintZ;
+    private int pendingSyncRevision = -1;
+    private final List<C2SChunkClaimBatchPacket.Entry> dragEntries = new ArrayList<>();
+    private final Set<Long> dragSeen = new HashSet<>();
+    private final Map<Long, Integer> dragPreview = new HashMap<>();
+
+    private int gridRevision = -1;
+    private int gridCx = Integer.MAX_VALUE;
+    private int gridCz = Integer.MAX_VALUE;
+    private boolean gridDirty;
+    private int previewClaimedDelta;
+    private int previewForcedDelta;
+    private final Map<Long, Integer> gridStates = new HashMap<>();
+    private final Map<Long, UUID> gridTeams = new HashMap<>();
+    private final Map<Long, String> gridClaimKeys = new HashMap<>();
 
     public ChunkMapWidget(int x, int y, int w, int h, TabletUiState state) {
         super(x, y, w, h);
@@ -92,10 +119,9 @@ public class ChunkMapWidget extends Widget {
         int gh = Math.max(3, h / cell);
         if (gh % 2 == 0) gh++;
         int s = Math.max(1, Math.min(16, (int) Math.sqrt(640000.0 / (gw * gh))));
-        long now = System.currentTimeMillis();
         boolean needs = terrainTex == null || gw != gridW || gh != gridH || s != sub
                 || cx != cachedCx || cz != cachedCz
-                || (now - lastSample) > RESAMPLE_MS;
+                || state.chunkClaimer.surfaceScan != cachedSurfaceScan;
         if (!needs) {
             return;
         }
@@ -104,7 +130,7 @@ public class ChunkMapWidget extends Widget {
         sub = s;
         cachedCx = cx;
         cachedCz = cz;
-        lastSample = now;
+        cachedSurfaceScan = state.chunkClaimer.surfaceScan;
 
         int totalW = (gw + 6) * sub;
         int totalH = (gh + 4) * sub;
@@ -122,6 +148,7 @@ public class ChunkMapWidget extends Widget {
             ResourceLocation terrainLoc = new ResourceLocation("questsandstuff", "chunkmap_terrain");
             Minecraft.getInstance().getTextureManager().register(terrainLoc, terrainTex);
             terrainTexLoc = terrainLoc;
+            terrainTexture = new ResourceTexture(terrainLoc);
         }
 
         int halfGw = gw / 2;
@@ -358,9 +385,8 @@ public class ChunkMapWidget extends Widget {
         int centerX = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, 0) + cell / 2;
         int centerY = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, 0) + cell / 2;
 
-        if (terrainTexLoc != null) {
-            ResourceTexture tex = new ResourceTexture(terrainTexLoc);
-            tex.draw(graphics, mouseX, mouseY, baseX + ox - 3 * cell, baseY + oy - 2 * cell, (gw + 6) * cell, (gh + 4) * cell);
+        if (terrainTexture != null) {
+            terrainTexture.draw(graphics, mouseX, mouseY, baseX + ox - 3 * cell, baseY + oy - 2 * cell, (gw + 6) * cell, (gh + 4) * cell);
         }
 
         int iLo = (int) Math.floor((0 - ox) / (double) cell);
@@ -368,22 +394,18 @@ public class ChunkMapWidget extends Widget {
         int jLo = (int) Math.floor((0 - oy) / (double) cell);
         int jHi = (int) Math.floor((h - oy) / (double) cell);
 
-        var states = new java.util.HashMap<Long, Integer>();
-        var teamCells = new java.util.HashMap<Long, UUID>();
-        var claimKeys = new java.util.HashMap<Long, String>();
-        for (int i = iLo; i <= iHi; i++) {
-            int dx = i - gw / 2;
-            for (int j = jLo; j <= jHi; j++) {
-                int dz = j - gh / 2;
-                long k = key(dx, dz);
-                int cwX = cx + dx;
-                int cwZ = cz + dz;
-                states.put(k, stateOf(ClientChunkClaimCache.INSTANCE, dim, cwX, cwZ));
-                UUID t = ClientChunkClaimCache.INSTANCE.teamIdOf(dim, cwX, cwZ);
-                if (t != null) teamCells.put(k, t);
-                int s = states.get(k);
-                claimKeys.put(k, s == 0 ? "0" : s + ":" + (t != null ? t.toString() : ""));
-            }
+        int rev = ClientChunkClaimCache.INSTANCE.revision();
+        if (pendingSyncRevision >= 0 && rev != pendingSyncRevision) {
+            pendingSyncRevision = -1;
+            dragPreview.clear();
+            gridDirty = true;
+        }
+        if (gridDirty || rev != gridRevision || cx != gridCx || cz != gridCz) {
+            gridDirty = false;
+            gridRevision = rev;
+            gridCx = cx;
+            gridCz = cz;
+            rebuildGrid(dim, cx, cz);
         }
 
         for (int i = iLo; i <= iHi; i++) {
@@ -391,11 +413,11 @@ public class ChunkMapWidget extends Widget {
             for (int j = jLo; j <= jHi; j++) {
                 int dz = j - gh / 2;
                 long k = key(dx, dz);
-                int s = states.getOrDefault(k, 0);
+                int s = gridStates.getOrDefault(k, 0);
                 if (s == 0) continue;
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                int cellColor = teamColor(teamCells.get(k), s);
+                int cellColor = teamColor(gridTeams.get(k), s);
                 int fillColor = (0x99000000) | (cellColor & 0x00FFFFFF);
                 graphics.fill(px, py, px + cell, py + cell, fillColor);
             }
@@ -410,19 +432,19 @@ public class ChunkMapWidget extends Widget {
                 for (int j = jLo; j <= jHi; j++) {
                     int dz = j - gh / 2;
                     long k = key(dx, dz);
-                    if (states.getOrDefault(k, 0) != 0) continue;
+                    if (gridStates.getOrDefault(k, 0) != 0) continue;
                     int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                     int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                    if (i == iLo || states.getOrDefault(key(dx - 1, dz), 0) == 0) {
+                    if (i == iLo || gridStates.getOrDefault(key(dx - 1, dz), 0) == 0) {
                         graphics.fill(px, py, px + 1, py + cell, gridCol);
                     }
-                    if (i == iHi || states.getOrDefault(key(dx + 1, dz), 0) == 0) {
+                    if (i == iHi || gridStates.getOrDefault(key(dx + 1, dz), 0) == 0) {
                         graphics.fill(px + cell, py, px + cell + 1, py + cell, gridCol);
                     }
-                    if (j == jLo || states.getOrDefault(key(dx, dz - 1), 0) == 0) {
+                    if (j == jLo || gridStates.getOrDefault(key(dx, dz - 1), 0) == 0) {
                         graphics.fill(px, py, px + cell, py + 1, gridCol);
                     }
-                    if (j == jHi || states.getOrDefault(key(dx, dz + 1), 0) == 0) {
+                    if (j == jHi || gridStates.getOrDefault(key(dx, dz + 1), 0) == 0) {
                         graphics.fill(px, py + cell, px + cell, py + cell + 1, gridCol);
                     }
                 }
@@ -434,16 +456,16 @@ public class ChunkMapWidget extends Widget {
             for (int j = jLo; j <= jHi; j++) {
                 int dz = j - gh / 2;
                 long k = key(dx, dz);
-                int s = states.getOrDefault(k, 0);
+                int s = gridStates.getOrDefault(k, 0);
                 if (s == 0) continue;
-                String ck = claimKeys.get(k);
+                String ck = gridClaimKeys.get(k);
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                int edge = teamColor(teamCells.get(k), s);
-                boolean left = i == iLo || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
-                boolean right = i == iHi || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
-                boolean up = j == jLo || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
-                boolean down = j == jHi || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                int edge = teamColor(gridTeams.get(k), s);
+                boolean left = i == iLo || !ck.equals(gridClaimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = i == iHi || !ck.equals(gridClaimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = j == jLo || !ck.equals(gridClaimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = j == jHi || !ck.equals(gridClaimKeys.getOrDefault(key(dx, dz + 1), "0"));
                 if (left) graphics.fill(px, py, px + 1, py + cell + 1, edge);
                 if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, edge);
                 if (up) graphics.fill(px, py, px + cell + 1, py + 1, edge);
@@ -457,14 +479,14 @@ public class ChunkMapWidget extends Widget {
             for (int j = jLo; j <= jHi; j++) {
                 int dz = j - gh / 2;
                 long k = key(dx, dz);
-                if (states.getOrDefault(k, 0) != 2) continue;
-                String ck = claimKeys.get(k);
+                if (gridStates.getOrDefault(k, 0) != 2) continue;
+                String ck = gridClaimKeys.get(k);
                 int px = baseX + ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int py = baseY + ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
-                boolean left = i == iLo || !ck.equals(claimKeys.getOrDefault(key(dx - 1, dz), "0"));
-                boolean right = i == iHi || !ck.equals(claimKeys.getOrDefault(key(dx + 1, dz), "0"));
-                boolean up = j == jLo || !ck.equals(claimKeys.getOrDefault(key(dx, dz - 1), "0"));
-                boolean down = j == jHi || !ck.equals(claimKeys.getOrDefault(key(dx, dz + 1), "0"));
+                boolean left = i == iLo || !ck.equals(gridClaimKeys.getOrDefault(key(dx - 1, dz), "0"));
+                boolean right = i == iHi || !ck.equals(gridClaimKeys.getOrDefault(key(dx + 1, dz), "0"));
+                boolean up = j == jLo || !ck.equals(gridClaimKeys.getOrDefault(key(dx, dz - 1), "0"));
+                boolean down = j == jHi || !ck.equals(gridClaimKeys.getOrDefault(key(dx, dz + 1), "0"));
                 if (left) graphics.fill(px, py, px + 1, py + cell + 1, forceInner);
                 if (right) graphics.fill(px + cell, py, px + cell + 1, py + cell + 1, forceInner);
                 if (up) graphics.fill(px, py, px + cell + 1, py + 1, forceInner);
@@ -472,7 +494,7 @@ public class ChunkMapWidget extends Widget {
             }
         }
 
-        if (isMouseOverElement(mouseX, mouseY)) {
+        if (!dragActive && isMouseOverElement(mouseX, mouseY)) {
             int lmx = (int) mouseX - baseX;
             int lmy = (int) mouseY - baseY;
             int dx = (int) Math.floor((lmx - ox) / (double) cell) - gw / 2;
@@ -534,6 +556,7 @@ public class ChunkMapWidget extends Widget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        endDrag();
         if (!isMouseOverElement(mouseX, mouseY)) {
             return false;
         }
@@ -542,71 +565,296 @@ public class ChunkMapWidget extends Widget {
             return false;
         }
 
-        int localX = (int) mouseX - getPositionX();
-        int localY = (int) mouseY - getPositionY();
-        int w = getSizeWidth();
-        int h = getSizeHeight();
-        int cell = ChunkMapGeometry.cellSize(w, h, gridW, gridH);
-        int ox = ChunkMapGeometry.gridOriginX(w, cell, gridW);
-        int oy = ChunkMapGeometry.gridOriginY(h, cell, gridH);
-        int dx = (int) Math.floor((localX - ox) / (double) cell) - gridW / 2;
-        int dz = (int) Math.floor((localY - oy) / (double) cell) - gridH / 2;
-        int i = dx + gridW / 2;
-        int j = dz + gridH / 2;
-        int clickILo = (int) Math.floor((0 - ox) / (double) cell);
-        int clickIHi = (int) Math.floor((w - ox) / (double) cell);
-        int clickJLo = (int) Math.floor((0 - oy) / (double) cell);
-        int clickJHi = (int) Math.floor((h - oy) / (double) cell);
-        if (i < clickILo || i > clickIHi || j < clickJLo || j > clickJHi) {
+        ChunkMapGeometry.ChunkMapCell cell = ChunkMapGeometry.cellAt(
+                (int) mouseX - getPositionX(), (int) mouseY - getPositionY(),
+                getSizeWidth(), getSizeHeight(), gridW, gridH);
+        if (cell == null) {
             return false;
         }
 
-        int chunkX = playerChunkX() + dx;
-        int chunkZ = playerChunkZ() + dz;
-        boolean claimed = ClientChunkClaimCache.INSTANCE.isClaimed(dim, chunkX, chunkZ);
-        boolean force = ClientChunkClaimCache.INSTANCE.isForceLoaded(dim, chunkX, chunkZ);
-        boolean shift = Screen.hasShiftDown();
+        int chunkX = playerChunkX() + cell.dx();
+        int chunkZ = playerChunkZ() + cell.dz();
+        List<C2SChunkClaimActionPacket.Action> actions = actionsFor(
+                ClientChunkClaimCache.INSTANCE.isClaimed(dim, chunkX, chunkZ),
+                ClientChunkClaimCache.INSTANCE.isForceLoaded(dim, chunkX, chunkZ),
+                state.chunkClaimer.claimArmed, state.chunkClaimer.forceLoadArmed,
+                button, Screen.hasShiftDown());
+        for (C2SChunkClaimActionPacket.Action action : actions) {
+            send(dim, action, chunkX, chunkZ);
+        }
+        beginDrag(dim, button, chunkX, chunkZ, actions);
+        return true;
+    }
 
-        if (button == 1) {
-            if (force) {
-                send(dim, C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, chunkX, chunkZ);
-            } else if (claimed) {
-                send(dim, C2SChunkClaimActionPacket.Action.UNCLAIM, chunkX, chunkZ);
-            }
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (!dragActive || dragDimension == null || !isMouseOverElement(mouseX, mouseY)) {
+            return false;
+        }
+        ChunkMapGeometry.ChunkMapCell cell = ChunkMapGeometry.cellAt(
+                (int) mouseX - getPositionX(), (int) mouseY - getPositionY(),
+                getSizeWidth(), getSizeHeight(), gridW, gridH);
+        if (cell == null) {
             return true;
         }
+        int chunkX = playerChunkX() + cell.dx();
+        int chunkZ = playerChunkZ() + cell.dz();
+        paintLine(lastPaintX, lastPaintZ, chunkX, chunkZ);
+        lastPaintX = chunkX;
+        lastPaintZ = chunkZ;
+        return true;
+    }
 
+    private void paintLine(int fromX, int fromZ, int toX, int toZ) {
+        int dx = Math.abs(toX - fromX);
+        int dz = Math.abs(toZ - fromZ);
+        int sx = fromX < toX ? 1 : -1;
+        int sz = fromZ < toZ ? 1 : -1;
+        int err = dx - dz;
+        int x = fromX;
+        int z = fromZ;
+        while (true) {
+            if (x != fromX || z != fromZ) {
+                paintCell(x, z);
+            }
+            if (x == toX && z == toZ) {
+                break;
+            }
+            int e2 = 2 * err;
+            if (e2 > -dz) {
+                err -= dz;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                z += sz;
+            }
+        }
+    }
+
+    private void paintCell(int chunkX, int chunkZ) {
+        long worldKey = ChunkPos.asLong(chunkX, chunkZ);
+        if (!dragSeen.add(worldKey)) {
+            return;
+        }
+        List<C2SChunkClaimActionPacket.Action> actions = actionsFor(
+                ClientChunkClaimCache.INSTANCE.isClaimed(dragDimension, chunkX, chunkZ),
+                ClientChunkClaimCache.INSTANCE.isForceLoaded(dragDimension, chunkX, chunkZ),
+                state.chunkClaimer.claimArmed, state.chunkClaimer.forceLoadArmed,
+                dragButton, Screen.hasShiftDown());
+        for (C2SChunkClaimActionPacket.Action action : actions) {
+            dragEntries.add(new C2SChunkClaimBatchPacket.Entry(action, chunkX, chunkZ));
+        }
+        applyPreview(worldKey, actions);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (!dragActive) {
+            return false;
+        }
+        endDrag();
+        return true;
+    }
+
+    static List<C2SChunkClaimActionPacket.Action> actionsFor(boolean claimed, boolean force,
+            boolean claimArmed, boolean forceArmed, int button, boolean shift) {
+        List<C2SChunkClaimActionPacket.Action> actions = new ArrayList<>(2);
+        if (button == 1) {
+            if (shift) {
+                if (force) {
+                    actions.add(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE);
+                }
+                if (claimed) {
+                    actions.add(C2SChunkClaimActionPacket.Action.UNCLAIM);
+                }
+                return actions;
+            }
+            if (force) {
+                actions.add(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE);
+            } else if (claimed) {
+                actions.add(C2SChunkClaimActionPacket.Action.UNCLAIM);
+            }
+            return actions;
+        }
         if (shift) {
             if (!claimed) {
-                send(dim, C2SChunkClaimActionPacket.Action.CLAIM, chunkX, chunkZ);
+                actions.add(C2SChunkClaimActionPacket.Action.CLAIM);
             } else if (!force) {
-                send(dim, C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, chunkX, chunkZ);
+                actions.add(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE);
             }
-            return true;
+            return actions;
         }
-
-        boolean claimOn = state.chunkClaimer.claimArmed;
-        boolean forceOn = state.chunkClaimer.forceLoadArmed;
-        if (claimOn && forceOn) {
-            send(dim, C2SChunkClaimActionPacket.Action.CLAIM, chunkX, chunkZ);
+        if (claimArmed && forceArmed) {
+            actions.add(C2SChunkClaimActionPacket.Action.CLAIM);
             if (!force) {
-                send(dim, C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, chunkX, chunkZ);
+                actions.add(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE);
             }
-            return true;
+            return actions;
         }
-        if (forceOn) {
+        if (forceArmed) {
             if (claimed && !force) {
-                send(dim, C2SChunkClaimActionPacket.Action.TOGGLE_FORCE, chunkX, chunkZ);
+                actions.add(C2SChunkClaimActionPacket.Action.TOGGLE_FORCE);
             }
-            return true;
+            return actions;
         }
-        if (claimOn) {
+        if (claimArmed) {
             if (!claimed) {
-                send(dim, C2SChunkClaimActionPacket.Action.CLAIM, chunkX, chunkZ);
+                actions.add(C2SChunkClaimActionPacket.Action.CLAIM);
             }
-            return true;
         }
-        return true;
+        return actions;
+    }
+
+    private void beginDrag(ResourceLocation dim, int button, int chunkX, int chunkZ,
+            List<C2SChunkClaimActionPacket.Action> actions) {
+        dragActive = true;
+        dragDimension = dim;
+        dragButton = button;
+        dragEntries.clear();
+        dragSeen.clear();
+        dragPreview.clear();
+        previewClaimedDelta = 0;
+        previewForcedDelta = 0;
+        pendingSyncRevision = -1;
+        ChunkClaimerHeaderControls.setPreviewDeltas(0, 0);
+        int cx = playerChunkX();
+        int cz = playerChunkZ();
+        rebuildGrid(dim, cx, cz);
+        gridRevision = ClientChunkClaimCache.INSTANCE.revision();
+        gridCx = cx;
+        gridCz = cz;
+        gridDirty = false;
+        lastPaintX = chunkX;
+        lastPaintZ = chunkZ;
+        long worldKey = ChunkPos.asLong(chunkX, chunkZ);
+        dragSeen.add(worldKey);
+        applyPreview(worldKey, actions);
+    }
+
+    private void applyPreview(long worldKey, List<C2SChunkClaimActionPacket.Action> actions) {
+        int pwx = (int) (worldKey & 0xFFFFFFFFL);
+        int pwz = (int) (worldKey >> 32);
+        long gridKey = key(pwx - playerChunkX(), pwz - playerChunkZ());
+        ResourceLocation dim = dragDimension;
+        if (dim == null) {
+            return;
+        }
+        boolean cacheClaimed = ClientChunkClaimCache.INSTANCE.isClaimed(dim, pwx, pwz);
+        boolean cacheForced = ClientChunkClaimCache.INSTANCE.isForceLoaded(dim, pwx, pwz);
+        int target = cacheForced ? 2 : cacheClaimed ? 1 : 0;
+        for (C2SChunkClaimActionPacket.Action action : actions) {
+            switch (action) {
+                case CLAIM -> {
+                    if (target < 1) {
+                        target = 1;
+                    }
+                }
+                case TOGGLE_FORCE -> target = target == 2 ? 1 : 2;
+                case UNCLAIM -> target = 0;
+                case REQUEST -> {}
+            }
+        }
+        int claimedDelta = (target >= 1 ? 1 : 0) - (cacheClaimed ? 1 : 0);
+        int forcedDelta = (target == 2 ? 1 : 0) - (cacheForced ? 1 : 0);
+        previewClaimedDelta += claimedDelta;
+        previewForcedDelta += forcedDelta;
+        ChunkClaimerHeaderControls.setPreviewDeltas(previewClaimedDelta, previewForcedDelta);
+        dragPreview.put(worldKey, target);
+        if (target == 0) {
+            removeCell(gridKey);
+            return;
+        }
+        gridStates.put(gridKey, target);
+        paintTeam(gridKey, target);
+    }
+
+    private void paintTeam(long gridKey, int state) {
+        UUID team = previewTeamId();
+        gridTeams.put(gridKey, team);
+        gridClaimKeys.put(gridKey, state + ":" + team);
+    }
+
+    private void removeCell(long gridKey) {
+        gridStates.remove(gridKey);
+        gridTeams.remove(gridKey);
+        gridClaimKeys.remove(gridKey);
+    }
+
+    private UUID previewTeamId() {
+        var team = ClientTeamCache.INSTANCE.getTeam();
+        if (team != null) {
+            return team.teamId();
+        }
+        String playerName = Minecraft.getInstance().getUser().getName();
+        for (var entry : ClientChunkClaimCache.INSTANCE.entries()) {
+            if (entry.claimedByName().equals(playerName)) {
+                return entry.teamId();
+            }
+        }
+        var player = Minecraft.getInstance().player;
+        return player == null ? null : player.getUUID();
+    }
+
+    private void rebuildGrid(ResourceLocation dim, int cx, int cz) {
+        gridStates.clear();
+        gridTeams.clear();
+        gridClaimKeys.clear();
+        int w = getSizeWidth();
+        int h = getSizeHeight();
+        int gw = gridW;
+        int gh = gridH;
+        int cell = ChunkMapGeometry.cellSize(w, h, gw, gh);
+        int ox = ChunkMapGeometry.gridOriginX(w, cell, gw);
+        int oy = ChunkMapGeometry.gridOriginY(h, cell, gh);
+        int iLo = (int) Math.floor((0 - ox) / (double) cell);
+        int iHi = (int) Math.floor((w - ox) / (double) cell);
+        int jLo = (int) Math.floor((0 - oy) / (double) cell);
+        int jHi = (int) Math.floor((h - oy) / (double) cell);
+        for (int i = iLo; i <= iHi; i++) {
+            int dx = i - gw / 2;
+            for (int j = jLo; j <= jHi; j++) {
+                int dz = j - gh / 2;
+                long k = key(dx, dz);
+                int cwX = cx + dx;
+                int cwZ = cz + dz;
+                int s = stateOf(ClientChunkClaimCache.INSTANCE, dim, cwX, cwZ);
+                gridStates.put(k, s);
+                UUID t = ClientChunkClaimCache.INSTANCE.teamIdOf(dim, cwX, cwZ);
+                if (t != null) {
+                    gridTeams.put(k, t);
+                }
+                gridClaimKeys.put(k, s == 0 ? "0" : s + ":" + (t != null ? t.toString() : ""));
+            }
+        }
+        for (Map.Entry<Long, Integer> entry : dragPreview.entrySet()) {
+            long packed = entry.getKey();
+            int pwx = (int) (packed & 0xFFFFFFFFL);
+            int pwz = (int) (packed >> 32);
+            long k = key(pwx - cx, pwz - cz);
+            int ps = entry.getValue();
+            if (ps == 0) {
+                removeCell(k);
+            } else {
+                gridStates.put(k, ps);
+                paintTeam(k, ps);
+            }
+        }
+    }
+
+    private void endDrag() {
+        if (!dragActive) {
+            return;
+        }
+        dragActive = false;
+        if (!dragEntries.isEmpty()) {
+            ModNetwork.sendToServer(new C2SChunkClaimBatchPacket(dragDimension, List.copyOf(dragEntries)));
+        }
+        pendingSyncRevision = ClientChunkClaimCache.INSTANCE.revision();
+        dragDimension = null;
+        dragEntries.clear();
+        dragSeen.clear();
+        gridDirty = true;
     }
 
     private void send(ResourceLocation dim, C2SChunkClaimActionPacket.Action action, int x, int z) {
