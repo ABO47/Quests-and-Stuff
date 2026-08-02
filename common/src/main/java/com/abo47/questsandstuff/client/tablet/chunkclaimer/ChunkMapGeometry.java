@@ -34,6 +34,33 @@ public final class ChunkMapGeometry {
         return (localY - originY) / cell - gridH / 2;
     }
 
+    public static int floorDeltaX(int localX, int originX, int cell, int gridW) {
+        return (int) Math.floor((localX - originX) / (double) cell) - gridW / 2;
+    }
+
+    public static int floorDeltaZ(int localY, int originY, int cell, int gridH) {
+        return (int) Math.floor((localY - originY) / (double) cell) - gridH / 2;
+    }
+
+    public static ChunkMapCell cellAt(int localX, int localY, int mapW, int mapH, int gridW, int gridH) {
+        int cell = cellSize(mapW, mapH, gridW, gridH);
+        int ox = gridOriginX(mapW, cell, gridW);
+        int oy = gridOriginY(mapH, cell, gridH);
+        int dx = floorDeltaX(localX, ox, cell, gridW);
+        int dz = floorDeltaZ(localY, oy, cell, gridH);
+        int loX = floorDeltaX(0, ox, cell, gridW);
+        int hiX = floorDeltaX(mapW, ox, cell, gridW);
+        int loZ = floorDeltaZ(0, oy, cell, gridH);
+        int hiZ = floorDeltaZ(mapH, oy, cell, gridH);
+        if (dx < loX || dx > hiX || dz < loZ || dz > hiZ) {
+            return null;
+        }
+        return new ChunkMapCell(dx, dz);
+    }
+
+    public record ChunkMapCell(int dx, int dz) {
+    }
+
     public static boolean inGridX(int dx, int gridW) {
         int half = gridW / 2;
         return dx >= -half && dx <= half;

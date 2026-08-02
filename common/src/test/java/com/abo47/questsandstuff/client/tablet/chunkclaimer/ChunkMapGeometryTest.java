@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ChunkMapGeometryTest {
@@ -45,5 +46,38 @@ class ChunkMapGeometryTest {
         assertTrue(ChunkMapGeometry.inGridZ(0, 11));
         assertTrue(ChunkMapGeometry.inGridZ(5, 11));
         assertFalse(ChunkMapGeometry.inGridZ(6, 11));
+    }
+
+    @Test
+    void floorDeltaUsesFloorDivisionForNegativeSpans() {
+        int cell = 20;
+        int gridW = 9;
+        assertEquals(-4, ChunkMapGeometry.floorDeltaX(0, 0, cell, gridW));
+        assertEquals(0, ChunkMapGeometry.floorDeltaX(80, 0, cell, gridW));
+        assertEquals(4, ChunkMapGeometry.floorDeltaX(160, 0, cell, gridW));
+        assertEquals(-4, ChunkMapGeometry.floorDeltaX(19, 0, cell, gridW));
+        assertEquals(3, ChunkMapGeometry.floorDeltaX(140, 0, cell, gridW));
+        assertEquals(-5, ChunkMapGeometry.floorDeltaX(-5, 0, cell, gridW));
+        assertEquals(-4, ChunkMapGeometry.floorDeltaZ(19, 0, cell, 9));
+        assertEquals(3, ChunkMapGeometry.floorDeltaZ(140, 0, cell, 9));
+    }
+
+    @Test
+    void cellAtPicksFloorCellInsideWidget() {
+        ChunkMapGeometry.ChunkMapCell cell = ChunkMapGeometry.cellAt(90, 90, 180, 180, 9, 9);
+        assertTrue(cell != null, "Center of the map should be a cell");
+        assertEquals(0, cell.dx(), "Center column delta");
+        assertEquals(0, cell.dz(), "Center row delta");
+
+        ChunkMapGeometry.ChunkMapCell corner = ChunkMapGeometry.cellAt(0, 0, 180, 180, 9, 9);
+        assertTrue(corner != null, "Top-left corner should be a cell");
+        assertEquals(-4, corner.dx(), "Top-left column delta");
+        assertEquals(-4, corner.dz(), "Top-left row delta");
+    }
+
+    @Test
+    void cellAtRejectsOutOfWidgetCoordinates() {
+        assertNull(ChunkMapGeometry.cellAt(-5, 90, 180, 180, 9, 9), "Left of widget should be null");
+        assertNull(ChunkMapGeometry.cellAt(90, -5, 180, 180, 9, 9), "Above widget should be null");
     }
 }

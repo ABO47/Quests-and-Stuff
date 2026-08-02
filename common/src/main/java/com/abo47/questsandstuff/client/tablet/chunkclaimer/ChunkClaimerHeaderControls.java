@@ -29,6 +29,8 @@ public final class ChunkClaimerHeaderControls {
     private static final int HEADER_INSET = GRID_9;
     private static final int BUTTON_COUNT = 5;
     private static ChunkClaimerHeaderControls current;
+    private static int previewClaimedDelta;
+    private static int previewForcedDelta;
 
     private final LabelWidget countLabel;
     private final ButtonWidget claimBtn;
@@ -109,10 +111,20 @@ public final class ChunkClaimerHeaderControls {
                 force++;
             }
         }
+        claimed = Math.max(0, claimed + previewClaimedDelta);
+        force = Math.max(0, force + previewForcedDelta);
         int maxClaimed = QuestsAndStuffConfig.chunkClaimMaxClaimedChunks();
         int maxForce = QuestsAndStuffConfig.chunkClaimMaxForceLoadedChunks();
         return Component.translatable(ChunkClaimTranslationKeys.STATUS_SUMMARY,
                 claimed, maxClaimed, force, maxForce).getString();
+    }
+
+    static void setPreviewDeltas(int claimedDelta, int forcedDelta) {
+        previewClaimedDelta = claimedDelta;
+        previewForcedDelta = forcedDelta;
+        if (current != null) {
+            current.updateCount();
+        }
     }
 
     LabelWidget countLabel() {
@@ -127,6 +139,8 @@ public final class ChunkClaimerHeaderControls {
         if (current == null) return;
         var state = TabletUiFactory.getActiveTabletState();
         if (state != null && "chunkclaimer".equals(state.root.currentApp)) {
+            previewClaimedDelta = 0;
+            previewForcedDelta = 0;
             current.updateCount();
         }
     }
