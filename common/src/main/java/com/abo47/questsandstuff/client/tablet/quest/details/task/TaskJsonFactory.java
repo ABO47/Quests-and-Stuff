@@ -214,6 +214,7 @@ final class TaskJsonFactory {
     static String defaultTarget(String typePath) {
         return switch (typePath) {
             case "kill_entity" -> "minecraft:zombie";
+            case "scan_entity" -> "minecraft:cow";
             case "advancement" -> "minecraft:story/root";
             case "recipe" -> "recipe";
             case "structure" -> "minecraft:village";
@@ -227,6 +228,7 @@ final class TaskJsonFactory {
     static String fallbackIcon(String typePath) {
         return switch (typePath) {
             case "kill_entity" -> "";
+            case "scan_entity" -> "";
             case "advancement" -> "minecraft:book";
             case "recipe" -> "recipe";
             case "structure" -> "minecraft:map";

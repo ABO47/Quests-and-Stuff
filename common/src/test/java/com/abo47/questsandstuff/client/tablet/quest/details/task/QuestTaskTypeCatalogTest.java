@@ -32,6 +32,16 @@ class QuestTaskTypeCatalogTest {
     }
 
     @Test
+    void taskCatalogHidesScanEntityWithoutOresAndStuff() {
+        Set<String> types = QuestTaskTypeCatalog.taskChoices()
+                .stream()
+                .map(QuestDetailsTypeChoice::type)
+                .collect(Collectors.toSet());
+
+        assertFalse(types.contains("scan_entity"));
+    }
+
+    @Test
     void catalogDefaultsParseThroughServerCodecs() {
         for (QuestDetailsTypeChoice choice : QuestTaskTypeCatalog.taskChoices()) {
             String id = "task_" + choice.type();

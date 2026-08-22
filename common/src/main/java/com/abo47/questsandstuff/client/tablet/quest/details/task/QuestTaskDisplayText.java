@@ -124,6 +124,13 @@ final class QuestTaskDisplayText {
                     ? TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY)
                     : TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY_NAMED, entityName);
         }
+        if ("scan_entity".equals(path)) {
+            String entityId = TaskJsonFactory.asString(json, "target", "");
+            String entityName = EntityPreviewRenderer.entityDisplayName(entityId);
+            return entityName.isBlank()
+                    ? TabletTranslationKeys.text(QuestTranslationKeys.SCAN_ENTITY)
+                    : TabletTranslationKeys.text(QuestTranslationKeys.SCAN_ENTITY_NAMED, entityName);
+        }
         if ("entity_interact".equals(path) || "entity_interaction".equals(path)) {
             String entityName = EntityPreviewRenderer.entityDisplayName(TaskJsonFactory.asString(json, "target", ""));
             return entityName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, entityName);
@@ -179,6 +186,7 @@ final class QuestTaskDisplayText {
         if (task) {
             return !isManualTask(json)
                     && !"biome".equals(path)
+                    && !"scan_entity".equals(path)
                     && !"advancement".equals(path)
                     && !"structure".equals(path)
                     && !"block_interact".equals(path)
@@ -195,6 +203,7 @@ final class QuestTaskDisplayText {
 
     private static boolean isEntityTask(String typePath) {
         return "kill_entity".equals(typePath)
+                || "scan_entity".equals(typePath)
                 || "entity_interact".equals(typePath)
                 || "entity_interaction".equals(typePath);
     }

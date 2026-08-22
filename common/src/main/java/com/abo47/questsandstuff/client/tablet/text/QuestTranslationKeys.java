@@ -49,6 +49,8 @@ public final class QuestTranslationKeys {
     public static final String FROM_INVENTORY = "ui.questsandstuff.quest.from_inventory";
     public static final String KILL_ENTITY = "ui.questsandstuff.quest.kill_entity";
     public static final String KILL_ENTITY_NAMED = "ui.questsandstuff.quest.kill_entity_named";
+    public static final String SCAN_ENTITY = "ui.questsandstuff.quest.scan_entity";
+    public static final String SCAN_ENTITY_NAMED = "ui.questsandstuff.quest.scan_entity_named";
     public static final String NO_BIOME_FOLDERS = "ui.questsandstuff.quest.no_biome_folders";
     public static final String NO_ADVANCEMENTS = "ui.questsandstuff.quest.no_advancements";
     public static final String NO_BIOMES = "ui.questsandstuff.quest.no_biomes";
@@ -162,6 +164,7 @@ public final class QuestTranslationKeys {
     public static final String TYPE_INTERACT_ENTITY = "ui.questsandstuff.quest.type.interact_entity";
     public static final String TYPE_INTERACT_ITEM = "ui.questsandstuff.quest.type.interact_item";
     public static final String TYPE_KILL_ENTITY = "ui.questsandstuff.quest.type.kill_entity";
+    public static final String TYPE_SCAN_ENTITY = "ui.questsandstuff.quest.type.scan_entity";
     public static final String TYPE_LOOT_TABLE = "ui.questsandstuff.quest.type.loot_table";
     public static final String TYPE_MANUAL_CHECK = "ui.questsandstuff.quest.type.manual_check";
     public static final String TYPE_RECIPE = "ui.questsandstuff.quest.type.recipe";

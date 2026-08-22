@@ -188,6 +188,7 @@ public final class IconRegistry {
         registeredDefault("orbit");
         registeredDefault("scissors");
         registeredRole("kill_entity", UiThemeManager.ROLE_ICON_WARNING);
+        registeredRole("scan", UiThemeManager.ROLE_ICON_INTERACTIVE);
         registeredRole("chapter_notice", UiThemeManager.ROLE_ICON_WARNING);
         registeredDefault("fit_grid");
 
