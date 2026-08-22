@@ -28,6 +28,13 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+            content {
+                includeGroupByRegex 'org\\.parchmentmc\\..*'
+            }
+        }
         maven { url = 'https://api.modrinth.com/maven' }
         maven {
             name = 'firstdarkdev'
@@ -36,10 +43,6 @@ allprojects {
         maven { url = 'https://maven.fabricmc.net/' }
         maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = 'https://maven.architectury.dev/' }
-        maven {
-            name = "Progwml6's maven"
-            url = 'https://dvs1.progwml6.com/files/maven/'
-        }
         maven {
             name = "Jared's maven"
             url = 'https://maven.blamejared.com/'
@@ -52,7 +55,6 @@ allprojects {
             name = 'ModMaven'
             url = 'https://modmaven.dev'
         }
-        maven { url = 'https://maven.parchmentmc.org' }
     }
 
     tasks.withType(JavaCompile).configureEach {
