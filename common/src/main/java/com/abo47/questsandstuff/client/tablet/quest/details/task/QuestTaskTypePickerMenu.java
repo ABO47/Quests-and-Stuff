@@ -62,7 +62,7 @@ final class QuestTaskTypePickerMenu {
         }
 
         addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
-        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "scan_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
         addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
         addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
         return sections.build();

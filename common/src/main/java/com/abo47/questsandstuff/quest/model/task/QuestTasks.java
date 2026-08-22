@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.compat.oresandstuff.OresAndStuffCompat;
 import com.abo47.questsandstuff.quest.model.task.fallback.UnsupportedQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.generic.CheckQuestTaskDefinition;
 import com.abo47.questsandstuff.quest.model.task.generic.CompositeQuestTaskDefinition;
@@ -39,6 +40,9 @@ public final class QuestTasks {
             return;
         }
         register(new QuestTaskType<>(id("kill_entity"), SimpleQuestTaskDefinition.codec(id("kill_entity"), QuestSignalType.ENTITY_KILLED), "kill_entity_widget"));
+        if (OresAndStuffCompat.isAvailable()) {
+            register(new QuestTaskType<>(id("scan_entity"), SimpleQuestTaskDefinition.codec(id("scan_entity"), QuestSignalType.BIO_SCANNED), "scan_entity_widget"));
+        }
         register(new QuestTaskType<>(id("item"), GatherItemQuestTaskDefinition.codec(id("item")), "item_widget"));
         register(new QuestTaskType<>(id("advancement"), SimpleQuestTaskDefinition.codec(id("advancement"), QuestSignalType.ADVANCEMENT), "advancement_widget"));
         register(new QuestTaskType<>(id("recipe"), SimpleQuestTaskDefinition.codec(id("recipe"), QuestSignalType.ITEM_CRAFTED), "recipe_widget"));

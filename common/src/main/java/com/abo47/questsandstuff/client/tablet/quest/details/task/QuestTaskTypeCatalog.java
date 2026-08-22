@@ -4,15 +4,18 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.compat.oresandstuff.OresAndStuffCompat;
 
 import com.google.gson.JsonObject;
 
 final class QuestTaskTypeCatalog {
-    private static final List<QuestDetailsTypeChoice> TASK_CHOICES = List.of(
+    private static final String SCAN_ENTITY_TYPE = "scan_entity";
+    private static final List<QuestDetailsTypeChoice> TASK_CHOICES = withoutUnavailable(List.of(
             task(QuestTranslationKeys.TYPE_ACQUIRE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, TaskJsonFactory::itemTask, "item"),
             task(QuestTranslationKeys.TYPE_USE_ITEM, "item_use", "item_use", QuestTaskEditFlow.SIMPLE_ICON_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_INTERACT_ITEM, "item_interact", "item_interact", QuestTaskEditFlow.SIMPLE_ICON_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_KILL_ENTITY, "kill_entity", "kill_entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_SCAN_ENTITY, "scan_entity", "scan", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_INTERACT_ENTITY, "entity_interact", "entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_ADVANCEMENT, "advancement", "trophy", QuestTaskEditFlow.ADVANCEMENT_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_RECIPE, "recipe", "recipe", QuestTaskEditFlow.RECIPE_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
@@ -23,13 +26,22 @@ final class QuestTaskTypeCatalog {
             task(QuestTranslationKeys.TYPE_MANUAL_CHECK, "check", "manual_check", QuestTaskEditFlow.DIRECT_JSON, TaskJsonFactory::checkTask, "target"),
             task(QuestTranslationKeys.TYPE_VISIT_BIOME, "biome", "biome", QuestTaskEditFlow.BIOME_PICKER, TaskJsonFactory::simpleDefaultTask, "target"),
             task(QuestTranslationKeys.TYPE_VISIT_LOCATION, "location", "orbit", QuestTaskEditFlow.DIMENSION_PICKER, TaskJsonFactory::locationTask, "dimension")
-    );
+    ));
     private static final List<QuestDetailsTypeChoice> REWARD_CHOICES = List.of(
             reward(QuestTranslationKeys.TYPE_GIVE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, TaskJsonFactory::itemReward, "item"),
             reward(QuestTranslationKeys.TYPE_XP, "xp", "xp", QuestTaskEditFlow.XP_PICKER, TaskJsonFactory::xpReward, "amount", "mode"),
             reward(QuestTranslationKeys.TYPE_COMMAND, "command", "open", QuestTaskEditFlow.COMMAND_EDITOR, TaskJsonFactory::commandReward, "command"),
             reward(QuestTranslationKeys.TYPE_LOOT_TABLE, "loot_table", "icon", QuestTaskEditFlow.LOOT_TABLE_PICKER, TaskJsonFactory::lootTableReward, "loot_table")
     );
+
+    private static List<QuestDetailsTypeChoice> withoutUnavailable(List<QuestDetailsTypeChoice> choices) {
+        if (OresAndStuffCompat.isAvailable()) {
+            return choices;
+        }
+        return choices.stream()
+                .filter(choice -> !SCAN_ENTITY_TYPE.equals(choice.type()))
+                .toList();
+    }
 
     private QuestTaskTypeCatalog() {
     }

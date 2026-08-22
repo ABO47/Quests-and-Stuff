@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimService;
+import com.abo47.questsandstuff.compat.oresandstuff.OresAndStuffCompat;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
@@ -40,6 +41,7 @@ public final class QuestServiceRegistry {
         SERVICES.put(server, new Bundle(definitionStore, progressData, syncService, runtimeEngine, editorService, performanceTracker, chunkClaimService));
 
         chunkClaimService.applyAllForceLoads();
+        OresAndStuffCompat.init();
     }
 
     public static void stop(MinecraftServer server) {

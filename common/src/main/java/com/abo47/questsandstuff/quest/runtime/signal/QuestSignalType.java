@@ -8,6 +8,7 @@ public enum QuestSignalType {
     ITEM_USED,
     ITEM_CRAFTED,
     ENTITY_KILLED,
+    BIO_SCANNED,
     ADVANCEMENT,
     DIMENSION_CHANGED,
     BLOCK_INTERACT,
