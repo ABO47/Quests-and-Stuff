@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.quest.lock.ClientItemLocks;
 
 public final class ItemLockViewerSync {
     private static final int ATTEMPT_INTERVAL_TICKS = 40;
+    private static final Set<String> WARNED_MESSAGES = new HashSet<>();
     private static Set<String> appliedHidden;
     private static int ticksUntilAttempt;
 
@@ -34,6 +35,7 @@ public final class ItemLockViewerSync {
             if (appliedHidden != null && !appliedHidden.isEmpty()) {
                 if (revealAll()) {
                     appliedHidden = Set.of();
+                    QuestsAndStuffMod.LOGGER.info("[QnS:Lock] viewer sync revealed {}", appliedHidden.size());
                 }
             }
             return;
@@ -51,7 +53,10 @@ public final class ItemLockViewerSync {
         List<ItemStack> show = stacksFor(difference(appliedHidden, current));
         if (apply(hide, show)) {
             appliedHidden = Set.copyOf(current);
-            QuestsAndStuffMod.debugLog("[QnS:Lock] viewer sync applied hidden={} shown={}", hide.size(), show.size());
+            com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge.refresh();
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] viewer sync applied hidden={} shown={}", hide.size(), show.size());
+        } else {
+            warnOnce("viewer sync could not reach any recipe viewer yet");
         }
     }
 
@@ -69,18 +74,38 @@ public final class ItemLockViewerSync {
     private static List<ItemStack> stacksFor(Set<String> entries) {
         List<ItemStack> stacks = new ArrayList<>();
         for (String entry : entries) {
-            ItemStack stack = stackFor(entry);
-            if (!stack.isEmpty()) {
-                stacks.add(stack);
-            }
+            appendStacks(entry, stacks);
         }
         return stacks;
     }
 
-    private static ItemStack stackFor(String entry) {
-        if (entry == null || entry.startsWith("#") || entry.isBlank()) {
-            return ItemStack.EMPTY;
+    private static void appendStacks(String entry, List<ItemStack> stacks) {
+        if (entry == null || entry.isBlank()) {
+            return;
         }
+        if (!entry.startsWith("#")) {
+            ItemStack direct = directStack(entry);
+            if (!direct.isEmpty()) {
+                stacks.add(direct);
+            }
+            return;
+        }
+        ResourceLocation tagId = ResourceLocation.tryParse(entry.substring(1));
+        if (tagId == null) {
+            return;
+        }
+        var tagKey = net.minecraft.tags.TagKey.create(BuiltInRegistries.ITEM.key(), tagId);
+        BuiltInRegistries.ITEM.getTag(tagKey).ifPresent(named -> {
+            for (var holder : named) {
+                ItemStack stack = new ItemStack(holder.value());
+                if (!stack.isEmpty()) {
+                    stacks.add(stack);
+                }
+            }
+        });
+    }
+
+    private static ItemStack directStack(String entry) {
         try {
             ResourceLocation id = ResourceLocation.tryParse(entry);
             if (id == null) {
@@ -117,7 +142,7 @@ public final class ItemLockViewerSync {
         } catch (ClassNotFoundException notInstalled) {
             return false;
         } catch (Exception error) {
-            QuestsAndStuffMod.LOGGER.debug("[QnS:Lock] EMI refresh failed", error);
+            warnOnce("EMI refresh failed: " + error);
             return false;
         }
     }
@@ -125,7 +150,12 @@ public final class ItemLockViewerSync {
     private static boolean jeiApply(List<ItemStack> hide, List<ItemStack> show) {
         try {
             Class<?> internal = Class.forName("mezz.jei.common.Internal");
-            Object runtime = internal.getMethod("getJeiRuntime").invoke(null);
+            Object runtime;
+            try {
+                runtime = internal.getMethod("getJeiRuntime").invoke(null);
+            } catch (java.lang.reflect.InvocationTargetException startingUp) {
+                return false;
+            }
             if (runtime == null) {
                 return false;
             }
@@ -133,8 +163,9 @@ public final class ItemLockViewerSync {
             Object manager = runtimeClass.getMethod("getIngredientManager").invoke(runtime);
             Class<?> managerClass = Class.forName("mezz.jei.api.runtime.IIngredientManager");
             Object itemType = vanillaItemStackType();
-            Method remove = managerClass.getMethod("removeIngredientsAtRuntime", itemType.getClass(), java.util.Collection.class);
-            Method add = managerClass.getMethod("addIngredientsAtRuntime", itemType.getClass(), java.util.Collection.class);
+            Class<?> itemTypeInterface = Class.forName("mezz.jei.api.ingredients.IIngredientType");
+            Method remove = managerClass.getMethod("removeIngredientsAtRuntime", itemTypeInterface, java.util.Collection.class);
+            Method add = managerClass.getMethod("addIngredientsAtRuntime", itemTypeInterface, java.util.Collection.class);
             if (!hide.isEmpty()) {
                 remove.invoke(manager, itemType, hide);
             }
@@ -145,7 +176,7 @@ public final class ItemLockViewerSync {
         } catch (ClassNotFoundException notInstalled) {
             return false;
         } catch (Exception error) {
-            QuestsAndStuffMod.LOGGER.debug("[QnS:Lock] JEI sync failed", error);
+            warnOnce("JEI sync failed: " + error);
             return false;
         }
     }
@@ -176,8 +207,14 @@ public final class ItemLockViewerSync {
         } catch (ClassNotFoundException notInstalled) {
             return false;
         } catch (Exception error) {
-            QuestsAndStuffMod.LOGGER.debug("[QnS:Lock] REI sync failed", error);
+            warnOnce("REI sync failed: " + error);
             return false;
+        }
+    }
+
+    private static void warnOnce(String message) {
+        if (WARNED_MESSAGES.add(message)) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] {}", message);
         }
     }
 

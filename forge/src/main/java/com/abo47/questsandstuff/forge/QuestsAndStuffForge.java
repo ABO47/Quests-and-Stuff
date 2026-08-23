@@ -16,10 +16,17 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import org.spongepowered.asm.mixin.Mixins;
+
 @Mod(QuestsAndStuffMod.MODID)
 public final class QuestsAndStuffForge {
+    static {
+        Mixins.addConfiguration("questsandstuff.forge.mixins.json");
+    }
+
     public QuestsAndStuffForge(FMLJavaModLoadingContext modLoadingContext) {
         Services.setPlatform(new ForgePlatformService());
+        ForgeLockHooks.register();
 
         var modBus = modLoadingContext.getModEventBus();
         ForgeContent.register(modBus);
@@ -48,6 +55,7 @@ public final class QuestsAndStuffForge {
         QuestsAndStuffMod.SERVER_REF = event.getServer();
         QuestsAndStuffMod.prepareAssetsDirectory();
         QuestServiceRegistry.start(event.getServer());
+        ForgeLockHooks.wrapServerRecipes(event.getServer());
     }
 
     private void onServerStopping(ServerStoppingEvent event) {

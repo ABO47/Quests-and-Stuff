@@ -120,6 +120,22 @@ public final class RuntimeEngine {
         return !itemLocks.isEmpty();
     }
 
+    public int itemLockCount() {
+        return Math.max(0, itemLocks.bindingCount());
+    }
+
+    public List<ItemLockIndex.LockBinding> itemLockBindings(ItemStack stack) {
+        return itemLocks.bindingsFor(stack);
+    }
+
+    public boolean itemLockBindingComplete(ServerPlayer player, ItemLockIndex.LockBinding binding) {
+        PlayerQuestState state = progressData.state(player.getUUID());
+        if (bindingComplete(state, binding)) {
+            return true;
+        }
+        return !binding.individualProgress() && anyTeammateCompleted(player, binding);
+    }
+
     public void preparePlayerForFullSync(ServerPlayer player) {
         if (player == null || progressData == null) {
             return;

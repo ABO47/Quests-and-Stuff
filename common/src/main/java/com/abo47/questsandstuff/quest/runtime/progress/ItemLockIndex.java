@@ -84,6 +84,10 @@ public final class ItemLockIndex {
         return bindingCount <= 0;
     }
 
+    public int bindingCount() {
+        return bindingCount;
+    }
+
     public List<LockBinding> bindingsFor(ItemStack stack) {
         if (isEmpty() || stack == null || stack.isEmpty()) {
             return List.of();

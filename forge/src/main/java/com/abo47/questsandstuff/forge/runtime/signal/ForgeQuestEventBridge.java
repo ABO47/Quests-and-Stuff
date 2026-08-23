@@ -37,8 +37,23 @@ public final class ForgeQuestEventBridge {
     private final Map<UUID, Map<String, Integer>> statSnapshots = new HashMap<>();
 
     @SubscribeEvent
+    public void onItemCrafted(net.minecraftforge.event.entity.player.PlayerEvent.ItemCraftedEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement.undoLockedCraft(
+                    player, event.getCrafting(), event.getInventory());
+        }
+    }
+
+    @SubscribeEvent
+    public void onContainerOpen(net.minecraftforge.event.entity.player.PlayerContainerEvent.Open event) {
+        com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating.gateCraftingMenu(
+                event.getEntity(), event.getContainer());
+    }
+
+    @SubscribeEvent
     public void onPlayerLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
             QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
             QuestServiceRegistry.sync(player.server).syncFull(player);
         }
