@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,10 @@ public interface QuestTaskDefinition {
     String id();
 
     ResourceLocation type();
+
+    default List<String> itemLocks() {
+        return List.of();
+    }
 
     TaskStorage<?, ? extends Tag> storage();
 

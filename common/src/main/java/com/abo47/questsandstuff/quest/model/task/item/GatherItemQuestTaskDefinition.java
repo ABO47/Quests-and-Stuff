@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.item;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.serialization.Codec;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestInventoryTasks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -25,7 +27,8 @@ public record GatherItemQuestTaskDefinition(
         int goal,
         CollectionMode collection,
         String title,
-        String icon
+        String icon,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     private static final ResourceLocation AIR = ResourceLocation.tryBuild("minecraft", "air");
 
@@ -33,8 +36,12 @@ public record GatherItemQuestTaskDefinition(
         this(id, type, item, tag, nbt, goal, collection, "", "");
     }
 
+    public GatherItemQuestTaskDefinition(String id, ResourceLocation type, ResourceLocation item, String tag, String nbt, int goal, CollectionMode collection, String title, String icon) {
+        this(id, type, item, tag, nbt, goal, collection, title, icon, List.of());
+    }
+
     public GatherItemQuestTaskDefinition(String id, ResourceLocation type, ResourceLocation item, String nbt, int goal, CollectionMode collection) {
-        this(id, type, item, "", nbt, goal, collection, "", "");
+        this(id, type, item, "", nbt, goal, collection);
     }
 
     public static Codec<GatherItemQuestTaskDefinition> codec(ResourceLocation type) {
@@ -46,8 +53,9 @@ public record GatherItemQuestTaskDefinition(
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(GatherItemQuestTaskDefinition::goal),
                 CollectionMode.CODEC.fieldOf("collection").orElse(CollectionMode.AUTOMATIC).forGetter(GatherItemQuestTaskDefinition::collection),
                 Codec.STRING.fieldOf("title").orElse("").forGetter(GatherItemQuestTaskDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(GatherItemQuestTaskDefinition::icon)
-        ).apply(instance, (id, item, tag, nbt, goal, collection, title, icon) -> new GatherItemQuestTaskDefinition(id, type, item, tag, nbt, goal, collection, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(GatherItemQuestTaskDefinition::icon),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(GatherItemQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, item, tag, nbt, goal, collection, title, icon, itemLocks) -> new GatherItemQuestTaskDefinition(id, type, item, tag, nbt, goal, collection, title, icon, itemLocks)));
     }
 
     public GatherItemQuestTaskDefinition {
@@ -57,6 +65,7 @@ public record GatherItemQuestTaskDefinition(
         }
         title = title == null ? "" : title.trim();
         icon = icon == null ? "" : icon.trim();
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override

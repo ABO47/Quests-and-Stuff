@@ -69,6 +69,10 @@ final class QuestDetailsWindowActions {
         QuestDetailsTasksPanel.applyLootTablePick(player, state, lootTable);
     }
 
+    static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+        QuestDetailsTasksPanel.applyItemLockPick(player, state, entry);
+    }
+
     static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
         QuestDetailsTasksPanel.applyInventoryItemPick(player, state, stack);
     }
@@ -232,6 +236,10 @@ final class QuestDetailsWindowActions {
 
     static void openLootTablePicker(TabletUiState state, String target) {
         ModalOpenActions.openLootTablePicker(state, target);
+    }
+
+    static void openItemLockPicker(TabletUiState state, String target) {
+        ModalOpenActions.openItemLockPicker(state, target);
     }
 
     static void openItemInventoryPicker(TabletUiState state, String target) {

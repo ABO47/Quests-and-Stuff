@@ -32,8 +32,24 @@ public final class ModalPickerStates {
             case SOUND_PICKER -> sound(state);
             case ENTITY_VARIANT_PICKER -> entityVariant(state);
             case PREREQUISITES_MANAGER -> prerequisitesManager(state);
+            case ITEM_LOCK_PICKER -> itemLock(state);
             default -> throw new IllegalArgumentException("Modal type has no picker state: " + type);
         };
+    }
+
+    public static SearchScrollState itemLock(TabletUiState state) {
+        return bind(
+                state,
+                ModalWindowManager.ModalType.ITEM_LOCK_PICKER,
+                () -> state.pickers.itemLockSearch,
+                value -> state.pickers.itemLockSearch = value,
+                () -> state.pickers.itemLockSearchFocused,
+                value -> state.pickers.itemLockSearchFocused = value,
+                () -> state.pickers.itemLockScroll,
+                value -> state.pickers.itemLockScroll = value,
+                () -> state.pickers.itemLockScrollDragging,
+                value -> state.pickers.itemLockScrollDragging = value
+        );
     }
 
     public static SearchScrollState icon(TabletUiState state) {

@@ -13,24 +13,32 @@ import net.minecraft.resources.ResourceLocation;
 import com.abo47.questsandstuff.quest.model.storage.CompositeTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
 public record CompositeQuestTaskDefinition(
         String id,
         ResourceLocation type,
         int goal,
-        List<String> children
+        List<String> children,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     public static Codec<CompositeQuestTaskDefinition> codec(ResourceLocation type) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(CompositeQuestTaskDefinition::id),
                 Codec.INT.fieldOf("required").orElse(1).forGetter(CompositeQuestTaskDefinition::goal),
-                Codec.STRING.listOf().fieldOf("children").orElse(List.of()).forGetter(CompositeQuestTaskDefinition::children)
-        ).apply(instance, (id, goal, children) -> new CompositeQuestTaskDefinition(id, type, goal, children)));
+                Codec.STRING.listOf().fieldOf("children").orElse(List.of()).forGetter(CompositeQuestTaskDefinition::children),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(CompositeQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, goal, children, itemLocks) -> new CompositeQuestTaskDefinition(id, type, goal, children, itemLocks)));
+    }
+
+    public CompositeQuestTaskDefinition(String id, ResourceLocation type, int goal, List<String> children) {
+        this(id, type, goal, children, List.of());
     }
 
     public CompositeQuestTaskDefinition {
         children = children == null ? List.of() : List.copyOf(children);
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.generic;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.abo47.questsandstuff.quest.model.storage.BooleanTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -20,10 +22,15 @@ public record CheckQuestTaskDefinition(
         ResourceLocation type,
         String target,
         String title,
-        String icon
+        String icon,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     public CheckQuestTaskDefinition(String id, ResourceLocation type, String target) {
         this(id, type, target, "", "");
+    }
+
+    public CheckQuestTaskDefinition(String id, ResourceLocation type, String target, String title, String icon) {
+        this(id, type, target, title, icon, List.of());
     }
 
     public static Codec<CheckQuestTaskDefinition> codec(ResourceLocation type) {
@@ -31,14 +38,16 @@ public record CheckQuestTaskDefinition(
                 Codec.STRING.fieldOf("id").forGetter(CheckQuestTaskDefinition::id),
                 Codec.STRING.fieldOf("target").orElse("").forGetter(CheckQuestTaskDefinition::target),
                 Codec.STRING.fieldOf("title").orElse("").forGetter(CheckQuestTaskDefinition::title),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(CheckQuestTaskDefinition::icon)
-        ).apply(instance, (id, target, title, icon) -> new CheckQuestTaskDefinition(id, type, target, title, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(CheckQuestTaskDefinition::icon),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(CheckQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, target, title, icon, itemLocks) -> new CheckQuestTaskDefinition(id, type, target, title, icon, itemLocks)));
     }
 
     public CheckQuestTaskDefinition {
         target = target == null ? "" : target.trim();
         title = title == null ? "" : title.trim();
         icon = icon == null ? "" : icon.trim();
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override
@@ -68,6 +77,6 @@ public record CheckQuestTaskDefinition(
         if (retargeted.equals(target)) {
             return this;
         }
-        return new CheckQuestTaskDefinition(id, type, retargeted, title, icon);
+        return new CheckQuestTaskDefinition(id, type, retargeted, title, icon, itemLocks);
     }
 }

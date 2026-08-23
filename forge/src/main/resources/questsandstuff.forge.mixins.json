@@ -3,6 +3,12 @@
   "package": "com.abo47.questsandstuff.forge.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CraftingMenuMixin",
+    "FurnaceResultSlotMixin",
+    "InventoryMenuMixin",
+    "LootTableMixin",
+    "ResultSlotMixin",
+    "ServerGamePacketListenerMixin",
     "EnderDragonMixin",
     "FarmBlockMixin",
     "LightningBoltMixin",

@@ -68,6 +68,11 @@ public final class QuestTranslationKeys {
     public static final String RECIPE_VIEWER_ACTIVE = "ui.questsandstuff.recipe_viewer.active";
     public static final String INTERACT_TARGET = "ui.questsandstuff.quest.interact_target";
     public static final String MAKE_SELECTABLE_REWARD = "ui.questsandstuff.quest.make_selectable_reward";
+    public static final String CONTEXT_ITEM_LOCKS = "ui.questsandstuff.quest.context_item_locks";
+    public static final String ADD_ITEM_LOCK = "ui.questsandstuff.quest.add_item_lock";
+    public static final String REMOVE_ITEM_LOCK = "ui.questsandstuff.quest.remove_item_lock";
+    public static final String CHOOSE_ITEM_LOCK = "ui.questsandstuff.quest.choose_item_lock";
+    public static final String NO_ITEM_LOCKS = "ui.questsandstuff.quest.no_item_locks";
     public static final String USE_TARGET = "ui.questsandstuff.quest.use_target";
     public static final String VISIT_TARGET = "ui.questsandstuff.quest.visit_target";
     public static final String EDIT_XP = "ui.questsandstuff.quest.edit_xp";

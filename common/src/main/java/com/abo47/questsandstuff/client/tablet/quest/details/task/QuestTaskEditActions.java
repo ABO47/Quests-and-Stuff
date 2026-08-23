@@ -50,6 +50,14 @@ public final class QuestTaskEditActions {
         QuestTaskPickerApplyActions.applyLootTablePick(player, state, lootTable);
     }
 
+    static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+        QuestTaskPickerApplyActions.applyItemLockPick(player, state, entry);
+    }
+
+    static void removeItemLock(Player player, TabletUiState state, String questId, String taskId, String entry) {
+        QuestTaskPickerApplyActions.removeItemLock(player, state, questId, taskId, entry);
+    }
+
     static void beginTaskAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
         QuestTaskTaskEditActions.beginTaskAdd(player, state, questId, quest, typePath);
     }

@@ -108,6 +108,10 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyLootTablePick(player, state, lootTable);
     }
 
+    public static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+        QuestDetailsWindowActions.applyItemLockPick(player, state, entry);
+    }
+
     public static void applyInventoryItemPick(Player player, TabletUiState state, net.minecraft.world.item.ItemStack stack) {
         QuestDetailsWindowActions.applyInventoryItemPick(player, state, stack);
     }
@@ -198,6 +202,10 @@ public final class QuestDetailsWindow {
 
     public static void openLootTablePicker(TabletUiState state, String target) {
         QuestDetailsWindowActions.openLootTablePicker(state, target);
+    }
+
+    public static void openItemLockPicker(TabletUiState state, String target) {
+        QuestDetailsWindowActions.openItemLockPicker(state, target);
     }
 
     public static void openItemInventoryPicker(TabletUiState state, String target) {

@@ -44,7 +44,7 @@ final class QuestTaskCardRenderer {
     }
 
     static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, List<QuestDetailsTaskEntry> entries, int listY, int listBottom) {
-        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom));
+        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom, false, false, false, QuestTaskLockJson.hasLocks(entry.json())));
         String icon = QuestTaskDisplayText.taskIcon(entry.json());
         addTaskIcon(parent, entry.json(), icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), true, entry.json(), icon, x + 8, y + 8);
@@ -62,7 +62,7 @@ final class QuestTaskCardRenderer {
         boolean claimChoiceEntry = QuestTaskSelectableRewards.isClaimChoiceEntry(entry);
         JsonObject displayJson = selectableWrapper ? QuestTaskSelectableRewards.displayJson(entry.json()) : entry.json();
         QuestDetailsTaskEntry displayEntry = selectableWrapper ? new QuestDetailsTaskEntry(entry.id(), entry.tag(), displayJson) : entry;
-        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry));
+        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry, false));
         String icon = QuestTaskDisplayText.rewardIcon(displayJson);
         addTaskIcon(parent, displayJson, icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), false, displayJson, icon, x + 8, y + 8);
@@ -126,6 +126,10 @@ final class QuestTaskCardRenderer {
     }
 
     private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry) {
+        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, claimedReward, claimChoiceEntry, false);
+    }
+
+    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry, boolean itemLocked) {
         WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsTasksPanel.CARD_H) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -166,7 +170,8 @@ final class QuestTaskCardRenderer {
         boolean editSelected = kind.startsWith(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
         boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
-        int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING) : TabletColors.INTERACTIVE;
+        int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING)
+                : itemLocked ? TabletColors.LOCKED : TabletColors.INTERACTIVE;
 
         String skinKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
         String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
@@ -191,6 +196,8 @@ final class QuestTaskCardRenderer {
             addCardFill(card, w, withAlpha(TabletColors.TEXT_MUTED, 34));
         } else if (selected || selectableReward) {
             addCardFill(card, w, withAlpha(accent, 82));
+        } else if (itemLocked) {
+            addCardFill(card, w, withAlpha(TabletColors.LOCKED, 46));
         }
 
         int borderColor = claimedReward ? TabletColors.subtleBorder() : (selected ? accent : TabletColors.subtleBorder());
