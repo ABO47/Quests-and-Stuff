@@ -13,11 +13,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockHooks;
 import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 
@@ -27,13 +30,27 @@ public final class ForgeLockHooks {
 
     public static void register() {
         ItemLockHooks.setCraftingPlayerResolver(ForgeLockHooks::resolveCraftingPlayer);
+        ItemLockEnforcement.setLockedForAnyoneResolver(ForgeLockHooks::lockedForAnyOnlinePlayer);
+    }
+
+    private static boolean lockedForAnyOnlinePlayer(ItemStack stack) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null || stack.isEmpty()) {
+            return false;
+        }
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            if (ItemLockEnforcement.isLocked(player, stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void wrapServerRecipes(MinecraftServer server) {
         ServerRecipeWrap.wrapAll(server.getRecipeManager());
     }
 
-    private static Player resolveCraftingPlayer(net.minecraft.world.Container grid) {
+    private static Player resolveCraftingPlayer(Container grid) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {

@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
 
 @Mixin(InventoryMenu.class)
@@ -39,7 +40,7 @@ public abstract class InventoryMenuMixin {
     private void questsandstuff$hideLockedResult(Container ignored, CallbackInfo ci) {
         ItemStack result = this.resultSlots.getItem(0);
         if (!result.isEmpty() && ItemLockEnforcement.isLocked(this.owner, result)) {
-            com.abo47.questsandstuff.QuestsAndStuffMod.LOGGER.info(
+            QuestsAndStuffMod.LOGGER.info(
                     "[QnS:Lock] suppressed inventory-grid output of {}", result.getItem());
             this.resultSlots.setItem(0, ItemStack.EMPTY);
         }

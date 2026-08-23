@@ -19,8 +19,18 @@ import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 public final class ItemLockEnforcement {
     private static volatile boolean hookSeen;
     private static long lastRevertLogMs;
+    private static volatile java.util.function.Predicate<ItemStack> anyoneLockResolver;
 
     private ItemLockEnforcement() {
+    }
+
+    public static void setLockedForAnyoneResolver(java.util.function.Predicate<ItemStack> resolver) {
+        anyoneLockResolver = resolver;
+    }
+
+    public static boolean lockedForAnyOnlinePlayer(ItemStack stack) {
+        java.util.function.Predicate<ItemStack> resolver = anyoneLockResolver;
+        return resolver != null && resolver.test(stack);
     }
 
     private static void reportHook() {

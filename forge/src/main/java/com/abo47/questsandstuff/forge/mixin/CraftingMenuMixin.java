@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.forge.mixin;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
 
 @Mixin(CraftingMenu.class)
@@ -35,10 +37,10 @@ public abstract class CraftingMenuMixin {
     }
 
     @Inject(method = "slotsChanged", at = @At("TAIL"))
-    private void questsandstuff$hideLockedResult(net.minecraft.world.Container container, CallbackInfo ci) {
+    private void questsandstuff$hideLockedResult(Container container, CallbackInfo ci) {
         ItemStack result = this.resultSlots.getItem(0);
         if (!result.isEmpty() && ItemLockEnforcement.isLocked(this.player, result)) {
-            com.abo47.questsandstuff.QuestsAndStuffMod.LOGGER.info(
+            QuestsAndStuffMod.LOGGER.info(
                     "[QnS:Lock] suppressed crafting-table output of {}", result.getItem());
             this.resultSlots.setItem(0, ItemStack.EMPTY);
         }

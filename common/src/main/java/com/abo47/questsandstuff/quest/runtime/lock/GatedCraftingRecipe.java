@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 public record GatedCraftingRecipe(CraftingRecipe original) implements CraftingRecipe {
+
     @Override
     public boolean matches(CraftingContainer inv, Level level) {
         return original.matches(inv, level);
@@ -25,7 +26,13 @@ public record GatedCraftingRecipe(CraftingRecipe original) implements CraftingRe
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
         ItemStack output = original.assemble(inv, registryAccess);
         Player craftingPlayer = ItemLockHooks.resolveCraftingPlayer(inv);
-        if (craftingPlayer != null && ItemLockEnforcement.isLocked(craftingPlayer, output)) {
+        if (craftingPlayer == null) {
+            if (!output.isEmpty() && ItemLockEnforcement.lockedForAnyOnlinePlayer(output)) {
+                return ItemStack.EMPTY;
+            }
+            return output;
+        }
+        if (!output.isEmpty() && ItemLockEnforcement.isLocked(craftingPlayer, output)) {
             return ItemStack.EMPTY;
         }
         return output;
@@ -57,18 +64,18 @@ public record GatedCraftingRecipe(CraftingRecipe original) implements CraftingRe
     }
 
     @Override
-    public RecipeType<?> getType() {
-        return original.getType();
-    }
-
-    @Override
-    public CraftingBookCategory category() {
-        return original.category();
+    public ItemStack getToastSymbol() {
+        return original.getToastSymbol();
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return original.getSerializer();
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return original.getType();
     }
 
     @Override
@@ -82,7 +89,7 @@ public record GatedCraftingRecipe(CraftingRecipe original) implements CraftingRe
     }
 
     @Override
-    public ItemStack getToastSymbol() {
-        return original.getToastSymbol();
+    public CraftingBookCategory category() {
+        return original.category();
     }
 }

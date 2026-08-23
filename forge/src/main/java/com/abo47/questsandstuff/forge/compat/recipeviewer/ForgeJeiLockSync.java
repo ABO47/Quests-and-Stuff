@@ -1,13 +1,14 @@
 package com.abo47.questsandstuff.forge.compat.recipeviewer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.runtime.IJeiRuntime;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 
 import org.jetbrains.annotations.Nullable;
@@ -16,8 +17,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge;
 
 public final class ForgeJeiLockSync {
-    private static final List<CraftingRecipe> PENDING_HIDE = new ArrayList<>();
-    private static final List<CraftingRecipe> PENDING_SHOW = new ArrayList<>();
+    private static final List<Recipe<?>> PENDING_HIDE = new ArrayList<>();
+    private static final List<Recipe<?>> PENDING_SHOW = new ArrayList<>();
 
     private ForgeJeiLockSync() {
     }
@@ -36,16 +37,8 @@ public final class ForgeJeiLockSync {
     }
 
     private static void onDiff(List<Recipe<?>> hidden, List<Recipe<?>> shown) {
-        for (Recipe<?> recipe : hidden) {
-            if (recipe instanceof CraftingRecipe crafting) {
-                PENDING_HIDE.add(crafting);
-            }
-        }
-        for (Recipe<?> recipe : shown) {
-            if (recipe instanceof CraftingRecipe crafting) {
-                PENDING_SHOW.add(crafting);
-            }
-        }
+        PENDING_HIDE.addAll(hidden);
+        PENDING_SHOW.addAll(shown);
         flush();
     }
 
@@ -62,22 +55,32 @@ public final class ForgeJeiLockSync {
             return;
         }
         var manager = runtime.getRecipeManager();
-        var craftingType = manager.getRecipeType(
-                ResourceLocation.tryBuild("minecraft", "crafting"), CraftingRecipe.class);
-        if (craftingType.isEmpty()) {
-            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] jei crafting type not found");
-            PENDING_HIDE.clear();
-            PENDING_SHOW.clear();
-            return;
+        int hiddenCount = 0;
+        int shownCount = 0;
+        try {
+            Class<?> jeiTypeClass = Class.forName("mezz.jei.api.recipe.RecipeType");
+            Method hideMethod = manager.getClass().getMethod("hideRecipes", jeiTypeClass, List.class);
+            Method unhideMethod = manager.getClass().getMethod("unhideRecipes", jeiTypeClass, List.class);
+            for (Recipe<?> recipe : PENDING_HIDE) {
+                ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
+                var jeiTypeOpt = manager.getRecipeType(uid, recipe.getClass());
+                if (jeiTypeOpt.isPresent()) {
+                    hideMethod.invoke(manager, jeiTypeOpt.get(), List.of(recipe));
+                    hiddenCount++;
+                }
+            }
+            for (Recipe<?> recipe : PENDING_SHOW) {
+                ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
+                var jeiTypeOpt = manager.getRecipeType(uid, recipe.getClass());
+                if (jeiTypeOpt.isPresent()) {
+                    unhideMethod.invoke(manager, jeiTypeOpt.get(), List.of(recipe));
+                    shownCount++;
+                }
+            }
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] jei recipes hidden={} shown={}", hiddenCount, shownCount);
+        } catch (Exception error) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] jei recipe sync failed", error);
         }
-        if (!PENDING_HIDE.isEmpty()) {
-            manager.hideRecipes(craftingType.get(), List.copyOf(PENDING_HIDE));
-        }
-        if (!PENDING_SHOW.isEmpty()) {
-            manager.unhideRecipes(craftingType.get(), List.copyOf(PENDING_SHOW));
-        }
-        QuestsAndStuffMod.LOGGER.info("[QnS:Lock] jei recipes hidden={} shown={}",
-                PENDING_HIDE.size(), PENDING_SHOW.size());
         PENDING_HIDE.clear();
         PENDING_SHOW.clear();
     }

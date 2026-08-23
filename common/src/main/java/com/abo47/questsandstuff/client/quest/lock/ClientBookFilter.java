@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 
@@ -140,8 +142,8 @@ public final class ClientBookFilter {
         return null;
     }
 
-    private static net.minecraft.core.RegistryAccess registryAccess() {
-        var minecraft = net.minecraft.client.Minecraft.getInstance();
+    private static RegistryAccess registryAccess() {
+        var minecraft = Minecraft.getInstance();
         return minecraft.level == null ? null : minecraft.level.registryAccess();
     }
 }

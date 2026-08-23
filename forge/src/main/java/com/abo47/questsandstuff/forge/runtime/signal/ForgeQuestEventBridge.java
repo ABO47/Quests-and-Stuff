@@ -8,6 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
+import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 
@@ -39,21 +42,21 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onItemCrafted(net.minecraftforge.event.entity.player.PlayerEvent.ItemCraftedEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement.undoLockedCraft(
+            ItemLockEnforcement.undoLockedCraft(
                     player, event.getCrafting(), event.getInventory());
         }
     }
 
     @SubscribeEvent
     public void onContainerOpen(net.minecraftforge.event.entity.player.PlayerContainerEvent.Open event) {
-        com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating.gateCraftingMenu(
+        ItemLockMenuGating.gateCraftingMenu(
                 event.getEntity(), event.getContainer());
     }
 
     @SubscribeEvent
     public void onPlayerLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
+            ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
             QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
             QuestServiceRegistry.sync(player.server).syncFull(player);
         }

@@ -8,6 +8,7 @@ import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.forge.compat.recipeviewer.ForgeJeiLockSync;
 
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
@@ -69,7 +70,7 @@ public final class ForgeClientEvents {
 
         @SubscribeEvent
         public static void onRecipesUpdated(RecipesUpdatedEvent event) {
-            var minecraft = net.minecraft.client.Minecraft.getInstance();
+            var minecraft = Minecraft.getInstance();
             ClientRecipePurge.onRecipesUpdated(minecraft.level.getRecipeManager(), minecraft.level.registryAccess());
         }
 

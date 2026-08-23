@@ -12,9 +12,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.TagKey;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.lock.ClientItemLocks;
+import com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge;
 
 public final class ItemLockViewerSync {
     private static final int ATTEMPT_INTERVAL_TICKS = 40;
@@ -53,7 +55,7 @@ public final class ItemLockViewerSync {
         List<ItemStack> show = stacksFor(difference(appliedHidden, current));
         if (apply(hide, show)) {
             appliedHidden = Set.copyOf(current);
-            com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge.refresh();
+            ClientRecipePurge.refresh();
             QuestsAndStuffMod.LOGGER.info("[QnS:Lock] viewer sync applied hidden={} shown={}", hide.size(), show.size());
         } else {
             warnOnce("viewer sync could not reach any recipe viewer yet");
@@ -94,7 +96,7 @@ public final class ItemLockViewerSync {
         if (tagId == null) {
             return;
         }
-        var tagKey = net.minecraft.tags.TagKey.create(BuiltInRegistries.ITEM.key(), tagId);
+        var tagKey = TagKey.create(BuiltInRegistries.ITEM.key(), tagId);
         BuiltInRegistries.ITEM.getTag(tagKey).ifPresent(named -> {
             for (var holder : named) {
                 ItemStack stack = new ItemStack(holder.value());

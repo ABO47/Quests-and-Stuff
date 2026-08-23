@@ -37,30 +37,27 @@ public final class ServerRecipeWrap {
                     replaced.put(entry.getKey(), recipe);
                     continue;
                 }
-                if (recipe instanceof CraftingRecipe craftingRecipe) {
-                    replaced.put(entry.getKey(), new GatedCraftingRecipe(craftingRecipe));
+                if (recipe instanceof CraftingRecipe crafting) {
+                    replaced.put(entry.getKey(), new GatedCraftingRecipe(crafting));
                     wrapped++;
                     continue;
                 }
                 replaced.put(entry.getKey(), recipe);
             }
             byNameField.set(manager, new LinkedHashMap<>(replaced));
-            Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> rebuiltBuckets = new LinkedHashMap<>();
-            for (Map.Entry<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> bucketEntry : buckets.entrySet()) {
-                var newBucket = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>();
-                for (Map.Entry<ResourceLocation, Recipe<?>> entry : bucketEntry.getValue().entrySet()) {
-                    Recipe<?> recipe = replaced.get(entry.getKey());
-                    if (recipe == null) {
-                        recipe = entry.getValue();
-                    }
+
+            var craftingBucket = buckets.get(RecipeType.CRAFTING);
+            if (craftingBucket != null) {
+                var rebuilt = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>();
+                for (Map.Entry<ResourceLocation, Recipe<?>> entry : craftingBucket.entrySet()) {
+                    Recipe<?> recipe = replaced.getOrDefault(entry.getKey(), entry.getValue());
                     if (recipe instanceof CraftingRecipe crafting && !(recipe instanceof GatedCraftingRecipe)) {
                         recipe = new GatedCraftingRecipe(crafting);
                     }
-                    newBucket.put(entry.getKey(), recipe);
+                    rebuilt.put(entry.getKey(), recipe);
                 }
-                rebuiltBuckets.put(bucketEntry.getKey(), newBucket);
+                buckets.put(RecipeType.CRAFTING, rebuilt);
             }
-            recipesField.set(manager, rebuiltBuckets);
             QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated {} crafting recipe(s) on server", wrapped);
         } catch (Exception error) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] server recipe gating failed", error);

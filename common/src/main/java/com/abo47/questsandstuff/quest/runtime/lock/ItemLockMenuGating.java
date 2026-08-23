@@ -20,6 +20,14 @@ public final class ItemLockMenuGating {
             gateFurnaceMenu(player, menu);
             return;
         }
+        if (simpleName.equals("StonecutterMenu")) {
+            gateResultContainer(player, menu, 1);
+            return;
+        }
+        if (simpleName.equals("SmithingMenu")) {
+            gateResultContainer(player, menu, 3);
+            return;
+        }
         if (!simpleName.equals("CraftingMenu") && !simpleName.equals("InventoryMenu")) {
             return;
         }
@@ -54,6 +62,29 @@ public final class ItemLockMenuGating {
             }
         }
         return null;
+    }
+
+    private static void gateResultContainer(Player player, AbstractContainerMenu menu, int resultSlotIndex) {
+        if (resultSlotIndex >= menu.slots.size() || menu.slots.get(resultSlotIndex) instanceof GateResultSlot) {
+            return;
+        }
+        try {
+            Field resultField = findResultContainerField(menu.getClass());
+            if (resultField == null) {
+                QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] no ResultContainer field on {}", menu.getClass().getSimpleName());
+                return;
+            }
+            resultField.setAccessible(true);
+            ResultContainer original = (ResultContainer) resultField.get(menu);
+            GateResultContainer gatedContainer = new GateResultContainer(original, player);
+            resultField.set(menu, gatedContainer);
+
+            Slot originalSlot = menu.slots.get(resultSlotIndex);
+            menu.slots.set(resultSlotIndex, new GateResultSlot(gatedContainer, originalSlot));
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated {} result container", menu.getClass().getSimpleName());
+        } catch (Exception error) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] result container gating failed for {}", menu.getClass().getSimpleName(), error);
+        }
     }
 
     private static void gateFurnaceMenu(Player player, AbstractContainerMenu menu) {
