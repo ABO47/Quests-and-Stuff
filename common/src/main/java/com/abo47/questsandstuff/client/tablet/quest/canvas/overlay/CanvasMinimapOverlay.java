@@ -212,7 +212,7 @@ final class CanvasMinimapOverlay {
         for (CanvasExclusiveChoice ec : ecs) {
             net.minecraft.nbt.CompoundTag ecTag = null;
             if (!ec.background().isBlank()) {
-                ecTag = new net.minecraft.nbt.CompoundTag();
+                ecTag = new CompoundTag();
                 ecTag.putString("ec_background", ec.background());
             }
             CanvasMinimapRect ecBox = projectRect(

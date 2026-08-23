@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 
 import com.abo47.questsandstuff.quest.model.task.generic.SimpleQuestTaskDefinition;
@@ -98,8 +99,8 @@ class QuestTaskItemLocksTest {
         assertTrue(decoded.itemLocks().isEmpty());
     }
 
-    private static com.google.gson.JsonObject taskJson(SimpleQuestTaskDefinition task) {
-        com.google.gson.JsonObject json = new com.google.gson.JsonObject();
+    private static JsonObject taskJson(SimpleQuestTaskDefinition task) {
+        JsonObject json = new JsonObject();
         json.addProperty("id", task.id());
         json.addProperty("type", task.type().toString());
         return json;

@@ -4,6 +4,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stat;
+import net.minecraft.stats.StatType;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -86,17 +87,17 @@ public final class QuestStatHelper {
         return player.getStats().getValue(stat);
     }
 
-    private static int readBlock(ServerPlayer player, ResourceLocation id, net.minecraft.stats.StatType<Block> type) {
+    private static int readBlock(ServerPlayer player, ResourceLocation id, StatType<Block> type) {
         Block block = BuiltInRegistries.BLOCK.getOptional(id).orElse(null);
         return block == null ? 0 : player.getStats().getValue(type.get(block));
     }
 
-    private static int readItem(ServerPlayer player, ResourceLocation id, net.minecraft.stats.StatType<Item> type) {
+    private static int readItem(ServerPlayer player, ResourceLocation id, StatType<Item> type) {
         Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
         return item == null ? 0 : player.getStats().getValue(type.get(item));
     }
 
-    private static int readEntity(ServerPlayer player, ResourceLocation id, net.minecraft.stats.StatType<EntityType<?>> type) {
+    private static int readEntity(ServerPlayer player, ResourceLocation id, StatType<EntityType<?>> type) {
         EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(null);
         return entityType == null ? 0 : player.getStats().getValue(type.get(entityType));
     }

@@ -67,7 +67,7 @@ public record SkinFillOverride(String mode, String path) {
     private static final int MAX_TILE_SIZE = 64;
 
     private IGuiTexture createTileTexture() {
-        net.minecraft.resources.ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
@@ -81,7 +81,7 @@ public record SkinFillOverride(String mode, String path) {
         if (kind == AssetKind.GIF) {
             return createFullTexture();
         }
-        net.minecraft.resources.ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;

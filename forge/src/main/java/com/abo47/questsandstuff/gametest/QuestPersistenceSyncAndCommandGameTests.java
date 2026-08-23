@@ -23,6 +23,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -353,7 +354,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
             if (mutations.size() != 1) {
                 throw new GameTestAssertException("Expected one editor mutation packet with quest details");
             }
-            ListTag lines = mutations.get(0).questTag().getList("description", net.minecraft.nbt.Tag.TAG_STRING);
+            ListTag lines = mutations.get(0).questTag().getList("description", Tag.TAG_STRING);
             if (lines.isEmpty() || !detailLine.equals(lines.getString(0))) {
                 throw new GameTestAssertException("Editor mutation should carry quest details description lines");
             }
@@ -570,7 +571,7 @@ public final class QuestPersistenceSyncAndCommandGameTests {
                 throw new GameTestAssertException("Editor full sync should include locked prerequisite chains for canvas editing");
             }
             CompoundTag child = ClientQuestStateFacade.quests().get("editor/child");
-            if (child == null || !child.getList(QuestDefinition.PREREQUISITES_FIELD, net.minecraft.nbt.Tag.TAG_STRING).contains(net.minecraft.nbt.StringTag.valueOf("editor/root"))) {
+            if (child == null || !child.getList(QuestDefinition.PREREQUISITES_FIELD, Tag.TAG_STRING).contains(StringTag.valueOf("editor/root"))) {
                 throw new GameTestAssertException("Editor full sync should preserve prerequisite edges for locked pasted-style quests");
             }
         } catch (IOException e) {

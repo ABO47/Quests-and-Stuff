@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -85,11 +86,11 @@ class RecipeViewerSelectionUtilsTest {
         assertEquals("", RecipeViewerSelectionUtils.pickTarget(selection, "not a recipe id", recipe("minecraft:diamond_recipe", Items.DIAMOND), true, "minecraft:diamond"));
     }
 
-    private static RecipeView recipe(String id, net.minecraft.world.item.Item output) {
+    private static RecipeView recipe(String id, Item output) {
         return recipeUsing(id, output, Ingredient.EMPTY);
     }
 
-    private static RecipeView recipeUsing(String id, net.minecraft.world.item.Item output, Ingredient ingredient) {
+    private static RecipeView recipeUsing(String id, Item output, Ingredient ingredient) {
         return new RecipeView(
                 id,
                 "minecraft:crafting",

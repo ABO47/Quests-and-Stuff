@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -36,7 +37,7 @@ class QuestTranslationVocabularyTest {
     void englishTranslationsUseCanonicalQuestTranslationKeys() throws Exception {
         JsonObject translations = JsonParser.parseString(Files.readString(EN_US)).getAsJsonObject();
         Set<String> drift = new LinkedHashSet<>();
-        for (Map.Entry<String, com.google.gson.JsonElement> entry : translations.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : translations.entrySet()) {
             checkText(entry.getKey(), "key", entry.getKey(), drift);
             if (entry.getValue().isJsonPrimitive() && entry.getValue().getAsJsonPrimitive().isString()) {
                 checkText(entry.getKey(), "value", entry.getValue().getAsString(), drift);

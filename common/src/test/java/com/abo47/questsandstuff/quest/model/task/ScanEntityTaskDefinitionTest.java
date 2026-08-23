@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ScanEntityTaskDefinitionTest {
@@ -24,7 +25,7 @@ class ScanEntityTaskDefinitionTest {
 
     @Test
     void scanEntityStaysUnregisteredWithoutOresAndStuffInstalled() {
-        org.junit.jupiter.api.Assertions.assertNull(QuestTasks.get(SCAN_ENTITY));
+        assertNull(QuestTasks.get(SCAN_ENTITY));
     }
 
     @Test

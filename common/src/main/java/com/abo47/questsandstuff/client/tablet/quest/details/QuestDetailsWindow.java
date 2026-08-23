@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -112,7 +113,7 @@ public final class QuestDetailsWindow {
         QuestDetailsWindowActions.applyItemLockPick(player, state, entry);
     }
 
-    public static void applyInventoryItemPick(Player player, TabletUiState state, net.minecraft.world.item.ItemStack stack) {
+    public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
         QuestDetailsWindowActions.applyInventoryItemPick(player, state, stack);
     }
 

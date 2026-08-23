@@ -7,6 +7,7 @@ import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 
@@ -180,7 +181,7 @@ public final class ForgeQuestEventBridge {
 
     @SubscribeEvent
     public void onMobGrief(EntityMobGriefingEvent event) {
-        if (event.getEntity() instanceof net.minecraft.world.entity.LivingEntity living
+        if (event.getEntity() instanceof LivingEntity living
                 && living.level() instanceof ServerLevel level) {
             if (ChunkClaimProtection.isProtectedChunk(level, new ChunkPos(living.blockPosition()), false, true)) {
                 event.setResult(Event.Result.DENY);

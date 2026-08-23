@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.quest.model.ChapterDef;
@@ -219,7 +220,7 @@ class SyncServiceHelpersTest {
         return String.format(java.util.Locale.ROOT, "%03d", value);
     }
 
-    private static boolean containsString(net.minecraft.nbt.ListTag tag, String value) {
+    private static boolean containsString(ListTag tag, String value) {
         for (int i = 0; i < tag.size(); i++) {
             if (value.equals(tag.getString(i))) {
                 return true;

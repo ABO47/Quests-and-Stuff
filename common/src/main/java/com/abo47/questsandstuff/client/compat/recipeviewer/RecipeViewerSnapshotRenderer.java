@@ -17,6 +17,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
@@ -144,7 +145,7 @@ public final class RecipeViewerSnapshotRenderer {
             RenderSystem.applyModelViewMatrix();
             RenderSystem.setProjectionMatrix(
                     new Matrix4f().setOrtho(0.0F, logicalWidth, logicalHeight, 0.0F, 1000.0F, 3000.0F),
-                    com.mojang.blaze3d.vertex.VertexSorting.ORTHOGRAPHIC_Z
+                    VertexSorting.ORTHOGRAPHIC_Z
             );
             Lighting.setupFor3DItems();
 
@@ -178,7 +179,7 @@ public final class RecipeViewerSnapshotRenderer {
                 modelView.popPose();
             }
             RenderSystem.applyModelViewMatrix();
-            RenderSystem.setProjectionMatrix(previousProjection, com.mojang.blaze3d.vertex.VertexSorting.ORTHOGRAPHIC_Z);
+            RenderSystem.setProjectionMatrix(previousProjection, VertexSorting.ORTHOGRAPHIC_Z);
             mainTarget.bindWrite(true);
             RenderSystem.viewport(0, 0, minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

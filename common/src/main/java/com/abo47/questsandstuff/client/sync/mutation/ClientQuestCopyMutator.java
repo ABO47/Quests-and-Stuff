@@ -6,6 +6,7 @@ import java.util.Set;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
@@ -39,7 +40,7 @@ public final class ClientQuestCopyMutator {
                 String prerequisite = prerequisites.getString(i);
                 String mapped = copiedIds.get(prerequisite);
                 if (mapped != null && !mapped.isBlank()) {
-                    remappedPrerequisites.add(net.minecraft.nbt.StringTag.valueOf(mapped));
+                    remappedPrerequisites.add(StringTag.valueOf(mapped));
                 }
             }
         }
@@ -67,7 +68,7 @@ public final class ClientQuestCopyMutator {
             String prerequisite = prerequisites.getString(i);
                 String mapped = mappedCopiedId(copiedIds, prerequisite);
             if (!mapped.isBlank() && !mapped.equals(targetId)) {
-                remappedPrerequisites.add(net.minecraft.nbt.StringTag.valueOf(mapped));
+                remappedPrerequisites.add(StringTag.valueOf(mapped));
             }
             }
         }
@@ -119,7 +120,7 @@ public final class ClientQuestCopyMutator {
             String prerequisite = prerequisites.getString(i);
             String mapped = mappedCopiedId(copiedIds, prerequisite);
             if (!mapped.isBlank() && !mapped.equals(targetId) && seen.add(mapped)) {
-                remapped.add(net.minecraft.nbt.StringTag.valueOf(mapped));
+                remapped.add(StringTag.valueOf(mapped));
             }
         }
         return remapped;
@@ -166,7 +167,7 @@ public final class ClientQuestCopyMutator {
         for (int i = 0; i < hiddenConnections.size(); i++) {
             String mapped = mappedCopiedId(copiedIds, hiddenConnections.getString(i));
             if (!mapped.isBlank() && prerequisites.contains(mapped) && seen.add(mapped)) {
-                remapped.add(net.minecraft.nbt.StringTag.valueOf(mapped));
+                remapped.add(StringTag.valueOf(mapped));
             }
         }
         return remapped;

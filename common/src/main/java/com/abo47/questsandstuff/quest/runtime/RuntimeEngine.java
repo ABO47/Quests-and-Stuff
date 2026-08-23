@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -436,11 +437,11 @@ public final class RuntimeEngine {
         return true;
     }
 
-    void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    void onTeamMembershipChanged(ServerLevel level, UUID changedPlayer) {
         TeamProgressReconciler.onTeamMembershipChanged(level, changedPlayer, definitionStore, progressData, syncService);
     }
 
-    public void triggerTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    public void triggerTeamMembershipChanged(ServerLevel level, UUID changedPlayer) {
         onTeamMembershipChanged(level, changedPlayer);
     }
 

@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -67,7 +68,7 @@ final class RecipePickerApplyActions {
         state.pickers.recipeHoveredPick = "";
         modal.addWidget(new WidgetGroup(0, 0, 0, 0) {
             @Override
-            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 state.pickers.recipeHoveredPick = "";
             }
 

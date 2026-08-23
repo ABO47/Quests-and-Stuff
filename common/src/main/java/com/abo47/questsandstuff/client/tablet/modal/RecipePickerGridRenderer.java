@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import java.util.List;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -131,7 +132,7 @@ final class RecipePickerGridRenderer {
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind={} value={} recipes={}", entry.tag() ? "tag" : "output", entry.value(), entry.recipeIds());
         }) {
             @Override
-            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
                 if (isMouseOverElement(mouseX, mouseY)) {
                     RecipePickerApplyActions.trackRecipeHover(state, entry.value());
@@ -155,7 +156,7 @@ final class RecipePickerGridRenderer {
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind=fluid value={}", entry);
         }) {
             @Override
-            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
                 if (isMouseOverElement(mouseX, mouseY)) {
                     RecipePickerApplyActions.trackRecipeHover(state, entry);
