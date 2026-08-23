@@ -294,8 +294,8 @@ public final class ModelAssetPreviewRenderer {
         graphics.pose().popPose();
         Lighting.setupFor3DItems();
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     private static Block blockForAsset(String asset) {

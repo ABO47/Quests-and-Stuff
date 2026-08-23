@@ -38,6 +38,7 @@ final class QuestHudIconRenderer {
         float a = Math.max(0, Math.min(255, alpha)) / 255.0f;
         graphics.setColor(1.0f, 1.0f, 1.0f, a);
         texture.draw(graphics, 0, 0, x, y, size, size);
+        graphics.flush();
         graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }

@@ -73,8 +73,8 @@ final class QuestHudBackgroundRenderer {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {
