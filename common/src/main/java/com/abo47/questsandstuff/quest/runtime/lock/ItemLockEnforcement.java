@@ -69,6 +69,87 @@ public final class ItemLockEnforcement {
         }
     }
 
+    public static boolean itemLockedFromEveryone(Level level, ItemStack stack) {
+        if (!locksActive()
+                || stack == null
+                || stack.isEmpty()
+                || level == null
+                || level.isClientSide
+                || level.getServer() == null) {
+            return false;
+        }
+        try {
+            var engine = QuestServiceRegistry.engine(level.getServer());
+            if (!engine.itemLockIndexHasLocks()) {
+                return false;
+            }
+            for (ServerPlayer player : level.getServer().getPlayerList().getPlayers()) {
+                if (player.getAbilities().instabuild) {
+                    continue;
+                }
+                if (!engine.isItemLocked(player, stack)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception error) {
+            warnOnce("everyone-lock probe failed: " + error);
+            return false;
+        }
+    }
+
+    public static boolean cookingOutputLockedFromEveryone(Level level, ItemStack input) {
+        if (!locksActive()
+                || input == null
+                || input.isEmpty()
+                || level == null
+                || level.isClientSide) {
+            return false;
+        }
+        try {
+            var engine = QuestServiceRegistry.engine(level.getServer());
+            if (!engine.itemLockIndexHasLocks()) {
+                return false;
+            }
+            var manager = level.getRecipeManager();
+            SingleIngredientGrid grid = new SingleIngredientGrid(input);
+            for (var recipe : manager.getAllRecipesFor(RecipeType.SMELTING)) {
+                if (cookingFrozen(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.SMOKING)) {
+                if (cookingFrozen(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.BLASTING)) {
+                if (cookingFrozen(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)) {
+                if (cookingFrozen(recipe, grid, level)) {
+                    return true;
+                }
+            }
+        } catch (Exception error) {
+            warnOnce("frozen cooking probe failed: " + error);
+        }
+        return false;
+    }
+
+    private static boolean cookingFrozen(
+            Recipe<Container> recipe,
+            SingleIngredientGrid grid,
+            Level level) {
+        if (!recipe.matches(grid, level)) {
+            return false;
+        }
+        ItemStack output = recipe.assemble(grid, level.registryAccess());
+        return itemLockedFromEveryone(level, output);
+    }
+
     public static boolean cookingOutputLockedDefinition(Level level, ItemStack input) {
         if (!locksActive()
                 || input == null

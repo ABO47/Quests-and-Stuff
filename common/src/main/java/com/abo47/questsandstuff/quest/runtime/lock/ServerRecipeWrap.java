@@ -51,7 +51,10 @@ public final class ServerRecipeWrap {
                 for (Map.Entry<ResourceLocation, Recipe<?>> entry : craftingBucket.entrySet()) {
                     rebuilt.put(entry.getKey(), replacedByName.getOrDefault(entry.getKey(), entry.getValue()));
                 }
-                buckets.put(RecipeType.CRAFTING, rebuilt);
+                Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> replacedBuckets =
+                        new java.util.LinkedHashMap<>(buckets);
+                replacedBuckets.put(RecipeType.CRAFTING, rebuilt);
+                recipesField.set(manager, replacedBuckets);
             }
             if (wrapped > 0) {
                 QuestsAndStuffMod.LOGGER.info(

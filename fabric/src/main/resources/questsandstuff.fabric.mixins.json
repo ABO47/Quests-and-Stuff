@@ -6,6 +6,7 @@
   "mixins": [
     "BlockItemMixin",
     "CampfireBlockEntityMixin",
+    "AbstractFurnaceBlockEntityMixin",
     "CampfireBlockMixin",
     "CraftingMenuMixin",
     "EnderDragonMixin",
@@ -13,7 +14,6 @@
     "ExplosionMixin",
     "FarmBlockMixin",
     "FurnaceResultSlotMixin",
-    "HopperBlockEntityMixin",
     "InventoryMenuMixin",
     "ItemEntityMixin",
     "LightningBoltMixin",

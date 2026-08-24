@@ -11,11 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
@@ -43,7 +39,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ForgeQuestEventBridge {
-    private static final String HOPPER_OWNER_TAG = "qns_owner";
     private final Map<UUID, Map<String, Integer>> inventorySnapshots = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> statSnapshots = new HashMap<>();
 
@@ -194,19 +189,9 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && event.getLevel() instanceof ServerLevel level) {
-            stampHopperOwner(level, event.getPos(), player);
             if (!ChunkClaimProtection.allowedBreakPlace(player, level, event.getPos())) {
                 event.setCanceled(true);
             }
-        }
-    }
-
-    private static void stampHopperOwner(ServerLevel level, BlockPos pos, ServerPlayer player) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity != null && blockEntity.getType() == BlockEntityType.HOPPER) {
-            blockEntity.getPersistentData().putUUID(HOPPER_OWNER_TAG, player.getUUID());
-            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] stamped hopper at {} with owner {}",
-                    pos.toShortString(), player.getName().getString());
         }
     }
 
