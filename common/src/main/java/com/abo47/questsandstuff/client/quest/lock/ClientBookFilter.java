@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.stats.RecipeBook;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 
@@ -58,6 +61,13 @@ public final class ClientBookFilter {
         } catch (Exception error) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] recipe book rebuild failed", error);
         }
+    }
+
+    public static boolean hasDisplayableRecipes(RecipeCollection collection, RecipeBook book, RecipeBookMenu<?> menu) {
+        if (!collection.getDisplayRecipes(true).isEmpty()) {
+            return true;
+        }
+        return !book.isFiltering(menu) && !collection.getDisplayRecipes(false).isEmpty();
     }
 
     private static void capturePristine(Map<Object, List<Object>> current) {

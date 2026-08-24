@@ -10,6 +10,7 @@
     "FurnaceResultSlotMixin",
     "InventoryMenuMixin",
     "LootTableMixin",
+    "RecipeButtonMixin",
     "ResultSlotMixin",
     "ServerGamePacketListenerMixin",
     "EnderDragonMixin",

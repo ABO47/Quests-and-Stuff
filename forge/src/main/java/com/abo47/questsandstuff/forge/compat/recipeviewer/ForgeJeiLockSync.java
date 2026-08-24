@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.forge.compat.recipeviewer;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -14,11 +15,13 @@ import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.jei.JeiRecipeViewerProvider;
 import com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge;
 
 public final class ForgeJeiLockSync {
     private static final List<Recipe<?>> PENDING_HIDE = new ArrayList<>();
     private static final List<Recipe<?>> PENDING_SHOW = new ArrayList<>();
+    private static final String JEI_RECIPE_TYPE_CLASS = "mezz.jei.api.recipe.RecipeType";
 
     private ForgeJeiLockSync() {
     }
@@ -58,22 +61,17 @@ public final class ForgeJeiLockSync {
         int hiddenCount = 0;
         int shownCount = 0;
         try {
-            Class<?> jeiTypeClass = Class.forName("mezz.jei.api.recipe.RecipeType");
-            Method hideMethod = manager.getClass().getMethod("hideRecipes", jeiTypeClass, List.class);
-            Method unhideMethod = manager.getClass().getMethod("unhideRecipes", jeiTypeClass, List.class);
+            Class<?> jeiTypeClass = Class.forName(JEI_RECIPE_TYPE_CLASS);
+            Method typeByUid = manager.getClass().getMethod("getRecipeType", ResourceLocation.class);
+            Method hideMethod = manager.getClass().getMethod("hideRecipes", jeiTypeClass, Collection.class);
+            Method unhideMethod = manager.getClass().getMethod("unhideRecipes", jeiTypeClass, Collection.class);
             for (Recipe<?> recipe : PENDING_HIDE) {
-                ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
-                var jeiTypeOpt = manager.getRecipeType(uid, recipe.getClass());
-                if (jeiTypeOpt.isPresent()) {
-                    hideMethod.invoke(manager, jeiTypeOpt.get(), List.of(recipe));
+                if (applyRecipeState(manager, typeByUid, hideMethod, recipe)) {
                     hiddenCount++;
                 }
             }
             for (Recipe<?> recipe : PENDING_SHOW) {
-                ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
-                var jeiTypeOpt = manager.getRecipeType(uid, recipe.getClass());
-                if (jeiTypeOpt.isPresent()) {
-                    unhideMethod.invoke(manager, jeiTypeOpt.get(), List.of(recipe));
+                if (applyRecipeState(manager, typeByUid, unhideMethod, recipe)) {
                     shownCount++;
                 }
             }
@@ -83,6 +81,20 @@ public final class ForgeJeiLockSync {
         }
         PENDING_HIDE.clear();
         PENDING_SHOW.clear();
+    }
+
+    private static boolean applyRecipeState(Object manager, Method typeByUid, Method stateMethod, Recipe<?> recipe) throws Exception {
+        Object lookup = typeByUid.invoke(manager, jeiTypeUid(recipe));
+        if (!(lookup instanceof java.util.Optional<?> optional) || optional.isEmpty()) {
+            return false;
+        }
+        stateMethod.invoke(manager, optional.get(), List.of(recipe));
+        return true;
+    }
+
+    private static ResourceLocation jeiTypeUid(Recipe<?> recipe) {
+        return JeiRecipeViewerProvider.jeiRecipeTypeId(
+                BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType()).toString());
     }
 
     @Nullable

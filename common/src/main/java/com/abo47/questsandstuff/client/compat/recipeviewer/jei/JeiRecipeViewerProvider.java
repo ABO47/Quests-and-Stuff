@@ -339,7 +339,7 @@ public final class JeiRecipeViewerProvider implements RecipeViewerProvider {
         return RecipeViewerReflectionUtils.firstMethod(focusFactory.getClass(), "createFocusGroup", 1).invoke(focusFactory, List.of());
     }
 
-    private static ResourceLocation jeiRecipeTypeId(String vanillaTypeId) {
+    public static ResourceLocation jeiRecipeTypeId(String vanillaTypeId) {
         ResourceLocation id = ResourceLocation.tryParse(vanillaTypeId == null ? "" : vanillaTypeId.trim());
         if (id == null || !"minecraft".equals(id.getNamespace())) {
             return id;

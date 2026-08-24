@@ -92,7 +92,7 @@ public final class ItemLockEnforcement {
         }
     }
 
-    public static boolean smeltingOutputLocked(Player player, ItemStack input) {
+    public static boolean cookingOutputLocked(Player player, ItemStack input) {
         if (!(player instanceof ServerPlayer serverPlayer)
                 || player.level().isClientSide
                 || input == null
@@ -101,11 +101,27 @@ public final class ItemLockEnforcement {
             return false;
         }
         try {
+            if (!QuestServiceRegistry.engine(serverPlayer.server).itemLockIndexHasLocks()) {
+                return false;
+            }
             var manager = serverPlayer.level().getRecipeManager();
             SingleIngredientGrid grid = new SingleIngredientGrid(input);
             for (var recipe : manager.getAllRecipesFor(RecipeType.SMELTING)) {
-                if (recipe.matches(grid, serverPlayer.level())) {
-                    return isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()));
+                if (recipe.matches(grid, serverPlayer.level())
+                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.SMOKING)) {
+                if (recipe.matches(grid, serverPlayer.level())
+                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.BLASTING)) {
+                if (recipe.matches(grid, serverPlayer.level())
+                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
+                    return true;
                 }
             }
         } catch (Exception ignored) {

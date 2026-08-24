@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalHelper;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -148,6 +149,7 @@ public final class FabricQuestEventBridge {
             return;
         }
         DIMENSION_SNAPSHOTS.put(player.getUUID(), player.level().dimension().location().toString());
+        ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
         QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
         QuestServiceRegistry.sync(player.server).syncFull(player);
     }

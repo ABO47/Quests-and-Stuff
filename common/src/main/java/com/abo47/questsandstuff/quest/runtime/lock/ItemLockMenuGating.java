@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.AbstractFurnaceMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +17,7 @@ public final class ItemLockMenuGating {
 
     public static void gateCraftingMenu(Player player, AbstractContainerMenu menu) {
         String simpleName = menu.getClass().getSimpleName();
-        if (simpleName.equals("FurnaceMenu")) {
+        if (menu instanceof AbstractFurnaceMenu) {
             gateFurnaceMenu(player, menu);
             return;
         }
@@ -116,7 +117,7 @@ public final class ItemLockMenuGating {
             if (!originalSlot.mayPlace(stack)) {
                 return false;
             }
-            return !ItemLockEnforcement.smeltingOutputLocked(player, stack);
+            return !ItemLockEnforcement.cookingOutputLocked(player, stack);
         }
 
         @Override

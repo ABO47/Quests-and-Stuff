@@ -15,6 +15,7 @@
     "LightningBoltMixin",
     "LootTableMixin",
     "PlayerAdvancementsMixin",
+    "RecipeButtonMixin",
     "RemoveBlockGoalMixin",
     "ResultSlotMixin",
     "ServerGamePacketListenerMixin",
