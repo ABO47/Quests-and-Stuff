@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.quest.runtime.lock;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -22,7 +24,7 @@ public final class LockedRecipeSerializer implements RecipeSerializer<LockedCraf
             ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "locked");
 
     private static final Set<String> WARNED_DECODE =
-            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private LockedRecipeSerializer() {
     }

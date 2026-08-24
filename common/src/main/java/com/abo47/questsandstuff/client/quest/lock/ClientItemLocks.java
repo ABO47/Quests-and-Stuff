@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.quest.lock;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -70,7 +73,7 @@ public final class ClientItemLocks {
     }
 
     private static void compute() {
-        java.util.Set<String> entries = new java.util.HashSet<>();
+        Set<String> entries = new HashSet<>();
         for (var questEntry : ClientQuestState.questEntries()) {
             CompoundTag quest = questEntry.getValue();
             CompoundTag tasks = quest.getCompound(SyncKeys.Quest.TASKS);
@@ -83,7 +86,7 @@ public final class ClientItemLocks {
                 entries.addAll(locks);
             }
         }
-        lockedEntries = java.util.Collections.unmodifiableSet(entries);
+        lockedEntries = Collections.unmodifiableSet(entries);
         anyLocksDefined = !entries.isEmpty();
         int fingerprint = entries.hashCode();
         if (fingerprint != lastPublishedFingerprint) {
@@ -102,7 +105,7 @@ public final class ClientItemLocks {
             if (!field.isJsonArray()) {
                 return List.of();
             }
-            java.util.List<String> locks = new java.util.ArrayList<>();
+            List<String> locks = new ArrayList<>();
             for (JsonElement element : field.getAsJsonArray()) {
                 if (element.isJsonPrimitive()) {
                     locks.add(element.getAsString());

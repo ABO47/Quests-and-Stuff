@@ -53,4 +53,12 @@ public final class OpenMenuIndex {
     public static int trackedMenus() {
         return OPEN_MENUS.size();
     }
+
+    public static void forEachTracked(java.util.function.BiConsumer<ServerPlayer, AbstractContainerMenu> consumer) {
+        synchronized (OPEN_MENUS) {
+            for (Map.Entry<AbstractContainerMenu, ServerPlayer> entry : OPEN_MENUS.entrySet()) {
+                consumer.accept(entry.getValue(), entry.getKey());
+            }
+        }
+    }
 }

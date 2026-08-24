@@ -17,7 +17,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
+
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
 
 public final class QuestsAndStuffFabricClient implements ClientModInitializer {
     private static final ResourceLocation EARLY_HUD_PHASE = new ResourceLocation(QuestsAndStuffMod.MODID, "early_hud");
@@ -35,6 +38,9 @@ public final class QuestsAndStuffFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.addPhaseOrdering(EARLY_HUD_PHASE, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
         HudRenderCallback.EVENT.register(EARLY_HUD_PHASE, (graphics, tickDelta) -> QuestHudOverlayRenderer.render(graphics));
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof AbstractContainerScreen<?> containerScreen && client.player != null) {
+                ItemLockMenuGating.gateCraftingMenu(client.player, containerScreen.getMenu());
+            }
             ScreenEvents.afterRender(screen).register((currentScreen, graphics, mouseX, mouseY, tickDelta) ->
                     RecipeViewerPickOverlays.drawForScreen(currentScreen, graphics, mouseX, mouseY));
             ScreenMouseEvents.allowMouseClick(screen).register((currentScreen, mouseX, mouseY, button) ->

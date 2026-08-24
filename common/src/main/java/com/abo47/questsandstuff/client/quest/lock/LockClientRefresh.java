@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.quest.lock;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.world.item.crafting.RecipeManager;
 
@@ -34,6 +35,19 @@ public final class LockClientRefresh {
             QuestsAndStuffMod.debugLog("[QnS:Lock] recipe book instance changed, applying filter");
             ClientItemLocks.entries();
             ClientBookFilter.refresh(book);
+        }
+    }
+
+    public static void refreshOpenClientMenu(Minecraft minecraft) {
+        if (minecraft == null || minecraft.player == null) {
+            return;
+        }
+        var menu = minecraft.player.containerMenu;
+        if (menu instanceof CraftingMenu crafting && menu.slots.size() > 1) {
+            var grid = menu.slots.get(1).container;
+            crafting.slotsChanged(grid);
+        } else if (menu != null) {
+            menu.broadcastChanges();
         }
     }
 

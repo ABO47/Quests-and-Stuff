@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.quest.runtime.lock;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractFurnaceMenu;
@@ -10,6 +11,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.quest.lock.ClientCookingLocks;
 import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 
 public final class ItemLockMenuGating {
@@ -70,7 +72,7 @@ public final class ItemLockMenuGating {
         int armorEnd = 39;
         for (int index = 0; index < menu.slots.size(); index++) {
             Slot slot = menu.slots.get(index);
-            if (slot instanceof GateArmorSlot || !(slot.container instanceof net.minecraft.world.entity.player.Inventory)) {
+            if (slot instanceof GateArmorSlot || !(slot.container instanceof Inventory)) {
                 continue;
             }
             int containerSlot = slot.getContainerSlot();
@@ -188,7 +190,9 @@ public final class ItemLockMenuGating {
             if (!originalSlot.mayPlace(stack)) {
                 return false;
             }
-            return !ItemLockEnforcement.cookingOutputLocked(player, stack);
+            return player.level().isClientSide
+                    ? !ClientCookingLocks.inputBlocked(stack)
+                    : !ItemLockEnforcement.cookingOutputLocked(player, stack);
         }
 
         @Override

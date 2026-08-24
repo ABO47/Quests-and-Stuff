@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.compat.recipeviewer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.tags.TagKey;
@@ -22,10 +23,11 @@ import com.abo47.questsandstuff.client.quest.lock.ClientItemLocks;
 import com.abo47.questsandstuff.client.quest.lock.ClientLockEvents;
 import com.abo47.questsandstuff.client.quest.lock.ClientBookFilter;
 import com.abo47.questsandstuff.client.quest.lock.LockClientRefresh;
-import com.abo47.questsandstuff.quest.runtime.lock.LockedCraftingRecipe;
 
 public final class ItemLockViewerSync implements ClientLockEvents.Listener {
-    private static final int EMI_DEBOUNCE_TICKS = 40;
+    private static final int EMI_DEBOUNCE_TICKS = 10;
+    private static final int RETRY_INTERVAL_TICKS = 20;
+    private static final int MAX_RETRIES = 5;
     private static final Set<String> WARNED_MESSAGES = new HashSet<>();
     private static final ItemLockViewerSync INSTANCE = new ItemLockViewerSync();
 
@@ -34,6 +36,10 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
     private boolean emiDirty = false;
     private int emiCooldownTicks = 0;
     private boolean registered;
+    private boolean viewersReached;
+    private boolean emiAvailable;
+    private int retryTicks;
+    private int retriesLeft;
 
     private ItemLockViewerSync() {
     }
@@ -45,25 +51,69 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
         }
     }
 
+    public static void requestRefresh() {
+        INSTANCE.appliedHidden = null;
+        INSTANCE.appliedHiddenRecipes = Set.of();
+        INSTANCE.viewersReached = false;
+        INSTANCE.retryTicks = 0;
+        INSTANCE.retriesLeft = MAX_RETRIES;
+        INSTANCE.applyCurrentState();
+    }
+
     public static void reset() {
         INSTANCE.appliedHidden = null;
         INSTANCE.appliedHiddenRecipes = Set.of();
         INSTANCE.emiDirty = false;
         INSTANCE.emiCooldownTicks = 0;
-        INSTANCE.registered = false;
-        ClientLockEvents.unregister(INSTANCE);
         LockClientRefresh.reset();
+        INSTANCE.applyCurrentStateWhenLevelReady();
+    }
+
+    private void applyCurrentStateWhenLevelReady() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft != null && minecraft.level != null) {
+            applyCurrentState();
+        }
     }
 
     public static void tick() {
         Minecraft minecraft = Minecraft.getInstance();
         LockClientRefresh.tickClient(minecraft);
         INSTANCE.tickEmiDebounce();
+        INSTANCE.tickRetry();
     }
 
     @Override
     public void onLockStatesChanged() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) {
+            return;
+        }
+        LockClientRefresh.refreshOpenClientMenu(minecraft);
         applyCurrentState();
+    }
+
+    private void tickRetry() {
+        if (viewersReached || retriesLeft <= 0 || retryTicks <= 0) {
+            return;
+        }
+        retryTicks--;
+        if (retryTicks == 0) {
+            retriesLeft--;
+            applyCurrentState();
+        }
+    }
+
+    private void scheduleRetryIfNeeded(boolean anyViewer) {
+        if (anyViewer) {
+            viewersReached = true;
+            return;
+        }
+        if (emiAvailable || retriesLeft <= 0) {
+            return;
+        }
+        viewersReached = false;
+        retryTicks = RETRY_INTERVAL_TICKS;
     }
 
     private void applyCurrentState() {
@@ -91,6 +141,7 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
                 "[QnS:Lock] viewer sync applied items hidden={} shown={}, recipes gated={} (viewers reachable={})",
                 hide.size(), show.size(), hideRecipes.size(), anyViewer);
         refreshBook(minecraft);
+        scheduleRetryIfNeeded(anyViewer);
     }
 
     private void refreshBook(Minecraft minecraft) {
@@ -114,17 +165,27 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
 
     private boolean emiMarkDirty() {
         emiDirty = true;
-        return true;
+        return emiAvailable;
+    }
+
+    private static List<Recipe<?>> gatedRecipes(Minecraft minecraft) {
+        var manager = minecraft.level.getRecipeManager();
+        List<Recipe<?>> all = new ArrayList<>();
+        all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.SMELTING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.SMOKING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.BLASTING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.STONECUTTING));
+        all.addAll(manager.getAllRecipesFor(RecipeType.SMITHING));
+        return all;
     }
 
     private static List<Recipe<?>> lockedRecipes(Minecraft minecraft) {
         RegistryAccess access = minecraft.level.registryAccess();
         List<Recipe<?>> result = new ArrayList<>();
-        for (CraftingRecipe recipe : minecraft.level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            if (!(recipe instanceof LockedCraftingRecipe locked)) {
-                continue;
-            }
-            ItemStack output = locked.inner().getResultItem(access);
+        for (Recipe<?> recipe : gatedRecipes(minecraft)) {
+            ItemStack output = recipe.getResultItem(access);
             if (!output.isEmpty() && ClientItemLocks.isLocked(output)) {
                 result.add(recipe);
             }
@@ -142,14 +203,11 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
         }
         RegistryAccess access = minecraft.level.registryAccess();
         List<Recipe<?>> result = new ArrayList<>();
-        for (CraftingRecipe recipe : minecraft.level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            if (!(recipe instanceof LockedCraftingRecipe locked)) {
+        for (Recipe<?> recipe : gatedRecipes(minecraft)) {
+            if (!previouslyHidden.contains(recipe.getId())) {
                 continue;
             }
-            if (!previouslyHidden.contains(locked.getId())) {
-                continue;
-            }
-            ItemStack output = locked.inner().getResultItem(access);
+            ItemStack output = recipe.getResultItem(access);
             if (output.isEmpty() || !ClientItemLocks.isLocked(output)) {
                 result.add(recipe);
             }
@@ -251,8 +309,9 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
     private static boolean emiReload() {
         try {
             Class<?> reloadManager = Class.forName("dev.emi.emi.runtime.EmiReloadManager");
-            java.lang.reflect.Method reload = reloadManager.getMethod("reload");
+            Method reload = reloadManager.getMethod("reload");
             reload.invoke(null);
+            INSTANCE.emiAvailable = true;
             return true;
         } catch (ClassNotFoundException notInstalled) {
             return false;
@@ -270,9 +329,9 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
                 return false;
             }
             Class<?> entryStacks = Class.forName("me.shedaniel.rei.api.common.util.EntryStacks");
-            java.lang.reflect.Method of = entryStacks.getMethod("of", ItemStack.class);
+            Method of = entryStacks.getMethod("of", ItemStack.class);
             if (!hide.isEmpty()) {
-                java.lang.reflect.Method removeEntry = registryClass.getMethod(
+                Method removeEntry = registryClass.getMethod(
                         "removeEntry", Class.forName("me.shedaniel.rei.api.common.entry.EntryStack"));
                 for (ItemStack stack : hide) {
                     removeEntry.invoke(registry, of.invoke(null, stack));
@@ -283,7 +342,7 @@ public final class ItemLockViewerSync implements ClientLockEvents.Listener {
                 for (ItemStack stack : show) {
                     stacks.add(of.invoke(null, stack));
                 }
-                registryClass.getMethod("addEntries", java.util.Collection.class).invoke(registry, stacks);
+                registryClass.getMethod("addEntries", Collection.class).invoke(registry, stacks);
             }
             return true;
         } catch (ClassNotFoundException notInstalled) {

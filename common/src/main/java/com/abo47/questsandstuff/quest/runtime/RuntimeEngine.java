@@ -25,6 +25,7 @@ import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.LockMenuRefresher;
 import com.abo47.questsandstuff.quest.runtime.lock.StageBridge;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -64,6 +65,7 @@ public final class RuntimeEngine {
         this.index = new QuestRuntimeIndex(definitionStore.quests());
         this.itemLocks.rebuild(definitionStore.quests());
         ItemLockEnforcement.setLocksActive(!this.itemLocks.isEmpty());
+        LockMenuRefresher.refreshOpenMenus();
     }
 
     public void refreshIndex(Set<String> questIds) {
@@ -75,6 +77,7 @@ public final class RuntimeEngine {
             itemLocks.upsert(definition);
         }
         ItemLockEnforcement.setLocksActive(!itemLocks.isEmpty());
+        LockMenuRefresher.refreshOpenMenus();
     }
 
     public boolean isItemLocked(ServerPlayer player, ItemStack stack) {
@@ -300,6 +303,7 @@ public final class RuntimeEngine {
         if (justCompleted) {
             progress.setCompleted(true, serverTick);
             applyExclusiveChoiceDisable(actor, ownerId, state, questId);
+            LockMenuRefresher.refreshOpenMenus();
             if (announce) {
                 ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                 if (owner != null) {

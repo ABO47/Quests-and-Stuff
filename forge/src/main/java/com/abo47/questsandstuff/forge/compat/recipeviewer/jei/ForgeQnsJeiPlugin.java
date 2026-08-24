@@ -23,6 +23,7 @@ public final class ForgeQnsJeiPlugin implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime runtime) {
         bridge.onRuntimeAvailable(runtime);
         LockViewerBridges.setJei(bridge);
+        ItemLockViewerSync.requestRefresh();
         ItemLockViewerSync.ensureSubscribed();
     }
 

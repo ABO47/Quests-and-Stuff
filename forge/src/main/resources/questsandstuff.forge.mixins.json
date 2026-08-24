@@ -5,8 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "questsandstuff-forge-questsandstuff-forge-refmap.json",
   "mixins": [
+    "CampfireBlockEntityMixin",
+    "CampfireBlockMixin",
     "CraftingMenuMixin",
     "FurnaceResultSlotMixin",
+    "HopperBlockEntityMixin",
     "InventoryMenuMixin",
     "ItemEntityMixin",
     "LootTableMixin",

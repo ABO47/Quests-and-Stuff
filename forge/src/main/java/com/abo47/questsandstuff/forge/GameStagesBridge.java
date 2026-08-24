@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -134,7 +135,7 @@ public final class GameStagesBridge implements StageBridge.GrantHook {
         try {
             JsonObject root = new JsonObject();
             JsonObject mapping = new JsonObject();
-            com.google.gson.JsonArray example = new com.google.gson.JsonArray();
+            JsonArray example = new JsonArray();
             example.add("stage_one");
             mapping.add("example_quest_id", example);
             root.add("questStages", mapping);

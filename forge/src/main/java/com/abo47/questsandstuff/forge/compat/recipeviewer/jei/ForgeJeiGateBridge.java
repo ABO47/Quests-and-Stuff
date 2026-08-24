@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.JeiRecipeTypeUids;
 import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerBridge;
 
 public final class ForgeJeiGateBridge implements LockViewerBridge {
@@ -29,8 +30,7 @@ public final class ForgeJeiGateBridge implements LockViewerBridge {
     }
 
     @Override
-    public boolean applyIngredientDeltas(List<net.minecraft.world.item.ItemStack> hide,
-                                         List<net.minecraft.world.item.ItemStack> show) {
+    public boolean applyIngredientDeltas(List<ItemStack> hide, List<ItemStack> show) {
         if (runtime == null) {
             return false;
         }
@@ -68,7 +68,7 @@ public final class ForgeJeiGateBridge implements LockViewerBridge {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static boolean setState(IRecipeManager manager, Recipe<?> recipe, boolean hide) {
-        ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType());
+        ResourceLocation uid = JeiRecipeTypeUids.alias(BuiltInRegistries.RECIPE_TYPE.getKey(recipe.getType()));
         if (uid == null) {
             return false;
         }

@@ -4,16 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
-import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
-import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
@@ -30,6 +32,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
@@ -40,11 +43,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ForgeQuestEventBridge {
+    private static final String HOPPER_OWNER_TAG = "qns_owner";
     private final Map<UUID, Map<String, Integer>> inventorySnapshots = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> statSnapshots = new HashMap<>();
 
     @SubscribeEvent
-    public void onItemCrafted(net.minecraftforge.event.entity.player.PlayerEvent.ItemCraftedEvent event) {
+    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ItemLockEnforcement.undoLockedCraft(
                     player, event.getCrafting(), event.getInventory());
@@ -52,21 +56,22 @@ public final class ForgeQuestEventBridge {
     }
 
     @SubscribeEvent
-    public void onContainerOpen(net.minecraftforge.event.entity.player.PlayerContainerEvent.Open event) {
-        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+    public void onContainerOpen(PlayerContainerEvent.Open event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             OpenMenuIndex.record(serverPlayer, event.getContainer());
             ItemLockMenuGating.gateCraftingMenu(serverPlayer, event.getContainer());
         }
     }
 
     @SubscribeEvent
-    public void onContainerClose(net.minecraftforge.event.entity.player.PlayerContainerEvent.Close event) {
+    public void onContainerClose(PlayerContainerEvent.Close event) {
         OpenMenuIndex.unrecord(event.getContainer());
     }
 
     @SubscribeEvent
-    public void onPlayerLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            OpenMenuIndex.record(player, player.inventoryMenu);
             QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
             QuestServiceRegistry.sync(player.server).syncFull(player);
         }
@@ -189,9 +194,19 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && event.getLevel() instanceof ServerLevel level) {
+            stampHopperOwner(level, event.getPos(), player);
             if (!ChunkClaimProtection.allowedBreakPlace(player, level, event.getPos())) {
                 event.setCanceled(true);
             }
+        }
+    }
+
+    private static void stampHopperOwner(ServerLevel level, BlockPos pos, ServerPlayer player) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity != null && blockEntity.getType() == BlockEntityType.HOPPER) {
+            blockEntity.getPersistentData().putUUID(HOPPER_OWNER_TAG, player.getUUID());
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] stamped hopper at {} with owner {}",
+                    pos.toShortString(), player.getName().getString());
         }
     }
 

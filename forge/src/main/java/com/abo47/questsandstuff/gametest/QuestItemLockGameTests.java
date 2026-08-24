@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -58,13 +59,13 @@ public final class QuestItemLockGameTests {
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
     public static void serverRecipesAreWrappedWithGate(GameTestHelper helper) {
-        RecipeManager manager = helper.getServer().getRecipeManager();
+        RecipeManager manager = helper.getLevel().getServer().getRecipeManager();
         ServerRecipeWrap.wrapAll(manager);
         var holder = manager.byKey(LOG_RECIPE_ID);
         if (holder.isEmpty()) {
             throw new GameTestAssertException("oak_planks recipe missing");
         }
-        if (!(holder.get().value() instanceof LockedCraftingRecipe)) {
+        if (!(holder.get() instanceof LockedCraftingRecipe)) {
             throw new GameTestAssertException("crafting recipes should be wrapped after wrapAll");
         }
         helper.succeed();
@@ -73,10 +74,10 @@ public final class QuestItemLockGameTests {
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
     public static void gatedRecipeRoundTripsThroughNetwork(GameTestHelper helper) {
-        RecipeManager manager = helper.getServer().getRecipeManager();
+        RecipeManager manager = helper.getLevel().getServer().getRecipeManager();
         ServerRecipeWrap.wrapAll(manager);
         var holder = manager.byKey(LOG_RECIPE_ID);
-        if (holder.isEmpty() || !(holder.get().value() instanceof LockedCraftingRecipe wrapped)) {
+        if (holder.isEmpty() || !(holder.get() instanceof LockedCraftingRecipe wrapped)) {
             throw new GameTestAssertException("wrapped oak_planks recipe missing");
         }
         if (wrapped.getSerializer() != LockedRecipeSerializer.INSTANCE) {
@@ -84,7 +85,7 @@ public final class QuestItemLockGameTests {
         }
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            wrapped.getSerializer().toNetwork(buf, wrapped);
+            LockedRecipeSerializer.INSTANCE.toNetwork(buf, wrapped);
             CraftingRecipe decoded = LockedRecipeSerializer.INSTANCE.fromNetwork(LOG_RECIPE_ID, buf);
             if (!(decoded instanceof LockedCraftingRecipe decodedLocked)) {
                 throw new GameTestAssertException("network decode did not reconstruct the wrapper");
@@ -105,8 +106,8 @@ public final class QuestItemLockGameTests {
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
     public static void gateFailsClosedWithoutContextAndReopens(GameTestHelper helper) {
-        var holder = helper.getServer().getRecipeManager().byKey(LOG_RECIPE_ID);
-        if (holder.isEmpty() || !(holder.get().value() instanceof CraftingRecipe inner)) {
+        var holder = helper.getLevel().getServer().getRecipeManager().byKey(LOG_RECIPE_ID);
+        if (holder.isEmpty() || !(holder.get() instanceof CraftingRecipe inner)) {
             throw new GameTestAssertException("oak_planks recipe not found");
         }
         LockedCraftingRecipe gated = new LockedCraftingRecipe(inner);
@@ -301,12 +302,22 @@ public final class QuestItemLockGameTests {
         }
 
         @Override
+        public int getWidth() {
+            return 3;
+        }
+
+        @Override
+        public int getHeight() {
+            return 3;
+        }
+
+        @Override
         public List<ItemStack> getItems() {
             return items;
         }
 
         @Override
-        public void setItems(List<ItemStack> value) {
+        public void fillStackedContents(StackedContents contents) {
         }
     }
 }

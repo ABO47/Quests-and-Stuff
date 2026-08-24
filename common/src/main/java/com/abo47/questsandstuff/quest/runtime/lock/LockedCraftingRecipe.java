@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.quest.runtime.lock;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 
 import net.minecraft.core.NonNullList;
@@ -23,7 +25,7 @@ import com.abo47.questsandstuff.client.quest.lock.ClientItemLocks;
 
 public final class LockedCraftingRecipe implements CraftingRecipe {
     private static final Set<String> WARNED_CONTEXT =
-            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
     static volatile BiPredicate<Player, ItemStack> gatePolicyOverride;
 
     private final CraftingRecipe inner;

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ActionTone;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
@@ -79,8 +80,8 @@ final class QuestTaskMenuActions {
         for (String lock : QuestTaskLockJson.locks(taskJson)) {
             lockActions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text(QuestTranslationKeys.REMOVE_ITEM_LOCK, lock),
-                    "x",
-                    TabletColors.ERROR,
+                    "delete",
+                    ActionTone.DANGER,
                     () -> {
                         ContextMenuController.clearDeleteConfirm(state);
                         QuestTaskEditActions.removeItemLock(player, state, questId, taskId, lock);

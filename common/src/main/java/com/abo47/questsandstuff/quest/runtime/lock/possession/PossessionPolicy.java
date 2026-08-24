@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.runtime.lock.possession;
 
+import java.util.function.BooleanSupplier;
+
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +28,7 @@ public final class PossessionPolicy {
         return denies(player, stack, "equip", QuestsAndStuffConfig::itemLockBlockEquip);
     }
 
-    private static boolean denies(Player player, ItemStack stack, String action, java.util.function.BooleanSupplier enabled) {
+    private static boolean denies(Player player, ItemStack stack, String action, BooleanSupplier enabled) {
         if (!(player instanceof ServerPlayer serverPlayer) || player.level().isClientSide) {
             return false;
         }

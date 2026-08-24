@@ -1,5 +1,9 @@
 package com.abo47.questsandstuff.quest.runtime.lock;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -12,8 +16,8 @@ public final class StageBridge {
     }
 
     private static volatile GrantHook hook;
-    private static final java.util.Set<String> WARNED =
-            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final Set<String> WARNED =
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private StageBridge() {
     }

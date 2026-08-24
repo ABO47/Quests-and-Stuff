@@ -1,6 +1,9 @@
 package com.abo47.questsandstuff.quest.runtime.lock;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -9,7 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
@@ -20,8 +25,8 @@ public final class ItemLockEnforcement {
     private static volatile boolean hookSeen;
     private static volatile boolean locksActive;
     private static long lastRevertLogMs;
-    private static final java.util.Set<String> WARNED_MESSAGES =
-            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final Set<String> WARNED_MESSAGES =
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private ItemLockEnforcement() {
     }
@@ -60,6 +65,99 @@ public final class ItemLockEnforcement {
             return QuestServiceRegistry.engine(serverPlayer.server).isItemLocked(serverPlayer, stack);
         } catch (Exception error) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] lock check failed for {}", stack.getItem(), error);
+            return false;
+        }
+    }
+
+    public static boolean cookingOutputLockedDefinition(Level level, ItemStack input) {
+        if (!locksActive()
+                || input == null
+                || input.isEmpty()
+                || level == null
+                || level.isClientSide) {
+            return false;
+        }
+        try {
+            if (!QuestServiceRegistry.engine(level.getServer()).itemLockIndexHasLocks()) {
+                return false;
+            }
+            var manager = level.getRecipeManager();
+            SingleIngredientGrid grid = new SingleIngredientGrid(input);
+            for (var recipe : manager.getAllRecipesFor(RecipeType.SMELTING)) {
+                if (cookingLockedDefinition(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.SMOKING)) {
+                if (cookingLockedDefinition(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.BLASTING)) {
+                if (cookingLockedDefinition(recipe, grid, level)) {
+                    return true;
+                }
+            }
+            for (var recipe : manager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)) {
+                if (cookingLockedDefinition(recipe, grid, level)) {
+                    return true;
+                }
+            }
+        } catch (Exception error) {
+            warnOnce("cooking lock probe failed: " + error);
+        }
+        return false;
+    }
+
+    private static boolean cookingLockedDefinition(
+            Recipe<Container> recipe, SingleIngredientGrid grid, Level level) {
+        if (!recipe.matches(grid, level)) {
+            return false;
+        }
+        ItemStack output = recipe.assemble(grid, level.registryAccess());
+        return lockedDefinitionExists(level, output);
+    }
+
+    public static boolean campfireOutputLocked(Level level, ItemStack input) {
+        if (!locksActive()
+                || input == null
+                || input.isEmpty()
+                || level == null
+                || level.isClientSide) {
+            return false;
+        }
+        try {
+            if (!QuestServiceRegistry.engine(level.getServer()).itemLockIndexHasLocks()) {
+                return false;
+            }
+            var manager = level.getRecipeManager();
+            SingleIngredientGrid grid = new SingleIngredientGrid(input);
+            for (var recipe : manager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)) {
+                if (recipe.matches(grid, level)) {
+                    ItemStack output = recipe.assemble(grid, level.registryAccess());
+                    if (lockedDefinitionExists(level, output)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception error) {
+            warnOnce("campfire lock probe failed: " + error);
+        }
+        return false;
+    }
+
+    public static boolean lockedDefinitionExists(Level level, ItemStack stack) {
+        if (stack == null
+                || stack.isEmpty()
+                || level == null
+                || level.isClientSide
+                || level.getServer() == null) {
+            return false;
+        }
+        try {
+            return QuestServiceRegistry.engine(level.getServer()).itemLockExists(stack);
+        } catch (Exception error) {
+            warnOnce("definition lock probe failed: " + error);
             return false;
         }
     }
