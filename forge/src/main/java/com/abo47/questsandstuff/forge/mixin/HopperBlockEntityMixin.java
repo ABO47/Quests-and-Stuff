@@ -2,12 +2,12 @@ package com.abo47.questsandstuff.forge.mixin;
 
 import java.util.UUID;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 
@@ -18,53 +18,84 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.runtime.lock.HopperGate;
 import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
 
 @Mixin(HopperBlockEntity.class)
 public abstract class HopperBlockEntityMixin {
     @Unique
     private static final String OWNER_TAG = "qns_owner";
+    @Unique
+    private static long lastBlockLogMs;
 
-    @Inject(method = "tryMoveInItem", at = @At("HEAD"), cancellable = true)
-    private static void questsandstuff$blockLockedHopperTransfer(
+        @Inject(method = "tryMoveInItem", at = @At("HEAD"), cancellable = true)
+    private static void questsandstuff$blockLockedHopperMerge(
             Container source,
             Container destination,
             ItemStack stack,
             int slot,
             Direction direction,
             CallbackInfoReturnable<ItemStack> cir) {
-        if (!ItemLockEnforcement.locksActive()
-                || stack == null
-                || stack.isEmpty()
-                || destination == null) {
-            return;
+        if (questsandstuff$hopperDenied(source, destination, stack)) {
+            cir.setReturnValue(stack);
         }
-        Level level = levelOf(source, destination);
-        if (level == null || !transferDenied(level, source, destination, stack)) {
-            return;
-        }
-        QuestsAndStuffMod.debugLog("[QnS:Lock] blocked hopper transfer of {}", stack.getItem());
-        cir.setReturnValue(stack);
     }
 
-    private static boolean transferDenied(Level level, Container source, Container destination, ItemStack stack) {
-        boolean lockedForOwner = false;
-        UUID owner = ownerOf(source, destination);
-        if (owner != null) {
-            ServerPlayer ownerPlayer = level.getServer().getPlayerList().getPlayer(owner);
-            lockedForOwner = ownerPlayer != null && ItemLockEnforcement.isLocked(ownerPlayer, stack);
+    @Inject(method = "canTakeItemFromContainer", at = @At("HEAD"), cancellable = true)
+    private static void questsandstuff$blockLockedHopperTake(
+            Container source,
+            Container destination,
+            ItemStack stack,
+            int slot,
+            Direction direction,
+            CallbackInfoReturnable<Boolean> cir) {
+        if (questsandstuff$hopperDenied(source, destination, stack)) {
+            cir.setReturnValue(false);
         }
-        if (lockedForOwner) {
+    }
+
+    @Inject(method = "canPlaceItemInContainer", at = @At("HEAD"), cancellable = true)
+    private static void questsandstuff$blockLockedHopperPlace(
+            Container destination,
+            ItemStack stack,
+            int slot,
+            Direction direction,
+            CallbackInfoReturnable<Boolean> cir) {
+        if (questsandstuff$hopperDenied(destination, destination, stack)) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    private static boolean questsandstuff$hopperDenied(Container source, Container destination, ItemStack stack) {
+        Level level = questsandstuff$levelOf(source, destination);
+        if (level == null) {
+            return false;
+        }
+        if (HopperGate.machineOutputLocked(level, destination, stack)) {
+            logBlocked("machine-output", stack);
             return true;
         }
-        if (destination instanceof AbstractFurnaceBlockEntity) {
-            return ItemLockEnforcement.cookingOutputLockedDefinition(level, stack)
-                    || ItemLockEnforcement.lockedDefinitionExists(level, stack);
+        if (!HopperGate.itemLocked(level, stack)) {
+            return false;
         }
-        return ItemLockEnforcement.lockedDefinitionExists(level, stack);
+        UUID owner = ownerOf(source, destination);
+        if (owner != null && ownerCanMove(level, owner, stack)) {
+            return false;
+        }
+        logBlocked("item", stack);
+        return true;
     }
 
-    private static Level levelOf(Container source, Container destination) {
+    @Unique
+    private static void logBlocked(String reason, ItemStack stack) {
+        long now = System.currentTimeMillis();
+        if (now - lastBlockLogMs >= 2000L) {
+            lastBlockLogMs = now;
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] blocked hopper transfer of {} ({})", stack.getItem(), reason);
+        }
+    }
+
+    private static Level questsandstuff$levelOf(Container source, Container destination) {
         if (source instanceof BlockEntity blockEntity && blockEntity.getLevel() != null) {
             return blockEntity.getLevel();
         }
@@ -85,5 +116,13 @@ public abstract class HopperBlockEntityMixin {
             return blockEntity.getPersistentData().getUUID(OWNER_TAG);
         }
         return null;
+    }
+
+    private static boolean ownerCanMove(Level level, UUID ownerId, ItemStack stack) {
+        if (level == null || level.getServer() == null) {
+            return false;
+        }
+        ServerPlayer ownerPlayer = level.getServer().getPlayerList().getPlayer(ownerId);
+        return ownerPlayer != null && !ItemLockEnforcement.isLocked(ownerPlayer, stack);
     }
 }
