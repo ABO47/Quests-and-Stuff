@@ -1,6 +1,9 @@
 package com.abo47.questsandstuff.client.tablet.root;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import org.lwjgl.opengl.GL11;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -15,6 +18,7 @@ final class TabletRootDrawRouter {
             WidgetGroup frontWindowLayer,
             boolean modalOpen,
             boolean frontWindowOpen,
+            boolean frontWindowMouse,
             GuiGraphics graphics,
             int mouseX,
             int mouseY,
@@ -22,34 +26,38 @@ final class TabletRootDrawRouter {
             LayerDraw layer,
             SelfLayerDraw selfDraw
     ) {
-        if (!modalOpen || modalLayer == null) {
-            drawWithFrontWindow(frontWindowLayer, frontWindowOpen, graphics, mouseX, mouseY, partialTicks, layer, selfDraw);
+        if (!modalOpen && !frontWindowOpen) {
+            selfDraw.draw(graphics, mouseX, mouseY, partialTicks);
             return;
         }
-        modalLayer.setVisible(false);
+        if (modalLayer != null) {
+            modalLayer.setVisible(false);
+        }
+        if (frontWindowLayer != null) {
+            frontWindowLayer.setVisible(false);
+        }
         selfDraw.draw(graphics, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE, partialTicks);
+        if (frontWindowOpen && frontWindowLayer != null) {
+            flushBatchedDraws(graphics);
+            frontWindowLayer.setVisible(true);
+            drawGroupLayer(frontWindowLayer, graphics, layerMouse(frontWindowMouse, mouseX), layerMouse(frontWindowMouse, mouseY), partialTicks, layer);
+        }
+        if (!modalOpen || modalLayer == null) {
+            return;
+        }
+        flushBatchedDraws(graphics);
         modalLayer.setVisible(true);
         drawGroupLayer(modalLayer, graphics, mouseX, mouseY, partialTicks, layer);
     }
 
-    private static void drawWithFrontWindow(
-            WidgetGroup frontWindowLayer,
-            boolean frontWindowOpen,
-            GuiGraphics graphics,
-            int mouseX,
-            int mouseY,
-            float partialTicks,
-            LayerDraw layer,
-            SelfLayerDraw selfDraw
-    ) {
-        if (!frontWindowOpen || frontWindowLayer == null) {
-            selfDraw.draw(graphics, mouseX, mouseY, partialTicks);
-            return;
-        }
-        frontWindowLayer.setVisible(false);
-        selfDraw.draw(graphics, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE, partialTicks);
-        frontWindowLayer.setVisible(true);
-        drawGroupLayer(frontWindowLayer, graphics, mouseX, mouseY, partialTicks, layer);
+    private static int layerMouse(boolean active, int mouse) {
+        return active ? mouse : OFFSCREEN_MOUSE;
+    }
+
+    private static void flushBatchedDraws(GuiGraphics graphics) {
+        graphics.bufferSource().endBatch();
+        RenderSystem.depthMask(true);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
     }
 
     private static void drawGroupLayer(WidgetGroup group, GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, LayerDraw layer) {

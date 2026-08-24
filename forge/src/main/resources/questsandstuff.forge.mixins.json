@@ -9,7 +9,6 @@
     "AbstractFurnaceBlockEntityMixin",
     "CampfireBlockMixin",
     "CraftingMenuMixin",
-    "FurnaceResultSlotMixin",
     "InventoryMenuMixin",
     "ItemEntityMixin",
     "LootTableMixin",

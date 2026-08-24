@@ -39,7 +39,7 @@ public final class QuestsAndStuffFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(EARLY_HUD_PHASE, (graphics, tickDelta) -> QuestHudOverlayRenderer.render(graphics));
         ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
             if (screen instanceof AbstractContainerScreen<?> containerScreen && client.player != null) {
-                ItemLockMenuGating.gateCraftingMenu(client.player, containerScreen.getMenu());
+                ItemLockMenuGating.gateCraftingMenu(client.player, containerScreen.getMenu(), true);
             }
             ScreenEvents.afterRender(screen).register((currentScreen, graphics, mouseX, mouseY, tickDelta) ->
                     RecipeViewerPickOverlays.drawForScreen(currentScreen, graphics, mouseX, mouseY));

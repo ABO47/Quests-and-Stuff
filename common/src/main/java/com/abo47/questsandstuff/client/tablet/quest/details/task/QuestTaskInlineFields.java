@@ -223,6 +223,6 @@ final class QuestTaskInlineFields {
     }
 
     static void renderDisplayText(WidgetGroup parent, int x, int y, int width, String text, int color, TextTexture.TextType type) {
-        parent.addWidget(TabletTextTextures.literal(x, y, Math.max(1, width), 16, text, color, type));
+        parent.addWidget(TabletTextTextures.flatLiteral(x, y, Math.max(1, width), 16, text, color, type));
     }
 }

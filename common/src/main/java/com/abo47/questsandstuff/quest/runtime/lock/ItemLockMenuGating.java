@@ -5,13 +5,11 @@ import java.lang.reflect.Field;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.AbstractFurnaceMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.quest.lock.ClientCookingLocks;
 import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 
 public final class ItemLockMenuGating {
@@ -19,11 +17,11 @@ public final class ItemLockMenuGating {
     }
 
     public static void gateCraftingMenu(Player player, AbstractContainerMenu menu) {
+        gateCraftingMenu(player, menu, false);
+    }
+
+    public static void gateCraftingMenu(Player player, AbstractContainerMenu menu, boolean clientSide) {
         String simpleName = menu.getClass().getSimpleName();
-        if (menu instanceof AbstractFurnaceMenu) {
-            gateFurnaceMenu(player, menu);
-            return;
-        }
         if (simpleName.equals("StonecutterMenu")) {
             gateResultContainer(player, menu, 1);
             return;
@@ -122,20 +120,6 @@ public final class ItemLockMenuGating {
         }
     }
 
-    private static void gateFurnaceMenu(Player player, AbstractContainerMenu menu) {
-        for (int index = 0; index < menu.slots.size(); index++) {
-            Slot slot = menu.slots.get(index);
-            String slotClass = slot.getClass().getSimpleName();
-            if (slotClass.equals("FurnaceResultSlot") && !(slot instanceof GateDelegatedSlot)) {
-                menu.slots.set(index, new GateDelegatedSlot(slot, player));
-                QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated furnace result slot");
-            } else if (index == 0 && !(slot instanceof GateSmeltingInputSlot)) {
-                menu.slots.set(index, new GateSmeltingInputSlot(slot, player));
-                QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated furnace input slot");
-            }
-        }
-    }
-
     private static class GateArmorSlot extends Slot {
         private final Slot originalSlot;
         private final Player player;
@@ -167,80 +151,6 @@ public final class ItemLockMenuGating {
         @Override
         public void onTake(Player accessPlayer, ItemStack stack) {
             originalSlot.onTake(accessPlayer, stack);
-        }
-
-        @Override
-        public int getMaxStackSize() {
-            return originalSlot.getMaxStackSize();
-        }
-    }
-
-    private static class GateSmeltingInputSlot extends Slot {
-        private final Slot originalSlot;
-        private final Player player;
-
-        GateSmeltingInputSlot(Slot originalSlot, Player player) {
-            super(originalSlot.container, originalSlot.getContainerSlot(), originalSlot.x, originalSlot.y);
-            this.originalSlot = originalSlot;
-            this.player = player;
-        }
-
-        @Override
-        public boolean mayPlace(ItemStack stack) {
-            if (!originalSlot.mayPlace(stack)) {
-                return false;
-            }
-            return player.level().isClientSide
-                    ? !ClientCookingLocks.inputBlocked(stack)
-                    : !ItemLockEnforcement.cookingOutputLocked(player, stack);
-        }
-
-        @Override
-        public ItemStack getItem() {
-            return originalSlot.getItem();
-        }
-
-        @Override
-        public int getMaxStackSize() {
-            return originalSlot.getMaxStackSize();
-        }
-    }
-
-    private static class GateDelegatedSlot extends Slot {
-        private final Slot originalSlot;
-        private final Player player;
-
-        GateDelegatedSlot(Slot originalSlot, Player player) {
-            super(originalSlot.container, originalSlot.getContainerSlot(), originalSlot.x, originalSlot.y);
-            this.originalSlot = originalSlot;
-            this.player = player;
-        }
-
-        @Override
-        public boolean mayPickup(Player player) {
-            ItemStack stack = getItem();
-            if (!stack.isEmpty() && ItemLockEnforcement.isLocked(player, stack)) {
-                return false;
-            }
-            return originalSlot.mayPickup(player);
-        }
-
-        @Override
-        public void onTake(Player player, ItemStack stack) {
-            if (ItemLockEnforcement.isLocked(player, stack)) {
-                return;
-            }
-            originalSlot.onTake(player, stack);
-        }
-
-        @Override
-        public ItemStack getItem() {
-            return originalSlot.getItem();
-        }
-
-        @Override
-        public boolean mayPlace(ItemStack stack) {
-            return originalSlot.mayPlace(stack);
         }
 
         @Override
