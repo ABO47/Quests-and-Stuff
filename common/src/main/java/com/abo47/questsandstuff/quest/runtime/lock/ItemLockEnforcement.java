@@ -20,6 +20,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.progress.ItemLockIndex;
 
 public final class ItemLockEnforcement {
     private static volatile boolean hookSeen;
@@ -150,55 +151,6 @@ public final class ItemLockEnforcement {
         return itemLockedFromEveryone(level, output);
     }
 
-    public static boolean cookingOutputLockedDefinition(Level level, ItemStack input) {
-        if (!locksActive()
-                || input == null
-                || input.isEmpty()
-                || level == null
-                || level.isClientSide) {
-            return false;
-        }
-        try {
-            if (!QuestServiceRegistry.engine(level.getServer()).itemLockIndexHasLocks()) {
-                return false;
-            }
-            var manager = level.getRecipeManager();
-            SingleIngredientGrid grid = new SingleIngredientGrid(input);
-            for (var recipe : manager.getAllRecipesFor(RecipeType.SMELTING)) {
-                if (cookingLockedDefinition(recipe, grid, level)) {
-                    return true;
-                }
-            }
-            for (var recipe : manager.getAllRecipesFor(RecipeType.SMOKING)) {
-                if (cookingLockedDefinition(recipe, grid, level)) {
-                    return true;
-                }
-            }
-            for (var recipe : manager.getAllRecipesFor(RecipeType.BLASTING)) {
-                if (cookingLockedDefinition(recipe, grid, level)) {
-                    return true;
-                }
-            }
-            for (var recipe : manager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)) {
-                if (cookingLockedDefinition(recipe, grid, level)) {
-                    return true;
-                }
-            }
-        } catch (Exception error) {
-            warnOnce("cooking lock probe failed: " + error);
-        }
-        return false;
-    }
-
-    private static boolean cookingLockedDefinition(
-            Recipe<Container> recipe, SingleIngredientGrid grid, Level level) {
-        if (!recipe.matches(grid, level)) {
-            return false;
-        }
-        ItemStack output = recipe.assemble(grid, level.registryAccess());
-        return lockedDefinitionExists(level, output);
-    }
-
     public static boolean campfireOutputLocked(Level level, ItemStack input) {
         if (!locksActive()
                 || input == null
@@ -278,44 +230,6 @@ public final class ItemLockEnforcement {
         }
     }
 
-    public static boolean cookingOutputLocked(Player player, ItemStack input) {
-        if (!(player instanceof ServerPlayer serverPlayer)
-                || player.level().isClientSide
-                || input == null
-                || input.isEmpty()
-                || player.getAbilities().instabuild) {
-            return false;
-        }
-        try {
-            if (!QuestServiceRegistry.engine(serverPlayer.server).itemLockIndexHasLocks()) {
-                return false;
-            }
-            var manager = serverPlayer.level().getRecipeManager();
-            SingleIngredientGrid grid = new SingleIngredientGrid(input);
-            for (var recipe : manager.getAllRecipesFor(RecipeType.SMELTING)) {
-                if (recipe.matches(grid, serverPlayer.level())
-                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
-                    return true;
-                }
-            }
-            for (var recipe : manager.getAllRecipesFor(RecipeType.SMOKING)) {
-                if (recipe.matches(grid, serverPlayer.level())
-                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
-                    return true;
-                }
-            }
-            for (var recipe : manager.getAllRecipesFor(RecipeType.BLASTING)) {
-                if (recipe.matches(grid, serverPlayer.level())
-                        && isLocked(player, recipe.assemble(grid, serverPlayer.level().registryAccess()))) {
-                    return true;
-                }
-            }
-        } catch (Exception error) {
-            warnOnce("smelting lock probe failed: " + error);
-        }
-        return false;
-    }
-
     private record SingleIngredientGrid(ItemStack stack) implements Container {
         @Override
         public int getContainerSize() {
@@ -364,6 +278,7 @@ public final class ItemLockEnforcement {
         if (!isLocked(player, taken)) {
             return false;
         }
+        logTakeDenial(player, taken);
         ItemStack current = container.getItem(slotIndex);
         if (current.isEmpty()) {
             container.setItem(slotIndex, taken.copy());
@@ -372,6 +287,44 @@ public final class ItemLockEnforcement {
             container.setChanged();
         }
         return true;
+    }
+
+    public static void logTakeDenial(Player player, ItemStack taken) {
+        long now = System.currentTimeMillis();
+        if (now - lastRevertLogMs < 2000L) {
+            return;
+        }
+        lastRevertLogMs = now;
+        try {
+            var bindings = QuestServiceRegistry.engine(((ServerPlayer) player).server)
+                    .itemLockBindings(taken);
+            StringBuilder detail = new StringBuilder();
+            for (var binding : bindings) {
+                boolean complete = engineBindingComplete(player, binding);
+                detail.append(binding.questId())
+                        .append('/')
+                        .append(binding.taskId())
+                        .append("(complete=")
+                        .append(complete)
+                        .append(") ");
+            }
+            QuestsAndStuffMod.LOGGER.info(
+                    "[QnS:Lock] denied take of {} by {}, bindings: {}", taken.getItem(),
+                    player.getName().getString(), detail);
+        } catch (Exception error) {
+            QuestsAndStuffMod.LOGGER.info(
+                    "[QnS:Lock] denied take of {} by {} (detail unavailable: {})",
+                    taken.getItem(), player.getName().getString(), error.toString());
+        }
+    }
+
+    private static boolean engineBindingComplete(Player player, ItemLockIndex.LockBinding binding) {
+        try {
+            return QuestServiceRegistry.engine(((ServerPlayer) player).server)
+                    .itemLockBindingComplete((ServerPlayer) player, binding);
+        } catch (Exception error) {
+            return false;
+        }
     }
 
     public static void undoLockedCraft(Player player, ItemStack crafted, Container craftMatrix) {

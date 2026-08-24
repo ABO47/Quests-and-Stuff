@@ -81,7 +81,7 @@ public final class ForgeClientEvents {
             if (event.getScreen() instanceof AbstractContainerScreen<?> containerScreen) {
                 var minecraft = Minecraft.getInstance();
                 if (minecraft.player != null) {
-                    ItemLockMenuGating.gateCraftingMenu(minecraft.player, containerScreen.getMenu());
+                    ItemLockMenuGating.gateCraftingMenu(minecraft.player, containerScreen.getMenu(), true);
                 }
             }
         }

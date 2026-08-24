@@ -13,7 +13,6 @@
     "EntityMayInteractMixin",
     "ExplosionMixin",
     "FarmBlockMixin",
-    "FurnaceResultSlotMixin",
     "InventoryMenuMixin",
     "ItemEntityMixin",
     "LightningBoltMixin",
