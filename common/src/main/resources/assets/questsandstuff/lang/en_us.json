@@ -494,5 +494,6 @@
   "ui.questsandstuff.style.tooltip.quote": "Quote",
   "ui.questsandstuff.style.tooltip.spoiler": "Spoiler",
   "ui.questsandstuff.style.tooltip.reset": "Reset Style",
-  "ui.questsandstuff.style.tooltip.font_size": "Font Size"
+  "ui.questsandstuff.style.tooltip.font_size": "Font Size",
+  "tooltip.questsandstuff.item_locked": "Locked - complete the related quest"
 }

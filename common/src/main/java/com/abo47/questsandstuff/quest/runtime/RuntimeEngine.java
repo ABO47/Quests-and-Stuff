@@ -24,6 +24,8 @@ import com.abo47.questsandstuff.quest.runtime.progress.ItemLockIndex;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.StageBridge;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
@@ -61,6 +63,7 @@ public final class RuntimeEngine {
     public void rebuildIndex() {
         this.index = new QuestRuntimeIndex(definitionStore.quests());
         this.itemLocks.rebuild(definitionStore.quests());
+        ItemLockEnforcement.setLocksActive(!this.itemLocks.isEmpty());
     }
 
     public void refreshIndex(Set<String> questIds) {
@@ -71,6 +74,7 @@ public final class RuntimeEngine {
         for (QuestDefinition definition : definitionsForIds(questIds)) {
             itemLocks.upsert(definition);
         }
+        ItemLockEnforcement.setLocksActive(!itemLocks.isEmpty());
     }
 
     public boolean isItemLocked(ServerPlayer player, ItemStack stack) {
@@ -301,6 +305,10 @@ public final class RuntimeEngine {
                 if (owner != null) {
                     syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
                 }
+            }
+            ServerPlayer ownerForStages = actor.server.getPlayerList().getPlayer(ownerId);
+            if (ownerForStages != null) {
+                StageBridge.onQuestCompleted(ownerForStages, definition.id());
             }
         }
         return justCompleted;

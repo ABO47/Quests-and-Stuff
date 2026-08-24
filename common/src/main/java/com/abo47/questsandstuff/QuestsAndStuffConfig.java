@@ -27,6 +27,7 @@ public final class QuestsAndStuffConfig {
     private static final QuestsAndStuffConfigSections.Hud HUD = new QuestsAndStuffConfigSections.Hud();
     private static final QuestsAndStuffConfigSections.Security SECURITY = new QuestsAndStuffConfigSections.Security();
     private static final QuestsAndStuffConfigSections.ChunkClaims CHUNK_CLAIMS = new QuestsAndStuffConfigSections.ChunkClaims();
+    private static final QuestsAndStuffConfigSections.ItemLocks ITEM_LOCKS = new QuestsAndStuffConfigSections.ItemLocks();
 
     private QuestsAndStuffConfig() {
     }
@@ -489,6 +490,36 @@ public final class QuestsAndStuffConfig {
         return true;
     }
 
+    public static boolean itemLockBlockUse() {
+        load();
+        return ITEM_LOCKS.blockUse;
+    }
+
+    public static boolean itemLockBlockPickup() {
+        load();
+        return ITEM_LOCKS.blockPickup;
+    }
+
+    public static boolean itemLockBlockEquip() {
+        load();
+        return ITEM_LOCKS.blockEquip;
+    }
+
+    public static boolean itemLockLockedTooltips() {
+        load();
+        return ITEM_LOCKS.lockedTooltips;
+    }
+
+    public static boolean updateItemLocks(boolean blockUse, boolean blockPickup, boolean blockEquip, boolean lockedTooltips) {
+        load();
+        ITEM_LOCKS.blockUse = blockUse;
+        ITEM_LOCKS.blockPickup = blockPickup;
+        ITEM_LOCKS.blockEquip = blockEquip;
+        ITEM_LOCKS.lockedTooltips = lockedTooltips;
+        save();
+        return true;
+    }
+
     private static void read(JsonObject root) {
         DEBUG.read(QuestsAndStuffConfigSections.object(root, "debug"));
         ANIMATIONS.read(QuestsAndStuffConfigSections.object(root, "animations"));
@@ -497,6 +528,7 @@ public final class QuestsAndStuffConfig {
         HUD.read(QuestsAndStuffConfigSections.object(root, "hud"));
         SECURITY.read(QuestsAndStuffConfigSections.object(root, "security"));
         CHUNK_CLAIMS.read(QuestsAndStuffConfigSections.object(root, "chunkClaims"));
+        ITEM_LOCKS.read(QuestsAndStuffConfigSections.object(root, "itemLocks"));
     }
 
     private static synchronized void save() {
@@ -508,6 +540,7 @@ public final class QuestsAndStuffConfig {
         root.add("hud", HUD.write());
         root.add("security", SECURITY.write());
         root.add("chunkClaims", CHUNK_CLAIMS.write());
+        root.add("itemLocks", ITEM_LOCKS.write());
 
         Path file = configFile();
         try {

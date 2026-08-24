@@ -20,48 +20,55 @@ public final class ServerRecipeWrap {
     }
 
     public static void wrapAll(RecipeManager manager) {
+        if (manager == null) {
+            return;
+        }
         try {
             resolveFields();
-            Map<ResourceLocation, Recipe<?>> byName = (Map<ResourceLocation, Recipe<?>>) byNameField.get(manager);
+            Map<ResourceLocation, Recipe<?>> byName =
+                    (Map<ResourceLocation, Recipe<?>>) byNameField.get(manager);
             @SuppressWarnings("unchecked")
             Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> buckets =
                     (Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>) recipesField.get(manager);
             if (byName == null || buckets == null) {
+                QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] recipe manager maps unavailable, gating skipped");
                 return;
             }
-            Map<ResourceLocation, Recipe<?>> replaced = new LinkedHashMap<>();
             int wrapped = 0;
+            Map<ResourceLocation, Recipe<?>> replacedByName = new LinkedHashMap<>(byName.size());
             for (Map.Entry<ResourceLocation, Recipe<?>> entry : byName.entrySet()) {
-                Recipe<?> recipe = entry.getValue();
-                if (recipe instanceof GatedCraftingRecipe) {
-                    replaced.put(entry.getKey(), recipe);
-                    continue;
-                }
-                if (recipe instanceof CraftingRecipe crafting) {
-                    replaced.put(entry.getKey(), new GatedCraftingRecipe(crafting));
+                Recipe<?> recipe = maybeWrap(entry.getValue());
+                if (recipe != entry.getValue()) {
                     wrapped++;
-                    continue;
                 }
-                replaced.put(entry.getKey(), recipe);
+                replacedByName.put(entry.getKey(), recipe);
             }
-            byNameField.set(manager, new LinkedHashMap<>(replaced));
+            byNameField.set(manager, new LinkedHashMap<>(replacedByName));
 
             var craftingBucket = buckets.get(RecipeType.CRAFTING);
             if (craftingBucket != null) {
                 var rebuilt = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>();
                 for (Map.Entry<ResourceLocation, Recipe<?>> entry : craftingBucket.entrySet()) {
-                    Recipe<?> recipe = replaced.getOrDefault(entry.getKey(), entry.getValue());
-                    if (recipe instanceof CraftingRecipe crafting && !(recipe instanceof GatedCraftingRecipe)) {
-                        recipe = new GatedCraftingRecipe(crafting);
-                    }
-                    rebuilt.put(entry.getKey(), recipe);
+                    rebuilt.put(entry.getKey(), replacedByName.getOrDefault(entry.getKey(), entry.getValue()));
                 }
                 buckets.put(RecipeType.CRAFTING, rebuilt);
             }
-            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated {} crafting recipe(s) on server", wrapped);
+            if (wrapped > 0) {
+                QuestsAndStuffMod.LOGGER.info(
+                        "[QnS:Lock] wrapped {} crafting recipe(s) with lock gate", wrapped);
+            } else {
+                QuestsAndStuffMod.debugLog("[QnS:Lock] recipe wrap pass found nothing new");
+            }
         } catch (Exception error) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] server recipe gating failed", error);
         }
+    }
+
+    private static Recipe<?> maybeWrap(Recipe<?> recipe) {
+        if (recipe instanceof LockedCraftingRecipe || !(recipe instanceof CraftingRecipe crafting)) {
+            return recipe;
+        }
+        return new LockedCraftingRecipe(crafting);
     }
 
     private static void resolveFields() throws Exception {
@@ -87,5 +94,8 @@ public final class ServerRecipeWrap {
         if (byNameField == null || recipesField == null) {
             throw new IllegalStateException("RecipeManager fields not resolved");
         }
+        QuestsAndStuffMod.LOGGER.info(
+                "[QnS:Lock] recipe manager fields resolved: byName='{}' buckets='{}'",
+                byNameField.getName(), recipesField.getName());
     }
 }

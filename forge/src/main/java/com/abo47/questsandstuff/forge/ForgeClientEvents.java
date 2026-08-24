@@ -1,12 +1,13 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
-import com.abo47.questsandstuff.client.quest.lock.ClientRecipePurge;
+import com.abo47.questsandstuff.client.quest.lock.LockClientRefresh;
+import com.abo47.questsandstuff.client.quest.lock.LockedItemTooltips;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
-import com.abo47.questsandstuff.forge.compat.recipeviewer.ForgeJeiLockSync;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,7 +40,7 @@ public final class ForgeClientEvents {
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 TabletLifecycle.prewarmClientAtGameLaunch();
-                ForgeJeiLockSync.install();
+                ItemLockViewerSync.ensureSubscribed();
             });
         }
     }
@@ -57,21 +58,24 @@ public final class ForgeClientEvents {
         @SubscribeEvent
         public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             TabletLifecycle.onClientLogout();
-            ForgeJeiLockSync.reset();
         }
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
                 TabletLifecycle.onClientTick();
-                ForgeJeiLockSync.tick();
             }
         }
 
         @SubscribeEvent
         public static void onRecipesUpdated(RecipesUpdatedEvent event) {
             var minecraft = Minecraft.getInstance();
-            ClientRecipePurge.onRecipesUpdated(minecraft.level.getRecipeManager(), minecraft.level.registryAccess());
+            LockClientRefresh.onRecipesUpdated(minecraft.level.getRecipeManager(), minecraft.level.registryAccess());
+        }
+
+        @SubscribeEvent
+        public static void onItemTooltip(net.minecraftforge.event.entity.player.ItemTooltipEvent event) {
+            LockedItemTooltips.append(event.getToolTip(), event.getItemStack());
         }
 
         @SubscribeEvent

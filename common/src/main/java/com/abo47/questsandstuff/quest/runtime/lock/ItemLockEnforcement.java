@@ -18,19 +18,26 @@ import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 
 public final class ItemLockEnforcement {
     private static volatile boolean hookSeen;
+    private static volatile boolean locksActive;
     private static long lastRevertLogMs;
-    private static volatile java.util.function.Predicate<ItemStack> anyoneLockResolver;
+    private static final java.util.Set<String> WARNED_MESSAGES =
+            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
 
     private ItemLockEnforcement() {
     }
 
-    public static void setLockedForAnyoneResolver(java.util.function.Predicate<ItemStack> resolver) {
-        anyoneLockResolver = resolver;
+    public static void setLocksActive(boolean active) {
+        locksActive = active;
     }
 
-    public static boolean lockedForAnyOnlinePlayer(ItemStack stack) {
-        java.util.function.Predicate<ItemStack> resolver = anyoneLockResolver;
-        return resolver != null && resolver.test(stack);
+    public static boolean locksActive() {
+        return locksActive;
+    }
+
+    private static void warnOnce(String message) {
+        if (WARNED_MESSAGES.add(message)) {
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] {}", message);
+        }
     }
 
     private static void reportHook() {
@@ -88,7 +95,7 @@ public final class ItemLockEnforcement {
                 }
             }
         } catch (Exception error) {
-            QuestsAndStuffMod.LOGGER.debug("[QnS:Lock] loot filter failed", error);
+            warnOnce("loot filter failed: " + error);
         }
     }
 
@@ -124,7 +131,8 @@ public final class ItemLockEnforcement {
                     return true;
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception error) {
+            warnOnce("smelting lock probe failed: " + error);
         }
         return false;
     }

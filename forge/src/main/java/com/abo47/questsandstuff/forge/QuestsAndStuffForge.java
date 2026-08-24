@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.forge.runtime.signal.ForgeQuestEventBridge;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestServerReloadListener;
+import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -26,7 +27,6 @@ public final class QuestsAndStuffForge {
 
     public QuestsAndStuffForge(FMLJavaModLoadingContext modLoadingContext) {
         Services.setPlatform(new ForgePlatformService());
-        ForgeLockHooks.register();
 
         var modBus = modLoadingContext.getModEventBus();
         ForgeContent.register(modBus);
@@ -55,7 +55,8 @@ public final class QuestsAndStuffForge {
         QuestsAndStuffMod.SERVER_REF = event.getServer();
         QuestsAndStuffMod.prepareAssetsDirectory();
         QuestServiceRegistry.start(event.getServer());
-        ForgeLockHooks.wrapServerRecipes(event.getServer());
+        ServerRecipeWrap.wrapAll(event.getServer().getRecipeManager());
+        GameStagesBridge.install();
     }
 
     private void onServerStopping(ServerStoppingEvent event) {

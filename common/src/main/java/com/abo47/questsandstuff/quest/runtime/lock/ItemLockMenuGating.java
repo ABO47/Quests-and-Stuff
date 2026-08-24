@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 
 public final class ItemLockMenuGating {
     private ItemLockMenuGating() {
@@ -29,9 +30,18 @@ public final class ItemLockMenuGating {
             gateResultContainer(player, menu, 3);
             return;
         }
-        if (!simpleName.equals("CraftingMenu") && !simpleName.equals("InventoryMenu")) {
+        if (simpleName.equals("InventoryMenu")) {
+            gateInventoryMenu(player, menu);
+            gateCraftingGrid(player, menu, simpleName);
             return;
         }
+        if (!simpleName.equals("CraftingMenu")) {
+            return;
+        }
+        gateCraftingGrid(player, menu, simpleName);
+    }
+
+    private static void gateCraftingGrid(Player player, AbstractContainerMenu menu, String simpleName) {
         if (menu.slots.isEmpty() || menu.slots.get(0) instanceof GateResultSlot) {
             return;
         }
@@ -51,6 +61,28 @@ public final class ItemLockMenuGating {
             QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated crafting menu {}", simpleName);
         } catch (Exception error) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] menu gating failed for {}", simpleName, error);
+        }
+    }
+
+    private static void gateInventoryMenu(Player player, AbstractContainerMenu menu) {
+        int wrapped = 0;
+        int armorStart = 36;
+        int armorEnd = 39;
+        for (int index = 0; index < menu.slots.size(); index++) {
+            Slot slot = menu.slots.get(index);
+            if (slot instanceof GateArmorSlot || !(slot.container instanceof net.minecraft.world.entity.player.Inventory)) {
+                continue;
+            }
+            int containerSlot = slot.getContainerSlot();
+            boolean isArmorRange = containerSlot >= armorStart && containerSlot <= armorEnd;
+            if (!isArmorRange) {
+                continue;
+            }
+            menu.slots.set(index, new GateArmorSlot(slot, player));
+            wrapped++;
+        }
+        if (wrapped > 0) {
+            QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated {} armor slot(s) in inventory", wrapped);
         }
     }
 
@@ -99,6 +131,45 @@ public final class ItemLockMenuGating {
                 menu.slots.set(index, new GateSmeltingInputSlot(slot, player));
                 QuestsAndStuffMod.LOGGER.info("[QnS:Lock] gated furnace input slot");
             }
+        }
+    }
+
+    private static class GateArmorSlot extends Slot {
+        private final Slot originalSlot;
+        private final Player player;
+
+        GateArmorSlot(Slot originalSlot, Player player) {
+            super(originalSlot.container, originalSlot.getContainerSlot(), originalSlot.x, originalSlot.y);
+            this.originalSlot = originalSlot;
+            this.player = player;
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            if (!originalSlot.mayPlace(stack)) {
+                return false;
+            }
+            return !PossessionPolicy.deniesEquip(this.player, stack);
+        }
+
+        @Override
+        public ItemStack getItem() {
+            return originalSlot.getItem();
+        }
+
+        @Override
+        public boolean mayPickup(Player accessPlayer) {
+            return originalSlot.mayPickup(accessPlayer);
+        }
+
+        @Override
+        public void onTake(Player accessPlayer, ItemStack stack) {
+            originalSlot.onTake(accessPlayer, stack);
+        }
+
+        @Override
+        public int getMaxStackSize() {
+            return originalSlot.getMaxStackSize();
         }
     }
 

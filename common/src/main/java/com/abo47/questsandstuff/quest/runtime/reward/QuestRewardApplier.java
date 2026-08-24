@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
+import com.abo47.questsandstuff.quest.runtime.lock.StageBridge;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.sync.SyncService;
 
@@ -67,6 +68,7 @@ public final class QuestRewardApplier {
         questState.claimedRewards().clear();
         questState.setCompleted(false, serverTick);
         questState.setUnlocked(true);
+        StageBridge.onQuestRevoked(player, definition.id());
         return true;
     }
 

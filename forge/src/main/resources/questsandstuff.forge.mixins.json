@@ -5,10 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "questsandstuff-forge-questsandstuff-forge-refmap.json",
   "mixins": [
-    "MinecraftClientProbeMixin",
     "CraftingMenuMixin",
     "FurnaceResultSlotMixin",
     "InventoryMenuMixin",
+    "ItemEntityMixin",
     "LootTableMixin",
     "RecipeButtonMixin",
     "ResultSlotMixin",

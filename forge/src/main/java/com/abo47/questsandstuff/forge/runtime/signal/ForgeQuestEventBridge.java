@@ -16,6 +16,10 @@ import net.minecraft.world.level.ChunkPos;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
+import com.abo47.questsandstuff.quest.runtime.lock.OpenMenuIndex;
+import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalHelper;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -49,14 +53,20 @@ public final class ForgeQuestEventBridge {
 
     @SubscribeEvent
     public void onContainerOpen(net.minecraftforge.event.entity.player.PlayerContainerEvent.Open event) {
-        ItemLockMenuGating.gateCraftingMenu(
-                event.getEntity(), event.getContainer());
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            OpenMenuIndex.record(serverPlayer, event.getContainer());
+            ItemLockMenuGating.gateCraftingMenu(serverPlayer, event.getContainer());
+        }
+    }
+
+    @SubscribeEvent
+    public void onContainerClose(net.minecraftforge.event.entity.player.PlayerContainerEvent.Close event) {
+        OpenMenuIndex.unrecord(event.getContainer());
     }
 
     @SubscribeEvent
     public void onPlayerLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
             QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
             QuestServiceRegistry.sync(player.server).syncFull(player);
         }
@@ -96,6 +106,10 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onItemRightClick(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            if (PossessionPolicy.deniesUse(player, event.getItemStack())) {
+                event.setCanceled(true);
+                return;
+            }
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
             QuestSignalHelper.send(player, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
         }

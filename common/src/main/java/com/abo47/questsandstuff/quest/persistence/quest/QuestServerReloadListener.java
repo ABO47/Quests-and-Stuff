@@ -10,6 +10,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 
 public final class QuestServerReloadListener implements PreparableReloadListener {
     @Override
@@ -30,6 +31,7 @@ public final class QuestServerReloadListener implements PreparableReloadListener
                     QuestServiceRegistry.definitions(QuestsAndStuffMod.SERVER_REF).saveAll();
                     QuestServiceRegistry.definitions(QuestsAndStuffMod.SERVER_REF).load();
                     QuestServiceRegistry.engine(QuestsAndStuffMod.SERVER_REF).rebuildIndex();
+                    ServerRecipeWrap.wrapAll(QuestsAndStuffMod.SERVER_REF.getRecipeManager());
                     var players = QuestsAndStuffMod.SERVER_REF.getPlayerList().getPlayers();
                     QuestServiceRegistry.engine(QuestsAndStuffMod.SERVER_REF).preparePlayersForFullSync(players);
                     QuestServiceRegistry.sync(QuestsAndStuffMod.SERVER_REF).syncFull(players);

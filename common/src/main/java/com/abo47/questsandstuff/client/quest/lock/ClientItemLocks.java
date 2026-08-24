@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.quest.sync.SyncKeys;
 public final class ClientItemLocks {
     private static Set<String> lockedEntries;
     private static boolean anyLocksDefined;
+    private static int lastPublishedFingerprint = Integer.MIN_VALUE;
 
     private ClientItemLocks() {
     }
@@ -84,6 +85,11 @@ public final class ClientItemLocks {
         }
         lockedEntries = java.util.Collections.unmodifiableSet(entries);
         anyLocksDefined = !entries.isEmpty();
+        int fingerprint = entries.hashCode();
+        if (fingerprint != lastPublishedFingerprint) {
+            lastPublishedFingerprint = fingerprint;
+            ClientLockEvents.fire();
+        }
     }
 
     private static List<String> locksOf(String taskJson) {

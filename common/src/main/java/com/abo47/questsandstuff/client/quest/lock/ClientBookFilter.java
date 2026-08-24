@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.quest.lock;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,34 +19,42 @@ import net.minecraft.world.item.crafting.Recipe;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 public final class ClientBookFilter {
-    private static final Map<Object, Map<Field, List<Recipe<?>>>> SNAPSHOTS = new WeakHashMap<>();
-    private static Map<Object, List<Object>> pristineGroups;
-    private static boolean pristineCaptured;
+    private static final Map<RecipeBook, BookState> BOOKS = new WeakHashMap<>();
+    private static volatile Field collectionsField;
+    private static boolean warnedMissingField;
 
     private ClientBookFilter() {
     }
 
-    public static void rebuild(Object book) {
+    public static void refresh(RecipeBook book) {
+        if (book == null) {
+            return;
+        }
         try {
-            Field collectionsField = findCollectionsField(book.getClass());
-            if (collectionsField == null) {
-                QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] book collections map not found");
+            Field field = resolveCollectionsField(book.getClass());
+            if (field == null) {
+                if (!warnedMissingField) {
+                    warnedMissingField = true;
+                    QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] book collections map not found");
+                }
                 return;
             }
-            collectionsField.setAccessible(true);
-            Map<Object, List<Object>> current = (Map<Object, List<Object>>) collectionsField.get(book);
-            if (current == null) {
+            @SuppressWarnings("unchecked")
+            Map<Object, List<Object>> current = (Map<Object, List<Object>>) field.get(book);
+            if (current == null || current.isEmpty()) {
                 return;
             }
-            capturePristine(current);
+            BookState state = BOOKS.computeIfAbsent(book, ignored -> new BookState());
+            state.absorb(current);
 
-            Map<Object, List<Object>> rebuilt = new LinkedHashMap<>();
+            RegistryAccess access = registryAccess();
+            Map<Object, List<Object>> rebuilt = new LinkedHashMap<>(current.size());
             int gatedCollections = 0;
-            for (Map.Entry<Object, List<Object>> entry : pristineGroups.entrySet()) {
-                List<Object> kept = new ArrayList<>();
-                for (Object collection : entry.getValue()) {
-                    StripResult result = stripLocked(collection);
-                    if (result.remaining() > 0 || result.total() == 0) {
+            for (Map.Entry<Object, List<Object>> entry : current.entrySet()) {
+                List<Object> base = state.categoryBase(entry.getKey(), entry.getValue());
+                List<Object> kept = new ArrayList<>(base.size());
+                for (Object collection : base) {
+                    if (applyStrips(state, collection, access)) {
                         kept.add(collection);
                     } else {
                         gatedCollections++;
@@ -53,14 +62,16 @@ public final class ClientBookFilter {
                 }
                 rebuilt.put(entry.getKey(), kept);
             }
-            collectionsField.set(book, rebuilt);
-            if (gatedCollections > 0) {
-                QuestsAndStuffMod.LOGGER.info(
-                        "[QnS:Lock] book filtered, {} collection(s) fully gated", gatedCollections);
-            }
+            field.set(book, rebuilt);
+            QuestsAndStuffMod.debugLog(
+                    "[QnS:Lock] book filter applied, {} fully gated collection(s)", gatedCollections);
         } catch (Exception error) {
-            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] recipe book rebuild failed", error);
+            QuestsAndStuffMod.LOGGER.warn("[QnS:Lock] recipe book filter failed", error);
         }
+    }
+
+    public static void reset() {
+        BOOKS.clear();
     }
 
     public static boolean hasDisplayableRecipes(RecipeCollection collection, RecipeBook book, RecipeBookMenu<?> menu) {
@@ -70,81 +81,105 @@ public final class ClientBookFilter {
         return !book.isFiltering(menu) && !collection.getDisplayRecipes(false).isEmpty();
     }
 
-    private static void capturePristine(Map<Object, List<Object>> current) {
-        if (pristineCaptured && isSameStructure(current)) {
-            return;
-        }
-        pristineGroups = new LinkedHashMap<>();
-        for (Map.Entry<Object, List<Object>> entry : current.entrySet()) {
-            pristineGroups.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
-        pristineCaptured = true;
-    }
+    private static class BookState {
+        private final Map<Object, List<Object>> categories = new LinkedHashMap<>();
+        private final Map<Object, Map<Field, List<Recipe<?>>>> originals = new IdentityHashMap<>();
 
-    private static boolean isSameStructure(Map<Object, List<Object>> current) {
-        for (List<Object> collections : pristineGroups.values()) {
-            for (Object collection : collections) {
-                if (containsCollection(current, collection)) {
-                    return true;
+        void absorb(Map<Object, List<Object>> current) throws IllegalAccessException {
+            boolean missing = false;
+            for (List<Object> collections : current.values()) {
+                for (Object collection : collections) {
+                    if (!originals.containsKey(collection)) {
+                        missing = true;
+                        break;
+                    }
                 }
             }
-        }
-        return false;
-    }
-
-    private static boolean containsCollection(Map<Object, List<Object>> current, Object target) {
-        for (List<Object> collections : current.values()) {
-            if (collections.contains(target)) {
-                return true;
+            if (missing || categories.size() != current.size()) {
+                categories.clear();
+                for (Map.Entry<Object, List<Object>> entry : current.entrySet()) {
+                    categories.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+                    for (Object collection : entry.getValue()) {
+                        captureOriginals(collection);
+                    }
+                }
+                QuestsAndStuffMod.debugLog("[QnS:Lock] captured pristine recipe book state");
             }
         }
-        return false;
+
+        private void captureOriginals(Object collection) throws IllegalAccessException {
+            if (originals.containsKey(collection)) {
+                return;
+            }
+            Map<Field, List<Recipe<?>>> captured = new LinkedHashMap<>();
+            for (Field field : recipeListFields(collection.getClass())) {
+                field.setAccessible(true);
+                Object value = field.get(collection);
+                if (value instanceof List<?> list) {
+                    @SuppressWarnings("unchecked")
+                    List<Recipe<?>> recipes = (List<Recipe<?>>) list;
+                    captured.put(field, new ArrayList<>(recipes));
+                }
+            }
+            originals.put(collection, captured);
+        }
+
+        List<Object> categoryBase(Object key, List<Object> fallback) {
+            List<Object> base = categories.get(key);
+            return base != null ? base : fallback;
+        }
+
+        private static List<Field> recipeListFields(Class<?> type) {
+            List<Field> fields = new ArrayList<>(2);
+            for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
+                for (Field field : current.getDeclaredFields()) {
+                    String generic = field.getGenericType().getTypeName();
+                    if (List.class.isAssignableFrom(field.getType()) && generic.contains(Recipe.class.getSimpleName())) {
+                        fields.add(field);
+                    }
+                }
+            }
+            return fields;
+        }
     }
 
-    private record StripResult(int stripped, int remaining, int total) {
-    }
-
-    private static StripResult stripLocked(Object collection) throws Exception {
-        int stripped = 0;
+    private static boolean applyStrips(BookState state, Object collection, RegistryAccess access) throws IllegalAccessException {
+        Map<Field, List<Recipe<?>>> captured = state.originals.get(collection);
+        if (captured == null || captured.isEmpty() || access == null) {
+            return true;
+        }
         int total = 0;
-        boolean sawRecipeList = false;
-        Map<Field, List<Recipe<?>>> snapshot = SNAPSHOTS.computeIfAbsent(collection, ignored -> new LinkedHashMap<>());
-        for (Field field : collection.getClass().getDeclaredFields()) {
-            String generic = field.getGenericType().getTypeName();
-            if (!List.class.isAssignableFrom(field.getType()) || !generic.contains(Recipe.class.getSimpleName())) {
-                continue;
-            }
-            field.setAccessible(true);
-            Object value = field.get(collection);
-            if (!(value instanceof List)) {
-                continue;
-            }
-            sawRecipeList = true;
-            List<Recipe<?>> recipes = (List<Recipe<?>>) value;
-            snapshot.putIfAbsent(field, new ArrayList<>(recipes));
-            List<Recipe<?>> base = snapshot.get(field);
-            total = Math.max(total, base.size());
-            List<Recipe<?>> kept = new ArrayList<>();
+        int keptCount = 0;
+        for (Map.Entry<Field, List<Recipe<?>>> entry : captured.entrySet()) {
+            List<Recipe<?>> base = entry.getValue();
+            List<Recipe<?>> kept = new ArrayList<>(base.size());
             for (Recipe<?> recipe : base) {
-                ItemStack output = recipe.getResultItem(registryAccess());
+                ItemStack output = recipe.getResultItem(access);
+                total++;
                 if (!output.isEmpty() && ClientItemLocks.isLocked(output)) {
-                    stripped++;
-                } else {
-                    kept.add(recipe);
+                    continue;
                 }
+                kept.add(recipe);
+                keptCount++;
             }
-            field.set(collection, kept);
+            entry.getKey().set(collection, kept);
         }
-        return new StripResult(stripped, total - stripped, sawRecipeList ? total : 0);
+        return keptCount > 0 || total == 0;
     }
 
-    private static Field findCollectionsField(Class<?> type) {
+    private static Field resolveCollectionsField(Class<?> type) {
+        Field cached = collectionsField;
+        if (cached != null) {
+            return cached;
+        }
         for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
             for (Field field : current.getDeclaredFields()) {
                 String generic = field.getGenericType().getTypeName();
                 if (Map.class.isAssignableFrom(field.getType())
                         && generic.contains("RecipeBookCategories")
                         && generic.contains("RecipeCollection")) {
+                    field.setAccessible(true);
+                    collectionsField = field;
                     return field;
                 }
             }

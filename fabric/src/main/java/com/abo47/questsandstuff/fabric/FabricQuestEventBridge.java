@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
-import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
+import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalHelper;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -62,6 +62,9 @@ public final class FabricQuestEventBridge {
         UseItemCallback.EVENT.register((player, world, hand) -> {
             ItemStack stack = player.getItemInHand(hand);
             if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
+                if (PossessionPolicy.deniesUse(serverPlayer, stack)) {
+                    return InteractionResultHolder.fail(stack);
+                }
                 ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
                 QuestSignalHelper.send(serverPlayer, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
             }
@@ -149,7 +152,6 @@ public final class FabricQuestEventBridge {
             return;
         }
         DIMENSION_SNAPSHOTS.put(player.getUUID(), player.level().dimension().location().toString());
-        ServerRecipeWrap.wrapAll(player.server.getRecipeManager());
         QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
         QuestServiceRegistry.sync(player.server).syncFull(player);
     }

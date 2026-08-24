@@ -12,6 +12,7 @@
     "FarmBlockMixin",
     "FurnaceResultSlotMixin",
     "InventoryMenuMixin",
+    "ItemEntityMixin",
     "LightningBoltMixin",
     "LootTableMixin",
     "PlayerAdvancementsMixin",
