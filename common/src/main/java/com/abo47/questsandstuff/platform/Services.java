@@ -4,7 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.entity.player.Player;
 
 public final class Services {
@@ -59,7 +61,7 @@ public final class Services {
         }
 
         @Override
-        public void setForceChunk(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.ChunkPos pos, boolean forced) {
+        public void setForceChunk(ServerLevel level, ChunkPos pos, boolean forced) {
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "itemGroup.questsandstuff.main": "Quests and Stuff",
   "item.questsandstuff.quest_tablet": "Tablet",
   "key.categories.questsandstuff": "Quests and Stuff",
@@ -98,6 +98,11 @@
   "ui.questsandstuff.quest.locked": "Locked",
   "ui.questsandstuff.quest.mark_task_done": "Mark Task Done",
   "ui.questsandstuff.quest.make_selectable_reward": "Make Selectable",
+  "ui.questsandstuff.quest.context_item_locks": "Item Locks",
+  "ui.questsandstuff.quest.add_item_lock": "Lock Item Behind Task",
+  "ui.questsandstuff.quest.remove_item_lock": "Remove: %s",
+  "ui.questsandstuff.quest.choose_item_lock": "Choose Item Or Tag",
+  "ui.questsandstuff.quest.no_item_locks": "No Items",
   "ui.questsandstuff.quest.no_advancements": "No Advancements",
   "ui.questsandstuff.quest.no_biome_folders": "No Biome Folders",
   "ui.questsandstuff.quest.no_biomes": "No Biomes",
@@ -489,5 +494,6 @@
   "ui.questsandstuff.style.tooltip.quote": "Quote",
   "ui.questsandstuff.style.tooltip.spoiler": "Spoiler",
   "ui.questsandstuff.style.tooltip.reset": "Reset Style",
-  "ui.questsandstuff.style.tooltip.font_size": "Font Size"
+  "ui.questsandstuff.style.tooltip.font_size": "Font Size",
+  "tooltip.questsandstuff.item_locked": "Locked - complete the related quest"
 }

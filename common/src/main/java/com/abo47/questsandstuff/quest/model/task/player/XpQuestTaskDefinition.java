@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.serialization.Codec;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.model.task.item.CollectionMode;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -21,15 +23,25 @@ public record XpQuestTaskDefinition(
         ResourceLocation type,
         int goal,
         XpMode mode,
-        CollectionMode collection
+        CollectionMode collection,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
+    public XpQuestTaskDefinition(String id, ResourceLocation type, int goal, XpMode mode, CollectionMode collection) {
+        this(id, type, goal, mode, collection, List.of());
+    }
+
     public static Codec<XpQuestTaskDefinition> codec(ResourceLocation type) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(XpQuestTaskDefinition::id),
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(XpQuestTaskDefinition::goal),
                 XpMode.CODEC.fieldOf("mode").orElse(XpMode.POINTS).forGetter(XpQuestTaskDefinition::mode),
-                CollectionMode.CODEC.fieldOf("collection").orElse(CollectionMode.AUTOMATIC).forGetter(XpQuestTaskDefinition::collection)
-        ).apply(instance, (id, goal, mode, collection) -> new XpQuestTaskDefinition(id, type, goal, mode, collection)));
+                CollectionMode.CODEC.fieldOf("collection").orElse(CollectionMode.AUTOMATIC).forGetter(XpQuestTaskDefinition::collection),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(XpQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, goal, mode, collection, itemLocks) -> new XpQuestTaskDefinition(id, type, goal, mode, collection, itemLocks)));
+    }
+
+    public XpQuestTaskDefinition {
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override

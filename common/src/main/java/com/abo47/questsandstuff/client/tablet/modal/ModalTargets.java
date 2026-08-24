@@ -11,6 +11,7 @@ public final class ModalTargets {
     public static final String TASK_STAT = "task_stat";
     public static final String TASK_DIMENSION = "task_dimension";
     public static final String TASK_ENTITY = "task_entity";
+    public static final String TASK_ITEM_LOCK = "task_item_lock";
     public static final String TASK_SIMPLE_ICON = "task_simple_icon";
     public static final String TASK_ICON = "task_icon";
     public static final String REWARD_ITEM = "reward_item";
@@ -97,6 +98,10 @@ public final class ModalTargets {
 
     public static String taskDimension(String questId, String taskId, String type) {
         return of(TASK_DIMENSION, questId, taskId, type);
+    }
+
+    public static String taskItemLock(String questId, String taskId) {
+        return of(TASK_ITEM_LOCK, questId, taskId);
     }
 
     public static String taskEntity(String questId, String taskId, String type) {

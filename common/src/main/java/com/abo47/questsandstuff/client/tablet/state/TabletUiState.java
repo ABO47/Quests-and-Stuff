@@ -223,6 +223,11 @@ public class TabletUiState {
         public boolean lootTableSearchFocused;
         public int lootTableScroll;
         public boolean lootTableScrollDragging;
+        public String itemLockSearch = "";
+        public boolean itemLockSearchFocused;
+        public boolean itemLockTagMode;
+        public int itemLockScroll;
+        public boolean itemLockScrollDragging;
         public String itemInventorySearch = "";
         public boolean itemInventorySearchFocused;
         public int itemInventoryScroll;

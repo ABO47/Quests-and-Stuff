@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.serialization.Codec;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestStatHelper;
@@ -21,19 +23,26 @@ public record StatQuestTaskDefinition(
         ResourceLocation type,
         int goal,
         String target,
-        String icon
+        String icon,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     public static Codec<StatQuestTaskDefinition> codec(ResourceLocation type) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("id").forGetter(StatQuestTaskDefinition::id),
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(StatQuestTaskDefinition::goal),
                 Codec.STRING.fieldOf("target").orElse("").forGetter(StatQuestTaskDefinition::target),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(StatQuestTaskDefinition::icon)
-        ).apply(instance, (id, goal, target, icon) -> new StatQuestTaskDefinition(id, type, goal, target, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(StatQuestTaskDefinition::icon),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(StatQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, goal, target, icon, itemLocks) -> new StatQuestTaskDefinition(id, type, goal, target, icon, itemLocks)));
+    }
+
+    public StatQuestTaskDefinition(String id, ResourceLocation type, int goal, String target, String icon) {
+        this(id, type, goal, target, icon, List.of());
     }
 
     public StatQuestTaskDefinition {
         icon = icon == null ? "" : icon;
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override

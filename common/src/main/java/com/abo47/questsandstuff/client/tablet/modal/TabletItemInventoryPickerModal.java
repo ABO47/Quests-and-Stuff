@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
@@ -102,7 +103,7 @@ public final class TabletItemInventoryPickerModal {
             }
         }) {
             @Override
-            public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
                 if (onHover != null && isMouseOverElement(mouseX, mouseY)) {
                     onHover.accept(stack.copy());

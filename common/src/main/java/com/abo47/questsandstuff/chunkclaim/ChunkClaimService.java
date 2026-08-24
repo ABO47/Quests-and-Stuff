@@ -3,6 +3,8 @@ package com.abo47.questsandstuff.chunkclaim;
 import java.util.UUID;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -172,7 +174,6 @@ public class ChunkClaimService {
     }
 
     private ServerLevel levelFor(ResourceLocation dim) {
-        return server.getLevel(net.minecraft.resources.ResourceKey.create(
-                net.minecraft.core.registries.Registries.DIMENSION, dim));
+        return server.getLevel(ResourceKey.create(Registries.DIMENSION, dim));
     }
 }

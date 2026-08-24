@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -18,9 +20,13 @@ import com.abo47.questsandstuff.quest.model.task.QuestTasks;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestProgressSavedData;
 import com.abo47.questsandstuff.quest.runtime.progress.CompletableQuestEvaluator;
+import com.abo47.questsandstuff.quest.runtime.progress.ItemLockIndex;
 import com.abo47.questsandstuff.quest.runtime.progress.PlayerQuestState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestProgressState;
 import com.abo47.questsandstuff.quest.runtime.progress.QuestRuntimeIndex;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.LockMenuRefresher;
+import com.abo47.questsandstuff.quest.runtime.lock.StageBridge;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 import com.abo47.questsandstuff.quest.sync.PerformanceTracker;
@@ -38,6 +44,7 @@ public final class RuntimeEngine {
     private final ManualSubmissions manualSubmissions;
     private final ProgressAdminActions progressAdmin;
     private QuestRuntimeIndex index;
+    private final ItemLockIndex itemLocks = new ItemLockIndex();
 
     public RuntimeEngine(QuestDefinitionStore definitionStore, QuestProgressSavedData progressData, SyncService syncService, PerformanceTracker performanceTracker) {
         this.definitionStore = definitionStore;
@@ -56,6 +63,9 @@ public final class RuntimeEngine {
 
     public void rebuildIndex() {
         this.index = new QuestRuntimeIndex(definitionStore.quests());
+        this.itemLocks.rebuild(definitionStore.quests());
+        ItemLockEnforcement.setLocksActive(!this.itemLocks.isEmpty());
+        LockMenuRefresher.refreshOpenMenus();
     }
 
     public void refreshIndex(Set<String> questIds) {
@@ -63,6 +73,74 @@ public final class RuntimeEngine {
             return;
         }
         index.upsertAll(definitionsForIds(questIds));
+        for (QuestDefinition definition : definitionsForIds(questIds)) {
+            itemLocks.upsert(definition);
+        }
+        ItemLockEnforcement.setLocksActive(!itemLocks.isEmpty());
+        LockMenuRefresher.refreshOpenMenus();
+    }
+
+    public boolean isItemLocked(ServerPlayer player, ItemStack stack) {
+        if (player == null || player.level().isClientSide) {
+            return false;
+        }
+        List<ItemLockIndex.LockBinding> bindings = itemLocks.bindingsFor(stack);
+        if (bindings.isEmpty()) {
+            return false;
+        }
+        PlayerQuestState state = progressData.state(player.getUUID());
+        for (ItemLockIndex.LockBinding binding : bindings) {
+            if (bindingComplete(state, binding)) {
+                continue;
+            }
+            if (!binding.individualProgress() && anyTeammateCompleted(player, binding)) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean bindingComplete(PlayerQuestState state, ItemLockIndex.LockBinding binding) {
+        QuestProgressState progress = state.quest(binding.questId());
+        return binding.task().isComplete(progress.getTaskProgress(binding.taskId(), binding.task()));
+    }
+
+    private boolean anyTeammateCompleted(ServerPlayer player, ItemLockIndex.LockBinding binding) {
+        List<UUID> teamMembers = TeamProgressProviders.members(player.serverLevel(), player.getUUID());
+        for (UUID memberId : teamMembers) {
+            if (memberId.equals(player.getUUID())) {
+                continue;
+            }
+            if (bindingComplete(progressData.state(memberId), binding)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean itemLockExists(ItemStack stack) {
+        return !itemLocks.bindingsFor(stack).isEmpty();
+    }
+
+    public boolean itemLockIndexHasLocks() {
+        return !itemLocks.isEmpty();
+    }
+
+    public int itemLockCount() {
+        return Math.max(0, itemLocks.bindingCount());
+    }
+
+    public List<ItemLockIndex.LockBinding> itemLockBindings(ItemStack stack) {
+        return itemLocks.bindingsFor(stack);
+    }
+
+    public boolean itemLockBindingComplete(ServerPlayer player, ItemLockIndex.LockBinding binding) {
+        PlayerQuestState state = progressData.state(player.getUUID());
+        if (bindingComplete(state, binding)) {
+            return true;
+        }
+        return !binding.individualProgress() && anyTeammateCompleted(player, binding);
     }
 
     public void preparePlayerForFullSync(ServerPlayer player) {
@@ -225,11 +303,16 @@ public final class RuntimeEngine {
         if (justCompleted) {
             progress.setCompleted(true, serverTick);
             applyExclusiveChoiceDisable(actor, ownerId, state, questId);
+            LockMenuRefresher.refreshOpenMenus();
             if (announce) {
                 ServerPlayer owner = actor.server.getPlayerList().getPlayer(ownerId);
                 if (owner != null) {
                     syncService.sendQuestEvent(owner, "quest_completed", definition.id(), "");
                 }
+            }
+            ServerPlayer ownerForStages = actor.server.getPlayerList().getPlayer(ownerId);
+            if (ownerForStages != null) {
+                StageBridge.onQuestCompleted(ownerForStages, definition.id());
             }
         }
         return justCompleted;
@@ -382,11 +465,11 @@ public final class RuntimeEngine {
         return true;
     }
 
-    void onTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    void onTeamMembershipChanged(ServerLevel level, UUID changedPlayer) {
         TeamProgressReconciler.onTeamMembershipChanged(level, changedPlayer, definitionStore, progressData, syncService);
     }
 
-    public void triggerTeamMembershipChanged(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+    public void triggerTeamMembershipChanged(ServerLevel level, UUID changedPlayer) {
         onTeamMembershipChanged(level, changedPlayer);
     }
 

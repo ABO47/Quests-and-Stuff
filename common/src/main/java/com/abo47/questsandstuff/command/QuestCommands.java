@@ -13,12 +13,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.progress.ItemLockIndex;
 
 public final class QuestCommands {
     private QuestCommands() {
@@ -38,7 +41,40 @@ public final class QuestCommands {
                 .then(pin())
                 .then(manual())
                 .then(perf())
+                .then(locks())
         );
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> locks() {
+        return Commands.literal("locks")
+                .requires(source -> source.hasPermission(2))
+                .executes(context -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    var engine = QuestServiceRegistry.engine(context.getSource().getServer());
+                    ItemStack held = player.getMainHandItem();
+                    String heldId = held.isEmpty()
+                            ? "(empty hand - hold the item you want to inspect)"
+                            : BuiltInRegistries.ITEM.getKey(held.getItem()).toString();
+                    List<ItemLockIndex.LockBinding> bindings = held.isEmpty() ? List.of() : engine.itemLockBindings(held);
+                    context.getSource().sendSuccess(() -> Component.literal(
+                            "[QnS] lock entries defined: " + engine.itemLockCount()), false);
+                    context.getSource().sendSuccess(() -> Component.literal(
+                            "[QnS] held item: " + heldId), false);
+                    if (bindings.isEmpty()) {
+                        context.getSource().sendSuccess(() -> Component.literal(
+                                "[QnS] no lock bindings match the held item"), false);
+                    }
+                    for (ItemLockIndex.LockBinding binding : bindings) {
+                        boolean complete = engine.itemLockBindingComplete(player, binding);
+                        context.getSource().sendSuccess(() -> Component.literal(
+                                "[QnS] locked by quest '" + binding.questId() + "' task '" + binding.taskId()
+                                        + "' complete=" + complete), false);
+                    }
+                    boolean locked = held.isEmpty() ? false : engine.isItemLocked(player, held);
+                    context.getSource().sendSuccess(() -> Component.literal(
+                            "[QnS] verdict: held item is " + (locked ? "LOCKED" : "not locked")), false);
+                    return 1;
+                });
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> reload() {

@@ -4,14 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimProtection;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockEnforcement;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
+import com.abo47.questsandstuff.quest.runtime.lock.OpenMenuIndex;
+import com.abo47.questsandstuff.quest.runtime.lock.possession.PossessionPolicy;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalHelper;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -22,6 +28,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
@@ -36,8 +43,30 @@ public final class ForgeQuestEventBridge {
     private final Map<UUID, Map<String, Integer>> statSnapshots = new HashMap<>();
 
     @SubscribeEvent
-    public void onPlayerLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            ItemLockEnforcement.undoLockedCraft(
+                    player, event.getCrafting(), event.getInventory());
+        }
+    }
+
+    @SubscribeEvent
+    public void onContainerOpen(PlayerContainerEvent.Open event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            OpenMenuIndex.record(serverPlayer, event.getContainer());
+            ItemLockMenuGating.gateCraftingMenu(serverPlayer, event.getContainer());
+        }
+    }
+
+    @SubscribeEvent
+    public void onContainerClose(PlayerContainerEvent.Close event) {
+        OpenMenuIndex.unrecord(event.getContainer());
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            OpenMenuIndex.record(player, player.inventoryMenu);
             QuestServiceRegistry.engine(player.server).preparePlayerForFullSync(player);
             QuestServiceRegistry.sync(player.server).syncFull(player);
         }
@@ -77,6 +106,10 @@ public final class ForgeQuestEventBridge {
     @SubscribeEvent
     public void onItemRightClick(PlayerInteractEvent.RightClickItem event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            if (PossessionPolicy.deniesUse(player, event.getItemStack())) {
+                event.setCanceled(true);
+                return;
+            }
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(event.getItemStack().getItem());
             QuestSignalHelper.send(player, QuestSignalType.ITEM_INTERACT, id.toString(), 1);
         }
@@ -180,7 +213,7 @@ public final class ForgeQuestEventBridge {
 
     @SubscribeEvent
     public void onMobGrief(EntityMobGriefingEvent event) {
-        if (event.getEntity() instanceof net.minecraft.world.entity.LivingEntity living
+        if (event.getEntity() instanceof LivingEntity living
                 && living.level() instanceof ServerLevel level) {
             if (ChunkClaimProtection.isProtectedChunk(level, new ChunkPos(living.blockPosition()), false, true)) {
                 event.setResult(Event.Result.DENY);

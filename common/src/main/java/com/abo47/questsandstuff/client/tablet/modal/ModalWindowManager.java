@@ -18,7 +18,8 @@ public final class ModalWindowManager {
         COLOR_PICKER,
         THEME_PICKER,
         ENTITY_VARIANT_PICKER,
-        PREREQUISITES_MANAGER
+        PREREQUISITES_MANAGER,
+        ITEM_LOCK_PICKER
     }
 
     private ModalWindowManager() {

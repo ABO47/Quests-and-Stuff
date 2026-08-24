@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
+import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
@@ -60,6 +61,7 @@ public final class TabletLifecycle {
             uiPrewarmed = true;
             QuestsAndStuffMod.debugLog("[QnS:UI] prewarmed tablet ui caches");
         }
+        ItemLockViewerSync.tick();
         if (minecraft.gameMode == null || minecraft.screen != null) {
             return;
         }
@@ -204,6 +206,7 @@ public final class TabletLifecycle {
 
     private static void resetSessionLocalState() {
         ClientQuestStateFacade.resetStateForTests();
+        ItemLockViewerSync.reset();
         rememberedQuestDetailsOpen = false;
         rememberedQuestDetailsQuestId = "";
         suppressNextOpenClick = false;

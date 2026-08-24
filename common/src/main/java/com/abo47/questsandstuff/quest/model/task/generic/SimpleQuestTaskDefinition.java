@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.generic;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import com.abo47.questsandstuff.quest.model.storage.IntegerTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestInventoryTasks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
@@ -26,10 +28,15 @@ public record SimpleQuestTaskDefinition(
         int goal,
         String target,
         String icon,
-        String title
+        String title,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     public SimpleQuestTaskDefinition(String id, ResourceLocation type, QuestSignalType signalType, int goal, String target, String icon) {
         this(id, type, signalType, goal, target, icon, "");
+    }
+
+    public SimpleQuestTaskDefinition(String id, ResourceLocation type, QuestSignalType signalType, int goal, String target, String icon, String title) {
+        this(id, type, signalType, goal, target, icon, title, List.of());
     }
 
     public static Codec<SimpleQuestTaskDefinition> codec(ResourceLocation type, QuestSignalType signalType) {
@@ -38,14 +45,16 @@ public record SimpleQuestTaskDefinition(
                 Codec.INT.fieldOf("amount").orElse(1).forGetter(SimpleQuestTaskDefinition::goal),
                 Codec.STRING.fieldOf("target").orElse("").forGetter(SimpleQuestTaskDefinition::target),
                 Codec.STRING.fieldOf("icon").orElse("").forGetter(SimpleQuestTaskDefinition::icon),
-                Codec.STRING.fieldOf("title").orElse("").forGetter(SimpleQuestTaskDefinition::title)
-        ).apply(instance, (id, goal, target, icon, title) -> new SimpleQuestTaskDefinition(id, type, signalType, goal, target, icon, title)));
+                Codec.STRING.fieldOf("title").orElse("").forGetter(SimpleQuestTaskDefinition::title),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(SimpleQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, goal, target, icon, title, itemLocks) -> new SimpleQuestTaskDefinition(id, type, signalType, goal, target, icon, title, itemLocks)));
     }
 
     public SimpleQuestTaskDefinition {
         target = target == null ? "" : target.trim();
         icon = icon == null ? "" : icon.trim();
         title = title == null ? "" : title.trim();
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override
@@ -75,7 +84,7 @@ public record SimpleQuestTaskDefinition(
         if (retargeted.equals(target)) {
             return this;
         }
-        return new SimpleQuestTaskDefinition(id, type, signalType, goal, retargeted, icon, title);
+        return new SimpleQuestTaskDefinition(id, type, signalType, goal, retargeted, icon, title, itemLocks);
     }
 
     private boolean matchesTarget(String signalKey) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -190,7 +191,7 @@ public final class EditorCanvasCommandClient {
 
     public static void runConnectionTextureAction(Player player, String questId, String prerequisiteId, String texture) {
         if (invalidQuestPair(questId, prerequisiteId)) return;
-        QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof net.minecraft.server.level.ServerPlayer);
+        QuestsAndStuffMod.debugLog("[QnS:UI] runConnectionTextureAction quest={} prereq={} texture={} isServerPlayer={}", questId, prerequisiteId, texture, player instanceof ServerPlayer);
         ClientQuestStateFacade.setConnectionTextureLocal(questId, prerequisiteId, texture);
         IntegratedServerActions.run(
                 player,

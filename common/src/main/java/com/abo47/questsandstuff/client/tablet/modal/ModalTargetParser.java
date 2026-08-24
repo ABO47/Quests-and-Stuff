@@ -63,6 +63,10 @@ public final class ModalTargetParser {
             return is(ModalTargets.TASK_ENTITY);
         }
 
+        public boolean isTaskItemLock() {
+            return is(ModalTargets.TASK_ITEM_LOCK);
+        }
+
         public boolean isTaskSimpleIcon() {
             return is(ModalTargets.TASK_SIMPLE_ICON);
         }

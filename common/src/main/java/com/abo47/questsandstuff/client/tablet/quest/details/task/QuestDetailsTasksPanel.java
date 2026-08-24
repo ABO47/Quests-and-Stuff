@@ -157,6 +157,10 @@ public final class QuestDetailsTasksPanel {
         QuestTaskEditActions.applyLootTablePick(player, state, lootTable);
     }
 
+    public static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+        QuestTaskEditActions.applyItemLockPick(player, state, entry);
+    }
+
     public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
         QuestTaskEditActions.applyInventoryItemPick(player, state, stack);
     }

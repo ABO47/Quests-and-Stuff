@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManager;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
@@ -153,7 +157,7 @@ public final class AssetPickerApplyActions {
         String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
         if (!canvasTarget.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas background picked chapter={} background={}", canvasTarget, background);
-            String currentBg = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.chapterCanvasBackground(canvasTarget);
+            String currentBg = ClientQuestStateFacade.chapterCanvasBackground(canvasTarget);
             SkinFillOverride o = SkinFillOverride.parse(currentBg);
             String mode = o != null ? o.mode() : "stretch";
             TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, BackgroundModes.encode(mode, background), 0);
@@ -166,14 +170,14 @@ public final class AssetPickerApplyActions {
                     ? connectionTextureTarget.split("\\|")[1] : "";
             java.util.Map<String, java.util.Map<String, String>> questTextures = new java.util.HashMap<>();
             for (String chapterQuestId : connectionTextureChapterTargets) {
-                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(chapterQuestId);
+                CompoundTag questTag = ClientQuestStateFacade.quest(chapterQuestId);
                 if (questTag == null) continue;
                 java.util.Map<String, String> prereqTextures = new java.util.HashMap<>();
-                net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
+                ListTag prereqs = questTag.getList("prerequisites", Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {
                     String prerequisiteId = prereqs.getString(i);
                     prereqTextures.put(prerequisiteId, background);
-                    com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
+                    ClientQuestStateFacade.setConnectionTextureLocal(chapterQuestId, prerequisiteId, background);
                     if (!chapter.isBlank()) {
                         ConnectionRenderer.setConnectionTexture(state, chapter, prerequisiteId, chapterQuestId, background);
                     }
@@ -184,7 +188,7 @@ public final class AssetPickerApplyActions {
             }
             if (!questTextures.isEmpty()) {
                 QuestsAndStuffMod.debugLog("[QnS:UI] chapter batch connection texture quests={} chapter={} bg={}", questTextures.size(), chapter, background);
-                net.minecraft.nbt.CompoundTag batchPayload = EditorCommandPayloads.connectionTextures(questTextures);
+                CompoundTag batchPayload = EditorCommandPayloads.connectionTextures(questTextures);
                 IntegratedServerActions.run(
                         player,
                         serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).setConnectionTextures(serverPlayer, questTextures),
@@ -260,7 +264,7 @@ public final class AssetPickerApplyActions {
         }
         String chapterTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CHAPTER, state.modal.modalChapterTarget);
         if (!chapterTarget.isBlank()) {
-            String currentBg = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.chapterBackground(chapterTarget);
+            String currentBg = ClientQuestStateFacade.chapterBackground(chapterTarget);
             SkinFillOverride o = SkinFillOverride.parse(currentBg);
             String mode = o != null ? o.mode() : "stretch";
             TabletUiFactory.runChapterAction(player, state, "set_background", chapterTarget, BackgroundModes.encode(mode, background), 0);

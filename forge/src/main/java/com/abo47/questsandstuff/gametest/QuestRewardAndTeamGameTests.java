@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -16,6 +17,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
@@ -680,7 +682,7 @@ public final class QuestRewardAndTeamGameTests {
     private static final class TestTeamProvider implements TeamProgressProvider {
         private final ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "gametest_provider");
         private List<UUID> members = List.of();
-        private BiConsumer<net.minecraft.server.level.ServerLevel, UUID> callback;
+        private BiConsumer<ServerLevel, UUID> callback;
 
         @Override
         public ResourceLocation id() {
@@ -688,7 +690,7 @@ public final class QuestRewardAndTeamGameTests {
         }
 
         @Override
-        public java.util.Collection<UUID> members(net.minecraft.server.level.ServerLevel level, UUID playerId) {
+        public Collection<UUID> members(ServerLevel level, UUID playerId) {
             if (members.isEmpty()) {
                 return List.of(playerId);
             }
@@ -696,7 +698,7 @@ public final class QuestRewardAndTeamGameTests {
         }
 
         @Override
-        public void installChangeHook(BiConsumer<net.minecraft.server.level.ServerLevel, UUID> callback) {
+        public void installChangeHook(BiConsumer<ServerLevel, UUID> callback) {
             this.callback = callback;
         }
 
@@ -704,7 +706,7 @@ public final class QuestRewardAndTeamGameTests {
             this.members = members;
         }
 
-        private void fire(net.minecraft.server.level.ServerLevel level, UUID changedPlayer) {
+        private void fire(ServerLevel level, UUID changedPlayer) {
             if (callback != null) {
                 callback.accept(level, changedPlayer);
             }

@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.Variant;
 import net.minecraft.world.item.DyeColor;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
@@ -272,7 +273,7 @@ public final class EntityVariantCatalog {
 
     private static List<VariantEntry> horseVariants() {
         List<VariantEntry> entries = new ArrayList<>();
-        for (net.minecraft.world.entity.animal.horse.Variant variant : net.minecraft.world.entity.animal.horse.Variant.values()) {
+        for (Variant variant : Variant.values()) {
             String color = variant.getSerializedName();
             entries.add(entry(color, title(color) + " horse"));
             entries.add(entry(color + ".white", title(color) + " horse with white markings"));

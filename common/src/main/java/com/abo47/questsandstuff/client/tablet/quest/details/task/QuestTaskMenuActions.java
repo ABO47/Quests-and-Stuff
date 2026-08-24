@@ -7,12 +7,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ActionTone;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -53,6 +56,7 @@ final class QuestTaskMenuActions {
             EditorQuestCommandClient.moveQuestTask(player, questId, contextId, 1);
         });
         sections.addAll(ContextMenuSection.ARRANGE, moveActions);
+        addLockSections(sections, state, player, questId, contextId, taskJson);
         List<ContextAction> visualActions = new ArrayList<>();
         QuestTaskMenuSupport.addVisualActions(visualActions, state, questId, contextId, true);
         sections.addAll(ContextMenuSection.APPEARANCE, visualActions);
@@ -60,5 +64,33 @@ final class QuestTaskMenuActions {
         sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
             EditorQuestCommandClient.removeQuestTask(player, questId, contextId);
         }));
+    }
+
+    private static void addLockSections(ContextMenuSections sections, TabletUiState state, Player player, String questId, String taskId, JsonObject taskJson) {
+        int lockAccent = TabletColors.LOCKED;
+        List<ContextAction> lockActions = new ArrayList<>();
+        lockActions.add(ContextActionFactory.action(
+                TabletTranslationKeys.text(QuestTranslationKeys.ADD_ITEM_LOCK),
+                "lock",
+                lockAccent,
+                () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsWindow.openItemLockPicker(state, ModalTargets.taskItemLock(questId, taskId));
+                }));
+        for (String lock : QuestTaskLockJson.locks(taskJson)) {
+            lockActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text(QuestTranslationKeys.REMOVE_ITEM_LOCK, lock),
+                    "delete",
+                    ActionTone.DANGER,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        QuestTaskEditActions.removeItemLock(player, state, questId, taskId, lock);
+                    }));
+        }
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(
+                TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ITEM_LOCKS),
+                "lock",
+                lockAccent,
+                lockActions));
     }
 }

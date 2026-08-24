@@ -184,6 +184,29 @@ final class QuestsAndStuffConfigSections {
         }
     }
 
+    static final class ItemLocks {
+        boolean blockUse;
+        boolean blockPickup;
+        boolean blockEquip;
+        boolean lockedTooltips = true;
+
+        void read(JsonObject root) {
+            blockUse = bool(root, "blockUse", blockUse);
+            blockPickup = bool(root, "blockPickup", blockPickup);
+            blockEquip = bool(root, "blockEquip", blockEquip);
+            lockedTooltips = bool(root, "lockedTooltips", lockedTooltips);
+        }
+
+        JsonObject write() {
+            JsonObject root = new JsonObject();
+            root.addProperty("blockUse", blockUse);
+            root.addProperty("blockPickup", blockPickup);
+            root.addProperty("blockEquip", blockEquip);
+            root.addProperty("lockedTooltips", lockedTooltips);
+            return root;
+        }
+    }
+
     static JsonObject object(JsonObject root, String key) {
         if (root != null && root.has(key) && root.get(key).isJsonObject()) {
             return root.getAsJsonObject(key);

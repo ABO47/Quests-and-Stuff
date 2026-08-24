@@ -1,18 +1,26 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
+import com.abo47.questsandstuff.client.quest.lock.LockClientRefresh;
+import com.abo47.questsandstuff.client.quest.lock.LockedItemTooltips;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.quest.runtime.lock.ItemLockMenuGating;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -33,7 +41,10 @@ public final class ForgeClientEvents {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            event.enqueueWork(TabletLifecycle::prewarmClientAtGameLaunch);
+            event.enqueueWork(() -> {
+                TabletLifecycle.prewarmClientAtGameLaunch();
+                ItemLockViewerSync.ensureSubscribed();
+            });
         }
     }
 
@@ -57,6 +68,27 @@ public final class ForgeClientEvents {
             if (event.phase == TickEvent.Phase.END) {
                 TabletLifecycle.onClientTick();
             }
+        }
+
+        @SubscribeEvent
+        public static void onRecipesUpdated(RecipesUpdatedEvent event) {
+            var minecraft = Minecraft.getInstance();
+            LockClientRefresh.onRecipesUpdated(minecraft.level.getRecipeManager(), minecraft.level.registryAccess());
+        }
+
+        @SubscribeEvent
+        public static void onScreenInit(ScreenEvent.Init event) {
+            if (event.getScreen() instanceof AbstractContainerScreen<?> containerScreen) {
+                var minecraft = Minecraft.getInstance();
+                if (minecraft.player != null) {
+                    ItemLockMenuGating.gateCraftingMenu(minecraft.player, containerScreen.getMenu());
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onItemTooltip(ItemTooltipEvent event) {
+            LockedItemTooltips.append(event.getToolTip(), event.getItemStack());
         }
 
         @SubscribeEvent

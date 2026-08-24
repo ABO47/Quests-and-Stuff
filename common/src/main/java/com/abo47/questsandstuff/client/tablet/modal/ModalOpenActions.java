@@ -74,6 +74,10 @@ public final class ModalOpenActions {
         openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.LOOT_TABLE_PICKER, () -> ModalPickerStates.lootTable(state).reset());
     }
 
+    public static void openItemLockPicker(TabletUiState state, String target) {
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.ITEM_LOCK_PICKER, () -> ModalPickerStates.itemLock(state).reset());
+    }
+
     public static void openItemInventoryPicker(TabletUiState state, String target) {
         openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, () -> ModalPickerStates.itemInventory(state).reset());
     }

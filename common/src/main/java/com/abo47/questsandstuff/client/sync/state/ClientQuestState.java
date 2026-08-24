@@ -16,6 +16,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.quest.lock.ClientItemLocks;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
@@ -33,10 +34,12 @@ public final class ClientQuestState {
     public static void reset() {
         QUESTS.clear();
         PINNED.clear();
+        ClientItemLocks.invalidate();
     }
 
     public static void clearQuests() {
         QUESTS.clear();
+        ClientItemLocks.invalidate();
     }
 
     public static void putQuest(String questId, CompoundTag quest) {
@@ -45,6 +48,7 @@ public final class ClientQuestState {
             return;
         }
         QUESTS.put(normalized, quest.copy());
+        ClientItemLocks.invalidate();
         if (normalized.equals(dragReorderQuestId) && dragReorderEntryId != null && !dragReorderEntryId.isBlank()) {
             if (dragReorderIsTask) {
                 moveTask(dragReorderQuestId, dragReorderEntryId, dragReorderOffset);

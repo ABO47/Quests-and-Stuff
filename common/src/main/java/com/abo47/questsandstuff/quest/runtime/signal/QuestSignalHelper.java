@@ -7,6 +7,7 @@ import java.util.UUID;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +37,7 @@ public final class QuestSignalHelper {
         Map<Structure, LongSet> structures = player.serverLevel().structureManager().getAllStructuresAt(player.blockPosition());
         if (!structures.isEmpty()) {
             for (Structure structure : structures.keySet()) {
-                ResourceLocation structureId = player.server.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getKey(structure);
+                ResourceLocation structureId = player.server.registryAccess().registryOrThrow(Registries.STRUCTURE).getKey(structure);
                 if (structureId != null) {
                     send(player, QuestSignalType.STRUCTURE_ENTER, structureId.toString(), 1);
                 }

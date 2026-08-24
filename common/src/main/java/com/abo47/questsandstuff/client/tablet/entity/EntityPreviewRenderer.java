@@ -415,15 +415,17 @@ public final class EntityPreviewRenderer {
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);
+        Quaternionf previousCameraOrientation = dispatcher.cameraOrientation();
         dispatcher.overrideCameraOrientation(new Quaternionf());
         RenderSystem.runAsFancy(() -> dispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, graphics.pose(), graphics.bufferSource(), 15728880));
         graphics.flush();
         dispatcher.setRenderShadow(true);
+        dispatcher.overrideCameraOrientation(previousCameraOrientation);
         graphics.pose().popPose();
         Lighting.setupFor3DItems();
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     private record EntityAsset(String entityId, String variantKey) {

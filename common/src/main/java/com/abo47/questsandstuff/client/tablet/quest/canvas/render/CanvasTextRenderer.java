@@ -8,6 +8,7 @@ import org.joml.Quaternionf;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
@@ -327,7 +328,7 @@ public final class CanvasTextRenderer {
         return new TextLayout(glyphs, cursors);
     }
 
-    private static int styledLineWidth(CanvasTextLayer text, LineRun line, net.minecraft.client.gui.Font font) {
+    private static int styledLineWidth(CanvasTextLayer text, LineRun line, Font font) {
         int width = 0;
         for (int i = 0; i < line.value().length(); i++) {
             int index = line.start() + i;
@@ -336,7 +337,7 @@ public final class CanvasTextRenderer {
         return width;
     }
 
-    private static List<LineRun> buildWrappedTextLines(CanvasTextLayer text, String value, int maxWidth, net.minecraft.client.gui.Font font) {
+    private static List<LineRun> buildWrappedTextLines(CanvasTextLayer text, String value, int maxWidth, Font font) {
         List<LineRun> lines = new ArrayList<>();
         int width = Math.max(1, maxWidth);
         String safeValue = value == null ? "" : value;
@@ -379,7 +380,7 @@ public final class CanvasTextRenderer {
         return lines;
     }
 
-    private static int styledCharWidth(CanvasTextLayer text, int index, char value, net.minecraft.client.gui.Font font) {
+    private static int styledCharWidth(CanvasTextLayer text, int index, char value, Font font) {
         return Math.max(1, font.width(String.valueOf(value)) + (isBoldStyle(text.styleAt(index)) ? 1 : 0));
     }
 

@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.compat.oresandstuff;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class OresAndStuffCompatTest {
     @Test
@@ -14,6 +15,6 @@ class OresAndStuffCompatTest {
     void grantTeamScanFailsClosedWithoutOresAndStuffInstalled() {
         boolean granted = OresAndStuffCompat.grantTeamScan(null, java.util.UUID.randomUUID(), null);
 
-        org.junit.jupiter.api.Assertions.assertFalse(granted);
+        assertFalse(granted);
     }
 }

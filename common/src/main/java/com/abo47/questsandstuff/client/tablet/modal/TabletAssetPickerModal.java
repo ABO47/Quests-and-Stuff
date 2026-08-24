@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -15,6 +18,7 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutManager;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
@@ -521,9 +525,9 @@ public final class TabletAssetPickerModal {
             String[] parts = target.split("\\|");
             String chapter = parts.length >= 2 ? parts[1] : "";
             for (String questId : chapterTargets) {
-                net.minecraft.nbt.CompoundTag questTag = com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade.quest(questId);
+                CompoundTag questTag = ClientQuestStateFacade.quest(questId);
                 if (questTag == null) continue;
-                net.minecraft.nbt.ListTag prereqs = questTag.getList("prerequisites", net.minecraft.nbt.Tag.TAG_STRING);
+                ListTag prereqs = questTag.getList("prerequisites", Tag.TAG_STRING);
                 for (int i = 0; i < prereqs.size(); i++) {
                     String prerequisiteId = prereqs.getString(i);
                     EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);

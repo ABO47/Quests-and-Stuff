@@ -39,12 +39,15 @@ dependencies {
     shadowCommon(project(path: ':questsandstuff-common', configuration: 'transformProductionForge')) {
         transitive = false
     }
-    modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") {
-        transitive = false
-    }
-    modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") {
-        transitive = false
-    }
+      modImplementation("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") {
+          transitive = false
+      }
+      modCompileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") {
+          transitive = false
+      }
+      modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") {
+          transitive = false
+      }
     modCompileOnly("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}") {
         transitive = false
     }
@@ -97,6 +100,17 @@ tasks.named('processResources', ProcessResources).configure {
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
+
+    doLast {
+        def manifest = new java.util.jar.Manifest()
+        manifest.mainAttributes.putValue('Manifest-Version', '1.0')
+        manifest.mainAttributes.putValue('MixinConfigs', 'questsandstuff.forge.mixins.json')
+        def bytes = new ByteArrayOutputStream()
+        manifest.write(bytes)
+        def target = new File(destinationDir, 'META-INF/MANIFEST.MF')
+        target.parentFile.mkdirs()
+        target.bytes = bytes.toByteArray()
+    }
 }
 
 tasks.named('jar', Jar).configure {
@@ -104,6 +118,7 @@ tasks.named('jar', Jar).configure {
     exclude 'com/abo47/questsandstuff/gametest/**'
     exclude 'gameteststructures/**'
     exclude 'data/questsandstuff/structures/gameteststructures/**'
+    exclude 'META-INF/MANIFEST.MF'
     manifest {
         attributes([
                 'Specification-Title'     : mod_id,
@@ -112,6 +127,7 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : archiveVersion,
                 'Implementation-Vendor'   : mod_authors,
+                'MixinConfigs'            : 'questsandstuff.forge.mixins.json',
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
@@ -120,6 +136,7 @@ tasks.named('jar', Jar).configure {
 shadowJar {
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = 'dev-shadow'
+    exclude 'META-INF/MANIFEST.MF'
 }
 
 remapJar {

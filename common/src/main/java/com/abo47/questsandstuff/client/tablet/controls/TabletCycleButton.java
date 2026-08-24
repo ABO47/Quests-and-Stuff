@@ -6,6 +6,7 @@ import java.util.function.IntSupplier;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.CycleButtonWidget;
@@ -102,7 +103,7 @@ public final class TabletCycleButton {
         }
 
         @Override
-        public void drawInBackground(net.minecraft.client.gui.GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             IGuiTexture texture = IconAtlas.iconTexture(iconSupplier.get(safeIndex(currentIndex, Integer.MAX_VALUE)));
             if (texture != null) {
                 texture.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());

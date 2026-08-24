@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 import com.abo47.questsandstuff.chunkclaim.ChunkClaimPacketHelper;
@@ -70,7 +71,7 @@ public enum ClientChunkClaimCache {
     public List<ClaimedChunk> snapshot() {
         UUID localTeam = ClientTeamCache.INSTANCE.getTeam() != null
                 ? ClientTeamCache.INSTANCE.getTeam().teamId() : null;
-        String localName = net.minecraft.client.Minecraft.getInstance().getUser().getName();
+        String localName = Minecraft.getInstance().getUser().getName();
         List<ClaimedChunk> result = new ArrayList<>();
         for (ChunkClaimPacketHelper.ClaimEntry e : claims.values()) {
             if (localTeam != null && localTeam.equals(e.teamId())) {

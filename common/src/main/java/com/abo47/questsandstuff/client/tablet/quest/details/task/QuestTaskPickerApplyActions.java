@@ -275,6 +275,32 @@ final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details dimension picked quest={} task={} dimension={}", parsed.questId(), parsed.entryId(), dimension.trim());
     }
 
+    static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+        ModalTargetParser.Target parsed = pickTarget(state);
+        if (parsed.kind().isBlank() || entry == null || entry.isBlank()) {
+            return;
+        }
+        if (!ModalTargetState.requireParts("task_item_lock", parsed, 3) || !parsed.isTaskItemLock()) {
+            return;
+        }
+        String questId = parsed.questId();
+        String taskId = parsed.entryId();
+        CompoundTag task = ClientQuestStateFacade.quest(questId).getCompound("tasks").getCompound(taskId);
+        JsonObject json = TaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
+        QuestTaskLockJson.add(json, entry);
+        EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
+        state.questDetails.questDetailsPickTarget = "";
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details item lock picked quest={} task={} entry={}", questId, taskId, entry);
+    }
+
+    static void removeItemLock(Player player, TabletUiState state, String questId, String taskId, String entry) {
+        CompoundTag task = ClientQuestStateFacade.quest(questId).getCompound("tasks").getCompound(taskId);
+        JsonObject json = TaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
+        QuestTaskLockJson.remove(json, entry);
+        EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details item lock removed quest={} task={} entry={}", questId, taskId, entry);
+    }
+
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || lootTable == null || lootTable.isBlank()) {

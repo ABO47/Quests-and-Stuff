@@ -6,6 +6,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.command.QuestCommands;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+import com.abo47.questsandstuff.quest.runtime.lock.ServerRecipeWrap;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -27,6 +28,7 @@ public final class QuestsAndStuffFabric implements ModInitializer {
             QuestsAndStuffMod.SERVER_REF = server;
             QuestsAndStuffMod.prepareAssetsDirectory();
             QuestServiceRegistry.start(server);
+            ServerRecipeWrap.wrapAll(server.getRecipeManager());
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             QuestServiceRegistry.stop(server);

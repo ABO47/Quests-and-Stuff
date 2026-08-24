@@ -19,6 +19,7 @@ import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.entity.animal.goat.Goat;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.animal.horse.Llama;
+import net.minecraft.world.entity.animal.horse.Variant;
 import net.minecraft.world.entity.animal.horse.Markings;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Slime;
@@ -111,7 +112,7 @@ final class EntityVariantApplier {
     static void applyHorse(Entity entity, String key) {
         if (entity instanceof Horse horse) {
             String[] parts = key.split("\\.", 2);
-            net.minecraft.world.entity.animal.horse.Variant variant = horseVariant(parts[0]);
+            Variant variant = horseVariant(parts[0]);
             Markings markings = parts.length > 1 ? horseMarkings(parts[1]) : Markings.NONE;
             CompoundTag tag = new CompoundTag();
             horse.addAdditionalSaveData(tag);
@@ -217,15 +218,15 @@ final class EntityVariantApplier {
         }
     }
 
-    private static net.minecraft.world.entity.animal.horse.Variant horseVariant(String key) {
+    private static Variant horseVariant(String key) {
         return switch (key) {
-            case "creamy" -> net.minecraft.world.entity.animal.horse.Variant.CREAMY;
-            case "chestnut" -> net.minecraft.world.entity.animal.horse.Variant.CHESTNUT;
-            case "brown" -> net.minecraft.world.entity.animal.horse.Variant.BROWN;
-            case "black" -> net.minecraft.world.entity.animal.horse.Variant.BLACK;
-            case "gray" -> net.minecraft.world.entity.animal.horse.Variant.GRAY;
-            case "dark_brown" -> net.minecraft.world.entity.animal.horse.Variant.DARK_BROWN;
-            default -> net.minecraft.world.entity.animal.horse.Variant.WHITE;
+            case "creamy" -> Variant.CREAMY;
+            case "chestnut" -> Variant.CHESTNUT;
+            case "brown" -> Variant.BROWN;
+            case "black" -> Variant.BLACK;
+            case "gray" -> Variant.GRAY;
+            case "dark_brown" -> Variant.DARK_BROWN;
+            default -> Variant.WHITE;
         };
     }
 

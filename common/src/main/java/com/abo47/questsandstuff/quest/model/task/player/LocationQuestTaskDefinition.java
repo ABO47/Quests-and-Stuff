@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.quest.model.task.player;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.serialization.Codec;
@@ -12,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.abo47.questsandstuff.quest.model.storage.BooleanTaskStorage;
 import com.abo47.questsandstuff.quest.model.storage.TaskStorage;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.model.task.QuestTaskItemLocks;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignal;
 import com.abo47.questsandstuff.quest.runtime.signal.QuestSignalType;
 
@@ -24,7 +26,8 @@ public record LocationQuestTaskDefinition(
         int y,
         int z,
         int radius,
-        String icon
+        String icon,
+        List<String> itemLocks
 ) implements QuestTaskDefinition {
     public static Codec<LocationQuestTaskDefinition> codec(ResourceLocation type) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -35,12 +38,18 @@ public record LocationQuestTaskDefinition(
                 Codec.INT.fieldOf("y").orElse(0).forGetter(LocationQuestTaskDefinition::y),
                 Codec.INT.fieldOf("z").orElse(0).forGetter(LocationQuestTaskDefinition::z),
                 Codec.INT.fieldOf("radius").orElse(6).forGetter(LocationQuestTaskDefinition::radius),
-                Codec.STRING.fieldOf("icon").orElse("").forGetter(LocationQuestTaskDefinition::icon)
-        ).apply(instance, (id, mode, dimension, x, y, z, radius, icon) -> new LocationQuestTaskDefinition(id, type, mode, dimension, x, y, z, radius, icon)));
+                Codec.STRING.fieldOf("icon").orElse("").forGetter(LocationQuestTaskDefinition::icon),
+                QuestTaskItemLocks.codec().optionalFieldOf(QuestTaskItemLocks.FIELD, List.of()).forGetter(LocationQuestTaskDefinition::itemLocks)
+        ).apply(instance, (id, mode, dimension, x, y, z, radius, icon, itemLocks) -> new LocationQuestTaskDefinition(id, type, mode, dimension, x, y, z, radius, icon, itemLocks)));
+    }
+
+    public LocationQuestTaskDefinition(String id, ResourceLocation type, String mode, String dimension, int x, int y, int z, int radius, String icon) {
+        this(id, type, mode, dimension, x, y, z, radius, icon, List.of());
     }
 
     public LocationQuestTaskDefinition {
         icon = icon == null ? "" : icon;
+        itemLocks = QuestTaskItemLocks.normalize(itemLocks);
     }
 
     @Override

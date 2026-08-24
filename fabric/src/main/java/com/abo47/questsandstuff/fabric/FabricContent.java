@@ -11,6 +11,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.item.TabletItem;
 import com.abo47.questsandstuff.loot.CompletedQuestLootCondition;
+import com.abo47.questsandstuff.quest.runtime.lock.LockedRecipeSerializer;
 
 public final class FabricContent {
     public static Item TABLET;
@@ -21,6 +22,11 @@ public final class FabricContent {
     }
 
     public static void register() {
+        Registry.register(
+                BuiltInRegistries.RECIPE_SERIALIZER,
+                LockedRecipeSerializer.ID,
+                LockedRecipeSerializer.INSTANCE
+        );
         TABLET = Registry.register(
                 BuiltInRegistries.ITEM,
                 id("quest_tablet"),
