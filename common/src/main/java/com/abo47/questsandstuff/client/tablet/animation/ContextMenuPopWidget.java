@@ -4,9 +4,11 @@ import java.util.function.LongSupplier;
 import javax.annotation.Nonnull;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -68,6 +70,9 @@ public final class ContextMenuPopWidget extends WidgetGroup {
         if (amount <= 0.01f) {
             return;
         }
+        graphics.bufferSource().endBatch();
+        RenderSystem.depthMask(true);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
         float scale = UiAnimationProgress.interpolate(START_SCALE, 1.0f, amount);
         int x = getPositionX();
         int y = getPositionY();

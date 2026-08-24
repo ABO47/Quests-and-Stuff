@@ -50,7 +50,7 @@ final class QuestTaskActionWidgets {
     }
 
     static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, int count, int amount) {
-        parent.addWidget(TabletTextTextures.literal(x - 46, y, 42, 16, count + " / " + amount, TabletColors.TEXT_PRIMARY, TextTexture.TextType.RIGHT_HIDE));
+        parent.addWidget(TabletTextTextures.flatLiteral(x - 46, y, 42, 16, count + " / " + amount, TabletColors.TEXT_PRIMARY, TextTexture.TextType.RIGHT_HIDE));
         boolean done = count >= amount;
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
@@ -86,7 +86,7 @@ final class QuestTaskActionWidgets {
         String label = claimable
                 ? TabletTranslationKeys.text(QuestTranslationKeys.CLAIM)
                 : (claimed ? TabletTranslationKeys.text(QuestTranslationKeys.CLAIMED) : Math.round(progressValue * 100.0f) + "%");
-        section.addWidget(TabletTextTextures.literal(x, y, barW, h, label, claimed ? TabletColors.TEXT_MUTED : TabletColors.TEXT_PRIMARY, TextTexture.TextType.HIDE));
+        section.addWidget(TabletTextTextures.flatLiteral(x, y, barW, h, label, claimed ? TabletColors.TEXT_MUTED : TabletColors.TEXT_PRIMARY, TextTexture.TextType.HIDE));
         if (claimable) {
             var hit = TabletUiFactory.flatHitButton(x, y, barW, h, click -> {
                 boolean hasSelectableReward = QuestTaskSelectableRewards.hasSelectableReward(quest);

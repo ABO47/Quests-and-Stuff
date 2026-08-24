@@ -139,12 +139,12 @@ public final class TabletRootWidget extends WidgetGroup {
             IGuiTexture saved = getBackgroundTexture();
             setBackground(IGuiTexture.EMPTY);
             drawRootFill(graphics);
-            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), true, graphics, mouseX, mouseY, partialTicks,
                     TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
             setBackground(saved);
         } else {
             drawRootFill(graphics);
-            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+            TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), true, graphics, mouseX, mouseY, partialTicks,
                     TabletRootDrawRouter.LayerDraw.BACKGROUND, (g, x, y, t) -> super.drawInBackground(g, x, y, t));
         }
         if (homeBtn != null) {
@@ -157,7 +157,7 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public void drawInForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+        TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), !frontWindowHoverSuppressed(), graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.FOREGROUND, (g, x, y, t) -> super.drawInForeground(g, x, y, t));
         if (homeBtn != null) {
             homeBtn.drawInForeground(graphics, mouseX, mouseY, partialTicks);
@@ -167,9 +167,21 @@ public final class TabletRootWidget extends WidgetGroup {
         }
     }
 
+    private boolean frontWindowHoverSuppressed() {
+        if (isAnyModalOpen()) {
+            return true;
+        }
+        return state != null && (state.questDetails.questDetailsContextOpen
+                || state.questDetails.questDetailsPickerSession.active()
+                || state.questDetails.questDetailsCommandRewardEditorOpen
+                || state.questDetails.questDetailsTaskRenameOpen
+                || state.questDetails.questDetailsToolsOpen
+                || state.questDetails.questDetailsToolsClosing);
+    }
+
     @Override
     public void drawOverlay(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), graphics, mouseX, mouseY, partialTicks,
+        TabletRootDrawRouter.draw(modalLayer, frontWindowLayer, isAnyModalOpen(), isFrontWindowOpen(), true, graphics, mouseX, mouseY, partialTicks,
                 TabletRootDrawRouter.LayerDraw.OVERLAY, (g, x, y, t) -> super.drawOverlay(g, x, y, t));
     }
 
