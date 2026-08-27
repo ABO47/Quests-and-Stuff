@@ -45,6 +45,44 @@ class SkinFillOverrideTest {
     }
 
     @Test
+    void parseHrstretchPrefix() {
+        SkinFillOverride result = SkinFillOverride.parse("hrstretch|path/to/bar.png");
+        assertNotNull(result);
+        assertEquals("hrstretch", result.mode());
+        assertEquals("path/to/bar.png", result.path());
+        assertEquals(0, result.leftEdge());
+        assertEquals(0, result.rightEdge());
+    }
+
+    @Test
+    void parseHrstretchWithEdges() {
+        SkinFillOverride result = SkinFillOverride.parse("hrstretch:8:12|path/to/bar.png");
+        assertNotNull(result);
+        assertEquals("hrstretch", result.mode());
+        assertEquals("path/to/bar.png", result.path());
+        assertEquals(8, result.leftEdge());
+        assertEquals(12, result.rightEdge());
+    }
+
+    @Test
+    void encodeHrstretchWithEdges() {
+        SkinFillOverride override = new SkinFillOverride("hrstretch", 8, 12, "bar.png");
+        assertEquals("hrstretch:8:12|bar.png", override.encode());
+    }
+
+    @Test
+    void roundTripHrstretchWithEdges() {
+        SkinFillOverride original = new SkinFillOverride("hrstretch", 8, 12, "some/bar.png");
+        String encoded = original.encode();
+        SkinFillOverride parsed = SkinFillOverride.parse(encoded);
+        assertNotNull(parsed);
+        assertEquals(original.mode(), parsed.mode());
+        assertEquals(original.path(), parsed.path());
+        assertEquals(original.leftEdge(), parsed.leftEdge());
+        assertEquals(original.rightEdge(), parsed.rightEdge());
+    }
+
+    @Test
     void parsePipeOnlyReturnsNull() {
         assertNull(SkinFillOverride.parse("|"));
         assertNull(SkinFillOverride.parse("stretch|"));

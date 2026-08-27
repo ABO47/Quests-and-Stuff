@@ -115,7 +115,9 @@ public final class AssetPickerApplyActions {
             String existing = SkinOverrideKey.resolveOverride(state, skinFillTarget);
             SkinFillOverride existingOverride = SkinFillOverride.parse(existing);
             String mode = (existingOverride != null) ? existingOverride.mode() : "stretch";
-            SkinFillOverride newOverride = new SkinFillOverride(mode, background);
+            int left = existingOverride != null ? existingOverride.leftEdge() : 0;
+            int right = existingOverride != null ? existingOverride.rightEdge() : 0;
+            SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
             state.root.skinFillOverrides.put(entryKey, newOverride.encode());
             state.root.activeSkinTargets.add(skinFillTarget);
             state.modal.skinEditFillTarget = "";
@@ -160,7 +162,10 @@ public final class AssetPickerApplyActions {
             String currentBg = ClientQuestStateFacade.chapterCanvasBackground(canvasTarget);
             SkinFillOverride o = SkinFillOverride.parse(currentBg);
             String mode = o != null ? o.mode() : "stretch";
-            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, BackgroundModes.encode(mode, background), 0);
+            int left = o != null ? o.leftEdge() : 0;
+            int right = o != null ? o.rightEdge() : 0;
+            SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
+            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, newOverride.encode(), 0);
             return;
         }
         String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
@@ -267,7 +272,10 @@ public final class AssetPickerApplyActions {
             String currentBg = ClientQuestStateFacade.chapterBackground(chapterTarget);
             SkinFillOverride o = SkinFillOverride.parse(currentBg);
             String mode = o != null ? o.mode() : "stretch";
-            TabletUiFactory.runChapterAction(player, state, "set_background", chapterTarget, BackgroundModes.encode(mode, background), 0);
+            int left = o != null ? o.leftEdge() : 0;
+            int right = o != null ? o.rightEdge() : 0;
+            SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
+            TabletUiFactory.runChapterAction(player, state, "set_background", chapterTarget, newOverride.encode(), 0);
         }
     }
 

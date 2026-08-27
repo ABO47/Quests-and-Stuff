@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -47,8 +48,10 @@ public final class ChapterContextMenuRows {
                     refresh.run();
                 }));
                 modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "brick-wall", currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
-                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("tile", path), 0);
-                    refresh.run();
+                    int curW = parsed != null && "tile".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                    int curH = parsed != null && "tile".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                    state.chapterPanel.chapterMenuOpen = false;
+                    openChapterModeEditor(state, player, target, "tile", path, curW, curH, refresh);
                 }));
                 modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"), "original_size", currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("center", path), 0);
@@ -57,6 +60,12 @@ public final class ChapterContextMenuRows {
                 modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"), "dynamic", currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("dynamic", path), 0);
                     refresh.run();
+                }));
+                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"), "repeat", currentMode.equals("hrstretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                    int curL = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                    int curR = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                    state.chapterPanel.chapterMenuOpen = false;
+                    openChapterModeEditor(state, player, target, "hrstretch", path, curL, curR, refresh);
                 }));
                 sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"), "layout-dashboard", TabletColors.TEXT_PRIMARY, modeActions));
             }
@@ -131,6 +140,35 @@ public final class ChapterContextMenuRows {
                 },
                 ContextMenuAnimationBridge.CHAPTER_KEY
         );
+    }
+
+    private static void openChapterModeEditor(TabletUiState state, Player player, String target, String mode, String path, int left, int right, Runnable refresh) {
+        int w = 240;
+        int h = 116;
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        int screenW = mc.getWindow().getGuiScaledWidth();
+        int screenH = mc.getWindow().getGuiScaledHeight();
+        int x = Math.max(4, (screenW - w) / 2);
+        int y = Math.max(4, (screenH - h) / 2);
+        boolean tile = "tile".equals(mode);
+        String title = tile ? "ui.questsandstuff.skin.mode_tile" : "ui.questsandstuff.skin.mode_hrstretch";
+        String leftKey = tile ? "ui.questsandstuff.skin.tile_size_w" : "ui.questsandstuff.skin.hrstretch_left";
+        String rightKey = tile ? "ui.questsandstuff.skin.tile_size_h" : "ui.questsandstuff.skin.hrstretch_right";
+        var popup = TwoFieldEditor.build(state, x, y, w, h, title, leftKey, rightKey, left, right,
+                (l, r) -> {
+                    EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, new SkinFillOverride(mode, l, r, path).encode(), 0);
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
+                    refresh.run();
+                },
+                () -> {
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
+                    refresh.run();
+                });
+        state.root.editorPopup = popup;
+        state.root.editorPopupOpen = true;
+        refresh.run();
     }
 
     private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
