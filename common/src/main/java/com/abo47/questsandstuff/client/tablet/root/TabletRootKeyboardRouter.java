@@ -49,6 +49,24 @@ final class TabletRootKeyboardRouter {
             int scanCode,
             int modifiers
     ) {
+        if (state.root.editorPopup != null) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                state.root.editorPopup = null;
+                state.root.editorPopupOpen = false;
+                refresher.run();
+                return true;
+            }
+            return state.root.editorPopup.keyPressed(keyCode, scanCode, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                state.root.skinModeEditorOpen = false;
+                root.closeContextMenu();
+                refresher.run();
+                return true;
+            }
+            return root.getContextMenuRoot().keyPressed(keyCode, scanCode, modifiers);
+        }
         boolean textInputActive = TabletRootWindowController.isTextInputActive(state, root);
         if (!textInputActive && !root.isAnyModalOpen() && root.isFrontWindowOpen() && handleQuestDetailsRecipeViewerShortcut(state, keyCode, scanCode)) {
             return true;
@@ -423,6 +441,12 @@ final class TabletRootKeyboardRouter {
     }
 
     static boolean keyReleased(TabletRootWidget root, TabletUiState state, Runnable refresher, KeyDelegate selfKeyRelease, int keyCode, int scanCode, int modifiers) {
+        if (state.root.editorPopup != null) {
+            return state.root.editorPopup.keyReleased(keyCode, scanCode, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            return root.getContextMenuRoot().keyReleased(keyCode, scanCode, modifiers);
+        }
         if (TabletKeybindings.quickConnectMatches(keyCode, scanCode)) {
             state.canvas.quickConnectHeld = false;
             state.canvas.quickConnectSourceQuestId = "";
@@ -434,6 +458,12 @@ final class TabletRootKeyboardRouter {
     }
 
     static boolean charTyped(TabletRootWidget root, TabletUiState state, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, Runnable refresher, CharTypedDelegate selfCharTyped, char c, int modifiers) {
+        if (state.root.editorPopup != null) {
+            return state.root.editorPopup.charTyped(c, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            return root.getContextMenuRoot().charTyped(c, modifiers);
+        }
         if (root.isAnyModalOpen()) {
             if (modalLayer != null) {
                 modalLayer.charTyped(c, modifiers);

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
@@ -58,12 +60,21 @@ public class TabletUiState {
         public String lastApp = "";
         public String currentApp = "";
         public String skinEditSelectedTarget = "";
+        public boolean skinModeEditorOpen;
+        public WidgetGroup editorPopup;
+        public boolean editorPopupOpen;
         public final Map<String, String> skinFillOverrides = new HashMap<>();
         public final java.util.Set<String> activeSkinTargets = new java.util.LinkedHashSet<>();
     }
 
     public static final class ChapterPanelState {
         public String chapterSearch = "";
+        public boolean modeEditorOpen;
+        public String modeEditorTarget = "";
+        public String modeEditorMode = "";
+        public String modeEditorPath = "";
+        public int modeEditorLeft;
+        public int modeEditorRight;
         public boolean chapterSearchFocused;
         public String chapterDraft = "";
         public String chapterDraftName = "";
@@ -538,6 +549,11 @@ public class TabletUiState {
 
     public static final class QuestDetailsState {
         public boolean entityMotionEditorOpen;
+        public boolean modeEditorOpen;
+        public String modeEditorMode = "";
+        public String modeEditorPath = "";
+        public int modeEditorLeft;
+        public int modeEditorRight;
         public String entityMotionEditorScope = "";
         public String entityMotionEditorGroup = "";
         public String entityMotionEditorQuestId = "";
@@ -691,6 +707,12 @@ public class TabletUiState {
 
     public static final class TabletContextMenuState {
         public boolean contextMenuOpen;
+        public boolean modeEditorOpen;
+        public String modeEditorTarget = "";
+        public String modeEditorMode = "";
+        public String modeEditorPath = "";
+        public int modeEditorLeft;
+        public int modeEditorRight;
         public ContextMenuTarget contextMenuTarget = ContextMenuTarget.CANVAS;
         public int contextMenuX;
         public int contextMenuY;

@@ -27,8 +27,6 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 final class AssetTextureCache {
     private static final Map<String, IGuiTexture> TEXTURE_CACHE = new HashMap<>();
     private static final Map<String, IGuiTexture> THUMBNAIL_CACHE = new HashMap<>();
-    private static final int MAX_TILE_SIZE = 64;
-    private static final int TILED_SIZE = 256;
 
     private AssetTextureCache() {
     }
@@ -154,26 +152,10 @@ final class AssetTextureCache {
             }
             int tileW = sourceBI.getWidth();
             int tileH = sourceBI.getHeight();
-            if (tileW > MAX_TILE_SIZE || tileH > MAX_TILE_SIZE) {
-                float scale = Math.min((float) MAX_TILE_SIZE / tileW, (float) MAX_TILE_SIZE / tileH);
-                int newW = Math.max(1, (int) (tileW * scale));
-                int newH = Math.max(1, (int) (tileH * scale));
-                BufferedImage scaled = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
-                java.awt.Graphics2D g = scaled.createGraphics();
-                g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g.drawImage(sourceBI, 0, 0, newW, newH, null);
-                g.dispose();
-                sourceBI = scaled;
-                tileW = newW;
-                tileH = newH;
-            }
-            BufferedImage tiledBI = new BufferedImage(TILED_SIZE, TILED_SIZE, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage tiledBI = new BufferedImage(tileW, tileH, BufferedImage.TYPE_INT_ARGB);
             java.awt.Graphics2D tg = tiledBI.createGraphics();
-            for (int tx = 0; tx < TILED_SIZE; tx += tileW) {
-                for (int ty = 0; ty < TILED_SIZE; ty += tileH) {
-                    tg.drawImage(sourceBI, tx, ty, null);
-                }
-            }
+            tg.drawImage(sourceBI, 0, 0, null);
+            tg.dispose();
             tg.dispose();
             Files.createDirectories(tilesDir);
             ImageIO.write(tiledBI, "png", tilePath.toFile());

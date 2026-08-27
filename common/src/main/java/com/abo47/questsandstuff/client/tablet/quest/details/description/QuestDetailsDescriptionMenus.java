@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
+import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
@@ -97,7 +98,7 @@ public final class QuestDetailsDescriptionMenus {
         int viewportOriginY = state.questDetails.questDetailsViewportOriginY;
         ContextMenuSections sections = new ContextMenuSections();
         switch (kind) {
-            case "description" -> addDescriptionActions(sections, state, player, questId, model, viewportOriginX, viewportOriginY);
+            case "description" -> addDescriptionActions(sections, state, player, questId, model, viewportOriginX, viewportOriginY, modal, refresh);
             case "desc_text" -> addTextActions(sections, state, player, questId, model);
             case "desc_image" -> addImageActions(sections, state, player, questId, model, refresh);
             case "desc_selection" -> addSelectionActions(sections, state, player, questId, model, viewportW, viewportH, refresh);
@@ -142,7 +143,7 @@ public final class QuestDetailsDescriptionMenus {
         modal.addWidget(canvasMenuLayer);
     }
 
-    private static void addDescriptionActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y) {
+    private static void addDescriptionActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model, int x, int y, WidgetGroup modal, Runnable refresh) {
         List<ContextAction> addActions = new ArrayList<>();
         addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_TEXT_BOX), "text", TabletColors.SUCCESS, () -> {
             ContextMenuController.clearDeleteConfirm(state);
@@ -195,8 +196,14 @@ public final class QuestDetailsDescriptionMenus {
                     currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                     () -> {
                         ContextMenuController.clearDeleteConfirm(state);
-                        model.canvasBackground = BackgroundModes.encode("tile", path);
-                        QuestDetailsDescriptionModel.save(player, questId, model);
+                        int curW = parsed != null && "tile".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                        int curH = parsed != null && "tile".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                        state.questDetails.modeEditorOpen = true;
+                        state.questDetails.modeEditorMode = "tile";
+                        state.questDetails.modeEditorPath = path;
+                        state.questDetails.modeEditorLeft = curW;
+                        state.questDetails.modeEditorRight = curH;
+                        refresh.run();
                     }));
             modeActions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
@@ -215,6 +222,21 @@ public final class QuestDetailsDescriptionMenus {
                         ContextMenuController.clearDeleteConfirm(state);
                         model.canvasBackground = BackgroundModes.encode("dynamic", path);
                         QuestDetailsDescriptionModel.save(player, questId, model);
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"),
+                    "repeat",
+                    currentMode.equals("hrstretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        int curL = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                        int curR = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                        state.questDetails.modeEditorOpen = true;
+                        state.questDetails.modeEditorMode = "hrstretch";
+                        state.questDetails.modeEditorPath = path;
+                        state.questDetails.modeEditorLeft = curL;
+                        state.questDetails.modeEditorRight = curR;
+                        refresh.run();
                     }));
             sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
@@ -241,6 +263,35 @@ public final class QuestDetailsDescriptionMenus {
                 QuestDetailsDescriptionClipboard.pasteAtContext(player, state, questId, model, x, y);
             }));
         }
+        renderModeEditor(modal, state, player, refresh, questId, model);
+    }
+
+    private static void renderModeEditor(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model) {
+        if (!state.questDetails.modeEditorOpen) {
+            return;
+        }
+        int w = 240;
+        int h = 116;
+        int x = Math.max(4, (modal.getSizeWidth() - w) / 2);
+        int y = Math.max(4, (modal.getSizeHeight() - h) / 2);
+        String mode = state.questDetails.modeEditorMode;
+        boolean tile = "tile".equals(mode);
+        String title = tile ? "ui.questsandstuff.skin.mode_tile_size" : "ui.questsandstuff.skin.mode_hrstretch";
+        String leftKey = tile ? "ui.questsandstuff.skin.tile_size_w" : "ui.questsandstuff.skin.hrstretch_left";
+        String rightKey = tile ? "ui.questsandstuff.skin.tile_size_h" : "ui.questsandstuff.skin.hrstretch_right";
+        WidgetGroup popup = TwoFieldEditor.build(state, x, y, w, h, title, leftKey, rightKey,
+                state.questDetails.modeEditorLeft, state.questDetails.modeEditorRight,
+                (l, r) -> {
+                    model.canvasBackground = new SkinFillOverride(mode, l, r, state.questDetails.modeEditorPath).encode();
+                    QuestDetailsDescriptionModel.save(player, questId, model);
+                    state.questDetails.modeEditorOpen = false;
+                    refresh.run();
+                },
+                () -> {
+                    state.questDetails.modeEditorOpen = false;
+                    refresh.run();
+                });
+        modal.addWidget(popup);
     }
 
     private static void addTextActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {

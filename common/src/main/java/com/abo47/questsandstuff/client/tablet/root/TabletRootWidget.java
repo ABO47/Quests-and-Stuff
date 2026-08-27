@@ -153,6 +153,9 @@ public final class TabletRootWidget extends WidgetGroup {
         if (state != null && state.root.skinEditMode) {
             SkinEditRenderer.draw(graphics, this, state, mouseX, mouseY);
         }
+        if (state != null && state.root.editorPopup != null) {
+            state.root.editorPopup.drawInBackground(graphics, mouseX, mouseY, partialTicks);
+        }
     }
 
     @Override
@@ -187,6 +190,16 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (state != null && state.root.editorPopup != null) {
+            if (state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+                state.root.editorPopup.mouseClicked(mouseX, mouseY, button);
+                return true;
+            }
+            state.root.editorPopup = null;
+            state.root.editorPopupOpen = false;
+            refresher.run();
+            return true;
+        }
         if (state != null && state.root.skinEditMode) {
             if (SkinEditManager.handleClick(state, this, refresher, (int) mouseX, (int) mouseY, button)) return true;
         }
@@ -198,12 +211,20 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (state != null && state.root.editorPopup != null && state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+            state.root.editorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return true;
+        }
         if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseDragged(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b, dx, dy) -> super.mouseDragged(x, y, b, dx, dy), mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (state != null && state.root.editorPopup != null && state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+            state.root.editorPopup.mouseReleased(mouseX, mouseY, button);
+            return true;
+        }
         if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseReleased(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseReleased(x, y, b), mouseX, mouseY, button);
     }

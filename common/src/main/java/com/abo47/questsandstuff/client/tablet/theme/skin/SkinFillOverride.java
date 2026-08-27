@@ -12,23 +12,48 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
-public record SkinFillOverride(String mode, String path) {
+public record SkinFillOverride(String mode, String path, int leftEdge, int rightEdge) {
     private static final String SEP = "|";
     private static final Map<String, IGuiTexture> CACHED = new HashMap<>();
+
+    public SkinFillOverride(String mode, String path) {
+        this(mode, path, 0, 0);
+    }
+
+    public SkinFillOverride(String mode, int leftEdge, int rightEdge, String path) {
+        this(mode, path, leftEdge, rightEdge);
+    }
 
     public static SkinFillOverride parse(String encoded) {
         if (encoded == null || encoded.isBlank()) return null;
         int pipeIdx = encoded.indexOf(SEP);
         if (pipeIdx >= 0) {
-            String mode = encoded.substring(0, pipeIdx);
+            String modePart = encoded.substring(0, pipeIdx);
             String path = encoded.substring(pipeIdx + 1);
             if (path.isEmpty()) return null;
-            return new SkinFillOverride(mode, path);
+            String mode = modePart;
+            int left = 0;
+            int right = 0;
+            if (modePart.indexOf(':') > 0) {
+                String[] bits = modePart.split(":");
+                if (bits.length >= 3) {
+                    try {
+                        mode = bits[0];
+                        left = Integer.parseInt(bits[1]);
+                        right = Integer.parseInt(bits[2]);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            return new SkinFillOverride(mode, path, left, right);
         }
         return new SkinFillOverride("stretch", encoded);
     }
 
     public String encode() {
+        if (("hrstretch".equals(mode) || "tile".equals(mode) || "tile_size".equals(mode)) && (leftEdge != 0 || rightEdge != 0)) {
+            return mode + ":" + leftEdge + ":" + rightEdge + SEP + path;
+        }
         return "stretch".equals(mode) ? path : mode + SEP + path;
     }
 
@@ -38,7 +63,7 @@ public record SkinFillOverride(String mode, String path) {
 
     public IGuiTexture createTexture() {
         if (path == null || path.isBlank()) return null;
-        String cacheKey = mode + ":" + path;
+        String cacheKey = mode + ":" + leftEdge + ":" + rightEdge + ":" + path;
         IGuiTexture cached = CACHED.get(cacheKey);
         if (cached != null) {
             QuestsAndStuffMod.debugLog("[QnS:Skin] createTexture CACHED: mode={}, path={}, class={}", mode, path, cached.getClass().getSimpleName());
@@ -46,12 +71,18 @@ public record SkinFillOverride(String mode, String path) {
         }
 
         IGuiTexture tex;
-        if ("tile".equals(mode)) {
+        if ("tile".equals(mode) && (leftEdge != 0 || rightEdge != 0)) {
+            tex = createTileSizeTexture();
+        } else if ("tile".equals(mode)) {
             tex = createTileTexture();
         } else if ("center".equals(mode)) {
             tex = createCenterTexture();
         } else if ("dynamic".equals(mode)) {
             tex = createDynamicTexture();
+        } else if ("hrstretch".equals(mode)) {
+            tex = createHorizontalRepeatTexture();
+        } else if ("tile_size".equals(mode)) {
+            tex = createTileSizeTexture();
         } else {
             tex = createFullTexture();
         }
@@ -64,15 +95,13 @@ public record SkinFillOverride(String mode, String path) {
         return tex;
     }
 
-    private static final int MAX_TILE_SIZE = 64;
-
     private IGuiTexture createTileTexture() {
         ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
-        int tileW = Math.min(dims.width(), MAX_TILE_SIZE);
-        int tileH = Math.min(dims.height(), MAX_TILE_SIZE);
+        int tileW = dims.width();
+        int tileH = dims.height();
         return new TiledGuiTexture(id, tileW, tileH);
     }
 
@@ -98,6 +127,28 @@ public record SkinFillOverride(String mode, String path) {
         AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         return new DynamicClippingTexture(id, dims.width(), dims.height());
+    }
+
+    private IGuiTexture createHorizontalRepeatTexture() {
+        AssetKind kind = AssetLibrary.assetKind(path);
+        if (kind == AssetKind.GIF) {
+            return createFullTexture();
+        }
+        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) return null;
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (dims == null) return null;
+        return new HorizontalRepeatTexture(id, dims.width(), dims.height(), leftEdge, rightEdge);
+    }
+
+    private IGuiTexture createTileSizeTexture() {
+        ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) return null;
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (dims == null) return null;
+        int tileW = leftEdge > 0 ? leftEdge : dims.width();
+        int tileH = rightEdge > 0 ? rightEdge : dims.height();
+        return new TiledGuiTexture(id, tileW, tileH);
     }
 
     private IGuiTexture createFullTexture() {

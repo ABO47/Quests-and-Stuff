@@ -27,6 +27,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -164,9 +165,10 @@ final class CanvasContextCanvasActions {
                     "brick-wall",
                     currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                     () -> {
-                        String encoded = BackgroundModes.encode("tile", path);
-                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
-                        canvasViewport.refresh();
+                        int curW = parsed != null && "tile".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                        int curH = parsed != null && "tile".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                        ContextMenuController.close(state);
+                        openCanvasModeEditor(state, canvasViewport, selectedChapter, "tile", path, curW, curH);
                     }));
             modeActions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
@@ -185,6 +187,16 @@ final class CanvasContextCanvasActions {
                         String encoded = BackgroundModes.encode("dynamic", path);
                         runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
                         canvasViewport.refresh();
+                    }));
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"),
+                    "repeat",
+                    currentMode.equals("hrstretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        int curL = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.leftEdge() : 0;
+                        int curR = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.rightEdge() : 0;
+                        ContextMenuController.close(state);
+                        openCanvasModeEditor(state, canvasViewport, selectedChapter, "hrstretch", path, curL, curR);
                     }));
             sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
@@ -215,6 +227,36 @@ final class CanvasContextCanvasActions {
         sections.add(ContextMenuSection.DEBUG, ContextActionFactory.submenu(
                 CanvasContextMenuController.tr("ui.questsandstuff.context.debug"),
                 "debug", TabletColors.INTERACTIVE, debugActions));
+    }
+
+    private static void openCanvasModeEditor(TabletUiState state, CanvasViewport canvasViewport, String selectedChapter, String mode, String path, int left, int right) {
+        int w = 240;
+        int h = 116;
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        int screenW = mc.getWindow().getGuiScaledWidth();
+        int screenH = mc.getWindow().getGuiScaledHeight();
+        int x = Math.max(4, (screenW - w) / 2);
+        int y = Math.max(4, (screenH - h) / 2);
+        boolean tile = "tile".equals(mode);
+        String title = tile ? "ui.questsandstuff.skin.mode_tile" : "ui.questsandstuff.skin.mode_hrstretch";
+        String leftKey = tile ? "ui.questsandstuff.skin.tile_size_w" : "ui.questsandstuff.skin.hrstretch_left";
+        String rightKey = tile ? "ui.questsandstuff.skin.tile_size_h" : "ui.questsandstuff.skin.hrstretch_right";
+        var popup = TwoFieldEditor.build(state, x, y, w, h, title, leftKey, rightKey, left, right,
+                (l, r) -> {
+                    String encoded = new SkinFillOverride(mode, l, r, path).encode();
+                    runChapterAction(mc.player, state, "set_canvas_background", selectedChapter, encoded, 0);
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
+                    canvasViewport.refresh();
+                },
+                () -> {
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
+                    canvasViewport.refresh();
+                });
+        state.root.editorPopup = popup;
+        state.root.editorPopupOpen = true;
+        canvasViewport.refresh();
     }
 
     private static void spawnAllEntities(TabletUiState state, String chapter, CanvasViewport canvasViewport) {
