@@ -13,7 +13,17 @@ public final class BackgroundModes {
     }
 
     public static String encode(String mode, String path) {
-        return "stretch".equals(mode) ? path : mode + "|" + path;
+        return encode(mode, path, 0, 0);
+    }
+
+    public static String encode(String mode, String path, int leftEdge, int rightEdge) {
+        SkinFillOverride o = new SkinFillOverride(mode, leftEdge, rightEdge, path);
+        return o.encode();
+    }
+
+    public static String encode(String mode, String path, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
+        SkinFillOverride o = new SkinFillOverride(mode, leftEdge, rightEdge, topEdge, bottomEdge, path);
+        return o.encode();
     }
 
     public static String stripMode(String background) {
