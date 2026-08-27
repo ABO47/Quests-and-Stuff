@@ -87,6 +87,12 @@ public final class TabletRootWidget extends WidgetGroup {
         if (frontWindowLayer != null) {
             frontWindowLayer.setGui(gui);
         }
+        if (state != null && state.root.editorPopup != null) {
+            state.root.editorPopup.setGui(gui);
+        }
+        if (contextMenuRoot != null) {
+            contextMenuRoot.setGui(gui);
+        }
     }
 
     public boolean isContextMenuOpen() {
@@ -122,6 +128,9 @@ public final class TabletRootWidget extends WidgetGroup {
 
     public void setContextMenu(WidgetGroup menu, int x, int y, int w, int h) {
         contextMenuRoot = menu;
+        if (contextMenuRoot != null && getGui() != null) {
+            contextMenuRoot.setGui(getGui());
+        }
         contextMenuRootX = x;
         contextMenuRootY = y;
         contextMenuRootW = w;
@@ -191,13 +200,17 @@ public final class TabletRootWidget extends WidgetGroup {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (state != null && state.root.editorPopup != null) {
-            if (state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
-                state.root.editorPopup.mouseClicked(mouseX, mouseY, button);
-                return true;
+            if (state.root.editorPopup.getGui() == null && getGui() != null) {
+                state.root.editorPopup.setGui(getGui());
             }
-            state.root.editorPopup = null;
-            state.root.editorPopupOpen = false;
-            refresher.run();
+            if (state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+                if (state.root.editorPopup.getGui() == null) return true;
+                try {
+                    state.root.editorPopup.mouseClicked(mouseX, mouseY, button);
+                } catch (NullPointerException ignored) {
+                    return true;
+                }
+            }
             return true;
         }
         if (state != null && state.root.skinEditMode) {
@@ -211,9 +224,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (state != null && state.root.editorPopup != null && state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
-            state.root.editorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-            return true;
+        if (state != null && state.root.editorPopup != null) {
+            if (state.root.editorPopup.getGui() == null && getGui() != null) {
+                state.root.editorPopup.setGui(getGui());
+            }
+            if (state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+                if (state.root.editorPopup.getGui() == null) return true;
+                try {
+                    state.root.editorPopup.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+                } catch (NullPointerException ignored) {
+                    return true;
+                }
+                return true;
+            }
         }
         if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseDragged(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b, dx, dy) -> super.mouseDragged(x, y, b, dx, dy), mouseX, mouseY, button, dragX, dragY);
@@ -221,9 +244,19 @@ public final class TabletRootWidget extends WidgetGroup {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (state != null && state.root.editorPopup != null && state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
-            state.root.editorPopup.mouseReleased(mouseX, mouseY, button);
-            return true;
+        if (state != null && state.root.editorPopup != null) {
+            if (state.root.editorPopup.getGui() == null && getGui() != null) {
+                state.root.editorPopup.setGui(getGui());
+            }
+            if (state.root.editorPopup.isMouseOverElement((int) mouseX, (int) mouseY)) {
+                if (state.root.editorPopup.getGui() == null) return true;
+                try {
+                    state.root.editorPopup.mouseReleased(mouseX, mouseY, button);
+                } catch (NullPointerException ignored) {
+                    return true;
+                }
+                return true;
+            }
         }
         if (state != null && state.root.skinEditMode && isContextMenuOpen() && !ModalStateQueries.anyOpen(state)) return true;
         return TabletRootPointerRouter.mouseReleased(this, state, modalLayer, frontWindowLayer, refresher, (x, y, b) -> super.mouseReleased(x, y, b), mouseX, mouseY, button);

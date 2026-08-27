@@ -149,8 +149,6 @@ final class CanvasSceneRenderer {
                 SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX + contentX + paintW, originY + contentY, viewportW - contentX - paintW, paintH);
                 if (canvasBackground == null) {
                     SurfaceFactory.fill(fill).draw(graphics, 0, 0, originX + contentX, originY + contentY, paintW, paintH);
-                } else {
-                    CanvasBackgroundOpacity.drawTexture(graphics, canvasBackground, mouseX, mouseY, originX + contentX, originY + contentY, paintW, paintH, percent);
                 }
             }
         });

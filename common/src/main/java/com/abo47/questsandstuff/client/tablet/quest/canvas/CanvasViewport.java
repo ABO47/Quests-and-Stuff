@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
@@ -306,7 +307,18 @@ public final class CanvasViewport extends WidgetGroup {
     @Override
     protected void drawBackgroundTexture(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         if (extendedBackgroundTexture != null) {
-            extendedBackgroundTexture.draw(graphics, mouseX, mouseY, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2);
+            int percent = state != null ? state.canvas.canvasBgOpacityPercent : 100;
+            int bx = getPositionX();
+            int by = getPositionY();
+            int bw = getSizeWidth();
+            int bh = getSizeHeight();
+            if (viewportBorderHidden) {
+                bx -= 1;
+                by -= 1;
+                bw += 2;
+                bh += 2;
+            }
+            CanvasBackgroundOpacity.drawTexture(graphics, extendedBackgroundTexture, mouseX, mouseY, bx, by, bw, bh, percent);
         }
         super.drawBackgroundTexture(graphics, mouseX, mouseY);
     }

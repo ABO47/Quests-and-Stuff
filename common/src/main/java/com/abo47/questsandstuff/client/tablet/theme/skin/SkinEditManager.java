@@ -24,6 +24,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
+import com.abo47.questsandstuff.client.tablet.controls.FourFieldEditor;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
@@ -328,8 +329,12 @@ public final class SkinEditManager {
                 currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                 () -> {
                     QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: dynamic, asset={}", currentAsset);
+                    int curL = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.leftEdge() : 1;
+                    int curR = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.rightEdge() : 1;
+                    int curT = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.topEdge() : 1;
+                    int curB = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.bottomEdge() : 1;
                     root.closeContextMenu();
-                    setFillMode(state, resolvedTarget, "dynamic", currentAsset, 0, 0, root, refresher);
+                    openDynamicModeEditor(state, root, refresher, resolvedTarget, currentAsset, mouseX, mouseY, curL, curR, curT, curB);
                 }));
         modeActions.add(ContextActionFactory.action(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"),
@@ -392,12 +397,16 @@ public final class SkinEditManager {
     }
 
     private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, WidgetGroup root, Runnable refresher) {
+        setFillMode(state, targetKey, mode, asset, leftEdge, rightEdge, 0, 0, root, refresher);
+    }
+
+    private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, int topEdge, int bottomEdge, WidgetGroup root, Runnable refresher) {
         if (asset == null || asset.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode ABORTED: asset is blank, target={}, mode={}", targetKey, mode);
             return;
         }
         String entryKey = SkinOverrideKey.isSharedKey(targetKey) ? targetKey : (state.root.currentApp.isBlank() ? targetKey : state.root.currentApp + ":" + targetKey);
-        SkinFillOverride override = new SkinFillOverride(mode, leftEdge, rightEdge, asset);
+        SkinFillOverride override = new SkinFillOverride(mode, leftEdge, rightEdge, topEdge, bottomEdge, asset);
         String encoded = override.encode();
         state.root.skinFillOverrides.put(entryKey, encoded);
         state.root.activeSkinTargets.add(targetKey);
@@ -428,6 +437,26 @@ public final class SkinEditManager {
                     setFillMode(state, targetKey, mode, asset, l, r, root, refresher);
                 },
                 cancel);
+        state.root.skinModeEditorOpen = true;
+        root.setContextMenu(popup, x, y, w, h);
+    }
+
+    private static void openDynamicModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY, int l, int r, int t, int b) {
+        int w = 240;
+        int h = 116;
+        int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        int x = Math.max(4, Math.min(mouseX, screenW - w - 4));
+        int y = Math.max(4, Math.min(mouseY, screenH - h - 4));
+        Runnable cancel = () -> {
+            state.root.skinModeEditorOpen = false;
+            root.closeContextMenu();
+        };
+        WidgetGroup popup = FourFieldEditor.build(state, x, y, w, h, "ui.questsandstuff.skin.mode_dynamic", "ui.questsandstuff.skin.hrstretch_left", "ui.questsandstuff.skin.hrstretch_right", "ui.questsandstuff.skin.dynamic_top", "ui.questsandstuff.skin.dynamic_bottom", l, r, t, b, (a, c, d, e) -> {
+            state.root.skinModeEditorOpen = false;
+            root.closeContextMenu();
+            setFillMode(state, targetKey, "dynamic", asset, a, c, d, e, root, refresher);
+        }, cancel);
         state.root.skinModeEditorOpen = true;
         root.setContextMenu(popup, x, y, w, h);
     }

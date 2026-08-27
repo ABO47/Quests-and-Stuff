@@ -27,6 +27,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.controls.FourFieldEditor;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
@@ -184,9 +185,12 @@ final class CanvasContextCanvasActions {
                     "dynamic",
                     currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
                     () -> {
-                        String encoded = BackgroundModes.encode("dynamic", path);
-                        runChapterAction(player, state, "set_canvas_background", selectedChapter, encoded, 0);
-                        canvasViewport.refresh();
+                        int curL = parsed != null && "dynamic".equals(parsed.mode()) ? parsed.leftEdge() : 1;
+                        int curR = parsed != null && "dynamic".equals(parsed.mode()) ? parsed.rightEdge() : 1;
+                        int curT = parsed != null && "dynamic".equals(parsed.mode()) ? parsed.topEdge() : 1;
+                        int curB = parsed != null && "dynamic".equals(parsed.mode()) ? parsed.bottomEdge() : 1;
+                        ContextMenuController.close(state);
+                        openCanvasDynamicModeEditor(state, canvasViewport, selectedChapter, path, curL, curR, curT, curB);
                     }));
             modeActions.add(ContextActionFactory.action(
                     TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"),
@@ -254,6 +258,36 @@ final class CanvasContextCanvasActions {
                     state.root.editorPopupOpen = false;
                     canvasViewport.refresh();
                 });
+        if (popup.getGui() == null && canvasViewport.getGui() != null) {
+            popup.setGui(canvasViewport.getGui());
+        }
+        state.root.editorPopup = popup;
+        state.root.editorPopupOpen = true;
+        canvasViewport.refresh();
+    }
+
+    private static void openCanvasDynamicModeEditor(TabletUiState state, CanvasViewport canvasViewport, String selectedChapter, String path, int l, int r, int t, int b) {
+        int w = 240;
+        int h = 116;
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        int screenW = mc.getWindow().getGuiScaledWidth();
+        int screenH = mc.getWindow().getGuiScaledHeight();
+        int x = Math.max(4, (screenW - w) / 2);
+        int y = Math.max(4, (screenH - h) / 2);
+        var popup = FourFieldEditor.build(state, x, y, w, h, "ui.questsandstuff.skin.mode_dynamic", "ui.questsandstuff.skin.dynamic_left", "ui.questsandstuff.skin.dynamic_right", "ui.questsandstuff.skin.dynamic_top", "ui.questsandstuff.skin.dynamic_bottom", l, r, t, b, (a, c, d, e) -> {
+            String encoded = new SkinFillOverride("dynamic", a, c, d, e, path).encode();
+            runChapterAction(mc.player, state, "set_canvas_background", selectedChapter, encoded, 0);
+            state.root.editorPopup = null;
+            state.root.editorPopupOpen = false;
+            canvasViewport.refresh();
+        }, () -> {
+            state.root.editorPopup = null;
+            state.root.editorPopupOpen = false;
+            canvasViewport.refresh();
+        });
+        if (popup.getGui() == null && canvasViewport.getGui() != null) {
+            popup.setGui(canvasViewport.getGui());
+        }
         state.root.editorPopup = popup;
         state.root.editorPopupOpen = true;
         canvasViewport.refresh();

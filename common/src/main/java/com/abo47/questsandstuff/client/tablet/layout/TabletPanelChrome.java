@@ -54,6 +54,16 @@ public final class TabletPanelChrome {
         int y = panel.getPositionY();
         int w = panel.getSize().width;
         int h = panel.getSize().height;
+        if (hasBuiltinCanvasBackground(state)) {
+            IGuiTexture fill;
+            if (hasPanelOverride(panel, state)) {
+                fill = resolveFill(panel);
+            } else {
+                fill = SurfaceFactory.fill(TabletColors.SURFACE_PANEL);
+            }
+            fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            return;
+        }
         boolean panelSkinned = hasSkinOverride(panel);
         if (hasPanelOverride(panel, state)) {
             if (panelSkinned) {
