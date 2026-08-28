@@ -47,7 +47,11 @@ final class CanvasContextMenuRenderer {
         int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenu.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
         ContextMenuController.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
 
-        canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> close(state)));
+        canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> {
+            if (!state.contextMenu.modeEditorOpen) {
+                close(state);
+            }
+        }));
         WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 close(state);

@@ -5,14 +5,11 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-
-import com.abo47.questsandstuff.QuestsAndStuffMod;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,28 +20,26 @@ public class DynamicClippingTexture implements IGuiTexture {
     private final ResourceLocation imageLocation;
     private final int origW;
     private final int origH;
-    private final int leftEdge;
-    private final int rightEdge;
-    private final int topEdge;
-    private final int bottomEdge;
+    private final int left;
+    private final int right;
+    private final int top;
+    private final int bottom;
     private boolean referenceSet = false;
     private int refW = -1;
     private int refH = -1;
-    private boolean logged = false;
-    private static final int SEAM_OVERLAP = 1;
 
     public DynamicClippingTexture(ResourceLocation imageLocation, int origW, int origH) {
         this(imageLocation, origW, origH, 0, 0, 0, 0);
     }
 
-    public DynamicClippingTexture(ResourceLocation imageLocation, int origW, int origH, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
+    public DynamicClippingTexture(ResourceLocation imageLocation, int origW, int origH, int left, int right, int top, int bottom) {
         this.imageLocation = imageLocation;
         this.origW = origW;
         this.origH = origH;
-        this.leftEdge = Math.max(0, leftEdge);
-        this.rightEdge = Math.max(0, rightEdge);
-        this.topEdge = Math.max(0, topEdge);
-        this.bottomEdge = Math.max(0, bottomEdge);
+        this.left = Math.max(0, left);
+        this.right = Math.max(0, right);
+        this.top = Math.max(0, top);
+        this.bottom = Math.max(0, bottom);
     }
 
     public void setReferenceSize(int w, int h) {
@@ -60,12 +55,22 @@ public class DynamicClippingTexture implements IGuiTexture {
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float x, float y, int width, int height) {
         if (width <= 0 || height <= 0 || origW <= 0 || origH <= 0) return;
 
-        int cmpW = refW > 0 ? refW : origW;
-        int cmpH = refH > 0 ? refH : origH;
+        int L = Math.min(left, origW);
+        int R = Math.min(right, Math.max(0, origW - L));
+        int T = Math.min(top, origH);
+        int B = Math.min(bottom, Math.max(0, origH - T));
+        int midW = origW - L - R;
+        int midH = origH - T - B;
+        if (midW <= 0 || midH <= 0) {
+            stretch(graphics, x, y, width, height);
+            return;
+        }
 
-        if (!logged) {
-            QuestsAndStuffMod.debugLog("[QnS:Skin] DynamicClippingTexture.draw: orig={}x{}, target={}x{}, ref={}x{}", origW, origH, width, height, cmpW, cmpH);
-            logged = true;
+        int gw = width - L - R;
+        int gh = height - T - B;
+        if (gw <= 0 || gh <= 0) {
+            stretch(graphics, x, y, width, height);
+            return;
         }
 
         Tesselator tessellator = Tesselator.getInstance();
@@ -74,101 +79,59 @@ public class DynamicClippingTexture implements IGuiTexture {
         RenderSystem.setShaderTexture(0, imageLocation);
         var matrix = graphics.pose().last().pose();
         buffer.begin(VertexFormat.Mode.QUADS, POSITION_TEX_COLOR);
-        float uEps = 0.5f / origW;
-        float vEps = 0.5f / origH;
 
-        int guiScale = Math.max(1, (int) Minecraft.getInstance().getWindow().getGuiScale());
-        if (leftEdge > 0 || rightEdge > 0 || topEdge > 0 || bottomEdge > 0) {
-            int L = Math.min(leftEdge, origW);
-            int R = Math.min(rightEdge, Math.max(0, origW - L));
-            int T = Math.min(topEdge, origH);
-            int B = Math.min(bottomEdge, Math.max(0, origH - T));
-            int midW = origW - L - R;
-            int midH = origH - T - B;
-            if (midW <= 0 || midH <= 0) {
-                buffer.vertex(matrix, x, y + height, 0).uv(0, 1).color(-1).endVertex();
-                buffer.vertex(matrix, x + width, y + height, 0).uv(1, 1).color(-1).endVertex();
-                buffer.vertex(matrix, x + width, y, 0).uv(1, 0).color(-1).endVertex();
-                buffer.vertex(matrix, x, y, 0).uv(0, 0).color(-1).endVertex();
-                tessellator.end();
-                return;
-            }
-            int Lpx = Math.max(0, Math.round(L / (float) guiScale));
-            int Rpx = Math.max(0, Math.round(R / (float) guiScale));
-            int Tpx = Math.max(0, Math.round(T / (float) guiScale));
-            int Bpx = Math.max(0, Math.round(B / (float) guiScale));
-            int gapW = width - Lpx - Rpx;
-            int gapH = height - Tpx - Bpx;
-            if (gapW < 0 || gapH < 0) {
-                float uCrop = (cmpW - width) / (2f * cmpW);
-                float uMin = Math.max(0, uCrop);
-                float uMax = Math.min(1, 1f - uCrop);
-                buffer.vertex(matrix, x, y + height, 0).uv(uMin, 1).color(-1).endVertex();
-                buffer.vertex(matrix, x + width, y + height, 0).uv(uMax, 1).color(-1).endVertex();
-                buffer.vertex(matrix, x + width, y, 0).uv(uMax, 0).color(-1).endVertex();
-                buffer.vertex(matrix, x, y, 0).uv(uMin, 0).color(-1).endVertex();
-                tessellator.end();
-                return;
-            }
-            float uL0 = uEps;
-            float uL1 = (float) L / origW - uEps;
-            float uR0 = (float) (origW - R) / origW + uEps;
-            float uR1 = 1 - uEps;
-            float vT0 = vEps;
-            float vT1 = (float) T / origH - vEps;
-            float vB0 = (float) (origH - B) / origH + vEps;
-            float vB1 = 1 - vEps;
-            float uM0 = (float) L / origW + uEps;
-            float uM1 = (float) (origW - R) / origW - uEps;
-            float vM0 = (float) T / origH + vEps;
-            float vM1 = (float) (origH - B) / origH - vEps;
-            if (gapW < midW) {
-                float crop = (midW - gapW) / 2f;
-                uM0 = (L + crop) / (float) origW + uEps;
-                uM1 = (L + crop + gapW) / (float) origW - uEps;
-            }
-            if (gapH < midH) {
-                float crop = (midH - gapH) / 2f;
-                vM0 = (T + crop) / (float) origH + vEps;
-                vM1 = (T + crop + gapH) / (float) origH - vEps;
-            }
-            int ov = SEAM_OVERLAP;
-            slice(buffer, matrix, x, y, Lpx + ov, Tpx + ov, uL0, uL1, vT0, vT1);
-            slice(buffer, matrix, x + Lpx - ov, y, gapW + 2 * ov, Tpx + ov, uM0, uM1, vT0, vT1);
-            slice(buffer, matrix, x + width - Rpx - ov, y, Rpx + ov, Tpx + ov, uR0, uR1, vT0, vT1);
-            slice(buffer, matrix, x, y + Tpx - ov, Lpx + ov, gapH + 2 * ov, uL0, uL1, vM0, vM1);
-            slice(buffer, matrix, x + Lpx - ov, y + Tpx - ov, gapW + 2 * ov, gapH + 2 * ov, uM0, uM1, vM0, vM1);
-            slice(buffer, matrix, x + width - Rpx - ov, y + Tpx - ov, Rpx + ov, gapH + 2 * ov, uR0, uR1, vM0, vM1);
-            slice(buffer, matrix, x, y + height - Bpx - ov, Lpx + ov, Bpx + ov, uL0, uL1, vB0, vB1);
-            slice(buffer, matrix, x + Lpx - ov, y + height - Bpx - ov, gapW + 2 * ov, Bpx + ov, uM0, uM1, vB0, vB1);
-            slice(buffer, matrix, x + width - Rpx - ov, y + height - Bpx - ov, Rpx + ov, Bpx + ov, uR0, uR1, vB0, vB1);
-            tessellator.end();
-            return;
+        float uL1 = (float) L / origW;
+        float uR0 = (float) (origW - R) / origW;
+        float vT1 = (float) T / origH;
+        float vB0 = (float) (origH - B) / origH;
+        float uM0 = uL1;
+        float uM1 = uR0;
+        float vM0 = vT1;
+        float vM1 = vB0;
+        if (gw < midW) {
+            float crop = (midW - gw) / 2f;
+            uM0 = (L + crop) / origW;
+            uM1 = (L + crop + gw) / origW;
+        }
+        if (gh < midH) {
+            float crop = (midH - gh) / 2f;
+            vM0 = (T + crop) / origH;
+            vM1 = (T + crop + gh) / origH;
         }
 
-        if (width >= cmpW) {
-            buffer.vertex(matrix, x, y + height, 0).uv(uEps, 1 - vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x + width, y + height, 0).uv(1 - uEps, 1 - vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x + width, y, 0).uv(1 - uEps, vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x, y, 0).uv(uEps, vEps).color(-1).endVertex();
-        } else {
-            float uCrop = (cmpW - width) / (2f * cmpW);
-            float uMin = Math.max(uEps, uCrop + uEps);
-            float uMax = Math.min(1 - uEps, 1f - uCrop - uEps);
-            buffer.vertex(matrix, x, y + height, 0).uv(uMin, 1 - vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x + width, y + height, 0).uv(uMax, 1 - vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x + width, y, 0).uv(uMax, vEps).color(-1).endVertex();
-            buffer.vertex(matrix, x, y, 0).uv(uMin, vEps).color(-1).endVertex();
-        }
+        slice(buffer, matrix, x, y, L, T, 0, uL1, 0, vT1);
+        slice(buffer, matrix, x + L, y, gw, T, uM0, uM1, 0, vT1);
+        slice(buffer, matrix, x + width - R, y, R, T, uR0, 1, 0, vT1);
+        slice(buffer, matrix, x, y + T, L, gh, 0, uL1, vM0, vM1);
+        slice(buffer, matrix, x + L, y + T, gw, gh, uM0, uM1, vM0, vM1);
+        slice(buffer, matrix, x + width - R, y + T, R, gh, uR0, 1, vM0, vM1);
+        slice(buffer, matrix, x, y + height - B, L, B, 0, uL1, vB0, 1);
+        slice(buffer, matrix, x + L, y + height - B, gw, B, uM0, uM1, vB0, 1);
+        slice(buffer, matrix, x + width - R, y + height - B, R, B, uR0, 1, vB0, 1);
 
+        tessellator.end();
+    }
+
+    private void stretch(GuiGraphics graphics, float x, float y, int width, int height) {
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, imageLocation);
+        var matrix = graphics.pose().last().pose();
+        buffer.begin(VertexFormat.Mode.QUADS, POSITION_TEX_COLOR);
+        quad(buffer, matrix, x, y, x + width, y + height, 0, 0, 1, 1);
         tessellator.end();
     }
 
     private static void slice(BufferBuilder buffer, org.joml.Matrix4f matrix, float x, float y, int w, int h, float u0, float u1, float v0, float v1) {
         if (w <= 0 || h <= 0) return;
-        buffer.vertex(matrix, x, y + h, 0).uv(u0, v1).color(-1).endVertex();
-        buffer.vertex(matrix, x + w, y + h, 0).uv(u1, v1).color(-1).endVertex();
-        buffer.vertex(matrix, x + w, y, 0).uv(u1, v0).color(-1).endVertex();
-        buffer.vertex(matrix, x, y, 0).uv(u0, v0).color(-1).endVertex();
+        quad(buffer, matrix, x, y, x + w, y + h, u0, v0, u1, v1);
+    }
+
+    private static void quad(BufferBuilder buffer, org.joml.Matrix4f matrix, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1) {
+        buffer.vertex(matrix, x0, y1, 0).uv(u0, v1).color(-1).endVertex();
+        buffer.vertex(matrix, x1, y1, 0).uv(u1, v1).color(-1).endVertex();
+        buffer.vertex(matrix, x1, y0, 0).uv(u1, v0).color(-1).endVertex();
+        buffer.vertex(matrix, x0, y0, 0).uv(u0, v0).color(-1).endVertex();
     }
 }

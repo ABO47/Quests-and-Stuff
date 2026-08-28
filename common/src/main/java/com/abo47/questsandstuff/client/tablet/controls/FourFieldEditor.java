@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
@@ -29,18 +30,19 @@ public final class FourFieldEditor {
         Runnable apply = () -> onApply.accept(vals[0], vals[1], vals[2], vals[3]);
         int halfW = (w - pad * 3) / 2;
         WidgetGroup popup = panel(x, y, w, h, withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT);
+        popup.addWidget(flatHitButton(0, 0, w, h, click -> {}));
         popup.addWidget(label(pad, 6, TabletTranslationKeys.text(titleKey), TabletColors.TEXT_PRIMARY));
         popup.addWidget(label(pad, 22, TabletTranslationKeys.text(lKey), TabletColors.TEXT_SECONDARY));
         popup.addWidget(label(pad + halfW + pad, 22, TabletTranslationKeys.text(rKey), TabletColors.TEXT_SECONDARY));
         TextFieldWidget lf = StyledTextFields.integerField(pad, 34, halfW, 14, l, 0, Integer.MAX_VALUE, 4, v -> {
             try { vals[0] = Integer.parseInt(v); } catch (NumberFormatException ignored) {}
-        }, apply, onCancel, apply);
+        }, apply, onCancel, () -> {});
         lf.setClientSideWidget();
         StyledTextFields.applyStandardStyle(lf, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(lf);
         TextFieldWidget rf = StyledTextFields.integerField(pad + halfW + pad, 34, halfW, 14, r, 0, Integer.MAX_VALUE, 4, v -> {
             try { vals[1] = Integer.parseInt(v); } catch (NumberFormatException ignored) {}
-        }, apply, onCancel, apply);
+        }, apply, onCancel, () -> {});
         rf.setClientSideWidget();
         StyledTextFields.applyStandardStyle(rf, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(rf);
@@ -48,13 +50,13 @@ public final class FourFieldEditor {
         popup.addWidget(label(pad + halfW + pad, 52, TabletTranslationKeys.text(bKey), TabletColors.TEXT_SECONDARY));
         TextFieldWidget tf = StyledTextFields.integerField(pad, 64, halfW, 14, t, 0, Integer.MAX_VALUE, 4, v -> {
             try { vals[2] = Integer.parseInt(v); } catch (NumberFormatException ignored) {}
-        }, apply, onCancel, apply);
+        }, apply, onCancel, () -> {});
         tf.setClientSideWidget();
         StyledTextFields.applyStandardStyle(tf, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(tf);
         TextFieldWidget bf = StyledTextFields.integerField(pad + halfW + pad, 64, halfW, 14, b, 0, Integer.MAX_VALUE, 4, v -> {
             try { vals[3] = Integer.parseInt(v); } catch (NumberFormatException ignored) {}
-        }, apply, onCancel, apply);
+        }, apply, onCancel, () -> {});
         bf.setClientSideWidget();
         StyledTextFields.applyStandardStyle(bf, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(bf);

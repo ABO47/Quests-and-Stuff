@@ -61,8 +61,11 @@ public final class SkinEditManager {
                 root.clickContextMenu(mouseX, mouseY, button);
                 return true;
             }
-            root.closeContextMenu();
-            state.root.skinModeEditorOpen = false;
+            if (!state.root.skinModeEditorOpen) {
+                root.closeContextMenu();
+                state.root.skinModeEditorOpen = false;
+            }
+            return true;
         }
 
         Widget homeBtn = root.getHomeButton();

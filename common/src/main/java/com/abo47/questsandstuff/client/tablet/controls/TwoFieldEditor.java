@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
@@ -30,6 +31,7 @@ public final class TwoFieldEditor {
         Runnable apply = () -> onApply.accept(edges[0], edges[1]);
 
         WidgetGroup popup = panel(x, y, w, h, withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT);
+        popup.addWidget(flatHitButton(0, 0, w, h, click -> {}));
         popup.addWidget(label(pad, 6, TabletTranslationKeys.text(titleKey), TabletColors.TEXT_PRIMARY));
 
         popup.addWidget(label(pad, 26, TabletTranslationKeys.text(leftLabelKey), TabletColors.TEXT_SECONDARY));
@@ -42,7 +44,7 @@ public final class TwoFieldEditor {
                     } catch (NumberFormatException ignored) {
                     }
                 },
-                apply, onCancel, apply);
+                apply, onCancel, () -> {});
         leftField.setClientSideWidget();
         StyledTextFields.applyStandardStyle(leftField, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(leftField);
@@ -57,7 +59,7 @@ public final class TwoFieldEditor {
                     } catch (NumberFormatException ignored) {
                     }
                 },
-                apply, onCancel, apply);
+                apply, onCancel, () -> {});
         rightField.setClientSideWidget();
         StyledTextFields.applyStandardStyle(rightField, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         popup.addWidget(rightField);
