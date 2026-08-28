@@ -54,12 +54,12 @@ final class TabletRootDismissals {
             EditorQuestCommandClient.cancelQuestTitleChange(state);
             changed = true;
         }
-        if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit()) {
+        if (clickState.chapterMenuWasOpen() && state.chapterPanel.chapterMenuOpen && !chapterMenuOpenedByThisClick && !clickState.chapterMenuHit() && !state.chapterPanel.modeEditorOpen) {
             state.chapterPanel.chapterMenuOpen = false;
             ContextMenuController.clearDeleteConfirm(state);
             changed = true;
         }
-        if (clickState.contextMenuWasOpen() && state.contextMenu.contextMenuOpen && !clickState.contextMenuHit()) {
+        if (clickState.contextMenuWasOpen() && state.contextMenu.contextMenuOpen && !clickState.contextMenuHit() && !state.contextMenu.modeEditorOpen) {
             ContextMenuController.close(state);
             changed = true;
         }

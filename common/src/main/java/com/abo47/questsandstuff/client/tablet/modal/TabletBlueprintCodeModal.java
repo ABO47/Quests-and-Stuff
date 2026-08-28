@@ -23,7 +23,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.BUTTON_18;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.PAD_8;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 final class TabletBlueprintCodeModal {
@@ -74,11 +73,6 @@ final class TabletBlueprintCodeModal {
     }
 
     static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
-        modal.addWidget(flatHitButton(0, 0, modalW, modalH, click -> {
-            close(state);
-            refresh.run();
-        }));
-
         int panelW = Math.min(PANEL_W, Math.max(220, modalW - 32));
         int panelH = PANEL_H;
         int x = Math.max(PAD, (modalW - panelW) / 2);
