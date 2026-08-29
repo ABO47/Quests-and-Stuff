@@ -14,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.TransformTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
@@ -142,7 +143,9 @@ public final class SkinEditManager {
                     applyToWidget(w, targetKey, tex);
                 } else if (!SkinOverrideKey.isCardKey(targetKey)) {
                     for (Widget child : wg.widgets) {
-                        if (!SkinEditTargetResolver.hasCustomChrome(child)) {
+                        if (!SkinEditTargetResolver.hasCustomChrome(child)
+                                || child instanceof TabletIconTextButton
+                                || child instanceof TextFieldWidget) {
                             if ("settings_tab_layer".equals(targetKey) && child instanceof WidgetGroup tabContainer && !tabContainer.widgets.isEmpty()) {
                                 applyToWidget(tabContainer.widgets.get(0), targetKey, tex);
                             } else {

@@ -554,6 +554,8 @@ public class TabletUiState {
         public String modeEditorPath = "";
         public int modeEditorLeft;
         public int modeEditorRight;
+        public int modeEditorTop;
+        public int modeEditorBottom;
         public String entityMotionEditorScope = "";
         public String entityMotionEditorGroup = "";
         public String entityMotionEditorQuestId = "";

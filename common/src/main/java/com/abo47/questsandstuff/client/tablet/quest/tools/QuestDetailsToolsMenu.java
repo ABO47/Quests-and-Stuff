@@ -1,6 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.tools;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -46,22 +45,15 @@ final class QuestDetailsToolsMenu {
 
         if (!editTools) {
             ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
-            rows.toggle(state.questDetails.questDetailsSplitterLocked ? "lock_separator" : "unlock_separator",
-                    state.questDetails.questDetailsSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
-                    !state.questDetails.questDetailsSplitterLocked,
-                    new Component[]{
-                            Component.translatable("ui.questsandstuff.tools.lock_separator"),
-                            Component.translatable(state.questDetails.questDetailsSplitterLocked ? "ui.questsandstuff.tools.separator_state_locked" : "ui.questsandstuff.tools.separator_state_unlocked")
-                    },
-                    () -> {
-                        state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
-                        if (state.questDetails.questDetailsSplitterLocked) {
-                            state.questDetails.questDetailsDraggingSplitter = false;
-                            TabletResizeCursor.update(false);
-                        }
-                        persistUiState(state);
-                        refresh.run();
-                    });
+            CanvasToolRows.splitterLock(rows, state.questDetails.questDetailsSplitterLocked, () -> {
+                state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
+                if (state.questDetails.questDetailsSplitterLocked) {
+                    state.questDetails.questDetailsDraggingSplitter = false;
+                    TabletResizeCursor.update(false);
+                }
+                persistUiState(state);
+                refresh.run();
+            });
             CanvasToolRows.backgroundOpacity(rows, state.questDetails.questDetailsCanvasBgOpacityPercent, rightClick -> {
                 state.questDetails.questDetailsCanvasBgOpacityPercent = cyclePercent(state.questDetails.questDetailsCanvasBgOpacityPercent, toolPercentStep(), rightClick);
                 persistUiState(state);

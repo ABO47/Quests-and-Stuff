@@ -234,7 +234,6 @@ public final class TabletAssetPickerModal {
                     state.pickers.assetContextOpen = false;
                     state.pickers.assetRenameOpen = false;
                 },
-                refresh,
                 (surface, entry, index, x, y, cellW, cellH, layout) -> {
             String relative = entry.relativePath();
             boolean renaming = state.pickers.assetRenameOpen && relative.equals(state.pickers.assetContextFile) && !entry.directory();

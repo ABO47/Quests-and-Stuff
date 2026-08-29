@@ -118,7 +118,6 @@ public final class TabletItemLockPickerModal {
                         dragging -> state.pickers.itemLockScrollDragging = dragging
                 ),
                 null,
-                refresh,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
         );
         return search;

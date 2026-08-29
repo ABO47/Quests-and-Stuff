@@ -100,7 +100,6 @@ final class EntityVariantTiles {
                         dragging -> state.pickers.entityVariantScrollDragging = dragging
                 ),
                 null,
-                refresh,
                 (surface, tileEntry, index, tileX, tileY, tileW, tileH, layout) -> addTile(surface, player, state, refresh, model, tileEntry, tileX, tileY, tileW, tileH)
         );
     }

@@ -69,11 +69,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             return;
         }
         IGuiTexture texture = BackgroundModes.createTexture(model.canvasBackground);
-        if (texture == null) {
-            CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, TabletColors.SURFACE_BASE, opacityPercent);
+        if (texture != null) {
+            // Custom canvas background is drawn exactly once by QuestDetailsDescriptionCanvas.drawBackgroundTexture.
             return;
         }
-        CanvasBackgroundOpacity.drawTexture(graphics, texture, 0, 0, contentX, contentY, paintW, paintH, opacityPercent);
+        CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, TabletColors.SURFACE_BASE, opacityPercent);
     }
 
     private static void drawElements(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {

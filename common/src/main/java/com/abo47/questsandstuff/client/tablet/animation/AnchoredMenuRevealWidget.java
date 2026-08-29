@@ -48,20 +48,20 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawAnchored(graphics, false, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
+        drawAnchored(graphics, false, true, true, () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
     public void drawInForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawAnchored(graphics, false, true, () -> drawWidgetsForeground(graphics, mouseX, mouseY, partialTicks));
+        drawAnchored(graphics, false, true, false, () -> drawWidgetsForeground(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
     public void drawOverlay(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        drawAnchored(graphics, false, false, () -> super.drawOverlay(graphics, mouseX, mouseY, partialTicks));
+        drawAnchored(graphics, false, false, false, () -> super.drawOverlay(graphics, mouseX, mouseY, partialTicks));
     }
 
-    private void drawAnchored(GuiGraphics graphics, boolean drawShadow, boolean drawVeil, Runnable draw) {
+    private void drawAnchored(GuiGraphics graphics, boolean drawShadow, boolean drawVeil, boolean clip, Runnable draw) {
         Frame frame = frame();
         if (frame.amount() <= 0.01f || frame.visibleHeight() <= 0) {
             return;
@@ -69,7 +69,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         if (drawShadow) {
             drawShadow(graphics, frame);
         }
-        boolean clipped = enableClip(graphics, getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + frame.visibleHeight());
+        boolean clipped = clip && enableClip(graphics, getPositionX(), getPositionY(), getPositionX() + getSizeWidth(), getPositionY() + frame.visibleHeight());
         graphics.pose().pushPose();
         graphics.pose().translate(0.0f, frame.offsetY(), 0.0f);
         draw.run();

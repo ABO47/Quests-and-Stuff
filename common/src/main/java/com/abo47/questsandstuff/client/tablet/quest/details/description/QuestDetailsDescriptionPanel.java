@@ -31,6 +31,7 @@ public final class QuestDetailsDescriptionPanel {
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
         QuestDetailsDescriptionMenus.renderContextMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
+        QuestDetailsDescriptionMenus.renderModeEditor(modal, state, player, refresh, questId, model);
         EntityMotionEditor.renderQuestDetails(modal, state, player, refresh);
     }
 

@@ -146,6 +146,7 @@ final class TeamsMemberCardRenderer {
         if (parsed == null) return;
         IGuiTexture tex = parsed.createTexture();
         if (tex != null) {
+            card.setBackground(SurfaceFactory.transparentFill());
             card.addWidget(new ImageWidget(-1, -1, cardW + 2, CARD_H + 2, tex));
         }
     }

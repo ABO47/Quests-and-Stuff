@@ -82,7 +82,6 @@ final class PrerequisiteRowsPanel {
                     state.modal.prerequisitesManagerContextOpen = false;
                     ContextMenuController.clearDeleteConfirm(state);
                 },
-                refresh,
                 (surface, row, index, x, y, cellW, cellH, tileLayout) -> renderConnectionRow(surface, state, refresh, modalW, modalH, questId, row, x, y, cellW, cellH)
         );
     }

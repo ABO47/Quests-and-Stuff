@@ -49,7 +49,7 @@ public final class SettingsOptionRowRenderer {
         boolean enabled = option.enabled();
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        int fill = enabled ? withAlpha(TabletColors.SUCCESS, 180) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int fill = enabled ? TabletColors.elevatedSurface() : TabletColors.SURFACE_PANEL_ALT;
         int border = enabled ? TabletColors.SUCCESS : TabletColors.BORDER_BASE;
         WidgetGroup card = panel(0, rowY, cardW, rowH, fill, border);
         list.addWidget(card);
@@ -89,7 +89,7 @@ public final class SettingsOptionRowRenderer {
     private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 180), TabletColors.BORDER_BASE);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, TabletColors.elevatedSurface(), TabletColors.BORDER_BASE);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
@@ -115,7 +115,7 @@ public final class SettingsOptionRowRenderer {
     private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 180), TabletColors.BORDER_BASE);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
 
@@ -244,6 +244,7 @@ public final class SettingsOptionRowRenderer {
         }
         IGuiTexture tex = parsed.createTexture();
         if (tex != null) {
+            card.setBackground(SurfaceFactory.transparentFill());
             list.addWidget(new ImageWidget(x - 1, y - 1, w + 2, h + 2, tex));
         }
     }

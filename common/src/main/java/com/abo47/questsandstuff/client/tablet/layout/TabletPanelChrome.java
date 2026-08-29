@@ -20,25 +20,10 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public final class TabletPanelChrome {
     private TabletPanelChrome() {
-    }
-
-    public static void drawWindowShadow(GuiGraphics graphics, WidgetGroup panel) {
-        drawWindowShadow(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSizeWidth(), panel.getSizeHeight());
-    }
-
-    public static void drawWindowShadow(GuiGraphics graphics, int x, int y, int w, int h) {
-        if (w <= 0 || h <= 0) {
-            return;
-        }
-        int soft = withAlpha(TabletColors.SURFACE_BASE, 82);
-        int hard = withAlpha(TabletColors.SURFACE_BASE, 120);
-        SurfaceFactory.fill(soft).draw(graphics, 0, 0, x + GRID_4, y + GRID_5, w, h);
-        SurfaceFactory.fill(hard).draw(graphics, 0, 0, x + GRID_2, y + GRID_3, w, h);
     }
 
     public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, TabletUiState state) {

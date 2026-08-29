@@ -34,11 +34,19 @@ public final class TiledPickerPanel {
             String emptyText,
             ScrollState scroll,
             Runnable onScroll,
-            Runnable refresh,
             TileRenderer<T> renderer
     ) {
         TileGridLayout layout = TileGridLayout.calculate(w, h, tileW, tileH, gap, padX, padY, entries.size(), scroll.value());
         scroll.setValue(layout.scrollStart());
+        WidgetGroup tiles = new WidgetGroup(0, 0, w, h);
+        Runnable relayout = () -> {
+            tiles.clearAllWidgets();
+            TileGridLayout current = TileGridLayout.calculate(w, h, tileW, tileH, gap, padX, padY, entries.size(), scroll.value());
+            for (int i = current.scrollStart(); i < current.visibleEnd(); i++) {
+                int visibleIndex = i - current.scrollStart();
+                renderer.render(tiles, entries.get(i), i, current.tileX(visibleIndex), current.tileY(visibleIndex), current.tileW(), current.tileH(), current);
+            }
+        };
         WidgetGroup surface = new TabletScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
@@ -51,7 +59,7 @@ public final class TiledPickerPanel {
                     if (onScroll != null) {
                         onScroll.run();
                     }
-                    refresh.run();
+                    relayout.run();
                 }
                 return true;
             }
@@ -64,10 +72,8 @@ public final class TiledPickerPanel {
             return layout;
         }
 
-        for (int i = layout.scrollStart(); i < layout.visibleEnd(); i++) {
-            int visibleIndex = i - layout.scrollStart();
-            renderer.render(surface, entries.get(i), i, layout.tileX(visibleIndex), layout.tileY(visibleIndex), layout.tileW(), layout.tileH(), layout);
-        }
+        surface.addWidget(tiles);
+        relayout.run();
 
         if (layout.showScroll()) {
             surface.addWidget(new DragScrollBarWidget(
@@ -86,7 +92,7 @@ public final class TiledPickerPanel {
                     },
                     scroll::dragging,
                     scroll::setDragging,
-                    refresh,
+                    relayout,
                     DragScrollBarWidget.WIDTH
             ));
         }

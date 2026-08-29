@@ -28,7 +28,6 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 final class SettingsAppHeaderControls {
     private static final int TAB_H = GRID_20;
@@ -104,7 +103,7 @@ final class SettingsAppHeaderControls {
         int fill = active ? withAlpha(TabletColors.SURFACE_BASE, 250) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 142);
         int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
-        WidgetGroup bg = active ? enlargedTabBg(w, fill, border) : panel(0, TAB_ENLARGE, w, h, fill, border);
+        WidgetGroup bg = active ? enlargedTabBg(w, fill, border) : staticTabBg(w, fill, border);
         LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
         ButtonWidget hit = active
                 ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
@@ -119,13 +118,24 @@ final class SettingsAppHeaderControls {
     }
 
     private WidgetGroup enlargedTabBg(int w, int fill, int border) {
+        return skinnedTabBg(w, fill, border, true);
+    }
+
+    private WidgetGroup staticTabBg(int w, int fill, int border) {
+        return skinnedTabBg(w, fill, border, false);
+    }
+
+    private WidgetGroup skinnedTabBg(int w, int fill, int border, boolean animate) {
         WidgetGroup bg = new WidgetGroup(0, 0, w, TAB_H) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                long elapsed = System.currentTimeMillis() - state.settings.tabAnimationStartMs;
-                float t = Math.max(0f, Math.min(1f, (float) elapsed / (float) TAB_ANIM_MS));
-                float eased = 1f - (1f - t) * (1f - t) * (1f - t);
-                int grow = (int) (TAB_ENLARGE * eased);
+                int grow = 0;
+                if (animate) {
+                    long elapsed = System.currentTimeMillis() - state.settings.tabAnimationStartMs;
+                    float t = Math.max(0f, Math.min(1f, (float) elapsed / (float) TAB_ANIM_MS));
+                    float eased = 1f - (1f - t) * (1f - t) * (1f - t);
+                    grow = (int) (TAB_ENLARGE * eased);
+                }
                 int drawY = getPositionY() + TAB_ENLARGE - grow;
                 int drawH = TAB_H + grow;
                 String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_tab_layer");
@@ -134,7 +144,7 @@ final class SettingsAppHeaderControls {
                     if (parsed != null) {
                         IGuiTexture tex = parsed.createTexture();
                         if (tex != null) {
-                            tex.draw(graphics, mouseX, mouseY, getPositionX(), drawY, getSizeWidth(), drawH);
+                            tex.draw(graphics, mouseX, mouseY, getPositionX() - 1, drawY - 1, getSizeWidth() + 2, drawH + 2);
                             return;
                         }
                     }
