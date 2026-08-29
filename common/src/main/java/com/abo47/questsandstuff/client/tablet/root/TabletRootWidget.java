@@ -186,9 +186,7 @@ public final class TabletRootWidget extends WidgetGroup {
         return state != null && (state.questDetails.questDetailsContextOpen
                 || state.questDetails.questDetailsPickerSession.active()
                 || state.questDetails.questDetailsCommandRewardEditorOpen
-                || state.questDetails.questDetailsTaskRenameOpen
-                || state.questDetails.questDetailsToolsOpen
-                || state.questDetails.questDetailsToolsClosing);
+                || state.questDetails.questDetailsTaskRenameOpen);
     }
 
     @Override

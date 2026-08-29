@@ -242,7 +242,7 @@ public final class SkinEditTargetResolver {
 
     private static void collectNestedTargets(Widget widget, List<Rectangle> out) {
         if (!widget.isVisible()) return;
-
+        if (isSkinExcluded(widget)) return;
         if (isTargetable(widget)) {
             out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
                     widget.getSizeWidth(), widget.getSizeHeight()));

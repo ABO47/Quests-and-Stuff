@@ -33,7 +33,6 @@ final class SettingsAppHeaderControls {
     private static final int TAB_H = GRID_20;
     private static final int TAB_GAP = GRID_4;
     private static final int SEARCH_INSET = 9;
-    private static final int TAB_ANIM_MS = 200;
     private static final int TAB_ENLARGE = GRID_4;
 
     private final TabletUiState state;
@@ -103,11 +102,9 @@ final class SettingsAppHeaderControls {
         int fill = active ? withAlpha(TabletColors.SURFACE_BASE, 250) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 142);
         int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
-        WidgetGroup bg = active ? enlargedTabBg(w, fill, border) : staticTabBg(w, fill, border);
+        WidgetGroup bg = skinnedTabBg(w, fill, border);
         LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
-        ButtonWidget hit = active
-                ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
-                : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
+        ButtonWidget hit = flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab));
         hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(Component.translatable(tab.labelKey()));
@@ -117,27 +114,12 @@ final class SettingsAppHeaderControls {
         return container;
     }
 
-    private WidgetGroup enlargedTabBg(int w, int fill, int border) {
-        return skinnedTabBg(w, fill, border, true);
-    }
-
-    private WidgetGroup staticTabBg(int w, int fill, int border) {
-        return skinnedTabBg(w, fill, border, false);
-    }
-
-    private WidgetGroup skinnedTabBg(int w, int fill, int border, boolean animate) {
-        WidgetGroup bg = new WidgetGroup(0, 0, w, TAB_H) {
+    private WidgetGroup skinnedTabBg(int w, int fill, int border) {
+        WidgetGroup bg = new WidgetGroup(0, 0, w, TAB_H + TAB_ENLARGE) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int grow = 0;
-                if (animate) {
-                    long elapsed = System.currentTimeMillis() - state.settings.tabAnimationStartMs;
-                    float t = Math.max(0f, Math.min(1f, (float) elapsed / (float) TAB_ANIM_MS));
-                    float eased = 1f - (1f - t) * (1f - t) * (1f - t);
-                    grow = (int) (TAB_ENLARGE * eased);
-                }
-                int drawY = getPositionY() + TAB_ENLARGE - grow;
-                int drawH = TAB_H + grow;
+                int drawY = getPositionY();
+                int drawH = TAB_H + TAB_ENLARGE;
                 String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_tab_layer");
                 if (rawOverride != null) {
                     SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
@@ -165,7 +147,6 @@ final class SettingsAppHeaderControls {
         state.settings.scrollDragging = false;
         state.modal.themeScroll = 0;
         state.modal.themeScrollDragging = false;
-        state.settings.tabAnimationStartMs = System.currentTimeMillis();
         QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
         refresh.run();
     }

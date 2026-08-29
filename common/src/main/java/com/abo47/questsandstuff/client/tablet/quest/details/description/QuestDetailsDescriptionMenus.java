@@ -282,11 +282,11 @@ public final class QuestDetailsDescriptionMenus {
         }
         int w = 240;
         int h = 116;
-        int x = Math.max(4, (modal.getSizeWidth() - w) / 2);
-        int y = Math.max(4, (modal.getSizeHeight() - h) / 2);
+        int x = modal.getPositionX() + Math.max(4, (modal.getSizeWidth() - w) / 2);
+        int y = modal.getPositionY() + Math.max(4, (modal.getSizeHeight() - h) / 2);
         String mode = state.questDetails.modeEditorMode;
         if ("dynamic".equals(mode)) {
-            modal.addWidget(FourFieldEditor.build(state, x, y, w, h,
+            WidgetGroup editor = FourFieldEditor.build(state, x, y, w, h,
                     "ui.questsandstuff.skin.mode_dynamic",
                     "ui.questsandstuff.skin.dynamic_left",
                     "ui.questsandstuff.skin.dynamic_right",
@@ -297,13 +297,20 @@ public final class QuestDetailsDescriptionMenus {
                     (l, r, t, b) -> {
                         model.canvasBackground = new SkinFillOverride("dynamic", l, r, t, b, state.questDetails.modeEditorPath).encode();
                         QuestDetailsDescriptionModel.save(player, questId, model);
+                        state.root.editorPopup = null;
+                        state.root.editorPopupOpen = false;
                         state.questDetails.modeEditorOpen = false;
                         refresh.run();
                     },
                     () -> {
+                        state.root.editorPopup = null;
+                        state.root.editorPopupOpen = false;
                         state.questDetails.modeEditorOpen = false;
                         refresh.run();
-                    }));
+                    });
+            editor.setGui(modal.getGui());
+            state.root.editorPopup = editor;
+            state.root.editorPopupOpen = true;
             return;
         }
         boolean tile = "tile".equals(mode);
@@ -315,14 +322,20 @@ public final class QuestDetailsDescriptionMenus {
                 (l, r) -> {
                     model.canvasBackground = new SkinFillOverride(mode, l, r, state.questDetails.modeEditorPath).encode();
                     QuestDetailsDescriptionModel.save(player, questId, model);
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
                     state.questDetails.modeEditorOpen = false;
                     refresh.run();
                 },
                 () -> {
+                    state.root.editorPopup = null;
+                    state.root.editorPopupOpen = false;
                     state.questDetails.modeEditorOpen = false;
                     refresh.run();
                 });
-        modal.addWidget(popup);
+        popup.setGui(modal.getGui());
+        state.root.editorPopup = popup;
+        state.root.editorPopupOpen = true;
     }
 
     private static void addTextActions(ContextMenuSections sections, TabletUiState state, Player player, String questId, QuestDetailsDescriptionModel model) {

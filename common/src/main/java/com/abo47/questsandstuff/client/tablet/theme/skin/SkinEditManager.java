@@ -172,7 +172,7 @@ public final class SkinEditManager {
 
     private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
         CapturedOriginal cap = ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
-        int[] offsets = skinExtendOffsets(w, targetKey, w.getBackgroundTexture());
+        int[] offsets = skinExtendOffsets(w, targetKey, cap.original());
         if (offsets != null) {
             IGuiTexture inner = tex;
             int dx = offsets[0];
@@ -210,7 +210,8 @@ public final class SkinEditManager {
                 return new int[]{-1, -1, 2, 2};
             }
             Class<?> cls = w.getClass();
-            if (cls == TabletIconTextButton.class || cls == QuestDetailsRootWidget.class) {
+            if (cls == TabletIconTextButton.class || cls == QuestDetailsRootWidget.class
+                    || cls == TextFieldWidget.class) {
                 return new int[]{-1, -1, 2, 2};
             }
         }

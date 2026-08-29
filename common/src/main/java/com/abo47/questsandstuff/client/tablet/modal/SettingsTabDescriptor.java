@@ -9,7 +9,6 @@ public record SettingsTabDescriptor(
         int id,
         String logName,
         String labelKey,
-        boolean themePicker,
         Function<TabletUiState, List<SettingsOptionDescriptor>> optionProvider
 ) {
     public List<SettingsOptionDescriptor> options(TabletUiState state) {
