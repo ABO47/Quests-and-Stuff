@@ -73,6 +73,9 @@ public final class SkinEditTargetResolver {
         if (targetKey == null || targetKey.isBlank()) return null;
         Widget registered = SkinAnchorRegistry.findByKey(targetKey);
         if (registered != null) return registered;
+        for (Widget w : SkinAnchorRegistry.sharedWidgetsFor(targetKey)) {
+            return w;
+        }
         for (Widget w : root.widgets) {
             Widget found = searchForKey(w, targetKey);
             if (found != null) return found;

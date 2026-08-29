@@ -49,12 +49,16 @@ public final class SettingsOptionRowRenderer {
         boolean enabled = option.enabled();
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        int fill = enabled ? withAlpha(TabletColors.SUCCESS, 28) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
-        int border = enabled ? withAlpha(TabletColors.SUCCESS, 170) : TabletColors.BORDER_BASE;
+        int fill = enabled ? withAlpha(TabletColors.SUCCESS, 180) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int border = enabled ? TabletColors.SUCCESS : TabletColors.BORDER_BASE;
         WidgetGroup card = panel(0, rowY, cardW, rowH, fill, border);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
+        if (enabled) {
+            list.addWidget(new ImageWidget(0, rowY, cardW, rowH,
+                    SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 40))));
+        }
 
         Component[] tooltips = tooltips(option);
         int switchX = Math.max(104, cardW - ToggleSwitchWidget.DEFAULT_WIDTH - SWITCH_GAP);
@@ -85,7 +89,7 @@ public final class SettingsOptionRowRenderer {
     private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, TabletUiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 28), TabletColors.BORDER_BASE);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, withAlpha(TabletColors.INTERACTIVE, 180), TabletColors.BORDER_BASE);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));

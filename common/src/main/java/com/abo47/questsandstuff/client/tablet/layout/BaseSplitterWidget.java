@@ -3,25 +3,37 @@ package com.abo47.questsandstuff.client.tablet.layout;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
+import com.abo47.questsandstuff.client.tablet.TabletClickSounds;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
 public abstract class BaseSplitterWidget extends WidgetGroup {
     protected final TabletUiState state;
     protected final Runnable refresh;
+    protected final String skinTargetKey;
 
     public BaseSplitterWidget(int x, int y, int w, int h, TabletUiState state, Runnable refresh) {
+        this(x, y, w, h, state, refresh, null);
+    }
+
+    public BaseSplitterWidget(int x, int y, int w, int h, TabletUiState state, Runnable refresh, String skinTargetKey) {
         super(x, y, w, h);
         this.state = state;
         this.refresh = refresh;
+        this.skinTargetKey = skinTargetKey;
     }
 
     protected abstract boolean isSplitterLocked();
@@ -69,6 +81,7 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
     }
 
     protected void onSplitterClick() {
+        TabletClickSounds.playClick();
     }
 
     protected void onSplitterRelease() {
@@ -95,11 +108,16 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
             skinBg.draw(graphics, mouseX, mouseY, left, top, width, height);
         } else {
             SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT).draw(graphics, mouseX, mouseY, left, top, width, height);
-            if (hovered) {
-                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, left, top, width, height);
-            }
             SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
             SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
+        }
+        if (hovered) {
+            ResourceLocation mask = resolveSkinMask();
+            if (mask != null) {
+                GlowShaderHelper.drawGlowMasked(graphics, mouseX, mouseY, left, top, width, height, TabletColors.GLOW, mask);
+            } else {
+                GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, left, top, width, height);
+            }
         }
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
@@ -170,6 +188,21 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         TabletResizeCursor.update(false);
         refresh.run();
         return true;
+    }
+
+    private ResourceLocation resolveSkinMask() {
+        if (skinTargetKey == null || skinTargetKey.isBlank() || state == null) return null;
+        String raw = SkinOverrideKey.resolveOverride(state, skinTargetKey);
+        if (raw == null) return null;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return null;
+        String path = override.path();
+        if (path == null || path.isBlank()) return null;
+        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        if (id == null) {
+            id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        }
+        return id;
     }
 
 }

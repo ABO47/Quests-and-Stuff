@@ -176,10 +176,15 @@ public final class ChunkClaimerHeaderControls {
 
         countLabel.setSelfPosition(HEADER_INSET, headerY + (HEADER_H - 12) / 2);
         countLabel.setSize(countW, 12);
+        opacityBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         opacityBtn.setSelfPosition(opacityX, headerY);
+        gridBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         gridBtn.setSelfPosition(gridX, headerY);
+        scanBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         scanBtn.setSelfPosition(scanX, headerY);
+        forceBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         forceBtn.setSelfPosition(forceX, headerY);
+        claimBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         claimBtn.setSelfPosition(claimX, headerY);
     }
 

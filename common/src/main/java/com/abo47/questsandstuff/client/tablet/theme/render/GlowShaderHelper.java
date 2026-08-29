@@ -16,12 +16,39 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class GlowShaderHelper {
     private static final ResourceLocation GLOW_SHADER = new ResourceLocation("questsandstuff", "glow");
+    private static final ResourceLocation GLOW_MASKED_SHADER = new ResourceLocation("questsandstuff", "glow_masked");
 
     private GlowShaderHelper() {
     }
 
     private static ShaderTexture shader() {
         return ShaderTexture.createShader(GLOW_SHADER);
+    }
+
+    // Draw the glow shader masked by the given texture's alpha, so the glow follows the shape of
+    // the hovered texture instead of being a plain rectangle. Falls back to the rectangular glow if
+    // the masked shader is unavailable or no mask is supplied.
+    public static void drawGlowMasked(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h, int glowColor, ResourceLocation mask) {
+        ShaderTexture s = ShaderTexture.createShader(GLOW_MASKED_SHADER);
+        if (s == null || mask == null) {
+            drawGlow(graphics, mouseX, mouseY, x, y, w, h, glowColor);
+            return;
+        }
+        float r = FastColor.ARGB32.red(glowColor) / 255f;
+        float g = FastColor.ARGB32.green(glowColor) / 255f;
+        float b = FastColor.ARGB32.blue(glowColor) / 255f;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        try {
+            s.bindTexture("uMask", mask);
+            s.setUniformCache(cache -> {
+                cache.glUniform4F("uGlowColor", r, g, b, 1f);
+                cache.glUniform1F("uUseMask", 1f);
+            });
+            s.draw(graphics, mouseX, mouseY, x, y, w, h);
+        } catch (Exception ignored) {
+            drawGlow(graphics, mouseX, mouseY, x, y, w, h, glowColor);
+        }
     }
 
     // IGuiTexture that draws the glow shader in the theme-driven GLOW color.
