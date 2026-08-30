@@ -327,9 +327,11 @@ public final class ChapterMetadataStore {
         state.clear();
         try {
             boolean migrated = false;
+            Map<String, Integer> orders = new HashMap<>();
             for (Path path : JsonFileTree.jsonFiles(chaptersDir)) {
-                migrated |= ChapterMetadataReader.read(path, state);
+                migrated |= ChapterMetadataReader.read(path, state, orders);
             }
+            state.chapterOrder.sort((a, b) -> Integer.compare(orders.getOrDefault(a, Integer.MAX_VALUE), orders.getOrDefault(b, Integer.MAX_VALUE)));
             reconcile(discoveredChapters);
             if (migrated) {
                 save();
