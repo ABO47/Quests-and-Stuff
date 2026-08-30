@@ -102,9 +102,11 @@ final class SettingsAppHeaderControls {
         int fill = active ? withAlpha(TabletColors.SURFACE_BASE, 250) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 142);
         int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
-        WidgetGroup bg = skinnedTabBg(w, fill, border);
+        WidgetGroup bg = skinnedTabBg(w, fill, border, active);
         LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
-        ButtonWidget hit = flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab));
+        ButtonWidget hit = active
+                ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
+                : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
         hit.setHoverTexture(GlowShaderHelper.hoverGlow());
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
         hit.setHoverTooltips(Component.translatable(tab.labelKey()));
@@ -114,12 +116,14 @@ final class SettingsAppHeaderControls {
         return container;
     }
 
-    private WidgetGroup skinnedTabBg(int w, int fill, int border) {
-        WidgetGroup bg = new WidgetGroup(0, 0, w, TAB_H + TAB_ENLARGE) {
+    private WidgetGroup skinnedTabBg(int w, int fill, int border, boolean active) {
+        int bgH = active ? TAB_H + TAB_ENLARGE : TAB_H;
+        int drawYOffset = active ? 0 : TAB_ENLARGE;
+        int drawH = bgH;
+        WidgetGroup bg = new WidgetGroup(0, 0, w, bgH) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int drawY = getPositionY();
-                int drawH = TAB_H + TAB_ENLARGE;
+                int drawY = getPositionY() + drawYOffset;
                 String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_tab_layer");
                 if (rawOverride != null) {
                     SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
