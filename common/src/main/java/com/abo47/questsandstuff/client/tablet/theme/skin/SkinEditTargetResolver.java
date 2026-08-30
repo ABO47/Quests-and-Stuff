@@ -26,21 +26,25 @@ public final class SkinEditTargetResolver {
         if (qdl != null && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
             if (hit != null && hit != qdl) {
-                String key = stableKeyFor(hit);
-                if (!isCanvasPanelKey(key)) return key;
-                return null;
+                return resolveHit(hit);
             }
         }
         Widget hit = deepestAt(root, mouseX, mouseY);
         if (hit != null && hit != root) {
-            String key = stableKeyFor(hit);
-            if (!isCanvasPanelKey(key)) return key;
-            return null;
+            return resolveHit(hit);
         }
         if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
             return "root";
         }
         return null;
+    }
+
+    private static String resolveHit(Widget hit) {
+        String key = stableKeyFor(hit);
+        if (isCanvasPanelKey(key)) return null;
+        String shared = resolveSharedKey(hit);
+        if (shared != null && SkinOverrideKey.isCardKey(shared)) return shared;
+        return key;
     }
 
     private static boolean isCanvasPanelKey(String key) {

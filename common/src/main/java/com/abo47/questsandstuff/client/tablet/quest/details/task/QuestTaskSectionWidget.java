@@ -163,10 +163,11 @@ final class QuestTaskSectionWidget {
             state.questDetails.questDetailsRewardScroll = ScrollMath.clamp(state.questDetails.questDetailsRewardScroll, maxStart);
         }
         String kind = tasks ? "tasks" : "rewards";
+        String cardsKey = tasks ? "quests_task_cards" : "quests_reward_cards";
+        SkinAnchorRegistry.clearShared(cardsKey);
         int listW = maxStart > 0 ? w - DragScrollBarWidget.RESERVED_WIDTH : w;
         WidgetGroup list = clippedList(0, listY, listW, visibleH, state, player, refresh, questId, entries, kind, listY, h - 4);
         section.addWidget(list);
-        SkinAnchorRegistry.register(tasks ? "quests_task_cards" : "quests_reward_cards", list);
         int scroll = tasks ? state.questDetails.questDetailsTaskScroll : state.questDetails.questDetailsRewardScroll;
         if (entries.isEmpty()) {
             return;

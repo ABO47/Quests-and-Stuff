@@ -61,6 +61,18 @@ public final class SkinAnchorRegistry {
         }
     }
 
+    public static void clearShared(String key) {
+        if (key == null || key.isBlank()) return;
+        Set<Widget> set = SHARED_KEY_TO_WIDGETS.remove(key);
+        if (set != null) {
+            for (Widget w : set) {
+                if (key.equals(WIDGET_TO_SHARED_KEY.get(w))) {
+                    WIDGET_TO_SHARED_KEY.remove(w);
+                }
+            }
+        }
+    }
+
     public static Widget findByKey(String key) {
         if (key == null || key.isBlank()) return null;
         return KEY_TO_WIDGET.get(key);
