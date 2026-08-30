@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.quest.persistence.chapter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -16,7 +17,7 @@ final class ChapterMetadataReader {
     private ChapterMetadataReader() {
     }
 
-    static boolean read(Path path, ChapterMetadataState state) {
+    static boolean read(Path path, ChapterMetadataState state, Map<String, Integer> orders) {
         try {
             JsonObject raw = JsonParser.parseString(Files.readString(path)).getAsJsonObject();
             boolean migrated = ChapterMetadataMigrator.needsMigration(raw);
@@ -28,6 +29,8 @@ final class ChapterMetadataReader {
             if (!state.chapterOrder.contains(name)) {
                 state.chapterOrder.add(name);
             }
+            int order = json.has("order") ? json.get("order").getAsInt() : Integer.MAX_VALUE;
+            orders.put(name, order);
             readChapterChrome(json, state, name);
             readCanvasLayers(json, state, name);
             return migrated;
