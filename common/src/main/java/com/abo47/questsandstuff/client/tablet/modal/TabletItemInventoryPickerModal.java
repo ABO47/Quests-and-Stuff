@@ -78,7 +78,6 @@ public final class TabletItemInventoryPickerModal {
                         dragging -> state.pickers.itemInventoryScrollDragging = dragging
                 ),
                 null,
-                refresh,
                 (surface, stack, index, x, y, tileW, tileH, layout) -> renderStackTile(surface, stack, x, y, picked -> {
                     QuestDetailsWindow.applyInventoryItemPick(player, state, picked);
                     closeAll(state);

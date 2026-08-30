@@ -8,7 +8,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 
 final class QuestDetailsSplitterWidget extends BaseSplitterWidget {
     QuestDetailsSplitterWidget(int x, int y, int h, TabletUiState state, Runnable refresh) {
-        super(x, y, SPLITTER_W, h, state, refresh);
+        super(x, y, SPLITTER_W, h, state, refresh, "quest_details_splitter");
     }
 
     @Override

@@ -58,8 +58,8 @@ public final class GlowShaderHelper {
      * @param ancestors list of ancestor bounds from outermost to innermost
      */
     public static void drawGlowClipped(GuiGraphics graphics, int mouseX, int mouseY,
-                                       int wx, int wy, int ww, int wh,
-                                       int glowColor, List<Rectangle> ancestors) {
+                                        int wx, int wy, int ww, int wh,
+                                        int glowColor, List<Rectangle> ancestors) {
         if (ww <= 0 || wh <= 0) return;
         Rectangle clip = ancestorClip(wx, wy, ww, wh, ancestors);
         if (clip == null || clip.width <= 0 || clip.height <= 0) return;
@@ -97,9 +97,9 @@ public final class GlowShaderHelper {
      *                  coordinate space as wx/wy (screen space), unclipped
      */
     public static void drawGlowOccluded(GuiGraphics graphics, int mouseX, int mouseY,
-                                         int wx, int wy, int ww, int wh,
-                                         int glowColor, List<Rectangle> ancestors,
-                                         List<Rectangle> excludes) {
+                                          int wx, int wy, int ww, int wh,
+                                          int glowColor, List<Rectangle> ancestors,
+                                          List<Rectangle> excludes) {
         if (ww <= 0 || wh <= 0) return;
 
         Rectangle base = ancestorClip(wx, wy, ww, wh, ancestors);

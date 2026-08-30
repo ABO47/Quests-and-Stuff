@@ -60,7 +60,6 @@ final class RecipePickerGridRenderer {
                 TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 scrollState(state),
                 null,
-                refresh,
                 (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> RecipePickerApplyActions.trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
         );
     }
@@ -82,7 +81,6 @@ final class RecipePickerGridRenderer {
                 TabletTranslationKeys.text(QuestTranslationKeys.NO_FLUIDS),
                 scrollState(state),
                 null,
-                refresh,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderFluidTile(surface, player, state, refresh, entry, x, y)
         );
     }
@@ -104,7 +102,6 @@ final class RecipePickerGridRenderer {
                 TabletTranslationKeys.text(QuestTranslationKeys.NO_RECIPES),
                 scrollState(state),
                 null,
-                refresh,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
         );
     }

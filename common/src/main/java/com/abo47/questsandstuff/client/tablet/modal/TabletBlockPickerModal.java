@@ -121,7 +121,6 @@ public final class TabletBlockPickerModal {
                         dragging -> state.pickers.blockScrollDragging = dragging
                 ),
                 null,
-                refresh,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
         );
         return search;

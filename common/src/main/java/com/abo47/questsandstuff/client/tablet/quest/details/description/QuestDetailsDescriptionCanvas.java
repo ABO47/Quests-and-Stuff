@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewpo
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {

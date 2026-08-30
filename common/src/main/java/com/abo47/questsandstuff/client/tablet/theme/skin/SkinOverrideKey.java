@@ -14,6 +14,7 @@ public final class SkinOverrideKey {
             "settings_tab_layer",
             "teams_member_cards"
     );
+
     private static final Set<String> CARD_KEYS = Set.of(
             "quests_task_cards", "quests_reward_cards",
             "settings_option_cards",

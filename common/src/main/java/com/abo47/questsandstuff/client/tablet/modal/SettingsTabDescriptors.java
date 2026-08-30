@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
@@ -26,13 +27,13 @@ public final class SettingsTabDescriptors {
     static final int CHUNK_CLAIMS = 6;
 
     private static final List<SettingsTabDescriptor> TABS = List.of(
-            new SettingsTabDescriptor(THEMES, "themes", "ui.questsandstuff.settings.tab_themes", true, state -> List.of()),
-            new SettingsTabDescriptor(CANVAS, "canvas", "ui.questsandstuff.settings.tab_canvas", false, SettingsTabDescriptors::canvasOptions),
-            new SettingsTabDescriptor(HUD, "hud", "ui.questsandstuff.settings.tab_hud", false, state -> hudOptions()),
-            new SettingsTabDescriptor(ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations", false, state -> animationOptions()),
-            new SettingsTabDescriptor(DEBUG, "debug", "ui.questsandstuff.settings.tab_debug", false, state -> debugOptions()),
-            new SettingsTabDescriptor(SKIN, "skin", "ui.questsandstuff.settings.tab_skin", false, SettingsTabDescriptors::skinOptions),
-            new SettingsTabDescriptor(CHUNK_CLAIMS, "chunkClaims", ChunkClaimTranslationKeys.SETTINGS_TAB, false, SettingsTabDescriptors::chunkClaimOptions)
+            new SettingsTabDescriptor(THEMES, "themes", "ui.questsandstuff.settings.tab_themes", SettingsTabDescriptors::themeOptions),
+            new SettingsTabDescriptor(CANVAS, "canvas", "ui.questsandstuff.settings.tab_canvas", SettingsTabDescriptors::canvasOptions),
+            new SettingsTabDescriptor(HUD, "hud", "ui.questsandstuff.settings.tab_hud", state -> hudOptions()),
+            new SettingsTabDescriptor(ANIMATIONS, "animations", "ui.questsandstuff.settings.tab_animations", state -> animationOptions()),
+            new SettingsTabDescriptor(DEBUG, "debug", "ui.questsandstuff.settings.tab_debug", state -> debugOptions()),
+            new SettingsTabDescriptor(SKIN, "skin", "ui.questsandstuff.settings.tab_skin", SettingsTabDescriptors::skinOptions),
+            new SettingsTabDescriptor(CHUNK_CLAIMS, "chunkClaims", ChunkClaimTranslationKeys.SETTINGS_TAB, SettingsTabDescriptors::chunkClaimOptions)
     );
 
     private SettingsTabDescriptors() {
@@ -63,9 +64,6 @@ public final class SettingsTabDescriptors {
         String q = SearchFilter.normalizeUserInput(query);
         List<SettingsOptionDescriptor> matches = new ArrayList<>();
         for (SettingsTabDescriptor tab : TABS) {
-            if (tab.themePicker()) {
-                continue;
-            }
             for (SettingsOptionDescriptor option : tab.options(state)) {
                 if (optionMatches(option, q)) {
                     matches.add(option);
@@ -288,6 +286,14 @@ public final class SettingsTabDescriptors {
 
     private static List<SettingsOptionDescriptor> skinOptions(TabletUiState state) {
         return List.of();
+    }
+
+    private static List<SettingsOptionDescriptor> themeOptions(TabletUiState state) {
+        List<SettingsOptionDescriptor> out = new ArrayList<>();
+        for (UiThemeManager.ThemeInfo t : UiThemeManager.availableThemes()) {
+            out.add(new SettingsOptionDescriptor(t.id(), t));
+        }
+        return out;
     }
 
     private static List<SettingsOptionDescriptor> chunkClaimOptions(TabletUiState state) {

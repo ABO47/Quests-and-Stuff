@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.forge;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -23,6 +25,10 @@ public final class ForgeContent {
     public static final DeferredRegister<LootItemConditionType> LOOT_CONDITION_TYPES = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, QuestsAndStuffMod.MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuestsAndStuffMod.MODID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, QuestsAndStuffMod.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, QuestsAndStuffMod.MODID);
+
+    public static final RegistryObject<SoundEvent> UI_CLICK = SOUND_EVENTS.register("ui_click",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(QuestsAndStuffMod.MODID, "ui_click")));
 
     public static final RegistryObject<Item> TABLET = ITEMS.register("quest_tablet", () -> new TabletItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<LootItemConditionType> COMPLETED_QUEST_LOOT_CONDITION = LOOT_CONDITION_TYPES.register(
@@ -47,5 +53,6 @@ public final class ForgeContent {
         LOOT_CONDITION_TYPES.register(modBus);
         TABS.register(modBus);
         RECIPE_SERIALIZERS.register(modBus);
+        SOUND_EVENTS.register(modBus);
     }
 }

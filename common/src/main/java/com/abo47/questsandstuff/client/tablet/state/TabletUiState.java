@@ -554,6 +554,8 @@ public class TabletUiState {
         public String modeEditorPath = "";
         public int modeEditorLeft;
         public int modeEditorRight;
+        public int modeEditorTop;
+        public int modeEditorBottom;
         public String entityMotionEditorScope = "";
         public String entityMotionEditorGroup = "";
         public String entityMotionEditorQuestId = "";
@@ -604,6 +606,7 @@ public class TabletUiState {
         public boolean questDetailsCanvasLocked;
         public int questDetailsGridOpacityPercent = 100;
         public int questDetailsCanvasBgOpacityPercent = 100;
+        public boolean questDetailsCanvasCustomBg;
         public int questDetailsDescScroll;
         public boolean questDetailsDescScrollDragging;
         public boolean questDetailsPanning;

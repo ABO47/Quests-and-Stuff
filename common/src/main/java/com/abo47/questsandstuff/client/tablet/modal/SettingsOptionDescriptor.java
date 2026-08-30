@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+
 public record SettingsOptionDescriptor(
         String id,
         String labelKey,
@@ -20,7 +22,8 @@ public record SettingsOptionDescriptor(
         int maxLength,
         boolean restartRequired,
         boolean requiresGlobalAnimation,
-        String unitKey
+        String unitKey,
+        UiThemeManager.ThemeInfo themeInfo
 ) {
     SettingsOptionDescriptor(
             String id,
@@ -46,7 +49,8 @@ public record SettingsOptionDescriptor(
                 0,
                 restartRequired,
                 requiresGlobalAnimation,
-                ""
+                "",
+                null
         );
     }
 
@@ -77,7 +81,8 @@ public record SettingsOptionDescriptor(
                 maxLength,
                 restartRequired,
                 false,
-                unitKey
+                unitKey,
+                null
         );
     }
 
@@ -102,7 +107,32 @@ public record SettingsOptionDescriptor(
                 0,
                 false,
                 false,
-                ""
+                "",
+                null
+        );
+    }
+
+    SettingsOptionDescriptor(
+            String id,
+            UiThemeManager.ThemeInfo theme
+    ) {
+        this(
+                id,
+                theme.label(),
+                "",
+                SettingsOptionKind.THEME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0,
+                0,
+                0,
+                false,
+                false,
+                "",
+                theme
         );
     }
 

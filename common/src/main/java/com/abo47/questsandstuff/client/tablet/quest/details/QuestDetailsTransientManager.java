@@ -149,6 +149,12 @@ public final class QuestDetailsTransientManager {
             ToolMenuAnimation.closeQuestDetails(state);
             changed = true;
         }
+        if (state.questDetails.modeEditorOpen) {
+            state.questDetails.modeEditorOpen = false;
+            state.root.editorPopup = null;
+            state.root.editorPopupOpen = false;
+            changed = true;
+        }
         return changed;
     }
 }

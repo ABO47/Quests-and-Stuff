@@ -69,7 +69,6 @@ public final class TabletThemePickerModal {
                         dragging -> state.modal.themeScrollDragging = dragging
                 ),
                 null,
-                refresh,
                 (surface, theme, index, rowX, rowY, rowW, rowH, layout) -> addThemeRow(surface, state, refresh, theme, active.equals(theme.id()), rowX, rowY, rowW)
         );
     }

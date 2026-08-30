@@ -139,10 +139,10 @@ memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE,
             SkinAnchorRegistry.register("home_btn", homeBtn);
             SkinAnchorRegistry.register("teams_main_panel", mainPanel);
             SkinAnchorRegistry.register("teams_member_list", memberListPanel);
-            SkinAnchorRegistry.register("teams_member_cards", memberListPanel);
             SkinAnchorRegistry.register("teams_header_leave", headers.leaveBtn());
             SkinAnchorRegistry.register("teams_header_join", headers.joinBtn());
             SkinAnchorRegistry.register("teams_header_invite", headers.inviteBtn());
+            SkinAnchorRegistry.register("teams_header_search", headers.searchField());
             SkinEditManager.reapplyOverrides(state, root);
         };
 

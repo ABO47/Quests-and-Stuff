@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -82,6 +83,13 @@ public final class SkinEditRenderer {
         Widget widget = SkinEditTargetResolver.widgetForKey(root, key);
         if (widget != null) {
             drawGlow(graphics, root, widget, glowColor, mouseX, mouseY);
+            return;
+        }
+        Set<Widget> shared = SkinAnchorRegistry.sharedWidgetsFor(key);
+        if (!shared.isEmpty()) {
+            for (Widget w : shared) {
+                drawGlow(graphics, root, w, glowColor, mouseX, mouseY);
+            }
             return;
         }
         int gx = 0, gy = 0, gw = 0, gh = 0;

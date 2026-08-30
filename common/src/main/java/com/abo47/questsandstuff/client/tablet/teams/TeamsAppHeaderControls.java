@@ -130,8 +130,11 @@ final class TeamsAppHeaderControls {
         searchField.setTextColor(TabletColors.TEXT_PRIMARY);
 
         int baX = HEADER_INSET + searchW;
+        leaveBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         leaveBtn.setSelfPosition(baX + HEADER_GAP, headerY);
+        joinBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         joinBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE + HEADER_GAP, headerY);
+        inviteBtn.setSize(TOOL_SIZE, TOOL_SIZE);
         inviteBtn.setSelfPosition(baX + HEADER_GAP + TOOL_SIZE * 2 + HEADER_GAP * 2, headerY);
     }
 

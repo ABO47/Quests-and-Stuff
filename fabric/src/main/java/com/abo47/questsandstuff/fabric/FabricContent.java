@@ -4,6 +4,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -38,6 +39,12 @@ public final class FabricContent {
                 new LootItemConditionType(CompletedQuestLootCondition.SERIALIZER)
         );
         QuestsAndStuffMod.registerContent(() -> TABLET, () -> COMPLETED_QUEST_LOOT_CONDITION);
+
+        Registry.register(
+                BuiltInRegistries.SOUND_EVENT,
+                id("ui_click"),
+                SoundEvent.createVariableRangeEvent(id("ui_click"))
+        );
 
         MAIN_TAB = Registry.register(
                 BuiltInRegistries.CREATIVE_MODE_TAB,

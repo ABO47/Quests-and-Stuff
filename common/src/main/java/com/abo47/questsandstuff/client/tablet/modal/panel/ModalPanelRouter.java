@@ -34,7 +34,6 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawWindowShadow;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class ModalPanelRouter {
@@ -91,18 +90,12 @@ public final class ModalPanelRouter {
             }
         };
         overlay.addWidget(dim);
-        WidgetGroup modal = new WidgetGroup(mx, my, w, h) {
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                drawWindowShadow(graphics, this);
-                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-            }
-        };
+        WidgetGroup modal = new WidgetGroup(mx, my, w, h);
         modal.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 252), TabletColors.BORDER_ACCENT));
         TextFieldWidget searchField = descriptor.rebuild(modal, state, player, refresh, w, h);
         modal.setActive(!state.modal.modalWindowClosing);
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
-            overlay.addWidget(SourceOriginRevealWidget.window(
+            overlay.addWidget(SourceOriginRevealWidget.windowNoShadow(
                     modal,
                     () -> state.modal.modalWindowAnimationStartMs,
                     () -> !state.modal.modalWindowClosing,

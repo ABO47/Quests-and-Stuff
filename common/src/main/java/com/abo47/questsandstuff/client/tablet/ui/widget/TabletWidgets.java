@@ -8,6 +8,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.TabletClickSounds;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -60,7 +61,10 @@ public final class TabletWidgets {
                 SurfaceFactory.controlPressed(activeColor),
                 new TextTexture(text)
         );
-        ButtonWidget button = new ButtonWidget(x, y, w, h, base, callback);
+        ButtonWidget button = new ButtonWidget(x, y, w, h, base, cd -> {
+            TabletClickSounds.playClick();
+            callback.accept(cd);
+        });
         button.setHoverTexture(GlowShaderHelper.hoverGlow());
         button.setClickedTexture(active);
         button.setClientSideWidget();
@@ -68,11 +72,17 @@ public final class TabletWidgets {
     }
 
     public static ButtonWidget closeIconButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        return ChromeFactory.closeIconButton(x, y, w, h, callback);
+        return ChromeFactory.closeIconButton(x, y, w, h, cd -> {
+            TabletClickSounds.playClick();
+            callback.accept(cd);
+        });
     }
 
     public static ButtonWidget flatHitButton(int x, int y, int w, int h, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        ButtonWidget button = new ButtonWidget(x, y, w, h, SurfaceFactory.transparentFill(), callback);
+        ButtonWidget button = new ButtonWidget(x, y, w, h, SurfaceFactory.transparentFill(), cd -> {
+            TabletClickSounds.playClick();
+            callback.accept(cd);
+        });
         button.setClientSideWidget();
         button.setHoverTexture(SurfaceFactory.transparentFill());
         button.setClickedTexture(SurfaceFactory.transparentFill());

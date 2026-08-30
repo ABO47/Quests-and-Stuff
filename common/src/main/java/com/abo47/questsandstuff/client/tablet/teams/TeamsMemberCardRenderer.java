@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -134,6 +135,7 @@ final class TeamsMemberCardRenderer {
             }
         }
 
+        SkinAnchorRegistry.registerShared("teams_member_cards", card);
         return card;
     }
 
@@ -144,6 +146,7 @@ final class TeamsMemberCardRenderer {
         if (parsed == null) return;
         IGuiTexture tex = parsed.createTexture();
         if (tex != null) {
+            card.setBackground(SurfaceFactory.transparentFill());
             card.addWidget(new ImageWidget(-1, -1, cardW + 2, CARD_H + 2, tex));
         }
     }

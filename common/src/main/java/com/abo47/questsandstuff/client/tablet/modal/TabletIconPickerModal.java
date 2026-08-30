@@ -144,9 +144,8 @@ public final class TabletIconPickerModal {
                             () -> state.pickers.iconScrollDragging,
                             dragging -> state.pickers.iconScrollDragging = dragging
                     ),
-                    null,
-                    refresh,
-                    (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryIconPick(player, state, picked, inventoryTarget, refresh))
+                null,
+                (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryIconPick(player, state, picked, inventoryTarget, refresh))
             );
         } else {
             List<String> entries = itemModelPicker
@@ -176,7 +175,6 @@ public final class TabletIconPickerModal {
                             dragging -> state.pickers.iconScrollDragging = dragging
                     ),
                     null,
-                    refresh,
                     (surface, entry, index, x, y, tileW, tileH, layout) -> {
                 String pickedIcon = pickingEntityIcons ? pickedEntityIcon(entry) : entry;
                 String previewIcon = pickedIcon.isBlank() ? entry : pickedIcon;

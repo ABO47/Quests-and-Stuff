@@ -57,7 +57,7 @@ public final class WorldPortalCapture {
             return false;
         }
         int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
-        return percent < 100;
+        return percent < 100 || state.questDetails.questDetailsCanvasCustomBg;
     }
 
     public static boolean hasUiTexture() {

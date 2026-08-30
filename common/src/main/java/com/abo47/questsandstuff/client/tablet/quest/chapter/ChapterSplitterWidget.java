@@ -20,7 +20,7 @@ public final class ChapterSplitterWidget extends BaseSplitterWidget {
     private static final int DRAG_THRESHOLD_PX = 3;
 
     public ChapterSplitterWidget(TabletUiState state, Runnable refresh, int x) {
-        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh);
+        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh, "quests_splitter");
     }
 
     @Override

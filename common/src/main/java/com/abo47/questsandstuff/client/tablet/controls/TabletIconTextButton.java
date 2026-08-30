@@ -15,6 +15,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
+import com.abo47.questsandstuff.client.tablet.TabletClickSounds;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -76,6 +77,7 @@ public final class TabletIconTextButton extends ButtonWidget {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
         if (handled) {
             isClicked = false;
+            TabletClickSounds.playClick();
         }
         return handled;
     }

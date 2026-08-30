@@ -26,21 +26,25 @@ public final class SkinEditTargetResolver {
         if (qdl != null && qdl instanceof WidgetGroup qdlGroup) {
             Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
             if (hit != null && hit != qdl) {
-                String key = stableKeyFor(hit);
-                if (!isCanvasPanelKey(key)) return key;
-                return null;
+                return resolveHit(hit);
             }
         }
         Widget hit = deepestAt(root, mouseX, mouseY);
         if (hit != null && hit != root) {
-            String key = stableKeyFor(hit);
-            if (!isCanvasPanelKey(key)) return key;
-            return null;
+            return resolveHit(hit);
         }
         if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
             return "root";
         }
         return null;
+    }
+
+    private static String resolveHit(Widget hit) {
+        String key = stableKeyFor(hit);
+        if (isCanvasPanelKey(key)) return null;
+        String shared = resolveSharedKey(hit);
+        if (shared != null && SkinOverrideKey.isCardKey(shared)) return shared;
+        return key;
     }
 
     private static boolean isCanvasPanelKey(String key) {
@@ -73,6 +77,9 @@ public final class SkinEditTargetResolver {
         if (targetKey == null || targetKey.isBlank()) return null;
         Widget registered = SkinAnchorRegistry.findByKey(targetKey);
         if (registered != null) return registered;
+        for (Widget w : SkinAnchorRegistry.sharedWidgetsFor(targetKey)) {
+            return w;
+        }
         for (Widget w : root.widgets) {
             Widget found = searchForKey(w, targetKey);
             if (found != null) return found;
@@ -135,10 +142,7 @@ public final class SkinEditTargetResolver {
     public static boolean isTargetable(Widget widget) {
         if (isSkinExcluded(widget)) return false;
         if (hasVisibleBackground(widget)) return true;
-        String key = SkinAnchorRegistry.keyFor(widget);
-        if (key != null && !SkinOverrideKey.isSharedKey(key)) return true;
-        if (key != null && SkinOverrideKey.isRootKey(key)) return true;
-        return false;
+        return SkinAnchorRegistry.keyFor(widget) != null;
     }
 
     private static boolean isSkinExcluded(Widget widget) {
@@ -242,7 +246,7 @@ public final class SkinEditTargetResolver {
 
     private static void collectNestedTargets(Widget widget, List<Rectangle> out) {
         if (!widget.isVisible()) return;
-
+        if (isSkinExcluded(widget)) return;
         if (isTargetable(widget)) {
             out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
                     widget.getSizeWidth(), widget.getSizeHeight()));

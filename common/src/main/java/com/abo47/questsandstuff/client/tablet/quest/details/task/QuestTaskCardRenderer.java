@@ -30,6 +30,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -174,6 +175,7 @@ final class QuestTaskCardRenderer {
                 : itemLocked ? TabletColors.LOCKED : TabletColors.INTERACTIVE;
 
         String skinKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
+        SkinAnchorRegistry.registerShared(skinKey, card);
         String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
         if (rawOverride == null) {
             rawOverride = fallbackOverride(state, skinKey);

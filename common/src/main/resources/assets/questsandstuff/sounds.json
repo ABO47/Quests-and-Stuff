@@ -1,0 +1,11 @@
+{
+  "ui_click": {
+    "sounds": [
+      {
+        "name": "questsandstuff:ui/click",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  }
+}
