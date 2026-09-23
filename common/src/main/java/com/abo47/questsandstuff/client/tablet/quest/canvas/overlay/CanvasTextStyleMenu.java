@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.function.Supplier;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -42,12 +43,17 @@ public final class CanvasTextStyleMenu {
         int menuW = bounds[2];
         int menuH = bounds[3];
         int columns = bounds[5];
+        String targetId = text.id();
+        Supplier<CanvasTextLayer> freshLookup = () -> CanvasLayerMutations.findCanvasText(state, selectedChapterName(state), targetId);
 
-        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, chapter, fitCanvasText(state, next)), null, () -> {
-            ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(chapter, text.id()), CanvasRenderer.activeTextColor(state, text));
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", chapter, text.id());
+        renderShared(canvasViewport, state, text, x, y, menuW, menuH, columns, "canvas", refresh, next -> CanvasLayerMutations.putCanvasText(state, selectedChapterName(state), fitCanvasText(state, next)), null, () -> {
+            CanvasTextLayer fresh = freshLookup.get();
+            CanvasTextLayer colorSource = fresh == null ? text : fresh;
+            String freshChapter = selectedChapterName(state);
+            ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(freshChapter, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", freshChapter, colorSource.id());
             refresh.run();
-        });
+        }, freshLookup);
     }
 
     public static void renderQuestDetails(
@@ -62,7 +68,8 @@ public final class CanvasTextStyleMenu {
             Consumer<CanvasTextLayer> updateText,
             IntConsumer onPreview,
             Runnable openColorPicker,
-            Runnable refresh
+            Runnable refresh,
+            Supplier<CanvasTextLayer> freshLookup
     ) {
         int toolCount = TextStyleButtons.TOOL_COUNT;
         CanvasTextLayer menuText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
@@ -72,7 +79,8 @@ public final class CanvasTextStyleMenu {
         int hitX = state.questDetails.questDetailsViewportOriginX + bounds[0];
         int hitY = state.questDetails.questDetailsViewportOriginY + bounds[1];
         TextStyleSession.setQuestDetailsBounds(state, hitX, hitY, bounds[2], bounds[3]);
-        renderShared(parent, state, text, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, onPreview, openColorPicker);
+        Supplier<CanvasTextLayer> effectiveFresh = freshLookup == null ? () -> text : freshLookup;
+        renderShared(parent, state, menuText, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, onPreview, openColorPicker, effectiveFresh);
     }
 
     private static void renderShared(
@@ -88,7 +96,8 @@ public final class CanvasTextStyleMenu {
             Runnable refresh,
             Consumer<CanvasTextLayer> updateText,
             IntConsumer onPreview,
-            Runnable openColorPicker
+            Runnable openColorPicker,
+            Supplier<CanvasTextLayer> freshLookup
     ) {
         String align = text.align();
         boolean bold = CanvasRenderer.isTextStyleFlagActive(state, text, "bold");
@@ -99,7 +108,7 @@ public final class CanvasTextStyleMenu {
         boolean spoiler = CanvasRenderer.isTextStyleFlagActive(state, text, "spoiler");
         int fontSize = text.fontSize();
         boolean fontSizeFieldOpen = text.id().equals(textFontSizeFieldTarget(state, logScope));
-        Runnable refreshOnly = refresh;
+        Supplier<CanvasTextLayer> fresh = freshLookup == null ? () -> text : freshLookup;
 
         TextStyleButtons.renderStyleMenu(
                 parent, x, y, menuW, menuH, columns,
@@ -107,26 +116,50 @@ public final class CanvasTextStyleMenu {
                 bold, italic, underline, strikethrough, quote, spoiler,
                 fontSize, fontSizeFieldOpen, true,
                 TabletColors.INTERACTIVE,
-                () -> updateStyle(state, logScope, text, text.withAlign("left"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, text.withAlign("center"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, text.withAlign("right"), updateText, refresh),
+                () -> applyAlign(state, logScope, fresh, "left", updateText, refresh),
+                () -> applyAlign(state, logScope, fresh, "center", updateText, refresh),
+                () -> applyAlign(state, logScope, fresh, "right", updateText, refresh),
                 () -> { markStyleInteraction(state, logScope); openColorPicker.run(); },
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "bold"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "italic"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "underline"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "strikethrough"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "quote"), updateText, refresh),
-                () -> updateStyle(state, logScope, text, CanvasRenderer.toggleTextStyleSelection(state, text, "spoiler"), updateText, refresh),
-                () -> { markStyleInteraction(state, logScope); setTextFontSizeFieldTarget(state, logScope, text.id()); QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size field id={} open=true", logScope, text.id()); refresh.run(); },
-                value -> { markStyleInteraction(state, logScope); updateText.accept(text.withFontSize(value)); keepQuestDetailsStyleMenuOpen(state, logScope, text.id()); },
+                () -> applyToggle(state, logScope, fresh, "bold", updateText, refresh),
+                () -> applyToggle(state, logScope, fresh, "italic", updateText, refresh),
+                () -> applyToggle(state, logScope, fresh, "underline", updateText, refresh),
+                () -> applyToggle(state, logScope, fresh, "strikethrough", updateText, refresh),
+                () -> applyToggle(state, logScope, fresh, "quote", updateText, refresh),
+                () -> applyToggle(state, logScope, fresh, "spoiler", updateText, refresh),
+                () -> { markStyleInteraction(state, logScope); CanvasTextLayer current = fresh.get(); String id = current == null ? text.id() : current.id(); setTextFontSizeFieldTarget(state, logScope, id); QuestsAndStuffMod.debugLog("[QnS:UI] {} text font-size field id={} open=true", logScope, id); refresh.run(); },
+                value -> { markStyleInteraction(state, logScope); CanvasTextLayer current = fresh.get(); if (current == null) { return; } updateText.accept(current.withFontSize(value)); keepQuestDetailsStyleMenuOpen(state, logScope, current.id()); },
                 onPreview,
                 () -> closeFontSizeField(state, logScope, refresh),
                 () -> closeFontSizeField(state, logScope, refresh),
                 () -> closeFontSizeField(state, logScope, refresh),
                 null,
-                () -> updateStyle(state, logScope, text, CanvasRenderer.applyTextStyleSelection(state, text, "normal"), updateText, refresh),
+                () -> applyReset(state, logScope, fresh, updateText, refresh),
                 () -> { markStyleInteraction(state, logScope); QuestsAndStuffMod.debugLog("[QnS:UI] {} text menu internal click target={}", logScope, text.id()); refresh.run(); }
         );
+    }
+
+    private static void applyAlign(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String align, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+        CanvasTextLayer current = freshLookup.get();
+        if (current == null) {
+            return;
+        }
+        updateStyle(state, logScope, current, current.withAlign(align), updateText, refresh);
+    }
+
+    private static void applyToggle(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String flag, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+        CanvasTextLayer current = freshLookup.get();
+        if (current == null) {
+            return;
+        }
+        updateStyle(state, logScope, current, CanvasRenderer.toggleTextStyleSelection(state, current, flag), updateText, refresh);
+    }
+
+    private static void applyReset(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+        CanvasTextLayer current = freshLookup.get();
+        if (current == null) {
+            return;
+        }
+        updateStyle(state, logScope, current, CanvasRenderer.applyTextStyleSelection(state, current, "normal"), updateText, refresh);
     }
 
     private static void updateStyle(TabletUiState state, String logScope, CanvasTextLayer oldText, CanvasTextLayer next, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
