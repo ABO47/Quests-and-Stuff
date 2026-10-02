@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
@@ -71,6 +72,13 @@ public final class AssetLibrary {
             return null;
         }
         return GameTextureCache.modeTexture(ref, mode, leftEdge, rightEdge, topEdge, bottomEdge);
+    }
+
+    public static ItemStack gameItemStack(String ref) {
+        if (!GameTextureCache.isGameRef(ref)) {
+            return null;
+        }
+        return GameTextureCache.gameStack(ref);
     }
 
     public static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {

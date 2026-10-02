@@ -16,10 +16,12 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -193,6 +195,15 @@ final class ConnectionPainter {
             glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
+        ItemStack gameStack = AssetLibrary.gameItemStack(rawTextureStr);
+        if (gameStack != null && !gameStack.isEmpty()) {
+            float progress = animation.running() ? animation.progress() : 1.0f;
+            int itemAlpha = animation.running()
+                    ? Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())))
+                    : alpha;
+            drawItemChevrons(graphics, path, gameStack, itemAlpha, progress, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+            return;
+        }
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
@@ -290,6 +301,9 @@ final class ConnectionPainter {
         ResourceLocation parsed = ResourceLocation.tryParse(textureStr);
         if (parsed != null && parsed.getNamespace().equals(QuestsAndStuffMod.MODID)) {
             return parsed;
+        }
+        if (AssetLibrary.gameItemStack(textureStr) != null) {
+            return null;
         }
         java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
         try {
@@ -407,6 +421,46 @@ final class ConnectionPainter {
         tessellator.end();
         RenderSystem.disableBlend();
         setChevronTextureFilter(tex, GL11.GL_NEAREST);
+    }
+
+    private static void drawItemChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            ItemStack stack,
+            int alpha,
+            float progress,
+            int customSpacing,
+            int glyphW,
+            int glyphH,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : (double) DEFAULT_SPACING);
+        double totalLength = pathLength(path);
+        if (totalLength < glyphW) {
+            return;
+        }
+        double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, progress)));
+        List<ChevronGlyph> glyphs = chevronGlyphs(path, 0xFFFFFF, alpha, visibleLength, glyphW, glyphH, spacing, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        if (glyphs.isEmpty()) {
+            return;
+        }
+        int size = Math.max(1, Math.min(glyphW, glyphH));
+        for (ChevronGlyph glyph : glyphs) {
+            graphics.pose().pushPose();
+            graphics.pose().translate((float) (glyph.x() - size / 2.0), (float) (glyph.y() - size / 2.0), 0.0f);
+            graphics.pose().scale(size / 16.0f, size / 16.0f, 1.0f);
+            DrawerHelper.drawItemStack(graphics, stack, 0, 0, -1, null);
+            graphics.pose().popPose();
+        }
+        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     private static double pathLength(List<CanvasPoint> path) {
