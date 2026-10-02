@@ -22,6 +22,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.root.TabletRootHitTest;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
@@ -50,6 +51,12 @@ final class CanvasViewportClickController {
     ) {
         if (!canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
+        }
+        if (TabletRootHitTest.isInsideChapterPanel(state,
+                TabletWidgetCoordinates.rootX(canvasViewport),
+                TabletWidgetCoordinates.rootY(canvasViewport),
+                mouseX, mouseY)) {
+            return false;
         }
         int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
         int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);

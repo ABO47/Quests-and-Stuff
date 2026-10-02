@@ -249,7 +249,7 @@ final class CanvasSceneRenderer {
             return;
         }
         CompoundTag tag = card.tag();
-        WidgetGroup cardLayer = new QuestHoverExpand(card.x(), card.y(), card.width(), card.height(), card.questId());
+        WidgetGroup cardLayer = new QuestHoverExpand(card.x(), card.y(), card.width(), card.height(), card.questId(), state);
         QuestCardLayout localCard = localCard(card);
         float progress = QuestCardBackgroundRenderer.questProgress(tag);
         boolean customBackground = QuestCardBackgroundRenderer.renderWidgetBackground(cardLayer, localCard.x(), localCard.y(), localCard.width(), localCard.height(), tag, progress);
@@ -296,8 +296,8 @@ final class CanvasSceneRenderer {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
-        cardLayer.addWidget(CanvasGlowEffect.overlay(0, 0, card.width(), card.height()));
-        addQuestTooltipHit(cardLayer, localCard);
+        cardLayer.addWidget(CanvasGlowEffect.overlay(0, 0, card.width(), card.height(), state));
+        addQuestTooltipHit(cardLayer, localCard, state);
     }
 
     private static QuestCardLayout localCard(QuestCardLayout card) {
@@ -477,7 +477,7 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new DisplayIconWidget(iconX, iconY, iconSize, iconSize, icon));
     }
 
-    private static void addQuestTooltipHit(WidgetGroup canvasViewport, QuestCardLayout card) {
+    private static void addQuestTooltipHit(WidgetGroup canvasViewport, QuestCardLayout card, TabletUiState state) {
         CompoundTag tag = card.tag();
         String title = tag.getString("title");
         if (title == null || title.isBlank()) {
@@ -487,7 +487,13 @@ final class CanvasSceneRenderer {
         Component status = ClientQuestStateFacade.questLockedPreview(tag)
                 ? Component.translatable("ui.questsandstuff.quest.locked")
                 : Component.literal(progress + "%");
-        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), SurfaceFactory.transparentFill(), click -> {});
+        ButtonWidget hit = new ButtonWidget(card.x(), card.y(), card.width(), card.height(), SurfaceFactory.transparentFill(), click -> {}) {
+            @Override
+            public boolean isMouseOverElement(double mouseX, double mouseY) {
+                return super.isMouseOverElement(mouseX, mouseY)
+                        && CanvasInteractionGate.hoverAllowed(state, this, mouseX, mouseY);
+            }
+        };
         hit.setClientSideWidget();
         hit.setHoverTexture(SurfaceFactory.transparentFill());
         hit.setClickedTexture(SurfaceFactory.transparentFill());

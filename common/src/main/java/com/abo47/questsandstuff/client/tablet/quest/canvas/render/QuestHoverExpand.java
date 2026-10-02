@@ -11,6 +11,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasInteractionGate;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestHoverExpand extends WidgetGroup {
     private static final long HOVER_MS = 150L;
@@ -18,10 +20,12 @@ public final class QuestHoverExpand extends WidgetGroup {
     private static final Map<String, HoverMotion> PROGRESS = new LinkedHashMap<>();
 
     private final String questId;
+    private final TabletUiState state;
 
-    public QuestHoverExpand(int x, int y, int w, int h, String questId) {
+    public QuestHoverExpand(int x, int y, int w, int h, String questId, TabletUiState state) {
         super(x, y, w, h);
         this.questId = questId == null ? "" : questId;
+        this.state = state;
     }
 
     @Override
@@ -73,7 +77,8 @@ public final class QuestHoverExpand extends WidgetGroup {
         if (percent <= 0) {
             return 1.0f;
         }
-        float amount = progress(isMouseOverElement(mouseX, mouseY));
+        float amount = progress(isMouseOverElement(mouseX, mouseY)
+                && CanvasInteractionGate.hoverAllowed(state, this, mouseX, mouseY));
         if (amount <= 0.001f) {
             return 1.0f;
         }

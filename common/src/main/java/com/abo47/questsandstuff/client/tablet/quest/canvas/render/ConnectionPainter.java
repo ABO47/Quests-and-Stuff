@@ -22,11 +22,13 @@ import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasInteractionGate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -70,7 +72,7 @@ final class ConnectionPainter {
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
+                    drawConnection(graphics, originX, originY, state, this, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
                 }
             }
         });
@@ -131,6 +133,7 @@ final class ConnectionPainter {
             int originX,
             int originY,
             TabletUiState state,
+            Widget view,
             ConnectionLine line,
             int mouseX,
             int mouseY,
@@ -166,7 +169,7 @@ final class ConnectionPainter {
                 sourceOffsetY,
                 targetOffsetX,
                 targetOffsetY
-        );
+        ) && CanvasInteractionGate.hoverAllowed(state, view, mouseX, mouseY);
         if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
             return;
         }
