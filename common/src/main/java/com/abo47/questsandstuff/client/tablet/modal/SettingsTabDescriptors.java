@@ -286,7 +286,7 @@ public final class SettingsTabDescriptors {
                         QuestsAndStuffConfig.MAX_QUEST_HOVER_EXPAND_PERCENT,
                         3,
                         false,
-                        "ui.questsandstuff.settings.percent_unit"
+                        ""
                 )
         );
     }
