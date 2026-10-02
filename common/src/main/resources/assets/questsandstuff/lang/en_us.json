@@ -254,7 +254,7 @@
   "ui.questsandstuff.settings.quest_hover_expand_animations": "Quest Hover Expand",
   "ui.questsandstuff.settings.quest_hover_expand_animations_desc": "Enlarge quest cards when hovering them.",
   "ui.questsandstuff.settings.quest_hover_expand_percent": "Quest Hover Expand Size.",
-  "ui.questsandstuff.settings.quest_hover_expand_percent_desc": "How much bigger a hovered quest card grows. Range 0 - 100%%.",
+  "ui.questsandstuff.settings.quest_hover_expand_percent_desc": "How much bigger a hovered quest card grows.",
   "ui.questsandstuff.settings.requires_global": "Also requires Animations to be enabled.",
   "ui.questsandstuff.settings.restart_not_required": "No restart required",
   "ui.questsandstuff.settings.restart_required": "Requires restart",

@@ -129,6 +129,9 @@ public final class ColorPickerApplyActions {
             state.pickers.colorPickerTarget = "";
             return;
         }
+        if (target.raw().isBlank()) {
+            return;
+        }
         TabletUiFactory.runChapterAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
     }
 

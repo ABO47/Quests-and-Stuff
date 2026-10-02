@@ -10,7 +10,9 @@
     "questWindowAnimations": true,
     "popupWindowAnimations": true,
     "connectionAnimations": true,
-    "chapterSwitchAnimations": true
+    "chapterSwitchAnimations": true,
+    "questHoverExpandAnimations": true,
+    "questHoverExpandPercent": 25
   },
   "canvas": {
     "fullScreenMode": false,
@@ -40,5 +42,11 @@
     "protectFire": true,
     "maxClaimedChunks": 100,
     "maxForceLoadedChunks": 100
+  },
+  "itemLocks": {
+    "blockUse": false,
+    "blockPickup": false,
+    "blockEquip": false,
+    "lockedTooltips": true
   }
 }

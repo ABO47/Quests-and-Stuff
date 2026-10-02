@@ -14,6 +14,8 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.clearAllModalTargets;
+import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.clearBlueprintCodeState;
 import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.openModal;
 
 public final class ModalOpenActions {
@@ -292,11 +294,7 @@ public final class ModalOpenActions {
     private static void resetAssetPicker(TabletUiState state) {
         state.pickers.assetContextOpen = false;
         state.pickers.assetRenameOpen = false;
-        state.modal.blueprintCodeOpen = false;
-        state.modal.blueprintCodeImportMode = false;
-        state.modal.blueprintCodeTarget = "";
-        state.modal.blueprintCodeDraft = "";
-        state.modal.blueprintCodeMessage = "";
+        clearBlueprintCodeState(state);
         state.pickers.assetBrowseDir = "";
         state.pickers.assetPickerSessionFresh = true;
         ModalPickerStates.asset(state).reset();
@@ -354,38 +352,9 @@ public final class ModalOpenActions {
 
     private static void openPickerModal(TabletUiState state, ModalWindowManager.ModalType type, Runnable configure) {
         closeBeforeOpen(state);
-        clearModalOpenTargets(state);
+        clearAllModalTargets(state);
         configure.run();
         openModal(state, type);
-    }
-
-    private static void clearModalOpenTargets(TabletUiState state) {
-        state.modal.modalQuestTarget = "";
-        state.modal.modalChapterTarget = "";
-        state.questDetails.questDetailsPickTarget = "";
-        state.questDetails.questDetailsAssetPickTarget = "";
-        state.modal.modalCanvasBackgroundTarget = "";
-        state.modal.modalCanvasImageTarget = "";
-        state.modal.modalCanvasEntityTarget = "";
-        state.modal.modalCanvasModelTarget = "";
-        state.modal.modalBlueprintTarget = "";
-        state.modal.modalQuestBackgroundTarget = "";
-        state.modal.modalQuestBackgroundTargets.clear();
-        state.modal.modalQuestBackgroundGrayscale = false;
-        state.modal.modalQuestCompletionHudBackgroundTarget = "";
-        state.modal.modalQuestCompletionHudBackgroundTargets.clear();
-        state.modal.modalEcBackgroundTarget = "";
-        state.modal.modalHudBackgroundTarget = "";
-        state.modal.modalHudBackgroundOpacityDragging = false;
-        state.modal.modalQuestCompletionSoundTarget = "";
-        state.modal.modalQuestCompletionSoundTargets.clear();
-        state.modal.modalConnectionTextureTarget = "";
-        state.modal.modalConnectionTextureChapterTargets.clear();
-        state.pickers.entityVariantTarget = "";
-        state.pickers.entityVariantSelected = "";
-        state.pickers.entityVariantFolder = "";
-        state.pickers.colorPickerTarget = "";
-        state.modal.prerequisitesManagerQuestId = "";
     }
 
     private static void setCanvasPickPoint(TabletUiState state, int logicalX, int logicalY) {
@@ -432,7 +401,5 @@ public final class ModalOpenActions {
         state.questDetails.questDetailsContextScroll = 0;
         state.questDetails.questDetailsContextScrollMax = 0;
         state.modal.prerequisitesManagerContextOpen = false;
-        state.pickers.assetContextOpen = false;
-        state.pickers.colorPaletteContextOpen = false;
     }
 }

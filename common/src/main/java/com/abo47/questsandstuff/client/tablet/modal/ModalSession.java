@@ -112,10 +112,13 @@ public final class ModalSession {
         setTarget(TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
         setTarget(TargetSlot.ENTITY_VARIANT, state.pickers.entityVariantTarget);
         setTarget(TargetSlot.COLOR_PICKER, state.pickers.colorPickerTarget);
+        setTarget(TargetSlot.EC_BACKGROUND, state.modal.modalEcBackgroundTarget);
+        setTarget(TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
         setTarget(TargetSlot.PREREQUISITES_MANAGER, state.modal.prerequisitesManagerQuestId);
         setTargetSet(TargetSetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets);
         setTargetSet(TargetSetSlot.QUEST_COMPLETION_HUD_BACKGROUND, state.modal.modalQuestCompletionHudBackgroundTargets);
         setTargetSet(TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
+        setTargetSet(TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
     }
 
     public void capturePickerState(TabletUiState state) {
@@ -195,13 +198,16 @@ public final class ModalSession {
         QUEST_COMPLETION_SOUND,
         ENTITY_VARIANT,
         COLOR_PICKER,
+        EC_BACKGROUND,
+        CONNECTION_TEXTURE,
         PREREQUISITES_MANAGER
     }
 
     public enum TargetSetSlot {
         QUEST_BACKGROUND,
         QUEST_COMPLETION_HUD_BACKGROUND,
-        QUEST_COMPLETION_SOUND
+        QUEST_COMPLETION_SOUND,
+        CONNECTION_TEXTURE_CHAPTERS
     }
 
     public static final class PickerSession {

@@ -30,7 +30,7 @@ public final class ChromeFactory {
 
         ButtonWidget btn = new ButtonWidget(x, y, w, h, iconTexture, callback);
         btn.setClientSideWidget();
-        btn.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(btn);
         btn.setClickedTexture((graphics, mouseX, mouseY, x0, y0, width, height) -> {
             int ac = activeColor.getAsInt();
             SurfaceFactory.fill(TabletColors.pressedFill(ac)).draw(graphics, mouseX, mouseY, x0, y0, width, height);

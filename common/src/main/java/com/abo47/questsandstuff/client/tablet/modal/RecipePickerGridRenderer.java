@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -122,46 +123,31 @@ final class RecipePickerGridRenderer {
         } else {
             surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
         }
-        ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
-            if (!entry.value().isBlank()) {
-                RecipePickerApplyActions.applyRecipePick(player, state, entry.value(), refresh);
-            }
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind={} value={} recipes={}", entry.tag() ? "tag" : "output", entry.value(), entry.recipeIds());
-        }) {
-            @Override
-            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-                if (isMouseOverElement(mouseX, mouseY)) {
-                    RecipePickerApplyActions.trackRecipeHover(state, entry.value());
-                }
-            }
-        };
-        hit.setHoverTooltips(entry.tooltip());
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
-        hit.setClientSideWidget();
-        surface.addWidget(hit);
+        addHoverHit(surface, player, state, refresh, x, y, entry.value(), entry.tooltip(), entry.tag() ? "tag" : "output");
     }
 
     private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry));
+        addHoverHit(surface, player, state, refresh, x, y, entry, TabletModalPanel.iconTooltip(entry), "fluid");
+    }
+
+    private static void addHoverHit(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, int x, int y, String value, Component[] tooltip, String logKind) {
         ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
-            if (entry != null && !entry.isBlank()) {
-                RecipePickerApplyActions.applyRecipePick(player, state, entry, refresh);
+            if (value != null && !value.isBlank()) {
+                RecipePickerApplyActions.applyRecipePick(player, state, value, refresh);
             }
-            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind=fluid value={}", entry);
+            QuestsAndStuffMod.debugLog("[QnS:UI] recipe picked kind={} value={}", logKind, value);
         }) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
                 if (isMouseOverElement(mouseX, mouseY)) {
-                    RecipePickerApplyActions.trackRecipeHover(state, entry);
+                    RecipePickerApplyActions.trackRecipeHover(state, value);
                 }
             }
         };
-        hit.setHoverTooltips(TabletModalPanel.iconTooltip(entry));
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit, tooltip);
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);

@@ -26,7 +26,7 @@ class SettingsTabDescriptorsTest {
     @Test
     void invalidTabFallsBackToThemes() {
         assertEquals(SettingsTabDescriptors.THEMES, SettingsTabDescriptors.activeTab(-99));
-        assertTrue(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.THEMES).themePicker());
+        assertEquals("themes", SettingsTabDescriptors.descriptor(-99).logName());
     }
 
     @Test
@@ -57,7 +57,9 @@ class SettingsTabDescriptorsTest {
                         "questWindowAnimations",
                         "popupWindowAnimations",
                         "connectionAnimations",
-                        "chapterSwitchAnimations"
+                        "chapterSwitchAnimations",
+                        "questHoverExpandAnimations",
+                        "questHoverExpandPercent"
                 ),
                 optionIds(SettingsTabDescriptors.descriptor(SettingsTabDescriptors.ANIMATIONS).options(state))
         );

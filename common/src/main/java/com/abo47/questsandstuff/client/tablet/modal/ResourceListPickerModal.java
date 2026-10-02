@@ -66,8 +66,7 @@ final class ResourceListPickerModal {
             closeAll(state);
             refresh.run();
         });
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-        hit.setHoverTooltips(PickerTooltips.nameAndId(options.displayName().value(entry), entry));
+        GlowShaderHelper.glowHit(hit, PickerTooltips.nameAndId(options.displayName().value(entry), entry));
         list.addWidget(hit);
     }
 

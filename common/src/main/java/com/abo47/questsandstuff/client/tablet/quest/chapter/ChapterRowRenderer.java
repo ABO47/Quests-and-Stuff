@@ -173,7 +173,7 @@ final class ChapterRowRenderer {
             refresh.run();
         });
         rowHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
-        if (!collapsed) rowHit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        if (!collapsed) GlowShaderHelper.glowHit(rowHit);
         chapterList.addWidget(rowHit);
     }
 

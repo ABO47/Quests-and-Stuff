@@ -18,12 +18,18 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
 public final class TabletRootWindowController {
     private TabletRootWindowController() {
     }
 
     public static boolean closeFrontmostWindow(TabletUiState state) {
+        if (state.modal.blueprintCodeOpen) {
+            TabletModalState.clearBlueprintCodeState(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed blueprint code overlay");
+            return true;
+        }
         if (isAnyModalOpen(state)) {
             ModalCloseActions.closeAll(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed modals");

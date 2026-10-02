@@ -35,6 +35,7 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -510,7 +511,7 @@ public class ChunkMapWidget extends Widget {
                 int hpyLocal = ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 int fx = baseX + hpxLocal + (cell + 1) / 2;
                 int fy = baseY + hpyLocal + (cell + 1) / 2;
-                com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.drawGlow(
+                GlowShaderHelper.drawGlow(
                         graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell + 1, cell + 1, TabletColors.BORDER_ACCENT);
                 int chunkX = cx + dx;
                 int chunkZ = cz + dz;

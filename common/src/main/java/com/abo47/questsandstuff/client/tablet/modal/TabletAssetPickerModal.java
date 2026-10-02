@@ -319,7 +319,7 @@ public final class TabletAssetPickerModal {
                 }
                 refresh.run();
             });
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+            GlowShaderHelper.glowHit(hit);
             surface.addWidget(hit);
                 });
 
@@ -518,8 +518,8 @@ public final class TabletAssetPickerModal {
 
     private static void commitConnectionTextureSpacing(Player player, TabletUiState state, Runnable refresh) {
         int spacing = state.pickers.connectionTextureSpacingDraft;
-        String target = state.modal.modalConnectionTextureTarget;
-        java.util.Set<String> chapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        String target = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
+        java.util.Set<String> chapterTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
         if (!chapterTargets.isEmpty()) {
             String[] parts = target.split("\\|");
             String chapter = parts.length >= 2 ? parts[1] : "";

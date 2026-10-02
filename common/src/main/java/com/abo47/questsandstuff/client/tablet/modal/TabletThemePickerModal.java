@@ -118,8 +118,7 @@ public final class TabletThemePickerModal {
                 refresh.run();
             }
         });
-        hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit, Component.literal(theme.label()));
         list.addWidget(hit);
     }
 
@@ -150,8 +149,7 @@ public final class TabletThemePickerModal {
                 refresh.run();
             }
         });
-        hit.setHoverTooltips(new Component[]{Component.literal(theme.label())});
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit, Component.literal(theme.label()));
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(theme.accent(), 64)));
         list.addWidget(hit);
     }

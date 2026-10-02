@@ -211,8 +211,7 @@ public final class TabletIconPickerModal {
                     }
                     refresh.run();
                 });
-                hit.setHoverTooltips(TabletModalPanel.iconTooltip(previewIcon));
-                hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+                GlowShaderHelper.glowHit(hit, TabletModalPanel.iconTooltip(previewIcon));
                 hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });

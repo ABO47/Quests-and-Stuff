@@ -139,7 +139,7 @@ public final class AssetPickerApplyActions {
             addCanvasImage(state, imageTarget, background);
             return;
         }
-        String ecTarget = state.modal.modalEcBackgroundTarget;
+        String ecTarget = ModalTargetState.target(state, ModalSession.TargetSlot.EC_BACKGROUND, state.modal.modalEcBackgroundTarget);
         if (!ecTarget.isBlank()) {
             String[] parts = ecTarget.split(":", 2);
             if (parts.length == 2) {
@@ -168,8 +168,8 @@ public final class AssetPickerApplyActions {
             TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, newOverride.encode(), 0);
             return;
         }
-        String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
-        java.util.Set<String> connectionTextureChapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        String connectionTextureTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
+        java.util.Set<String> connectionTextureChapterTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
         if (!connectionTextureChapterTargets.isEmpty()) {
             String chapter = !connectionTextureTarget.isBlank() && connectionTextureTarget.startsWith("connection|")
                     ? connectionTextureTarget.split("\\|")[1] : "";
