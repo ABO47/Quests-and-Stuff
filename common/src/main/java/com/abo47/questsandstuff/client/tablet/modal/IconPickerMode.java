@@ -8,6 +8,7 @@ public enum IconPickerMode {
     USABLE_ITEMS("usable_items", "send-horizontal"),
     ITEMS("items", "mode_items"),
     TAGS("tags", "mode_tags"),
+    BLOCKS("blocks", "brick-wall"),
     FLUIDS("fluids", "mode_fluids"),
     ENTITIES("entities", "entity"),
     INVENTORY("inventory", "mode_inventory");
@@ -19,6 +20,7 @@ public enum IconPickerMode {
     private static final IconPickerMode[] GENERAL_WITH_ENTITY_CYCLE = {ITEMS, TAGS, FLUIDS, ENTITIES};
     private static final IconPickerMode[] GENERAL_WITH_INVENTORY_CYCLE = {ITEMS, TAGS, FLUIDS, INVENTORY};
     private static final IconPickerMode[] GENERAL_WITH_ENTITY_AND_INVENTORY_CYCLE = {ITEMS, TAGS, FLUIDS, ENTITIES, INVENTORY};
+    private static final IconPickerMode[] BACKGROUND_CYCLE = {ITEMS, TAGS, BLOCKS};
 
     private final String logName;
     private final String icon;
@@ -38,6 +40,10 @@ public enum IconPickerMode {
 
     boolean showingTags() {
         return this == TAGS;
+    }
+
+    boolean showingBlocks() {
+        return this == BLOCKS;
     }
 
     boolean showingFluids() {
@@ -95,6 +101,29 @@ public enum IconPickerMode {
         if (state != null) {
             state.pickers.iconMode = normalize(state.pickers.iconMode, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         }
+    }
+
+    static IconPickerMode[] gameBackgroundCycle() {
+        return BACKGROUND_CYCLE;
+    }
+
+    static void normalizeForBackground(TabletUiState state) {
+        if (state == null) {
+            return;
+        }
+        IconPickerMode current = safe(state.pickers.iconMode);
+        if (current != ITEMS && current != TAGS && current != BLOCKS) {
+            state.pickers.iconMode = ITEMS;
+        }
+    }
+
+    static void cycleBackground(TabletUiState state, int direction) {
+        if (state == null) {
+            return;
+        }
+        normalizeForBackground(state);
+        state.pickers.iconMode = cycleIn(safe(state.pickers.iconMode), direction, BACKGROUND_CYCLE);
+        state.pickers.iconScroll = 0;
     }
 
     static void cycleModelItems(TabletUiState state, int direction) {
@@ -161,7 +190,7 @@ public enum IconPickerMode {
             }
             return current == INVENTORY && supportsInventoryIcons ? INVENTORY : USABLE_ITEMS;
         }
-        if (current == USABLE_ITEMS) {
+        if (current == USABLE_ITEMS || current == BLOCKS) {
             return ITEMS;
         }
         if (current == ENTITIES && !supportsEntityIcons) {

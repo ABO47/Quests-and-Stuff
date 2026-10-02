@@ -99,6 +99,7 @@ public final class ModalSession {
         targetSets.clear();
         setTarget(TargetSlot.QUEST, state.modal.modalQuestTarget);
         setTarget(TargetSlot.CHAPTER, state.modal.modalChapterTarget);
+        setTarget(TargetSlot.ASSET_ICON, state.modal.modalAssetIconTarget);
         setTarget(TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         setTarget(TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget);
         setTarget(TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
@@ -185,6 +186,7 @@ public final class ModalSession {
     public enum TargetSlot {
         QUEST,
         CHAPTER,
+        ASSET_ICON,
         QUEST_DETAILS_PICK,
         QUEST_DETAILS_ASSET_PICK,
         CANVAS_BACKGROUND,

@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
@@ -46,6 +47,14 @@ final class QuestDetailsDescriptionEditActions {
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
         QuestDetailsWindow.openAssetPicker(state, ModalTargets.descImageNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add image pending quest={} image={} pos={},{}", questId, id, x, y);
+    }
+
+    static void addGameImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+        String id = nextDescriptionImageId(modelForQuest(questId));
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 40);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
+        ModalOpenActions.openQuestDetailsGameTexturePicker(state, ModalTargets.descImageNew(questId, id, Math.max(0, x), Math.max(0, y)));
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details add game image pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
     static void addEntityAt(TabletUiState state, String questId, int panelX, int panelY) {

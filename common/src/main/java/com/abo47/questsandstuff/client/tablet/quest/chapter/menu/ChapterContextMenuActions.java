@@ -73,6 +73,15 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
+    public static void changeAssetIcon(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        ModalOpenActions.openChapterAssetIconPicker(state, target);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
     public static void changeVariant(TabletUiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
@@ -110,6 +119,15 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
+    public static void changeGameBackground(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        ModalOpenActions.openChapterGameTexturePicker(state, target);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
     public static void removeBackground(Player player, TabletUiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
@@ -128,6 +146,19 @@ public final class ChapterContextMenuActions {
         }
         String currentBackground = firstQuestCompletionHud(questIds);
         ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(state, questIds, currentBackground);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeGameCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        ModalOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, questIds);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -174,6 +205,24 @@ public final class ChapterContextMenuActions {
             return;
         }
         ModalOpenActions.openChapterConnectionTexturePicker(state, target, targets);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeGameConnectionTexture(TabletUiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        List<String> targets = new java.util.ArrayList<>();
+        targets.addAll(questIds);
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {
+            targets.add(ec.id());
+        }
+        if (targets.isEmpty()) {
+            return;
+        }
+        ModalOpenActions.openChapterConnectionGameTexturePicker(state, target, targets);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }

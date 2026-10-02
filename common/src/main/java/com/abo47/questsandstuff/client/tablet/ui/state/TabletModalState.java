@@ -128,6 +128,8 @@ public final class TabletModalState {
     public static void clearAllModalTargets(TabletUiState state) {
         state.modal.modalQuestTarget = "";
         state.modal.modalChapterTarget = "";
+        state.modal.modalAssetIconTarget = "";
+        state.modal.modalGameTexturePick = false;
         state.questDetails.questDetailsPickTarget = "";
         state.questDetails.questDetailsAssetPickTarget = "";
         state.modal.modalCanvasBackgroundTarget = "";

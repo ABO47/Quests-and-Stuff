@@ -52,6 +52,9 @@ public final class AssetLibrary {
     }
 
     public static AssetKind assetKind(String relativePath) {
+        if (GameTextureCache.isGameRef(relativePath)) {
+            return AssetKind.IMAGE;
+        }
         return AssetPathResolver.assetKind(relativePath, false);
     }
 
@@ -61,6 +64,13 @@ public final class AssetLibrary {
 
     public static IGuiTexture assetThumbnailTexture(Path assetsRoot, String relativePath) {
         return AssetTextureCache.assetThumbnailTexture(assetsRoot, relativePath);
+    }
+
+    public static IGuiTexture gameBackgroundTexture(String ref, String mode, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
+        if (!GameTextureCache.isGameRef(ref)) {
+            return null;
+        }
+        return GameTextureCache.modeTexture(ref, mode, leftEdge, rightEdge, topEdge, bottomEdge);
     }
 
     public static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {

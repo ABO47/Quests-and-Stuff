@@ -164,10 +164,16 @@ public final class QuestDetailsDescriptionMenus {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addTextAt(player, state, questId, model, x, y);
         }));
-        addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_IMAGE), "image", TabletColors.SUCCESS, () -> {
-            ContextMenuController.clearDeleteConfirm(state);
-            QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
-        }));
+        addActions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_IMAGE), "image", TabletColors.SUCCESS, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.SUCCESS, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
+                }),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.SUCCESS, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsDescriptionPanel.addGameImageAt(state, questId, x, y);
+                })
+        )));
         addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_ENTITY), "entity", TabletColors.SUCCESS, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addEntityAt(state, questId, x, y);
@@ -187,10 +193,16 @@ public final class QuestDetailsDescriptionMenus {
             }));
         }
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, () -> {
-            ContextMenuController.clearDeleteConfirm(state);
-            ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
+                }),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ModalOpenActions.openQuestDetailsGameTexturePicker(state, ModalTargets.descBackground(questId));
+                })
+        )));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
             SkinFillOverride parsed = BackgroundModes.decode(model.canvasBackground);
             String currentMode = parsed != null ? parsed.mode() : "stretch";

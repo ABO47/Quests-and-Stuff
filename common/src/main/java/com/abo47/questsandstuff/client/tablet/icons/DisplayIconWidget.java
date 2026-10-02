@@ -16,6 +16,7 @@ import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.visual.VisualRef;
 
 public final class DisplayIconWidget extends WidgetGroup {
     private final String iconId;
@@ -66,6 +67,11 @@ public final class DisplayIconWidget extends WidgetGroup {
 
     private static void drawIconContent(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, String iconId, float partialTicks) {
         String safeIconId = iconId == null ? "" : iconId;
+        IGuiTexture assetIcon = VisualRef.assetIconTexture(safeIconId);
+        if (assetIcon != null) {
+            assetIcon.draw(graphics, mouseX, mouseY, x, y, width, height);
+            return;
+        }
         ResourceTexture uiIcon = IconAtlas.iconTexture(safeIconId);
         if (uiIcon != null) {
             uiIcon.draw(graphics, mouseX, mouseY, x, y, width, height);

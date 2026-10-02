@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -150,6 +151,15 @@ public final class DisplayIconProvider {
             return searchableTagEntries(rawQuery, query, false);
         }
         return searchableItemEntries(rawQuery, query, DisplayIconProvider::isUsableItem);
+    }
+
+    public static List<String> searchableBlockEntries(String filter) {
+        String rawQuery = SearchFilter.normalizeUserInput(filter);
+        String query = SearchFilter.normalizeKey(rawQuery);
+        if (rawQuery.startsWith("#")) {
+            return searchableTagEntries(rawQuery, query, false);
+        }
+        return searchableItemEntries(rawQuery, query, item -> item instanceof BlockItem);
     }
 
     public static List<String> searchableFluidEntries(String filter) {

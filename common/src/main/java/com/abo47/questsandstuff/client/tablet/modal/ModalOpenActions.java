@@ -44,6 +44,91 @@ public final class ModalOpenActions {
         });
     }
 
+    public static void openQuestDetailsAssetIconPicker(TabletUiState state, String target) {
+        openAssetPickerSession(state, "", () -> state.questDetails.questDetailsPickTarget = clean(target));
+    }
+
+    public static void openChapterAssetIconPicker(TabletUiState state, String chapter) {
+        openAssetPickerSession(state, "", () -> state.modal.modalAssetIconTarget = ModalTargets.chapterIcon(chapter));
+    }
+
+    public static void openQuestAssetIconPicker(TabletUiState state, String questId) {
+        openAssetPickerSession(state, "", () -> state.modal.modalAssetIconTarget = ModalTargets.questIcon(questId));
+    }
+
+    public static void openQuestDetailsGameTexturePicker(TabletUiState state, String target) {
+        openGameTexturePickerSession(state, () -> state.questDetails.questDetailsAssetPickTarget = clean(target));
+    }
+
+    public static void openQuestGameTexturePicker(TabletUiState state, String questId, boolean grayscale) {
+        openGameTexturePickerSession(state, () -> {
+            state.modal.modalQuestBackgroundTarget = clean(questId);
+            state.modal.modalQuestBackgroundGrayscale = grayscale;
+        });
+    }
+
+    public static void openBatchQuestGameTexturePicker(TabletUiState state, Collection<String> questIds, boolean grayscale) {
+        Set<String> targets = normalizedTargets(questIds);
+        openGameTexturePickerSession(state, () -> {
+            state.modal.modalQuestBackgroundTargets.addAll(targets);
+            state.modal.modalQuestBackgroundGrayscale = grayscale;
+        });
+    }
+
+    public static void openQuestCompletionHudGameTexturePicker(TabletUiState state, String questId) {
+        openGameTexturePickerSession(state, () -> state.modal.modalQuestCompletionHudBackgroundTarget = clean(questId));
+    }
+
+    public static void openBatchQuestCompletionHudGameTexturePicker(TabletUiState state, Collection<String> questIds) {
+        Set<String> targets = normalizedTargets(questIds);
+        openGameTexturePickerSession(state, () -> state.modal.modalQuestCompletionHudBackgroundTargets.addAll(targets));
+    }
+
+    public static void openChapterGameTexturePicker(TabletUiState state, String chapter) {
+        openGameTexturePickerSession(state, () -> state.modal.modalChapterTarget = clean(chapter));
+    }
+
+    public static void openCanvasGameTexturePicker(TabletUiState state, String chapter) {
+        openGameTexturePickerSession(state, () -> state.modal.modalCanvasBackgroundTarget = clean(chapter));
+    }
+
+    public static void openEcGameTexturePicker(TabletUiState state, String chapter, String ecId) {
+        openGameTexturePickerSession(state, () -> state.modal.modalEcBackgroundTarget = chapter + ":" + ecId);
+    }
+
+    public static void openCanvasImageGameTexturePicker(TabletUiState state, String chapter, int logicalX, int logicalY) {
+        openGameTexturePickerSession(state, () -> {
+            state.modal.modalCanvasImageTarget = clean(chapter);
+            setCanvasPickPoint(state, logicalX, logicalY);
+        });
+    }
+
+    public static void openConnectionGameTexturePicker(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        openGameTexturePickerSession(state, () -> {
+            state.modal.modalConnectionTextureTarget = ModalTargets.connection(chapter, sourceQuestId, targetQuestId);
+        });
+    }
+
+    public static void openConnectionGameTexturePicker(TabletUiState state, String target) {
+        openGameTexturePickerSession(state, () -> state.modal.modalConnectionTextureTarget = target);
+    }
+
+    public static void openChapterConnectionGameTexturePicker(TabletUiState state, String chapter, java.util.Collection<String> questIds) {
+        openGameTexturePickerSession(state, () -> {
+            state.modal.modalConnectionTextureTarget = ModalTargets.of(ModalTargets.CONNECTION, chapter, "", "");
+            state.modal.modalConnectionTextureChapterTargets.addAll(questIds);
+        });
+    }
+
+    private static void openGameTexturePickerSession(TabletUiState state, Runnable configure) {
+        openPickerModal(state, ModalWindowManager.ModalType.ICON_PICKER, () -> {
+            resetIconPicker(state);
+            IconPickerMode.normalizeForBackground(state);
+            configure.run();
+            state.modal.modalGameTexturePick = true;
+        });
+    }
+
     public static void openBiomePicker(TabletUiState state, String target) {
         openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.BIOME_PICKER, () -> ModalPickerStates.biome(state).reset());
     }

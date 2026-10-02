@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.visual.VisualRef;
 
 final class AssetPathResolver {
     private AssetPathResolver() {
@@ -32,10 +33,11 @@ final class AssetPathResolver {
     }
 
     static Path resolveAssetPath(Path assetsRoot, String relativePath) {
-        if (containsTraversal(relativePath) || containsIllegalPathCharacter(relativePath)) {
+        String target = VisualRef.isAssetRef(relativePath) ? VisualRef.assetPath(relativePath) : relativePath;
+        if (containsTraversal(target) || containsIllegalPathCharacter(target)) {
             return null;
         }
-        String rel = normalizeRelative(relativePath);
+        String rel = normalizeRelative(target);
         if (rel.isBlank()) {
             return null;
         }

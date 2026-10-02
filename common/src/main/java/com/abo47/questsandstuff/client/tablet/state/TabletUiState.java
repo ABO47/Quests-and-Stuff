@@ -141,6 +141,8 @@ public class TabletUiState {
         public boolean themeScrollDragging;
         public String modalChapterTarget = "";
         public String modalQuestTarget = "";
+        public String modalAssetIconTarget = "";
+        public boolean modalGameTexturePick;
         public String modalCanvasBackgroundTarget = "";
         public String modalEcBackgroundTarget = "";
         public String modalCanvasImageTarget = "";

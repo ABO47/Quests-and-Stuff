@@ -87,29 +87,51 @@ final class CanvasContextSelectionActions {
             if (totalCount > 1 && !questIds.isEmpty()) {
                 List<String> targets = new ArrayList<>(questIds);
                 CompoundTag first = firstQuest(targets);
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", TabletColors.INTERACTIVE, () -> {
-                    ContextMenuController.closeExclusiveSubmenus(state);
-                    ModalOpenActions.openBatchQuestBackgroundPicker(
-                            state,
-                            targets,
-                            first.getString("quest_background"),
-                            first.getBoolean("quest_background_grayscale")
-                    );
-                    ContextMenuController.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
-                    canvasViewport.refresh();
-                }));
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", TabletColors.INTERACTIVE, () -> {
-                    ContextMenuController.closeExclusiveSubmenus(state);
-                    ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(
-                            state,
-                            targets,
-                            first.getString("completion_hud_background")
-                    );
-                    ContextMenuController.clearDeleteConfirm(state);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background quests={}", targets.size());
-                    canvasViewport.refresh();
-                }));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            ModalOpenActions.openBatchQuestBackgroundPicker(
+                                    state,
+                                    targets,
+                                    first.getString("quest_background"),
+                                    first.getBoolean("quest_background_grayscale")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            ModalOpenActions.openBatchQuestGameTexturePicker(
+                                    state,
+                                    targets,
+                                    first.getBoolean("quest_background_grayscale")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background_game quests={}", targets.size());
+                            canvasViewport.refresh();
+                        })
+                )));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", TabletColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(
+                                    state,
+                                    targets,
+                                    first.getString("completion_hud_background")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background quests={}", targets.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            ModalOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, targets);
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background_game quests={}", targets.size());
+                            canvasViewport.refresh();
+                        })
+                )));
             }
         }
         if (totalCount > 1) {
@@ -122,11 +144,18 @@ final class CanvasContextSelectionActions {
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors chapter={} connections={}", selectedChapter, connectedConnections.size());
                     canvasViewport.refresh();
                 }));
-                sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
-                    ModalOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
-                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
-                    canvasViewport.refresh();
-                }));
+                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                            ModalOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                            ModalOpenActions.openConnectionGameTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures_game chapter={} connections={}", selectedChapter, connectedConnections.size());
+                            canvasViewport.refresh();
+                        })
+                )));
                 if (selectionHasConnectionTexture(state, selectedChapter, connectedConnections)) {
                     String selConnTexKey = "sel_remove_conn_tex:" + selectedChapter;
                     sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
@@ -499,11 +528,18 @@ final class CanvasContextSelectionActions {
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, finalPrimaryId);
         if (ec == null) return;
 
-        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openEcBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
-            ContextMenuController.close(state);
-            canvasViewport.refresh();
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openEcBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
+                    ContextMenuController.close(state);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openEcGameTexturePicker(state, selectedChapter, finalPrimaryId);
+                    ContextMenuController.close(state);
+                    canvasViewport.refresh();
+                })
+        )));
         if (!ec.background().isBlank()) {
             String selEcBgKey = "sel_remove_ec_bg:" + selectedChapter;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selEcBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {

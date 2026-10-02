@@ -10,6 +10,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -34,10 +35,16 @@ final class QuestTaskMenuSupport {
     }
 
     static void addVisualActions(List<ContextAction> actions, TabletUiState state, String questId, String taskId, boolean task) {
-        actions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "square_pen", TabletColors.INTERACTIVE, () -> {
-            ContextMenuController.clearDeleteConfirm(state);
-            QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, taskId) : ModalTargets.rewardIcon(questId, taskId));
-        }));
+        actions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "square_pen", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, taskId) : ModalTargets.rewardIcon(questId, taskId));
+                }),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ModalOpenActions.openQuestDetailsAssetIconPicker(state, task ? ModalTargets.taskIcon(questId, taskId) : ModalTargets.rewardIcon(questId, taskId));
+                })
+        )));
         addEntityIconActions(actions, state, questId, taskId, task);
     }
 

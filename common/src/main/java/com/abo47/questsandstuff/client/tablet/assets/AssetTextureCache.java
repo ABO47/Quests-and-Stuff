@@ -39,6 +39,9 @@ final class AssetTextureCache {
         if (background == null || background.isBlank() || "default".equals(background)) {
             return null;
         }
+        if (GameTextureCache.isGameRef(background)) {
+            return GameTextureCache.backgroundTexture(background, grayscale);
+        }
         AssetPathResolver.ensureAssetsDirs(assetsRoot);
         String cacheKey = textureCacheKey(background, grayscale);
         IGuiTexture cached = TEXTURE_CACHE.get(cacheKey);
@@ -61,6 +64,9 @@ final class AssetTextureCache {
     }
 
     static AssetLibrary.AssetDimensions assetDimensions(Path assetsRoot, String relativePath) {
+        if (GameTextureCache.isGameRef(relativePath)) {
+            return GameTextureCache.dimensions(relativePath);
+        }
         try {
             AssetPathResolver.ensureAssetsDirs(assetsRoot);
             Path path = AssetPathResolver.resolveAssetPath(assetsRoot, relativePath);
@@ -99,6 +105,9 @@ final class AssetTextureCache {
     static IGuiTexture assetThumbnailTexture(Path assetsRoot, String relativePath) {
         if (relativePath == null || relativePath.isBlank()) {
             return null;
+        }
+        if (GameTextureCache.isGameRef(relativePath)) {
+            return GameTextureCache.backgroundTexture(relativePath, false);
         }
         AssetPathResolver.ensureAssetsDirs(assetsRoot);
         IGuiTexture cached = THUMBNAIL_CACHE.get(relativePath);

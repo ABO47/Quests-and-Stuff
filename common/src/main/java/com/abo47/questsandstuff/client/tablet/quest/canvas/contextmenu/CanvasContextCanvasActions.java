@@ -67,12 +67,20 @@ final class CanvasContextCanvasActions {
             canvasViewport.refresh();
         }));
         List<ContextAction> addActions = new ArrayList<>();
-        addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_image"), "image", TabletColors.SUCCESS, () -> {
-            ModalOpenActions.openCanvasImagePicker(state, selectedChapter, state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
-            ContextMenuController.close(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_image chapter={} logical={},{}", selectedChapter, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
-            canvasViewport.refresh();
-        }));
+        addActions.add(ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.add_image"), "image", TabletColors.SUCCESS, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.SUCCESS, () -> {
+                    ModalOpenActions.openCanvasImagePicker(state, selectedChapter, state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
+                    ContextMenuController.close(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_image chapter={} logical={},{}", selectedChapter, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.SUCCESS, () -> {
+                    ModalOpenActions.openCanvasImageGameTexturePicker(state, selectedChapter, state.contextMenu.contextPointerLogicalX, state.contextMenu.contextPointerLogicalY);
+                    ContextMenuController.close(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_image_game chapter={} logical={},{}", selectedChapter, state.contextMenu.contextLogicalX, state.contextMenu.contextLogicalY);
+                    canvasViewport.refresh();
+                })
+        )));
         addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_text_box"), "text", TabletColors.SUCCESS, () -> {
             String id = StableIdAllocator.nextId("txt", canvasTextIds(state, selectedChapter));
             int textW = 96;
@@ -141,11 +149,18 @@ final class CanvasContextCanvasActions {
         }
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
 
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openCanvasBackgroundPicker(state, selectedChapter, ClientQuestStateFacade.chapterCanvasBackground(selectedChapter));
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg chapter={}", selectedChapter);
-            canvasViewport.refresh();
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_canvas_bg"), "background", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openCanvasBackgroundPicker(state, selectedChapter, ClientQuestStateFacade.chapterCanvasBackground(selectedChapter));
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg chapter={}", selectedChapter);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openCanvasGameTexturePicker(state, selectedChapter);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_canvas_bg_game chapter={}", selectedChapter);
+                    canvasViewport.refresh();
+                })
+        )));
         String currentCanvasBg = ClientQuestStateFacade.chapterCanvasBackground(selectedChapter);
         if (!currentCanvasBg.isBlank() && !"default".equals(currentCanvasBg)) {
             SkinFillOverride parsed = BackgroundModes.decode(currentCanvasBg);

@@ -88,6 +88,12 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
             return cached;
         }
 
+        IGuiTexture game = AssetLibrary.gameBackgroundTexture(path, mode, leftEdge, rightEdge, topEdge, bottomEdge);
+        if (game != null) {
+            CACHED.put(cacheKey, game);
+            return game;
+        }
+
         IGuiTexture tex;
         if ("tile".equals(mode) && (leftEdge != 0 || rightEdge != 0)) {
             tex = createTileSizeTexture();
