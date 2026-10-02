@@ -36,6 +36,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransfor
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionLine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestHoverExpand;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
@@ -248,7 +249,7 @@ final class CanvasSceneRenderer {
             return;
         }
         CompoundTag tag = card.tag();
-        WidgetGroup cardLayer = new WidgetGroup(card.x(), card.y(), card.width(), card.height());
+        WidgetGroup cardLayer = new QuestHoverExpand(card.x(), card.y(), card.width(), card.height(), card.questId());
         QuestCardLayout localCard = localCard(card);
         float progress = QuestCardBackgroundRenderer.questProgress(tag);
         boolean customBackground = QuestCardBackgroundRenderer.renderWidgetBackground(cardLayer, localCard.x(), localCard.y(), localCard.width(), localCard.height(), tag, progress);

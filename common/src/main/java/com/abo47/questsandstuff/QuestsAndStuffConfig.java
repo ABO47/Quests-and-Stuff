@@ -18,6 +18,9 @@ public final class QuestsAndStuffConfig {
     public static final int DEFAULT_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.DEFAULT_DURATION_MS;
     public static final int MIN_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MIN_DURATION_MS;
     public static final int MAX_COMPLETION_HUD_DURATION_MS = QuestsAndStuffConfigSections.Hud.MAX_DURATION_MS;
+    public static final int MIN_QUEST_HOVER_EXPAND_PERCENT = QuestsAndStuffConfigSections.Animations.MIN_HOVER_EXPAND_PERCENT;
+    public static final int MAX_QUEST_HOVER_EXPAND_PERCENT = QuestsAndStuffConfigSections.Animations.MAX_HOVER_EXPAND_PERCENT;
+    public static final int DEFAULT_QUEST_HOVER_EXPAND_PERCENT = QuestsAndStuffConfigSections.Animations.DEFAULT_HOVER_EXPAND_PERCENT;
 
     private static boolean loaded;
     private static final QuestsAndStuffConfigSections.Debug DEBUG = new QuestsAndStuffConfigSections.Debug();
@@ -201,6 +204,42 @@ public final class QuestsAndStuffConfig {
             ANIMATIONS.chapterSwitch = enabled;
             save();
         }
+    }
+
+    public static boolean questHoverExpandAnimationSettingEnabled() {
+        load();
+        return ANIMATIONS.questHoverExpand;
+    }
+
+    public static boolean questHoverExpandAnimationsEnabled() {
+        load();
+        return ANIMATIONS.ui && ANIMATIONS.questHoverExpand;
+    }
+
+    public static void setQuestHoverExpandAnimationsEnabled(boolean enabled) {
+        load();
+        if (ANIMATIONS.questHoverExpand != enabled) {
+            ANIMATIONS.questHoverExpand = enabled;
+            save();
+        }
+    }
+
+    public static int questHoverExpandPercent() {
+        load();
+        return ANIMATIONS.questHoverExpandPercent;
+    }
+
+    public static void setQuestHoverExpandPercent(int percent) {
+        load();
+        int normalized = normalizeQuestHoverExpandPercent(percent);
+        if (ANIMATIONS.questHoverExpandPercent != normalized) {
+            ANIMATIONS.questHoverExpandPercent = normalized;
+            save();
+        }
+    }
+
+    public static int normalizeQuestHoverExpandPercent(int percent) {
+        return QuestsAndStuffConfigSections.Animations.normalizeHoverExpandPercent(percent);
     }
 
     public static boolean fullScreenModeEnabled() {
