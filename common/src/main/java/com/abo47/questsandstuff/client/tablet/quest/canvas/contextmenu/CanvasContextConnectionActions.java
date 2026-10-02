@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import java.util.List;
+
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -18,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrd
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -69,12 +72,20 @@ final class CanvasContextConnectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
-        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
-            ContextMenuController.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
-            canvasViewport.refresh();
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture_game source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                })
+        )));
         if (!ConnectionRenderer.connectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
             String connTexKey = "conn_remove_tex:" + sourceId + ":" + targetId;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
@@ -108,12 +119,20 @@ final class CanvasContextConnectionActions {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
-        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
-            ContextMenuController.clearDeleteConfirm(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
-            canvasViewport.refresh();
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ModalOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture_game source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                })
+        )));
         if (!ConnectionRenderer.ecConnectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
             String ecConnTexKey = "ec_conn_remove_tex:" + sourceId + ":" + targetId;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, ecConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {

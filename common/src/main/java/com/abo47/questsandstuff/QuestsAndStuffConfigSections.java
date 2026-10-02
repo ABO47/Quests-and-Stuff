@@ -21,6 +21,10 @@ final class QuestsAndStuffConfigSections {
     }
 
     static final class Animations {
+        static final int MIN_HOVER_EXPAND_PERCENT = 0;
+        static final int MAX_HOVER_EXPAND_PERCENT = 100;
+        static final int DEFAULT_HOVER_EXPAND_PERCENT = 25;
+
         boolean ui = true;
         boolean contextMenu = true;
         boolean toolsMenu = true;
@@ -29,6 +33,8 @@ final class QuestsAndStuffConfigSections {
         boolean popupWindow = true;
         boolean connection = true;
         boolean chapterSwitch = true;
+        boolean questHoverExpand = true;
+        int questHoverExpandPercent = DEFAULT_HOVER_EXPAND_PERCENT;
 
         void read(JsonObject root) {
             ui = bool(root, "uiAnimations", ui);
@@ -39,6 +45,8 @@ final class QuestsAndStuffConfigSections {
             popupWindow = bool(root, "popupWindowAnimations", popupWindow);
             connection = bool(root, "connectionAnimations", connection);
             chapterSwitch = bool(root, "chapterSwitchAnimations", chapterSwitch);
+            questHoverExpand = bool(root, "questHoverExpandAnimations", questHoverExpand);
+            questHoverExpandPercent = normalizeHoverExpandPercent(intValue(root, "questHoverExpandPercent", questHoverExpandPercent));
         }
 
         JsonObject write() {
@@ -51,7 +59,13 @@ final class QuestsAndStuffConfigSections {
             root.addProperty("popupWindowAnimations", popupWindow);
             root.addProperty("connectionAnimations", connection);
             root.addProperty("chapterSwitchAnimations", chapterSwitch);
+            root.addProperty("questHoverExpandAnimations", questHoverExpand);
+            root.addProperty("questHoverExpandPercent", questHoverExpandPercent);
             return root;
+        }
+
+        static int normalizeHoverExpandPercent(int percent) {
+            return Math.max(MIN_HOVER_EXPAND_PERCENT, Math.min(MAX_HOVER_EXPAND_PERCENT, percent));
         }
     }
 

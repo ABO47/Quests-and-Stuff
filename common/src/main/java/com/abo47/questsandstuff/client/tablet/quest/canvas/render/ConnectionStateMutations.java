@@ -98,7 +98,7 @@ final class ConnectionStateMutations {
     static void setConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, int spacing) {
 		String key = QuestConnectionMetadata.connectionKey(sourceQuestId, targetQuestId);
 		Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.computeIfAbsent(chapter, ignored -> new HashMap<>());
-        if (spacing <= 0) {
+        if (spacing == 0) {
             spacings.remove(key);
         } else {
             spacings.put(key, spacing);

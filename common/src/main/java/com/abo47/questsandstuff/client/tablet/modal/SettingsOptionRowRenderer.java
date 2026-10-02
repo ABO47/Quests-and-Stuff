@@ -84,9 +84,8 @@ public final class SettingsOptionRowRenderer {
         ));
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(0, rowY, cardW, rowH, click -> toggle(option, refresh));
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+            GlowShaderHelper.glowHit(hit, tooltips);
             hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)));
-            hit.setHoverTooltips(tooltips);
             list.addWidget(hit);
         }
     }
@@ -110,9 +109,8 @@ public final class SettingsOptionRowRenderer {
         list.addWidget(label(8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(0, rowY, cardW, rowH, click -> option.runAction());
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+            GlowShaderHelper.glowHit(hit, tooltips);
             hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
-            hit.setHoverTooltips(tooltips);
             list.addWidget(hit);
         }
     }
@@ -199,8 +197,7 @@ public final class SettingsOptionRowRenderer {
                     refresh.run();
                 }
             });
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-            hit.setHoverTooltips(Component.literal(theme.label()));
+            GlowShaderHelper.glowHit(hit, Component.literal(theme.label()));
             list.addWidget(hit);
         }
     }

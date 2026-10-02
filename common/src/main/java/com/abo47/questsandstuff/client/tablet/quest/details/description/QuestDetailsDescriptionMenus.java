@@ -10,6 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerIntegrations;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
@@ -74,20 +75,33 @@ public final class QuestDetailsDescriptionMenus {
         }
         TextStyleSession.openQuestDetails(state, text.id());
         int contentW = Math.max(1, w - 1);
+        String styleTargetId = text.id();
         CanvasTextStyleMenu.renderQuestDetails(modal, state, text, x, y, w, h, state.questDetails.questDetailsDescScroll, next -> {
-            updateText(player, state, questId, model, next, contentW);
+            QuestDetailsDescriptionModel freshModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            updateText(player, state, questId, freshModel, next, contentW);
             TextStyleSession.openQuestDetails(state, next.id());
         }, value -> {
-            CanvasTextLayer preview = QuestDetailsDescriptionLayout.fitAndClampText(state, text.withFontSize(value), contentW);
-            model.putText(preview);
-            QuestDetailsDescriptionModel.preview(questId, model);
+            QuestDetailsDescriptionModel freshModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            CanvasTextLayer base = freshModel.text(styleTargetId);
+            if (base == null) {
+                return;
+            }
+            CanvasTextLayer preview = QuestDetailsDescriptionLayout.fitAndClampText(state, base.withFontSize(value), contentW);
+            freshModel.putText(preview);
+            QuestDetailsDescriptionModel.preview(questId, freshModel);
         }, () -> {
+            QuestDetailsDescriptionModel freshModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            CanvasTextLayer base = freshModel.text(styleTargetId);
+            CanvasTextLayer colorSource = base == null ? text : base;
             state.questDetails.questDetailsTextColorQuestId = questId;
-            state.questDetails.questDetailsTextColorTextId = text.id();
-            ModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, text.id()), CanvasRenderer.activeTextColor(state, text));
-            QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color open picker quest={} text={}", questId, text.id());
+            state.questDetails.questDetailsTextColorTextId = colorSource.id();
+            ModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color open picker quest={} text={}", questId, colorSource.id());
             refresh.run();
-        }, refresh);
+        }, refresh, () -> {
+            QuestDetailsDescriptionModel freshModel = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+            return freshModel.text(styleTargetId);
+        });
     }
 
     public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsDescriptionModel model, int x, int y, int viewportW, int viewportH) {
@@ -150,10 +164,16 @@ public final class QuestDetailsDescriptionMenus {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addTextAt(player, state, questId, model, x, y);
         }));
-        addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_IMAGE), "image", TabletColors.SUCCESS, () -> {
-            ContextMenuController.clearDeleteConfirm(state);
-            QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
-        }));
+        addActions.add(ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_IMAGE), "image", TabletColors.SUCCESS, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.SUCCESS, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsDescriptionPanel.addImageAt(state, questId, x, y);
+                }),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.SUCCESS, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsDescriptionPanel.addGameImageAt(state, questId, x, y);
+                })
+        )));
         addActions.add(ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD_ENTITY), "entity", TabletColors.SUCCESS, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsDescriptionPanel.addEntityAt(state, questId, x, y);
@@ -173,10 +193,16 @@ public final class QuestDetailsDescriptionMenus {
             }));
         }
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ADD), "add", TabletColors.SUCCESS, addActions));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, () -> {
-            ContextMenuController.clearDeleteConfirm(state);
-            ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
-        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
+                }),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    ModalOpenActions.openQuestDetailsGameTexturePicker(state, ModalTargets.descBackground(questId));
+                })
+        )));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
             SkinFillOverride parsed = BackgroundModes.decode(model.canvasBackground);
             String currentMode = parsed != null ? parsed.mode() : "stretch";
@@ -604,6 +630,9 @@ public final class QuestDetailsDescriptionMenus {
     }
 
     private static void updateText(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, CanvasTextLayer next, int contentW) {
+        if (next == null || next.id().isBlank() || model.text(next.id()) == null) {
+            return;
+        }
         next = QuestDetailsDescriptionLayout.fitAndClampText(state, next, contentW);
         model.putText(next);
         QuestDetailsDescriptionModel.preview(questId, model);

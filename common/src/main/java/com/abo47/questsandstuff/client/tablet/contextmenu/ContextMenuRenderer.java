@@ -72,7 +72,7 @@ public final class ContextMenuRenderer {
         }
 
         ButtonWidget hit = flatHitButton(GRID_4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit);
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
     }

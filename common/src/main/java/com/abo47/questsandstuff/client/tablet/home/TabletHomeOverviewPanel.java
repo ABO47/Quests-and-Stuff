@@ -64,9 +64,8 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.closeTabletUi(null, false, "home_button"));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(homeBtn, Component.translatable("ui.questsandstuff.common.close"));
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
-        homeBtn.setHoverTooltips(Component.translatable("ui.questsandstuff.common.close"));
         addWidget(homeBtn);
 
         List<AppDescriptor> apps = TabletAppRegistry.all().values().stream()
@@ -87,9 +86,8 @@ final class TabletHomeOverviewPanel extends WidgetGroup {
                     tex,
                     cd -> TabletLifecycle.openApp(app.id()));
             appBtn.setClientSideWidget();
-            appBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
+            GlowShaderHelper.glowHit(appBtn, Component.translatable(app.translationKey()));
             appBtn.setClickedTexture(SurfaceFactory.group(tex, SurfaceFactory.fill(TabletColors.pressedFill(TabletColors.INTERACTIVE))));
-            appBtn.setHoverTooltips(Component.translatable(app.translationKey()));
             addWidget(appBtn);
             col++;
         }

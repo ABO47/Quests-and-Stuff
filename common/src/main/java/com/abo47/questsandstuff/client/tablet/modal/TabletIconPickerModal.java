@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import java.util.List;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,11 +13,13 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
@@ -61,7 +64,12 @@ public final class TabletIconPickerModal {
         String questTarget = ModalTargetState.target(state, QUEST, state.modal.modalQuestTarget);
         boolean supportsEntityIcons = supportsEntityIconSelection(details, questTarget, chapterTarget);
         boolean supportsInventoryIcons = supportsInventoryIconSelection(details, questTarget, chapterTarget, canvasEntityTarget, canvasModelTarget);
-        IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+        boolean backgroundMode = state.modal.modalGameTexturePick;
+        if (backgroundMode) {
+            IconPickerMode.normalizeForBackground(state);
+        } else {
+            IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
+        }
         IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
         int headY = 24;
         int headH = 18;
@@ -76,14 +84,30 @@ public final class TabletIconPickerModal {
         int slot = 18;
 
         TabletModalPanel.addModalClose(modal, gridX + gridW - headH, 4, headH, state, refresh);
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.iconSearch, 80, value -> {
-            state.pickers.iconSearch = SearchFilter.normalizeUserInput(value);
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.iconSearch, 80, value -> {            state.pickers.iconSearch = SearchFilter.normalizeUserInput(value);
             state.pickers.iconScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", IconPickerMode.safe(state.pickers.iconMode).logName(), state.pickers.iconSearch);
             refresh.run();
         }, focused -> state.pickers.iconSearchFocused = focused);
 
-        if (itemModelPicker) {
+        if (backgroundMode) {
+            IconPickerMode[] cycle = IconPickerMode.gameBackgroundCycle();
+            TabletCycleButton.addIconModeButton(
+                    modal,
+                    gridX,
+                    headY,
+                    modeW,
+                    headH,
+                    cycle.length,
+                    () -> IconPickerMode.cycleIndex(state.pickers.iconMode, cycle),
+                    index -> IconPickerMode.iconAt(cycle, index),
+                    mode.tooltip(),
+                    direction -> {
+                        IconPickerMode.cycleBackground(state, direction);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] icon picker mode={} direction={}", IconPickerMode.safe(state.pickers.iconMode).logName(), cycleDirectionName(direction));
+                        refresh.run();
+                    });
+        } else if (itemModelPicker) {
             IconPickerMode[] cycle = IconPickerMode.modelItemCycle();
             TabletCycleButton.addIconModeButton(
                     modal,
@@ -148,7 +172,9 @@ public final class TabletIconPickerModal {
                 (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryIconPick(player, state, picked, inventoryTarget, refresh))
             );
         } else {
-            List<String> entries = itemModelPicker
+            List<String> entries = backgroundMode
+                    ? backgroundTextureEntries(state)
+                    : itemModelPicker
                     ? searchableModelItemEntries(state.pickers.iconSearch, mode.showingTags())
                     : pickingEntityIcons
                     ? EntityPreviewRenderer.searchableSpawnEggEntries(state.pickers.iconSearch)
@@ -183,7 +209,11 @@ public final class TabletIconPickerModal {
                 ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, CONTENT_ICON_SIZE, CONTENT_ICON_SIZE, click -> {
                     boolean doubleClick = click.button == 0
                             && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("icon", chapterTarget, questTarget, previewIcon));
-                    if (!canvasModelTarget.isBlank()) {
+                    if (backgroundMode) {
+                        AssetPickerApplyActions.run(player, state, entry);
+                        closeAll(state);
+                        QuestsAndStuffMod.debugLog("[QnS:UI] game texture picked icon={}", previewIcon);
+                    } else if (!canvasModelTarget.isBlank()) {
                         if (TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry)) {
                             closeAll(state);
                         }
@@ -211,13 +241,20 @@ public final class TabletIconPickerModal {
                     }
                     refresh.run();
                 });
-                hit.setHoverTooltips(TabletModalPanel.iconTooltip(previewIcon));
-                hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+                GlowShaderHelper.glowHit(hit, TabletModalPanel.iconTooltip(previewIcon));
                 hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });
         }
         return search;
+    }
+
+    private static List<String> backgroundTextureEntries(TabletUiState state) {
+        IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
+        if (mode.showingBlocks()) {
+            return DisplayIconProvider.searchableBlockEntries(state.pickers.iconSearch);
+        }
+        return DisplayIconProvider.searchableEntries(state.pickers.iconSearch, mode.showingTags());
     }
 
     private static List<String> searchableIconEntries(TabletUiState state) {

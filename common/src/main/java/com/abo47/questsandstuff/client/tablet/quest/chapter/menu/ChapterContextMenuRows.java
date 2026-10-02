@@ -35,8 +35,14 @@ public final class ChapterContextMenuRows {
         if (layout.hasTarget()) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.changeIcon(() -> ChapterContextMenuActions.changeIcon(state, target, refresh)));
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_CHAPTER_TEXTURE), "background", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)));
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, List.of(
+                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)),
+                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeAssetIcon(state, target, refresh))
+            )));
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_CHAPTER_TEXTURE), "background", ActionTone.PRIMARY, List.of(
+                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)),
+                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeGameBackground(state, target, refresh))
+            )));
             String chapterBg = ClientQuestStateFacade.chapterBackground(target);
             if (!chapterBg.isBlank() && !"default".equals(chapterBg)) {
                 SkinFillOverride parsed = BackgroundModes.decode(chapterBg);
@@ -75,8 +81,14 @@ public final class ChapterContextMenuRows {
         }
 
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameCompletionHudBackground(state, target, refresh))
+        )));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)),
+                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameConnectionTexture(state, target, refresh))
+        )));
         if (chapterHasConnectionTexture(state, target)) {
             String connTexKey = "chapter:remove_conn_tex:" + target;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, tr("ui.questsandstuff.context.remove_connection_texture"), () -> ChapterContextMenuActions.removeConnectionTexture(player, state, target)));

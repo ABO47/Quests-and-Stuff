@@ -21,6 +21,8 @@ class QuestsAndStuffConfigSectionsTest {
         source.addProperty("popupWindowAnimations", false);
         source.addProperty("connectionAnimations", true);
         source.addProperty("chapterSwitchAnimations", false);
+        source.addProperty("questHoverExpandAnimations", false);
+        source.addProperty("questHoverExpandPercent", 60);
 
         animations.read(source);
         JsonObject written = animations.write();
@@ -33,6 +35,15 @@ class QuestsAndStuffConfigSectionsTest {
         assertFalse(written.get("popupWindowAnimations").getAsBoolean());
         assertTrue(written.get("connectionAnimations").getAsBoolean());
         assertFalse(written.get("chapterSwitchAnimations").getAsBoolean());
+        assertFalse(written.get("questHoverExpandAnimations").getAsBoolean());
+        assertEquals(60, written.get("questHoverExpandPercent").getAsInt());
+    }
+
+    @Test
+    void hoverExpandPercentNormalizesToZeroToHundred() {
+        assertEquals(0, QuestsAndStuffConfigSections.Animations.normalizeHoverExpandPercent(-5));
+        assertEquals(100, QuestsAndStuffConfigSections.Animations.normalizeHoverExpandPercent(140));
+        assertEquals(25, QuestsAndStuffConfigSections.Animations.normalizeHoverExpandPercent(25));
     }
 
     @Test

@@ -33,6 +33,7 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.visual.VisualRef;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandType;
@@ -46,6 +47,22 @@ public final class AssetPickerApplyActions {
 
     public static void run(Player player, TabletUiState state, String background) {
         state.pickers.saveBrowseDirForMode();
+        String assetIconTarget = ModalTargetState.target(state, ModalSession.TargetSlot.ASSET_ICON, state.modal.modalAssetIconTarget);
+        if (!assetIconTarget.isBlank()) {
+            String icon = VisualRef.assetRef(background);
+            ModalTargetParser.Target parsed = ModalTargetParser.parse(assetIconTarget);
+            if (parsed.isQuestIcon()) {
+                TabletUiFactory.runQuestIconAction(player, parsed.questId(), icon);
+            } else if (parsed.isChapterIcon()) {
+                TabletUiFactory.runChapterAction(player, state, "set_icon", parsed.questId(), icon, 0);
+            } else {
+                state.questDetails.questDetailsPickTarget = assetIconTarget;
+                QuestDetailsWindow.applyIconPick(player, state, icon);
+            }
+            state.modal.modalAssetIconTarget = "";
+            QuestsAndStuffMod.debugLog("[QnS:UI] asset icon picked target={} icon={}", assetIconTarget, icon);
+            return;
+        }
         String blueprintTarget = ModalTargetState.target(state, ModalSession.TargetSlot.BLUEPRINT, state.modal.modalBlueprintTarget);
         if (!blueprintTarget.isBlank()) {
             CanvasBlueprintController.beginPlacement(state, background);
@@ -139,7 +156,7 @@ public final class AssetPickerApplyActions {
             addCanvasImage(state, imageTarget, background);
             return;
         }
-        String ecTarget = state.modal.modalEcBackgroundTarget;
+        String ecTarget = ModalTargetState.target(state, ModalSession.TargetSlot.EC_BACKGROUND, state.modal.modalEcBackgroundTarget);
         if (!ecTarget.isBlank()) {
             String[] parts = ecTarget.split(":", 2);
             if (parts.length == 2) {
@@ -168,8 +185,8 @@ public final class AssetPickerApplyActions {
             TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, newOverride.encode(), 0);
             return;
         }
-        String connectionTextureTarget = state.modal.modalConnectionTextureTarget;
-        java.util.Set<String> connectionTextureChapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        String connectionTextureTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
+        java.util.Set<String> connectionTextureChapterTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
         if (!connectionTextureChapterTargets.isEmpty()) {
             String chapter = !connectionTextureTarget.isBlank() && connectionTextureTarget.startsWith("connection|")
                     ? connectionTextureTarget.split("\\|")[1] : "";

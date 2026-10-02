@@ -48,7 +48,42 @@ public final class CanvasBlueprintController {
     }
 
     public static String saveSelection(CanvasViewport canvasViewport, TabletUiState state) {
-        CanvasBlueprint blueprint = buildSelection(canvasViewport, state);
+        if (canvasViewport == null || state == null) {
+            return "";
+        }
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        if (chapter.isBlank()) {
+            return "";
+        }
+        CanvasSelectionSet selection = CanvasSelectionSet.current(state);
+        if (selection.size() == 0) {
+            return "";
+        }
+        return storeBlueprint(state, buildFromSelection(state, chapter, selection));
+    }
+
+    public static boolean saveQuestWithNotice(CanvasViewport canvasViewport, TabletUiState state, String questId, int noticeX, int noticeY) {
+        String saved = saveQuest(canvasViewport, state, questId);
+        if (saved.isBlank()) {
+            return false;
+        }
+        CanvasMiniNotificationController.show(state, "ui.questsandstuff.canvas_notifications.saved", noticeX, noticeY);
+        return true;
+    }
+
+    public static String saveQuest(CanvasViewport canvasViewport, TabletUiState state, String questId) {
+        if (canvasViewport == null || state == null || questId == null || questId.isBlank()) {
+            return "";
+        }
+        String chapter = TabletStateQueries.selectedChapterName(state);
+        if (chapter.isBlank()) {
+            return "";
+        }
+        return storeBlueprint(state, buildFromSelection(state, chapter,
+                new CanvasSelectionSet(Set.of(questId), Set.of(), Set.of(), Set.of())));
+    }
+
+    private static String storeBlueprint(TabletUiState state, CanvasBlueprint blueprint) {
         if (blueprint.isEmpty()) {
             return "";
         }
@@ -72,6 +107,27 @@ public final class CanvasBlueprintController {
         ContextMenuController.close(state);
         state.pickers.assetContextOpen = false;
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
+    }
+
+    public static boolean beginUseLastPlacement(TabletUiState state) {
+        if (state == null || state.canvas.blueprintPlacement.useLastHeld() || state.canvas.blueprintPlacement.active()) {
+            return false;
+        }
+        beginPlacement(state, state.canvas.blueprintPlacement.asset());
+        if (!state.canvas.blueprintPlacement.active()) {
+            return false;
+        }
+        state.canvas.blueprintPlacement.setUseLastHeld();
+        return true;
+    }
+
+    public static boolean endUseLastPlacement(TabletUiState state) {
+        boolean wasActive = state != null && state.canvas.blueprintPlacement.active();
+        if (state != null) {
+            state.canvas.blueprintPlacement.clearUseLast();
+        }
+        cancelPlacement(state);
+        return wasActive;
     }
 
     public static boolean cancelPlacement(TabletUiState state) {
@@ -101,7 +157,9 @@ public final class CanvasBlueprintController {
         state.canvas.canvasSelection.textIds().clear();
         state.clipboard.canvasClipboard.clearPendingPastedLayers();
         EditorCanvasCommandClient.runCanvasPasteBlueprintAction(player, state, blueprint, anchor.x(), anchor.y());
-        state.canvas.blueprintPlacement.finish();
+        if (!state.canvas.blueprintPlacement.useLastHeld()) {
+            state.canvas.blueprintPlacement.finish();
+        }
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement commit path={} anchor={},{} entries={}",
                 asset, anchor.x(), anchor.y(), blueprint.contentCount());
         return true;
@@ -124,16 +182,8 @@ public final class CanvasBlueprintController {
         return new PlacementAnchor(clamped.x, clamped.y);
     }
 
-    private static CanvasBlueprint buildSelection(CanvasViewport canvasViewport, TabletUiState state) {
-        if (canvasViewport == null || state == null) {
-            return CanvasBlueprint.empty();
-        }
-        String chapter = TabletStateQueries.selectedChapterName(state);
-        if (chapter.isBlank()) {
-            return CanvasBlueprint.empty();
-        }
-        CanvasSelectionSet selection = CanvasSelectionSet.current(state);
-        if (selection.size() == 0) {
+    private static CanvasBlueprint buildFromSelection(TabletUiState state, String chapter, CanvasSelectionSet selection) {
+        if (state == null || chapter == null || chapter.isBlank() || selection == null || selection.size() == 0) {
             return CanvasBlueprint.empty();
         }
         List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), chapter);

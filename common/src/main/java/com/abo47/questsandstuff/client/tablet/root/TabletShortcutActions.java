@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
@@ -38,6 +39,9 @@ final class TabletShortcutActions {
         }
         if (TabletKeybindings.renameSelectedMatches(keyCode, scanCode)) {
             return beginRename(state);
+        }
+        if (TabletKeybindings.useLastBlueprintMatches(keyCode, scanCode)) {
+            return CanvasBlueprintController.beginUseLastPlacement(state);
         }
         if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             return deleteSelection(player, state, canvasViewport);

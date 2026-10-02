@@ -195,7 +195,7 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
 
     public CanvasExclusiveChoice withConnectionTextureSpacing(String questId, int spacing) {
         Map<String, Integer> next = new HashMap<>(connectionTextureSpacings);
-        next.put(questId, Math.max(0, spacing));
+        next.put(questId, spacing);
         return new CanvasExclusiveChoice(id, x, y, w, h, rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes, connectionTextures, next, hiddenConnections);
     }
 

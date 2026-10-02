@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
@@ -47,11 +48,18 @@ public final class AssetLibrary {
         return AssetSearchIndex.listAssetEntries(assetsRoot, relativeDir);
     }
 
+    public static Path resolveDirectory(Path assetsRoot, String relativeDir) {
+        return AssetPathResolver.resolveDirectory(assetsRoot, relativeDir);
+    }
+
     public static List<AssetEntry> searchAssetEntries(Path assetsRoot, String relativeDir, String query) {
         return AssetSearchIndex.searchAssetEntries(assetsRoot, relativeDir, query);
     }
 
     public static AssetKind assetKind(String relativePath) {
+        if (GameTextureCache.isGameRef(relativePath)) {
+            return AssetKind.IMAGE;
+        }
         return AssetPathResolver.assetKind(relativePath, false);
     }
 
@@ -61,6 +69,20 @@ public final class AssetLibrary {
 
     public static IGuiTexture assetThumbnailTexture(Path assetsRoot, String relativePath) {
         return AssetTextureCache.assetThumbnailTexture(assetsRoot, relativePath);
+    }
+
+    public static IGuiTexture gameBackgroundTexture(String ref, String mode, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
+        if (!GameTextureCache.isGameRef(ref)) {
+            return null;
+        }
+        return GameTextureCache.modeTexture(ref, mode, leftEdge, rightEdge, topEdge, bottomEdge);
+    }
+
+    public static ItemStack gameItemStack(String ref) {
+        if (!GameTextureCache.isGameRef(ref)) {
+            return null;
+        }
+        return GameTextureCache.gameStack(ref);
     }
 
     public static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {

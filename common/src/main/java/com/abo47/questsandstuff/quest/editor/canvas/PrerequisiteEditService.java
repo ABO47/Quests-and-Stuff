@@ -196,7 +196,7 @@ public final class PrerequisiteEditService {
             return;
         }
         Map<String, Integer> spacings = new HashMap<>(source.connectionTextureSpacings());
-        Integer previous = spacings.put(prerequisite, Math.max(0, spacing));
+        Integer previous = spacings.put(prerequisite, spacing);
         if (previous != null && previous == spacing) {
             return;
         }

@@ -143,7 +143,7 @@ public final class QuestAppComposer {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
-        questHomeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(questHomeBtn);
         questHomeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(questHomeBtn);
         root.setHomeButton(questHomeBtn);

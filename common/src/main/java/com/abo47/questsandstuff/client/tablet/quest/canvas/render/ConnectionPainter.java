@@ -16,15 +16,19 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
+import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasInteractionGate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -40,6 +44,7 @@ final class ConnectionPainter {
     private static final float CHEVRON_U1 = 206.0f / 256.0f;
     private static final int CHEVRON_BASE_W = 5;
     private static final int CHEVRON_BASE_H = 9;
+    private static final int ITEM_GLYPH_BASE = 12;
     private static final float DARKEN_FACTOR = 0.52f;
     private static final float SCALE_CLAMP_MIN = 0.25f;
     private static final float SCALE_CLAMP_MAX = 2.0f;
@@ -67,7 +72,7 @@ final class ConnectionPainter {
                 int clipMaxY = clipMinY + getSizeHeight();
                 long now = System.currentTimeMillis();
                 for (ConnectionLine line : lines) {
-                    drawConnection(graphics, originX, originY, state, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
+                    drawConnection(graphics, originX, originY, state, this, line, mouseX, mouseY, now, clipMinX, clipMinY, clipMaxX, clipMaxY);
                 }
             }
         });
@@ -128,6 +133,7 @@ final class ConnectionPainter {
             int originX,
             int originY,
             TabletUiState state,
+            Widget view,
             ConnectionLine line,
             int mouseX,
             int mouseY,
@@ -163,7 +169,7 @@ final class ConnectionPainter {
                 sourceOffsetY,
                 targetOffsetX,
                 targetOffsetY
-        );
+        ) && CanvasInteractionGate.hoverAllowed(state, view, mouseX, mouseY);
         if (line.hidden() && !state.root.canEdit && !hoveringEndpoint) {
             return;
         }
@@ -172,11 +178,10 @@ final class ConnectionPainter {
         String rawTextureStr = line.texture();
         ResourceLocation texture = resolveTexture(rawTextureStr);
         int spacing = line.textureSpacing();
-        if (spacing <= 0 && texture != null) {
+        if (spacing == 0 && texture != null) {
             int tw = textureWidth(rawTextureStr);
             if (tw > 0) spacing = Math.max(tw, DEFAULT_SPACING);
         }
-        spacing = Math.max(0, spacing);
         float zoom = state.canvas.canvasZoom;
         float safeScale = clampScale(zoom);
         double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
@@ -193,6 +198,16 @@ final class ConnectionPainter {
             glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
         }
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
+        ItemStack gameStack = AssetLibrary.gameItemStack(rawTextureStr);
+        if (gameStack != null && !gameStack.isEmpty()) {
+            int itemGlyph = scaledGlyphDim(ITEM_GLYPH_BASE, safeScale);
+            float progress = animation.running() ? animation.progress() : 1.0f;
+            int itemAlpha = animation.running()
+                    ? Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())))
+                    : alpha;
+            drawItemChevrons(graphics, path, gameStack, itemAlpha, progress, spacing, itemGlyph, itemGlyph, clipMinX, clipMinY, clipMaxX, clipMaxY);
+            return;
+        }
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
             drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
@@ -291,6 +306,9 @@ final class ConnectionPainter {
         if (parsed != null && parsed.getNamespace().equals(QuestsAndStuffMod.MODID)) {
             return parsed;
         }
+        if (AssetLibrary.gameItemStack(textureStr) != null) {
+            return null;
+        }
         java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
         try {
             com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.ensureAssetsDirs(assetsRoot);
@@ -376,7 +394,7 @@ final class ConnectionPainter {
             int clipMaxX,
             int clipMaxY
     ) {
-        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : (double) DEFAULT_SPACING);
+        double spacing = chevronStride(customSpacing, glyphW);
         boolean customTex = texture != null;
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
@@ -407,6 +425,56 @@ final class ConnectionPainter {
         tessellator.end();
         RenderSystem.disableBlend();
         setChevronTextureFilter(tex, GL11.GL_NEAREST);
+    }
+
+    private static double chevronStride(int customSpacing, int glyphW) {
+        if (customSpacing == 0) {
+            return Math.max(glyphW, DEFAULT_SPACING);
+        }
+        if (customSpacing > 0) {
+            return Math.max(glyphW, customSpacing);
+        }
+        return Math.max(1, glyphW * (100 + customSpacing) / 100.0);
+    }
+
+    private static void drawItemChevrons(
+            GuiGraphics graphics,
+            List<CanvasPoint> path,
+            ItemStack stack,
+            int alpha,
+            float progress,
+            int customSpacing,
+            int glyphW,
+            int glyphH,
+            int clipMinX,
+            int clipMinY,
+            int clipMaxX,
+            int clipMaxY
+    ) {
+        double spacing = chevronStride(customSpacing, glyphW);
+        double totalLength = pathLength(path);
+        if (totalLength < glyphW) {
+            return;
+        }
+        double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, progress)));
+        List<ChevronGlyph> glyphs = chevronGlyphs(path, 0xFFFFFF, alpha, visibleLength, glyphW, glyphH, spacing, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        if (glyphs.isEmpty()) {
+            return;
+        }
+        int size = Math.max(1, Math.min(glyphW, glyphH));
+        for (ChevronGlyph glyph : glyphs) {
+            graphics.pose().pushPose();
+            graphics.pose().translate((float) (glyph.x() - size / 2.0), (float) (glyph.y() - size / 2.0), 0.0f);
+            graphics.pose().scale(size / 16.0f, size / 16.0f, 1.0f);
+            DrawerHelper.drawItemStack(graphics, stack, 0, 0, -1, null);
+            graphics.pose().popPose();
+        }
+        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
     }
 
     private static double pathLength(List<CanvasPoint> path) {

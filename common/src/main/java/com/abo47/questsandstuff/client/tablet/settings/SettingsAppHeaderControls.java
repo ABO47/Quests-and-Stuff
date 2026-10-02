@@ -107,9 +107,8 @@ final class SettingsAppHeaderControls {
         ButtonWidget hit = active
                 ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
                 : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit, Component.translatable(tab.labelKey()));
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
-        hit.setHoverTooltips(Component.translatable(tab.labelKey()));
         container.addWidget(bg);
         container.addWidget(text);
         container.addWidget(hit);

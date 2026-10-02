@@ -89,7 +89,7 @@ final class ConnectionStyleResolver {
         if (target != null && target.contains(CONNECTION_TEXTURE_SPACINGS, Tag.TAG_COMPOUND)) {
             CompoundTag spacings = target.getCompound(CONNECTION_TEXTURE_SPACINGS);
             if (spacings.contains(metadataKey, Tag.TAG_INT)) {
-                return Math.max(0, spacings.getInt(metadataKey));
+                return spacings.getInt(metadataKey);
             }
         }
         Map<String, Integer> spacings = state.canvas.connectionTextureSpacingsByGroup.get(chapter);

@@ -4,9 +4,10 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public final class SvgIconRasterizer {
     private SvgIconRasterizer() {
@@ -34,9 +35,14 @@ public final class SvgIconRasterizer {
         transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, (float) size);
 
         TranscoderInput input = new TranscoderInput(svgPath.toUri().toString());
-        try (OutputStream output = Files.newOutputStream(pngPath)) {
-            transcoder.transcode(input, new TranscoderOutput(output));
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        transcoder.transcode(input, new TranscoderOutput(buffer));
+        byte[] fresh = buffer.toByteArray();
+        if (Files.isRegularFile(pngPath) && Arrays.equals(Files.readAllBytes(pngPath), fresh)) {
+            return;
         }
+        Files.createDirectories(pngPath.getParent());
+        Files.write(pngPath, fresh);
     }
 
     private static String toPngName(Path svgPath) {

@@ -108,6 +108,10 @@ public final class QuestDetailsDescriptionPanel {
         QuestDetailsDescriptionEditActions.addImageAt(state, questId, panelX, panelY);
     }
 
+    public static void addGameImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+        QuestDetailsDescriptionEditActions.addGameImageAt(state, questId, panelX, panelY);
+    }
+
     public static void addEntityAt(TabletUiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addEntityAt(state, questId, panelX, panelY);
     }

@@ -161,7 +161,7 @@ final class ClientQuestConnectionMutator {
             return;
         }
         CompoundTag spacings = target.quest().getCompound(CONNECTION_TEXTURE_SPACINGS).copy();
-        if (spacing <= 0) {
+        if (spacing == 0) {
             spacings.remove(target.metadataKey());
         } else {
             spacings.putInt(target.metadataKey(), spacing);

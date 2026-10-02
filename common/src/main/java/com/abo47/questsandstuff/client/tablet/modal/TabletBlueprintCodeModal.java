@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -64,12 +65,7 @@ final class TabletBlueprintCodeModal {
     }
 
     static void close(TabletUiState state) {
-        state.modal.blueprintCodeOpen = false;
-        state.modal.blueprintCodeImportMode = false;
-        state.modal.blueprintCodeAnimationStartMs = 0L;
-        state.modal.blueprintCodeTarget = "";
-        state.modal.blueprintCodeDraft = "";
-        state.modal.blueprintCodeMessage = "";
+        TabletModalState.clearBlueprintCodeState(state);
     }
 
     static void add(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {

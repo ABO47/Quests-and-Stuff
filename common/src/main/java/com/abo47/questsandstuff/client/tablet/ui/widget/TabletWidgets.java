@@ -65,7 +65,7 @@ public final class TabletWidgets {
             TabletClickSounds.playClick();
             callback.accept(cd);
         });
-        button.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(button);
         button.setClickedTexture(active);
         button.setClientSideWidget();
         return button;

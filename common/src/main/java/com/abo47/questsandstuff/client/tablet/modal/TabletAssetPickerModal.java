@@ -1,10 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -46,6 +48,7 @@ import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
@@ -118,6 +121,13 @@ public final class TabletAssetPickerModal {
         }
         state.pickers.assetPickerMode = currentMode;
         String dir = state.pickers.assetBrowseDir == null ? "" : state.pickers.assetBrowseDir;
+        modal.addWidget(ChromeFactory.iconButton(headerChainButtonX(w, blueprintPicker ? 3 : 1), HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "folder", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
+            AssetLibrary.ensureAssetsDirs(TabletUiFactory.ASSETS_ROOT_DIR);
+            Path folder = AssetLibrary.resolveDirectory(TabletUiFactory.ASSETS_ROOT_DIR, dir);
+            if (folder != null) {
+                Util.getPlatform().openFile(folder.toFile());
+            }
+        }));
         List<AssetLibrary.AssetEntry> assets = searchAssetEntries(dir, SearchFilter.normalizeUserInput(state.pickers.assetSearch));
         if (soundPicker) {
             assets = filterByKind(assets, AssetLibrary.AssetKind.SOUND);
@@ -183,7 +193,7 @@ public final class TabletAssetPickerModal {
         int controlsH = 16;
         int backY = HEADER_BUTTON_Y;
         int backSize = HEADER_BUTTON_SIZE;
-        int firstHeaderButtonX = blueprintPicker ? headerChainButtonX(w, 2) : headerCloseRenderX(w);
+        int firstHeaderButtonX = headerChainButtonX(w, blueprintPicker ? 3 : 1);
         int backX = firstHeaderButtonX - HEADER_GAP - backSize;
         boolean canGoBack = !dir.isBlank();
         int searchW = canGoBack
@@ -319,7 +329,7 @@ public final class TabletAssetPickerModal {
                 }
                 refresh.run();
             });
-            hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+            GlowShaderHelper.glowHit(hit);
             surface.addWidget(hit);
                 });
 
@@ -499,14 +509,16 @@ public final class TabletAssetPickerModal {
         }
         int rowY = Math.max(58, previewH - 56);
         preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), TabletColors.TEXT_SECONDARY));
-        PercentSliderControls.add(
+        PercentSliderControls.addRanged(
                 preview,
                 8,
                 rowY + 12,
                 leftW - 16,
+                -100,
+                100,
                 state.pickers.connectionTextureSpacingDraft,
                 next -> {
-                    state.pickers.connectionTextureSpacingDraft = Math.max(0, Math.min(100, next));
+                    state.pickers.connectionTextureSpacingDraft = Math.max(-100, Math.min(100, next));
                     refresh.run();
                 },
                 () -> commitConnectionTextureSpacing(player, state, refresh),
@@ -518,8 +530,8 @@ public final class TabletAssetPickerModal {
 
     private static void commitConnectionTextureSpacing(Player player, TabletUiState state, Runnable refresh) {
         int spacing = state.pickers.connectionTextureSpacingDraft;
-        String target = state.modal.modalConnectionTextureTarget;
-        java.util.Set<String> chapterTargets = state.modal.modalConnectionTextureChapterTargets;
+        String target = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
+        java.util.Set<String> chapterTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
         if (!chapterTargets.isEmpty()) {
             String[] parts = target.split("\\|");
             String chapter = parts.length >= 2 ? parts[1] : "";

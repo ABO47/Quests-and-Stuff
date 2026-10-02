@@ -1,7 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,196 +14,75 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
-import com.lowdragmc.lowdraglib.gui.widget.SlotWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
-import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
-import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_MODEL;
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 
 public final class TabletBlockPickerModal {
-    private static final int TILE = 18;
-    private static List<BlockChoice> ALL_BLOCKS;
-    private static List<BlockChoice> ALL_TAGS;
-
     private TabletBlockPickerModal() {
     }
 
     public static void prewarm() {
-        if (ALL_BLOCKS != null) {
-            return;
-        }
-        ALL_BLOCKS = BuiltInRegistries.ITEM.stream()
-                .filter(item -> item instanceof BlockItem)
-                .map(TabletBlockPickerModal::choice)
-                .filter(choice -> choice != null)
-                .sorted(Comparator.comparing(BlockChoice::value))
-                .toList();
+        RegistryTilePicker.prewarm("block_items", TabletBlockPickerModal::blockChoices);
     }
 
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_BLOCK), w, state, refresh);
-        int sidePad = 8;
-        int headY = 24;
-        int headH = 18;
-        int modeW = headH;
-        int gap = 4;
-        int gridX = sidePad;
-        int gridW = w - sidePad * 2;
-        int searchX = gridX + modeW + gap;
-        int searchW = gridW - modeW - gap;
-        int gridY = headY + headH + 4;
-        int gridH = h - gridY - 8;
-
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.blockSearch, 96, value -> {
-            state.pickers.blockSearch = SearchFilter.normalizeUserInput(value);
-            state.pickers.blockScroll = 0;
-            QuestsAndStuffMod.debugLog("[QnS:UI] block search mode={} query='{}'", blockModeName(state), state.pickers.blockSearch);
-            refresh.run();
-        }, focused -> state.pickers.blockSearchFocused = focused);
-        TabletCycleButton.addIconModeButton(
-                modal,
-                gridX,
-                headY,
-                modeW,
-                headH,
-                2,
-                () -> state.pickers.blockTagMode ? 1 : 0,
-                index -> index == 1 ? "mode_tags" : "mode_items",
-                null,
-                direction -> {
-                    state.pickers.blockTagMode = !state.pickers.blockTagMode;
-                    state.pickers.blockScroll = 0;
-                    QuestsAndStuffMod.debugLog("[QnS:UI] block picker mode={}", blockModeName(state));
-                    refresh.run();
-                });
-
-        List<BlockChoice> entries = entries(state.pickers.blockSearch, state.pickers.blockTagMode);
-        TiledPickerPanel.add(
-                modal,
-                gridX,
-                gridY,
-                gridW,
-                gridH,
-                TILE,
-                TILE,
-                0,
-                6,
-                6,
-                entries,
+        return RegistryTilePicker.rebuild(modal, state, player, refresh, w, h, new RegistryTilePicker.Config(
+                TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_BLOCK),
                 TabletTranslationKeys.text(QuestTranslationKeys.NO_BLOCKS),
-                ScrollState.bind(
+                "block",
+                "block",
+                TabletColors.INTERACTIVE,
+                new RegistryTilePicker.StateAccess(
+                        () -> state.pickers.blockSearch,
+                        value -> state.pickers.blockSearch = value,
                         () -> state.pickers.blockScroll,
                         value -> state.pickers.blockScroll = value,
                         () -> state.pickers.blockScrollDragging,
-                        dragging -> state.pickers.blockScrollDragging = dragging
-                ),
-                null,
-                (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
-        );
-        return search;
-    }
-
-    private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, BlockChoice entry, int x, int y) {
-        surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
-        if (entry.previews().length == 0) {
-            surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, "box"));
-        } else {
-            surface.addWidget(new ImageWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, new ScopedItemStackTexture(entry.previews())));
-        }
-        ButtonWidget hit = flatHitButton(x + GRID_1, y + GRID_1, GRID_16, GRID_16, click -> {
-            if (!entry.value().isBlank()) {
-                String canvasModelTarget = ModalTargetState.target(state, CANVAS_MODEL, state.modal.modalCanvasModelTarget);
-                if (!canvasModelTarget.isBlank()) {
-                    if (!TabletModalPanel.runCanvasModelAction(state, canvasModelTarget, entry.value())) {
-                        return;
+                        dragging -> state.pickers.blockScrollDragging = dragging,
+                        focused -> state.pickers.blockSearchFocused = focused,
+                        () -> state.pickers.blockTagMode,
+                        () -> state.pickers.blockTagMode = !state.pickers.blockTagMode),
+                "block_items",
+                TabletBlockPickerModal::blockChoices,
+                "block_tags",
+                TabletBlockPickerModal::tagChoices,
+                (pickPlayer, pickState, entry) -> {
+                    if (entry.value().isBlank()) {
+                        return true;
                     }
-                } else {
-                    QuestDetailsWindow.applyBlockPick(player, state, entry.value());
-                }
-            }
-            QuestsAndStuffMod.debugLog("[QnS:UI] block picked kind={} value={} preview={}", entry.tag() ? "tag" : "block", entry.value(), entry.previewId());
-            closeAll(state);
-            refresh.run();
-        });
-        hit.setHoverTooltips(PickerTooltips.nameAndId(entry.displayName(), entry.value()));
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
-        hit.setClientSideWidget();
-        surface.addWidget(hit);
+                    String canvasModelTarget = ModalTargetState.target(pickState, CANVAS_MODEL, pickState.modal.modalCanvasModelTarget);
+                    if (!canvasModelTarget.isBlank()) {
+                        return TabletModalPanel.runCanvasModelAction(pickState, canvasModelTarget, entry.value());
+                    }
+                    QuestDetailsWindow.applyBlockPick(pickPlayer, pickState, entry.value());
+                    return true;
+                }));
     }
 
-    private static List<BlockChoice> entries(String query, boolean tagMode) {
-        String rawQuery = SearchFilter.normalizeUserInput(query);
-        return tagMode || rawQuery.startsWith("#") ? tags(rawQuery) : blocks(rawQuery);
-    }
-
-    private static List<BlockChoice> blocks(String query) {
-        String rawQuery = SearchFilter.normalizeUserInput(query);
-        if (ALL_BLOCKS != null) {
-            if (rawQuery.isBlank()) {
-                return ALL_BLOCKS;
-            }
-            return ALL_BLOCKS.stream()
-                    .filter(choice -> SearchFilter.matches(rawQuery, choice.previewId(), choice.displayName())
-                            || SearchFilter.matches(rawQuery, choice.value(), choice.displayName()))
-                    .toList();
-        }
+    private static List<RegistryTilePicker.Choice> blockChoices() {
         return BuiltInRegistries.ITEM.stream()
                 .filter(item -> item instanceof BlockItem)
                 .map(TabletBlockPickerModal::choice)
                 .filter(choice -> choice != null)
-                .filter(choice -> rawQuery.isBlank()
-                        || SearchFilter.matches(rawQuery, choice.previewId(), choice.displayName())
-                        || SearchFilter.matches(rawQuery, choice.value(), choice.displayName()))
-                .sorted(Comparator.comparing(BlockChoice::value))
                 .toList();
     }
 
-    private static List<BlockChoice> tags(String query) {
-        String rawQuery = SearchFilter.normalizeUserInput(query);
-        if (rawQuery.startsWith("#")) {
-            rawQuery = SearchFilter.normalizeUserInput(rawQuery.substring(1));
-        }
-        String tagQuery = SearchFilter.normalizeKey(rawQuery);
-        String filter = rawQuery;
-        List<BlockChoice> source = ALL_TAGS;
-        if (source == null) {
-            source = BuiltInRegistries.BLOCK.getTagNames()
-                    .map(TabletBlockPickerModal::tagChoice)
-                    .sorted(Comparator.comparing(BlockChoice::value))
-                    .toList();
-            ALL_TAGS = source;
-        }
-        return source.stream()
-                .filter(choice -> filter.isBlank()
-                        || SearchFilter.matches(filter, choice.value().substring(1), choice.displayName())
-                        || SearchFilter.normalizeKey(choice.value()).contains(tagQuery))
+    private static List<RegistryTilePicker.Choice> tagChoices() {
+        return BuiltInRegistries.BLOCK.getTagNames()
+                .map(TabletBlockPickerModal::tagChoice)
                 .toList();
     }
 
-    private static BlockChoice choice(Item item) {
+    private static RegistryTilePicker.Choice choice(Item item) {
         if (!(item instanceof BlockItem blockItem)) {
             return null;
         }
@@ -217,14 +95,14 @@ public final class TabletBlockPickerModal {
         if (itemId == null || blockId == null) {
             return null;
         }
-        return new BlockChoice(blockId.toString(), itemId.toString(), item.getDescription().getString(), new ItemStack[]{new ItemStack(item)}, false);
+        return new RegistryTilePicker.Choice(blockId.toString(), itemId.toString(), item.getDescription().getString(), new ItemStack[]{new ItemStack(item)}, false);
     }
 
-    private static BlockChoice tagChoice(TagKey<Block> tag) {
+    private static RegistryTilePicker.Choice tagChoice(TagKey<Block> tag) {
         String value = "#" + tag.location();
         ItemStack[] previews = tagPreviews(tag);
         String previewId = previews.length == 0 ? "box" : BuiltInRegistries.ITEM.getKey(previews[0].getItem()).toString();
-        return new BlockChoice(value, previewId, DisplayNameFormatter.resourceLeaf(tag.location().toString()), previews, true);
+        return new RegistryTilePicker.Choice(value, previewId, DisplayNameFormatter.resourceLeaf(tag.location().toString()), previews, true);
     }
 
     private static ItemStack[] tagPreviews(TagKey<Block> tag) {
@@ -241,12 +119,5 @@ public final class TabletBlockPickerModal {
 
     private static boolean isPickable(Block block) {
         return block != Blocks.AIR && block != Blocks.CAVE_AIR && block != Blocks.VOID_AIR;
-    }
-
-    private static String blockModeName(TabletUiState state) {
-        return state.pickers.blockTagMode || (state.pickers.blockSearch != null && state.pickers.blockSearch.trim().startsWith("#")) ? "tags" : "blocks";
-    }
-
-    private record BlockChoice(String value, String previewId, String displayName, ItemStack[] previews, boolean tag) {
     }
 }

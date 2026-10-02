@@ -15,6 +15,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
@@ -80,7 +81,7 @@ public final class ChunkClaimerAppComposer {
                 SurfaceFactory.bordered(SURFACE_PANEL_ALT, subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(homeBtn);
         homeBtn.setClickedTexture(SurfaceFactory.bordered(SURFACE_PANEL_ALT, BORDER_ACCENT));
         root.addWidget(homeBtn);
         root.setHomeButton(homeBtn);

@@ -116,6 +116,10 @@ public final class QuestTranslationKeys {
     public static final String CONTEXT_REMOVE_COMPLETION_HUD_BACKGROUND = "ui.questsandstuff.context.remove_completion_hud_background";
     public static final String CONTEXT_USE_CUSTOM_SOUND = "ui.questsandstuff.context.use_custom_sound";
     public static final String CONTEXT_USE_GAME_SOUND = "ui.questsandstuff.context.use_game_sound";
+    public static final String CONTEXT_USE_BUILTIN_ICON = "ui.questsandstuff.context.use_builtin_icon";
+    public static final String CONTEXT_USE_ASSET_IMAGE = "ui.questsandstuff.context.use_asset_image";
+    public static final String CONTEXT_USE_BUILTIN_TEXTURE = "ui.questsandstuff.context.use_builtin_texture";
+    public static final String CONTEXT_USE_ASSET_TEXTURE = "ui.questsandstuff.context.use_asset_texture";
     public static final String SOUND_LEVEL = "ui.questsandstuff.sound.level";
     public static final String QUEST_BACKGROUND_GRAYSCALE = "ui.questsandstuff.quest_background.grayscale";
     public static final String QUEST_BACKGROUND_GRAYSCALE_TOOLTIP = "ui.questsandstuff.quest_background.grayscale_tooltip";

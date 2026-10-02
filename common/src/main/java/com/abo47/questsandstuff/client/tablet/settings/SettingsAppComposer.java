@@ -78,7 +78,7 @@ public final class SettingsAppComposer {
                 SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
                 cd -> TabletLifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
-        homeBtn.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(homeBtn);
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         root.addWidget(homeBtn);
         root.setHomeButton(homeBtn);

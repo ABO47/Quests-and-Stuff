@@ -125,7 +125,7 @@ final class EntityVariantTiles {
     private static void addFolderTile(WidgetGroup surface, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantFolder folder, int tileX, int tileY, int tileW, int tileH) {
         boolean active = folder.key().equals(EntityVariantCatalog.variantFolderFor(model.entityId(), model.selected()));
         surface.addWidget(folderTile(folder, active, tileX, tileY, tileW, tileH));
-        ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
+        addTileHit(surface, tileX, tileY, tileW, tileH, click -> {
             state.pickers.entityVariantFolder = folder.key();
             state.pickers.entityVariantSelected = EntityVariantCatalog.defaultVariantForFolder(model.entityId(), folder.key());
             state.pickers.entityVariantSearch = "";
@@ -134,15 +134,12 @@ final class EntityVariantTiles {
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder opened target={} entity={} folder={}", model.target(), model.entityId(), folder.key());
             refresh.run();
         });
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
-        surface.addWidget(hit);
     }
 
     private static void addVariantTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantEntry entry, int tileX, int tileY, int tileW, int tileH) {
         boolean active = entry.key().equals(model.selected());
         surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, tileW, tileH, model.activeFolder()));
-        ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, click -> {
+        addTileHit(surface, tileX, tileY, tileW, tileH, click -> {
             state.pickers.entityVariantSelected = entry.key();
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant selected target={} entity={} variant={}", model.target(), model.entityId(), entry.key());
             if (click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
@@ -151,7 +148,11 @@ final class EntityVariantTiles {
             }
             refresh.run();
         });
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+    }
+
+    private static void addTileHit(WidgetGroup surface, int tileX, int tileY, int tileW, int tileH, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> onClick) {
+        ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, onClick);
+        GlowShaderHelper.glowHit(hit);
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
     }

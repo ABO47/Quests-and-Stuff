@@ -6,11 +6,13 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -33,6 +35,19 @@ public final class GlowShaderHelper {
     public static IGuiTexture hoverGlow(int glowColor) {
         return (graphics, mouseX, mouseY, x, y, w, h) ->
                 drawGlow(graphics, mouseX, mouseY, (int) x, (int) y, w, h, glowColor);
+    }
+
+    public static Widget glowHit(Widget hit) {
+        hit.setHoverTexture(hoverGlow());
+        return hit;
+    }
+
+    public static Widget glowHit(Widget hit, Component... tooltips) {
+        glowHit(hit);
+        if (tooltips != null && tooltips.length > 0) {
+            hit.setHoverTooltips(tooltips);
+        }
+        return hit;
     }
 
     // Draw the glow shader over the given area in the theme-driven GLOW color.

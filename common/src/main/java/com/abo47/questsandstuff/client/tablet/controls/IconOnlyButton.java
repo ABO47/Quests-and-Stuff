@@ -27,7 +27,7 @@ public final class IconOnlyButton extends ButtonWidget {
         this.iconSize = Math.max(8, size - 2);
         this.iconTexture = new SmoothResourceTexture(icon).setDynamicColor(() -> color);
         setClientSideWidget();
-        setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(this);
         setClickedTexture(SurfaceFactory.transparentFill());
     }
 

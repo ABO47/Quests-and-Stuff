@@ -266,6 +266,27 @@ public final class SettingsTabDescriptors {
                         QuestsAndStuffConfig::setChapterSwitchAnimationsEnabled,
                         false,
                         true
+                ),
+                new SettingsOptionDescriptor(
+                        "questHoverExpandAnimations",
+                        "ui.questsandstuff.settings.quest_hover_expand_animations",
+                        "ui.questsandstuff.settings.quest_hover_expand_animations_desc",
+                        QuestsAndStuffConfig::questHoverExpandAnimationSettingEnabled,
+                        QuestsAndStuffConfig::setQuestHoverExpandAnimationsEnabled,
+                        false,
+                        true
+                ),
+                new SettingsOptionDescriptor(
+                        "questHoverExpandPercent",
+                        "ui.questsandstuff.settings.quest_hover_expand_percent",
+                        "ui.questsandstuff.settings.quest_hover_expand_percent_desc",
+                        QuestsAndStuffConfig::questHoverExpandPercent,
+                        QuestsAndStuffConfig::setQuestHoverExpandPercent,
+                        QuestsAndStuffConfig.MIN_QUEST_HOVER_EXPAND_PERCENT,
+                        QuestsAndStuffConfig.MAX_QUEST_HOVER_EXPAND_PERCENT,
+                        3,
+                        false,
+                        ""
                 )
         );
     }

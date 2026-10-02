@@ -109,9 +109,8 @@ public final class TabletItemInventoryPickerModal {
                 }
             }
         };
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
+        GlowShaderHelper.glowHit(hit, tooltip(stack));
         hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
-        hit.setHoverTooltips(tooltip(stack));
         hit.setClientSideWidget();
         surface.addWidget(hit);
     }

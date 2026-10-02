@@ -387,7 +387,7 @@ public final class EditorCommandPayloads {
 
     public static CompoundTag connectionTextureSpacing(String questId, String prerequisiteId, int spacing) {
         CompoundTag payload = prerequisite(questId, prerequisiteId);
-        payload.putInt(SPACING, Math.max(0, spacing));
+        payload.putInt(SPACING, spacing);
         return payload;
     }
 

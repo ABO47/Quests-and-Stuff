@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import java.util.List;
+
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
@@ -164,14 +166,28 @@ final class CanvasContextElementActions {
         }
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId);
         if (ec != null) {
-            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                     CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE),
-                    "background", TabletColors.INTERACTIVE, () -> {
-                        ModalOpenActions.openEcBackgroundPicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId, ec.background());
-                        ContextMenuController.close(state);
-                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
-                        canvasViewport.refresh();
-                    }
+                    "background", TabletColors.INTERACTIVE, List.of(
+                            ContextActionFactory.action(
+                                    CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE),
+                                    "image", TabletColors.INTERACTIVE, () -> {
+                                        ModalOpenActions.openEcBackgroundPicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId, ec.background());
+                                        ContextMenuController.close(state);
+                                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
+                                        canvasViewport.refresh();
+                                    }
+                            ),
+                            ContextActionFactory.action(
+                                    CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE),
+                                    "brick-wall", TabletColors.INTERACTIVE, () -> {
+                                        ModalOpenActions.openEcGameTexturePicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId);
+                                        ContextMenuController.close(state);
+                                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background_game ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
+                                        canvasViewport.refresh();
+                                    }
+                            )
+                    )
             ));
             if (!ec.background().isBlank()) {
                 String ecBgKey = "ec_remove_bg:" + state.contextMenu.contextCanvasExclusiveChoiceId;

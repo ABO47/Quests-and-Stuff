@@ -124,8 +124,7 @@ public final class TabletSoundPickerModal {
             }
             refresh.run();
         });
-        hit.setHoverTexture(GlowShaderHelper.hoverGlow());
-        hit.setHoverTooltips(PickerTooltips.nameOnly(entry.name()));
+        GlowShaderHelper.glowHit(hit, PickerTooltips.nameOnly(entry.name()));
         list.addWidget(hit);
     }
 
