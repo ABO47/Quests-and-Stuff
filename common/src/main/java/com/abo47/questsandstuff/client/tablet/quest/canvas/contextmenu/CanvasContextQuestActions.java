@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -116,6 +117,13 @@ final class CanvasContextQuestActions {
             })));
         }
         addQuestCopyAndDeleteActions(sections, canvasViewport, state, player);
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", TabletColors.INTERACTIVE, () -> {
+            ContextMenuController.close(state);
+            ContextMenuController.clearDeleteConfirm(state);
+            boolean saved = CanvasBlueprintController.saveQuestWithNotice(canvasViewport, state, state.contextMenu.contextQuestId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
+            QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint target=quest id={} saved={}", state.contextMenu.contextQuestId, saved);
+            canvasViewport.refresh();
+        }));
     }
 
     private static void addQuestBackgroundActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {

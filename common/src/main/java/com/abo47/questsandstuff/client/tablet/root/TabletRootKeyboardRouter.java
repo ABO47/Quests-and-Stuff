@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
@@ -426,6 +427,7 @@ final class TabletRootKeyboardRouter {
         }
         if (state.canvas.blueprintPlacement.active()) {
             state.canvas.blueprintPlacement.cancel();
+            state.canvas.blueprintPlacement.clearUseLast();
             return true;
         }
         if (state.canvas.canvasSelection.hasAny() || state.canvas.selectionBoundsVisible) {
@@ -451,6 +453,12 @@ final class TabletRootKeyboardRouter {
             state.canvas.quickConnectSourceQuestId = "";
             state.canvas.quickConnectEcId = "";
             refresher.run();
+            return true;
+        }
+        if (TabletKeybindings.useLastBlueprintMatches(keyCode, scanCode)) {
+            if (CanvasBlueprintController.endUseLastPlacement(state)) {
+                refresher.run();
+            }
             return true;
         }
         return selfKeyRelease.invoke(keyCode, scanCode, modifiers);

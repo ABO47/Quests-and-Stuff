@@ -47,6 +47,12 @@ public final class TabletKeybindings {
             GLFW.GLFW_KEY_F3,
             CATEGORY
     );
+    private static final KeyMapping USE_LAST_BLUEPRINT = new KeyMapping(
+            "key.questsandstuff.use_last_blueprint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_UNKNOWN,
+            CATEGORY
+    );
     public static final KeyMapping EDIT_HUD = new KeyMapping(
             "key.questsandstuff.edit_hud",
             InputConstants.Type.KEYSYM,
@@ -88,6 +94,7 @@ public final class TabletKeybindings {
         registrar.accept(OPEN_CHUNKCLAIMER_UI);
         registrar.accept(QUICK_CONNECT);
         registrar.accept(RENAME_SELECTED);
+        registrar.accept(USE_LAST_BLUEPRINT);
         registrar.accept(EDIT_HUD);
         registrar.accept(GIZMO_MOVE);
         registrar.accept(GIZMO_RESIZE);
@@ -105,6 +112,10 @@ public final class TabletKeybindings {
 
     public static boolean renameSelectedMatches(int keyCode, int scanCode) {
         return RENAME_SELECTED.matches(keyCode, scanCode);
+    }
+
+    public static boolean useLastBlueprintMatches(int keyCode, int scanCode) {
+        return USE_LAST_BLUEPRINT.matches(keyCode, scanCode);
     }
 
     public static boolean openUiMatches(int keyCode, int scanCode) {

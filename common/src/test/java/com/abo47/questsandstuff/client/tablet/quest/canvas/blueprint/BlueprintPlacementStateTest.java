@@ -51,4 +51,26 @@ class BlueprintPlacementStateTest {
         assertTrue(state.hasAsset());
         assertEquals("blueprints/tower.json", state.asset());
     }
+
+    @Test
+    void useLastFlagSurvivesCancelButClearsOnBegin() {
+        BlueprintPlacementState state = new BlueprintPlacementState();
+        state.begin("blueprints/camp.json");
+        state.setUseLastHeld();
+
+        assertTrue(state.useLastHeld());
+
+        state.cancel();
+
+        assertTrue(state.useLastHeld());
+
+        state.clearUseLast();
+
+        assertFalse(state.useLastHeld());
+
+        state.setUseLastHeld();
+        state.begin("blueprints/tower.json");
+
+        assertFalse(state.useLastHeld());
+    }
 }
