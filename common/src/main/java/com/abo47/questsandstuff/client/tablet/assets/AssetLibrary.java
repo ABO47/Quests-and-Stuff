@@ -48,6 +48,10 @@ public final class AssetLibrary {
         return AssetSearchIndex.listAssetEntries(assetsRoot, relativeDir);
     }
 
+    public static Path resolveDirectory(Path assetsRoot, String relativeDir) {
+        return AssetPathResolver.resolveDirectory(assetsRoot, relativeDir);
+    }
+
     public static List<AssetEntry> searchAssetEntries(Path assetsRoot, String relativeDir, String query) {
         return AssetSearchIndex.searchAssetEntries(assetsRoot, relativeDir, query);
     }

@@ -1,6 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.assets;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,11 +58,11 @@ final class GameTextureCache {
         if (cached != null) {
             return cached;
         }
-        ItemStack stack = gameStack(ref);
-        if (stack.isEmpty()) {
+        ItemStack[] stacks = gameStacks(ref);
+        if (stacks.length == 0) {
             return null;
         }
-        IGuiTexture out = new GameItemTexture(stack, mode, leftEdge, rightEdge, topEdge, bottomEdge);
+        IGuiTexture out = new GameItemTexture(stacks, mode, leftEdge, rightEdge, topEdge, bottomEdge);
         TEXTURE_CACHE.put(key, out);
         return out;
     }
@@ -79,18 +81,21 @@ final class GameTextureCache {
             return itemStack(ModelAssetPreviewRenderer.normalizeItemPick(value.substring(ModelAssetPreviewRenderer.ITEM_ASSET_PREFIX.length())));
         }
         if (value.startsWith(ModelAssetPreviewRenderer.ITEM_TAG_ASSET_PREFIX)) {
-            return firstItemTagStack(ModelAssetPreviewRenderer.normalizeItemTagPick(value.substring(ModelAssetPreviewRenderer.ITEM_TAG_ASSET_PREFIX.length())));
+            return firstOrEmpty(itemTagStacks(ModelAssetPreviewRenderer.normalizeItemTagPick(value.substring(ModelAssetPreviewRenderer.ITEM_TAG_ASSET_PREFIX.length()))));
         }
         if (value.startsWith(ModelAssetPreviewRenderer.BLOCK_ASSET_PREFIX)) {
             return itemStack(ModelAssetPreviewRenderer.normalizeBlockPick(value.substring(ModelAssetPreviewRenderer.BLOCK_ASSET_PREFIX.length())));
         }
         if (value.startsWith(ModelAssetPreviewRenderer.BLOCK_TAG_ASSET_PREFIX)) {
-            return firstBlockTagStack(ModelAssetPreviewRenderer.normalizeBlockTagPick(value.substring(ModelAssetPreviewRenderer.BLOCK_TAG_ASSET_PREFIX.length())));
+            return firstOrEmpty(blockTagStacks(ModelAssetPreviewRenderer.normalizeBlockTagPick(value.substring(ModelAssetPreviewRenderer.BLOCK_TAG_ASSET_PREFIX.length()))));
         }
         if (value.startsWith("#")) {
             String tagId = value.substring(1).trim();
-            ItemStack tagStack = firstItemTagStack(tagId);
-            return tagStack.isEmpty() ? firstBlockTagStack(tagId) : tagStack;
+            ItemStack[] tagStacks = itemTagStacks(tagId);
+            if (tagStacks.length == 0) {
+                tagStacks = blockTagStacks(tagId);
+            }
+            return firstOrEmpty(tagStacks);
         }
         ItemStack plain = itemStack(value);
         if (!plain.isEmpty()) {
@@ -120,32 +125,55 @@ final class GameTextureCache {
         return new ItemStack(block.asItem());
     }
 
-    private static ItemStack firstItemTagStack(String tagId) {
-        ResourceLocation id = ResourceLocation.tryParse(tagId);
-        if (id == null) {
-            return ItemStack.EMPTY;
+    static ItemStack[] gameStacks(String ref) {
+        String value = ref == null ? "" : ref.trim();
+        if (value.startsWith(ModelAssetPreviewRenderer.ITEM_TAG_ASSET_PREFIX)) {
+            return itemTagStacks(ModelAssetPreviewRenderer.normalizeItemTagPick(value.substring(ModelAssetPreviewRenderer.ITEM_TAG_ASSET_PREFIX.length())));
         }
-        TagKey<Item> key = TagKey.create(BuiltInRegistries.ITEM.key(), id);
-        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(key)) {
-            if (holder.value() != Items.AIR) {
-                return new ItemStack(holder.value());
-            }
+        if (value.startsWith(ModelAssetPreviewRenderer.BLOCK_TAG_ASSET_PREFIX)) {
+            return blockTagStacks(ModelAssetPreviewRenderer.normalizeBlockTagPick(value.substring(ModelAssetPreviewRenderer.BLOCK_TAG_ASSET_PREFIX.length())));
         }
-        return ItemStack.EMPTY;
+        if (value.startsWith("#")) {
+            String tagId = value.substring(1).trim();
+            ItemStack[] tagStacks = itemTagStacks(tagId);
+            return tagStacks.length == 0 ? blockTagStacks(tagId) : tagStacks;
+        }
+        ItemStack single = gameStack(value);
+        return single.isEmpty() ? new ItemStack[0] : new ItemStack[]{single};
     }
 
-    private static ItemStack firstBlockTagStack(String tagId) {
+    private static ItemStack firstOrEmpty(ItemStack[] stacks) {
+        return stacks.length == 0 ? ItemStack.EMPTY : stacks[0];
+    }
+
+    private static ItemStack[] itemTagStacks(String tagId) {
         ResourceLocation id = ResourceLocation.tryParse(tagId);
         if (id == null) {
-            return ItemStack.EMPTY;
+            return new ItemStack[0];
+        }
+        TagKey<Item> key = TagKey.create(BuiltInRegistries.ITEM.key(), id);
+        List<ItemStack> out = new ArrayList<>();
+        for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(key)) {
+            if (holder.value() != Items.AIR) {
+                out.add(new ItemStack(holder.value()));
+            }
+        }
+        return out.toArray(ItemStack[]::new);
+    }
+
+    private static ItemStack[] blockTagStacks(String tagId) {
+        ResourceLocation id = ResourceLocation.tryParse(tagId);
+        if (id == null) {
+            return new ItemStack[0];
         }
         TagKey<Block> key = TagKey.create(BuiltInRegistries.BLOCK.key(), id);
+        List<ItemStack> out = new ArrayList<>();
         for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(key)) {
             Block block = holder.value();
             if (block != null && block.asItem() != Items.AIR) {
-                return new ItemStack(block.asItem());
+                out.add(new ItemStack(block.asItem()));
             }
         }
-        return ItemStack.EMPTY;
+        return out.toArray(ItemStack[]::new);
     }
 }

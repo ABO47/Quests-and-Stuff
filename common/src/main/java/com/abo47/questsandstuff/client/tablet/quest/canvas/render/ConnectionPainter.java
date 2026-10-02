@@ -42,6 +42,7 @@ final class ConnectionPainter {
     private static final float CHEVRON_U1 = 206.0f / 256.0f;
     private static final int CHEVRON_BASE_W = 5;
     private static final int CHEVRON_BASE_H = 9;
+    private static final int ITEM_GLYPH_BASE = 12;
     private static final float DARKEN_FACTOR = 0.52f;
     private static final float SCALE_CLAMP_MIN = 0.25f;
     private static final float SCALE_CLAMP_MAX = 2.0f;
@@ -174,11 +175,10 @@ final class ConnectionPainter {
         String rawTextureStr = line.texture();
         ResourceLocation texture = resolveTexture(rawTextureStr);
         int spacing = line.textureSpacing();
-        if (spacing <= 0 && texture != null) {
+        if (spacing == 0 && texture != null) {
             int tw = textureWidth(rawTextureStr);
             if (tw > 0) spacing = Math.max(tw, DEFAULT_SPACING);
         }
-        spacing = Math.max(0, spacing);
         float zoom = state.canvas.canvasZoom;
         float safeScale = clampScale(zoom);
         double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
@@ -197,11 +197,12 @@ final class ConnectionPainter {
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
         ItemStack gameStack = AssetLibrary.gameItemStack(rawTextureStr);
         if (gameStack != null && !gameStack.isEmpty()) {
+            int itemGlyph = scaledGlyphDim(ITEM_GLYPH_BASE, safeScale);
             float progress = animation.running() ? animation.progress() : 1.0f;
             int itemAlpha = animation.running()
                     ? Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())))
                     : alpha;
-            drawItemChevrons(graphics, path, gameStack, itemAlpha, progress, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+            drawItemChevrons(graphics, path, gameStack, itemAlpha, progress, spacing, itemGlyph, itemGlyph, clipMinX, clipMinY, clipMaxX, clipMaxY);
             return;
         }
         if (animation.running()) {
@@ -390,7 +391,7 @@ final class ConnectionPainter {
             int clipMaxX,
             int clipMaxY
     ) {
-        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : (double) DEFAULT_SPACING);
+        double spacing = chevronStride(customSpacing, glyphW);
         boolean customTex = texture != null;
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
@@ -423,6 +424,16 @@ final class ConnectionPainter {
         setChevronTextureFilter(tex, GL11.GL_NEAREST);
     }
 
+    private static double chevronStride(int customSpacing, int glyphW) {
+        if (customSpacing == 0) {
+            return Math.max(glyphW, DEFAULT_SPACING);
+        }
+        if (customSpacing > 0) {
+            return Math.max(glyphW, customSpacing);
+        }
+        return Math.max(1, glyphW * (100 + customSpacing) / 100.0);
+    }
+
     private static void drawItemChevrons(
             GuiGraphics graphics,
             List<CanvasPoint> path,
@@ -437,7 +448,7 @@ final class ConnectionPainter {
             int clipMaxX,
             int clipMaxY
     ) {
-        double spacing = Math.max(glyphW, customSpacing > 0 ? (double) customSpacing : (double) DEFAULT_SPACING);
+        double spacing = chevronStride(customSpacing, glyphW);
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
             return;

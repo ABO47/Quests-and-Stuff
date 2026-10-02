@@ -18,7 +18,6 @@ public record QuestConnectionMetadata(
         targetQuestId = normalizeQuestId(targetQuestId);
         mode = mode == null ? QuestConnectionMode.DIRECT : mode;
         texture = texture == null ? "" : texture;
-        textureSpacing = Math.max(0, textureSpacing);
     }
 
     public static QuestConnectionMetadata direct(String sourceQuestId, String targetQuestId, int color, boolean hidden) {

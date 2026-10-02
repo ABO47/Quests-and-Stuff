@@ -20,6 +20,8 @@ final class PercentSliderWidget extends SliderWidget {
     private final BooleanSupplier dragCapture;
     private final Consumer<Boolean> setDragCapture;
     private int currentValue;
+    private final int min;
+    private final int max;
     private boolean dragging;
 
     PercentSliderWidget(
@@ -33,7 +35,25 @@ final class PercentSliderWidget extends SliderWidget {
             BooleanSupplier dragCapture,
             Consumer<Boolean> setDragCapture
     ) {
+        this(x, y, width, height, 0, 100, currentValue, onChange, onCommit, dragCapture, setDragCapture);
+    }
+
+    PercentSliderWidget(
+            int x,
+            int y,
+            int width,
+            int height,
+            int min,
+            int max,
+            int currentValue,
+            IntConsumer onChange,
+            Runnable onCommit,
+            BooleanSupplier dragCapture,
+            Consumer<Boolean> setDragCapture
+    ) {
         super(x, y, width, height);
+        this.min = min;
+        this.max = Math.max(min + 1, max);
         this.currentValue = clamp(currentValue);
         this.onChange = onChange == null ? value -> {
         } : onChange;
@@ -52,7 +72,7 @@ final class PercentSliderWidget extends SliderWidget {
         handleTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 180), withAlpha(TabletColors.INTERACTIVE, 235));
         handleHoverTexture = GlowShaderHelper.hoverGlow();
         setOverlay(null);
-        setValue(this.currentValue / 100.0f);
+        setValue(normalize(currentValue));
         setSliderCallback(this::setValueFromSlider);
         updateTooltip();
     }
@@ -112,7 +132,7 @@ final class PercentSliderWidget extends SliderWidget {
     }
 
     private boolean setValueFromSlider(float sliderValue) {
-        int next = clamp(Math.round(Math.max(0.0f, Math.min(1.0f, sliderValue)) * 100.0f));
+        int next = clamp(min + Math.round(Math.max(0.0f, Math.min(1.0f, sliderValue)) * (max - min)));
         if (next == currentValue) {
             return false;
         }
@@ -128,9 +148,13 @@ final class PercentSliderWidget extends SliderWidget {
             return;
         }
         currentValue = next;
-        setValue(next / 100.0f);
+        setValue(normalize(next));
         updateTooltip();
         onChange.accept(next);
+    }
+
+    private float normalize(int value) {
+        return (value - min) / (float) (max - min);
     }
 
     private boolean isDragging() {
@@ -147,11 +171,12 @@ final class PercentSliderWidget extends SliderWidget {
         setDragCapture.accept(false);
     }
 
-    private static int clamp(int value) {
-        return Math.max(0, Math.min(100, value));
+    private int clamp(int value) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private void updateTooltip() {
-        setHoverTooltips(new Component[]{Component.literal(currentValue + "%")});
+        String text = min == 0 && max == 100 ? currentValue + "%" : Integer.toString(currentValue);
+        setHoverTooltips(new Component[]{Component.literal(text)});
     }
 }

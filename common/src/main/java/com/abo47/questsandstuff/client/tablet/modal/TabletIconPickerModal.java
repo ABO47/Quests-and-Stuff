@@ -77,11 +77,8 @@ public final class TabletIconPickerModal {
         int gap = 4;
         int gridX = sidePad;
         int gridW = w - sidePad * 2;
-        boolean assetSwitch = !backgroundMode && canvasEntityTarget.isBlank() && canvasModelTarget.isBlank()
-                && (!detailsTarget.isBlank() || !questTarget.isBlank() || !chapterTarget.isBlank());
-        int assetW = assetSwitch ? headH + gap : 0;
         int searchX = gridX + modeW + (entityPicker ? 0 : gap);
-        int searchW = gridW - modeW - (entityPicker ? 0 : gap) - assetW;
+        int searchW = gridW - modeW - (entityPicker ? 0 : gap);
         int gridY = headY + headH + 4;
         int gridH = h - gridY - 8;
         int slot = 18;
@@ -92,20 +89,6 @@ public final class TabletIconPickerModal {
             QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", IconPickerMode.safe(state.pickers.iconMode).logName(), state.pickers.iconSearch);
             refresh.run();
         }, focused -> state.pickers.iconSearchFocused = focused);
-
-        if (assetSwitch) {
-            ActionButtons.iconAction(modal, searchX + Math.max(24, searchW), headY, headH, headH, "image", "",
-                    TabletColors.INTERACTIVE,
-                    new Component[]{Component.translatable(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE)}, click -> {
-                        if (!detailsTarget.isBlank()) {
-                            ModalOpenActions.openQuestDetailsAssetIconPicker(state, detailsTarget);
-                        } else if (!questTarget.isBlank()) {
-                            ModalOpenActions.openQuestAssetIconPicker(state, questTarget);
-                        } else {
-                            ModalOpenActions.openChapterAssetIconPicker(state, chapterTarget);
-                        }
-                    });
-        }
 
         if (backgroundMode) {
             IconPickerMode[] cycle = IconPickerMode.gameBackgroundCycle();

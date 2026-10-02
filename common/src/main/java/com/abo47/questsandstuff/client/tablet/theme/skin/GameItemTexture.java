@@ -14,8 +14,8 @@ public class GameItemTexture implements IGuiTexture {
     private final int tileW;
     private final int tileH;
 
-    public GameItemTexture(ItemStack stack, String mode, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
-        this.item = new ScopedItemStackTexture(stack);
+    public GameItemTexture(ItemStack[] stacks, String mode, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
+        this.item = new ScopedItemStackTexture(stacks == null ? new ItemStack[0] : stacks);
         this.mode = mode == null ? "stretch" : mode;
         if ("tile_size".equals(this.mode)) {
             this.tileW = leftEdge > 0 ? leftEdge : SPRITE;
